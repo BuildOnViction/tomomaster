@@ -1,0 +1,4 @@
+{
+  "ignore": [".git/*", ".gitignore", ".eslintcache"],
+  "exec": "node"
+}
