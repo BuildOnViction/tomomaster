@@ -10,13 +10,16 @@ contract TomoValidator is IValidator {
         bool isValidator;
         bool isCandidate;
         uint256 cap;
+        mapping(address => uint256) votes;
     }
 
     mapping(address => ValidatorState) validatorsState;
+    address[] public validators;
     uint256 threshold = 1000 * 10** 18; // 1000 TOMO
 
     function TomoValidator(address[] _validators, uint256[] _caps) public {
-
+        validators = _validators;
+        
         for (uint256 i = 0; i < _validators.length; i++) {
             validatorsState[_validators[i]] = ValidatorState({
                 isValidator: true,
@@ -44,6 +47,11 @@ contract TomoValidator is IValidator {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.add(msg.value);
         if (validatorsState[_candidate].cap >= threshold) {
             validatorsState[_candidate].isValidator = true;
+            validatorsState[_candidate].votes[msg.sender] = validatorsState[_candidate].votes[msg.sender].add(msg.value);
         }
+    }
+
+    function getValidators() public view returns(address[]) {
+       return validators;
     }
 }
