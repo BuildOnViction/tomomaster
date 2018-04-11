@@ -54,4 +54,23 @@ contract TomoValidator is IValidator {
     function getValidators() public view returns(address[]) {
        return validators;
     }
+
+    function isValidator(address _candidate) public view returns(bool) {
+       return validatorsState[_candidate].isValidator;
+    }
+
+    function isCandidate(address _candidate) public view returns(bool) {
+       return validatorsState[_candidate].isCandidate;
+    }
+
+    function unvote(address _candidate, uint256 _cap) public {
+        // only unvote for candidate who does not become validator yet
+        require(!validatorsState[_candidate].isValidator);
+        require(validatorsState[_candidate].isCandidate);
+        require(validatorsState[_candidate].votes[msg.sender] >= _cap);
+        validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(_cap);
+        validatorsState[_candidate].votes[msg.sender] = validatorsState[_candidate].votes[msg.sender].sub(_cap);
+        // refunding to user after unvoting
+        msg.sender.transfer(_cap);
+    }
 }
