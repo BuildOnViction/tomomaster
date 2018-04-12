@@ -32,8 +32,12 @@
                   <md-table-row>
                       <md-table-head md-numeric>ID</md-table-head>
                       <md-table-head>Address</md-table-head>
-                      <md-table-head>Name</md-table-head>
                       <md-table-head></md-table-head>
+                  </md-table-row>
+                  <md-table-row v-for="c, key in candidates">
+                      <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
+                      <md-table-cell>{{ c }}</md-table-cell>
+                      <md-table-cell><md-button class="md-raised md-primary">Vote</md-button></md-table-cell>
                   </md-table-row>
               </md-table>
           </div>
@@ -46,13 +50,13 @@
                   <md-table-row>
                       <md-table-head md-numeric>ID</md-table-head>
                       <md-table-head>Address</md-table-head>
-                      <md-table-head>Name</md-table-head>
+                      <md-table-head></md-table-head>
                   </md-table-row>
 
-                  <md-table-row>
-                      <md-table-cell md-numeric>1</md-table-cell>
-                      <md-table-cell>Shawna Dubbin</md-table-cell>
-                      <md-table-cell>sdubbin0@geocities.com</md-table-cell>
+                  <md-table-row v-for="v, key in validators">
+                      <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
+                      <md-table-cell>{{ v }}</md-table-cell>
+                      <md-table-cell></md-table-cell>
                   </md-table-row>
               </md-table>
           </div>
@@ -62,15 +66,25 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.css'
-import 'vue-material/dist/theme/default.css'
+import Vue from 'vue';
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.css';
+import 'vue-material/dist/theme/default.css';
+import { default as contract } from 'truffle-contract';
+import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json';
 Vue.use(VueMaterial)
+
+var web3 = window.web3 || false;
+var TomoValidator = contract(TomoValidatorArtifacts);
+var account;
+
 export default {
   name: 'app',
   data() {
     return {
+        isReady: !!web3,
+        validators: [],
+        candidates: []
     };
   },
   computed: {
@@ -78,8 +92,34 @@ export default {
   watch: {
     '$route'() { }
   },
-  created() { },
-  mounted() { },
+  created() {
+      var vm = this;
+      TomoValidator.setProvider(web3.currentProvider);
+      web3.eth.getAccounts(function(err, accs) {
+          if (err != null) {
+              console.log("There was an error fetching your accounts.");
+              return;
+          }
+
+          if (accs.length == 0) {
+              console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+              return;
+          }
+
+          account = accs[0];
+      });
+      TomoValidator.deployed().then(function(tv) {
+          return tv.getValidators.call({from: account}).then(d => {
+              vm.validators = d;
+              return tv.getCandidates.call({from: account}).then(d => {
+                  vm.candidates = d;
+              });
+          });
+      });
+
+  },
+  mounted() {
+  },
   methods: { }
 };
 </script>
