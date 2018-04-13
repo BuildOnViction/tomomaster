@@ -8,9 +8,9 @@
           </div>
 
           <div class="md-toolbar-section-end">
-            <md-button class="md-raised" >Add New</md-button>
+            <md-button class="md-raised" >Become a candidate</md-button>
 
-            <md-menu md-direction="bottom-start" md-align-trigger>
+            <!--md-menu md-direction="bottom-start" md-align-trigger>
               <md-button md-menu-trigger>
                 <md-icon>more_vert</md-icon>
               </md-button>
@@ -18,7 +18,7 @@
               <md-menu-content>
                 <md-menu-item><md-button class="md-primary">Balance</md-button></md-menu-item>
               </md-menu-content>
-            </md-menu>
+            </md-menu-->
           </div>
         </div>
       </md-toolbar>
