@@ -71,6 +71,10 @@
                                 md-input-maxlength="30"
                                 md-input-placeholder="Type $TOMO..."
                                 md-confirm-text="Confirm" @md-confirm="vote()"/>
+    <md-dialog-alert
+                            :md-active.sync="isNotReady"
+                            md-title="Note!"
+                            md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
   </div>
 </template>
 
@@ -91,7 +95,7 @@ export default {
   name: 'app',
   data() {
     return {
-        isReady: !!web3,
+        isNotReady: !web3,
         voteActive: false,
         voteValue: 1,
         voteItem: {},
@@ -134,6 +138,9 @@ export default {
                   return Promise.all(map);
               });
           });
+      }).catch(e => {
+          this.isNotReady = true;
+          console.log(e);
       });
 
   },
