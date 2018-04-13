@@ -39,7 +39,7 @@
                       <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                       <md-table-cell>{{ c.address }}</md-table-cell>
                       <md-table-cell>{{ c.cap }}</md-table-cell>
-                      <md-table-cell><md-button class="md-raised md-primary" @click="vote(c)">Vote</md-button></md-table-cell>
+                      <md-table-cell><md-button class="md-raised md-primary" @click="voteActive = true; voteItem = c">Vote</md-button></md-table-cell>
                   </md-table-row>
               </md-table>
           </div>
@@ -64,6 +64,13 @@
           </div>
       </div>
     </div>
+    <md-dialog-prompt
+                                :md-active.sync="voteActive"
+                                v-model="voteValue"
+                                md-title="How much?"
+                                md-input-maxlength="30"
+                                md-input-placeholder="Type $TOMO..."
+                                md-confirm-text="Confirm" @md-confirm="vote()"/>
   </div>
 </template>
 
@@ -85,6 +92,9 @@ export default {
   data() {
     return {
         isReady: !!web3,
+        voteActive: false,
+        voteValue: 1,
+        voteItem: {},
         validators: [],
         candidates: []
     };
@@ -114,7 +124,14 @@ export default {
           return tv.getValidators.call({from: account}).then(d => {
               vm.validators = d;
               return tv.getCandidates.call({from: account}).then(cs => {
-                  vm.candidates = cs.map(it => ({ address: it, cap: "0" }));
+                  var map = cs.map(it => { 
+                      return tv.getCandidateCap.call(it, {from: account}).then(d => {
+                          vm.candidates.push({
+                              address: it, cap: String(d/10**18) + ' $TOMO'
+                          });
+                      });
+                  });
+                  return Promise.all(map);
               });
           });
       });
@@ -123,10 +140,12 @@ export default {
   mounted() {
   },
   methods: {
-      vote: function(candidate) {
+      vote: function() {
+          var candidate = this.voteItem;
+          var value = this.voteValue
           TomoValidator.deployed().then(function(tv) {
-              tv.vote(candidate.address, {from: account, value: 10**18}).then((d) => {
-                  tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
+              return tv.vote(candidate.address, {from: account, value: parseFloat(value)*10**18}).then((d) => {
+                  return tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
                       candidate.cap = String(d/10**18) + ' $TOMO';
                   });
               });
