@@ -32,12 +32,14 @@
                   <md-table-row>
                       <md-table-head md-numeric>ID</md-table-head>
                       <md-table-head>Address</md-table-head>
+                      <md-table-head>Capacity</md-table-head>
                       <md-table-head></md-table-head>
                   </md-table-row>
                   <md-table-row v-for="c, key in candidates">
                       <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                      <md-table-cell>{{ c }}</md-table-cell>
-                      <md-table-cell><md-button class="md-raised md-primary">Vote</md-button></md-table-cell>
+                      <md-table-cell>{{ c.address }}</md-table-cell>
+                      <md-table-cell>{{ c.cap }}</md-table-cell>
+                      <md-table-cell><md-button class="md-raised md-primary" @click="vote(c)">Vote</md-button></md-table-cell>
                   </md-table-row>
               </md-table>
           </div>
@@ -111,8 +113,8 @@ export default {
       TomoValidator.deployed().then(function(tv) {
           return tv.getValidators.call({from: account}).then(d => {
               vm.validators = d;
-              return tv.getCandidates.call({from: account}).then(d => {
-                  vm.candidates = d;
+              return tv.getCandidates.call({from: account}).then(cs => {
+                  vm.candidates = cs.map(it => ({ address: it, cap: "0" }));
               });
           });
       });
@@ -120,7 +122,17 @@ export default {
   },
   mounted() {
   },
-  methods: { }
+  methods: {
+      vote: function(candidate) {
+          TomoValidator.deployed().then(function(tv) {
+              tv.vote(candidate.address, {from: account, value: 10**18}).then((d) => {
+                  tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
+                      candidate.cap = String(d/10**18) + ' $TOMO';
+                  });
+              });
+          });
+      }
+  }
 };
 </script>
 
