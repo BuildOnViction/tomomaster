@@ -19,11 +19,14 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.vue$/,
+            { 
+                test: /\.vue$/,
+                exclude: /(node_modules|bower_components)/,
                 loader: "vue-loader",
             },
             {
                 test: /\.css$/,
+                exclude: /(node_modules|bower_components)/,
                 use: [ 'style-loader', 'css-loader' ]
             },
             {
