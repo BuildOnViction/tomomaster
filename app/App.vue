@@ -43,25 +43,6 @@
                   </md-table-row>
               </md-table>
           </div>
-          <div class="table-container">
-              <md-table md-card>
-                  <md-table-toolbar>
-                      <h1 class="md-title">Validators</h1>
-                  </md-table-toolbar>
-
-                  <md-table-row>
-                      <md-table-head md-numeric>ID</md-table-head>
-                      <md-table-head>Address</md-table-head>
-                      <md-table-head></md-table-head>
-                  </md-table-row>
-
-                  <md-table-row v-for="v, key in validators">
-                      <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                      <md-table-cell>{{ v }}</md-table-cell>
-                      <md-table-cell></md-table-cell>
-                  </md-table-row>
-              </md-table>
-          </div>
       </div>
     </div>
     <md-dialog-prompt
@@ -99,7 +80,6 @@ export default {
         voteActive: false,
         voteValue: 1,
         voteItem: {},
-        validators: [],
         candidates: []
     };
   },
@@ -125,18 +105,15 @@ export default {
           account = accs[0];
       });
       TomoValidator.deployed().then(function(tv) {
-          return tv.getValidators.call({from: account}).then(d => {
-              vm.validators = d;
-              return tv.getCandidates.call({from: account}).then(cs => {
-                  var map = cs.map(it => { 
-                      return tv.getCandidateCap.call(it, {from: account}).then(d => {
-                          vm.candidates.push({
-                              address: it, cap: String(d/10**18) + ' $TOMO'
-                          });
+          return tv.getCandidates.call({from: account}).then(cs => {
+              var map = cs.map(it => { 
+                  return tv.getCandidateCap.call(it, {from: account}).then(d => {
+                      vm.candidates.push({
+                          address: it, cap: String(d/10**18) + ' $TOMO'
                       });
                   });
-                  return Promise.all(map);
               });
+              return Promise.all(map);
           });
       }).catch(e => {
           this.isNotReady = true;
