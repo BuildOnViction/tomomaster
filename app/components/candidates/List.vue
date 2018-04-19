@@ -74,13 +74,14 @@ export default {
     methods: {
         vote: function() {
             var vm = this;
-            var account = vm.account;
             var candidate = this.voteItem;
             var value = this.voteValue
-            vm.TomoValidator.deployed().then(function(tv) {
-                return tv.vote(candidate.address, {from: account, value: parseFloat(value)*10**18}).then((d) => {
-                    return tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
-                        candidate.cap = String(d/10**18) + ' $TOMO';
+            vm.getAccount().then( account => {
+                vm.TomoValidator.deployed().then(function(tv) {
+                    return tv.vote(candidate.address, {from: account, value: parseFloat(value)*10**18}).then((d) => {
+                        return tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
+                            candidate.cap = String(d/10**18) + ' $TOMO';
+                        });
                     });
                 });
             });
