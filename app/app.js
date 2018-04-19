@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import App from './App.vue'
 import CandidateView from './components/candidates/View.vue'
 import CandidateList from './components/candidates/List.vue'
+import CandidateApply from './components/candidates/Apply.vue'
 
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.css';
@@ -41,6 +42,9 @@ const router = new VueRouter({
     routes: [
         {
             path: '/', component: CandidateList
+        },
+        {
+            path: '/apply', component: CandidateApply
         },
         {
             path: '/candidates', component: CandidateList

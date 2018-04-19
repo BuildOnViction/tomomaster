@@ -3,7 +3,7 @@
         <div class="table-container">
             <md-table md-card>
                 <md-table-toolbar>
-                    <h1 class="md-title">Candidates</h1>
+                    <div class="md-title">Candidates</div>
                 </md-table-toolbar>
 
                 <md-table-row>

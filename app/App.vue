@@ -8,7 +8,7 @@
           </div>
 
           <div class="md-toolbar-section-end">
-            <md-button class="md-raised" >Become a candidate</md-button>
+              <md-button class="md-raised" to="/apply">Become a candidate</md-button>
 
             <!--md-menu md-direction="bottom-start" md-align-trigger>
               <md-button md-menu-trigger>
