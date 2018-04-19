@@ -1,5 +1,4 @@
 var TomoValidator = artifacts.require('./TomoValidator');
-var config = require('config');
 
 module.exports = function(deployer) {
     return deployer.deploy(TomoValidator, [

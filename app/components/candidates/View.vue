@@ -20,4 +20,27 @@
     </div>
 </template>
 <script>
+import Vue from 'vue';
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.css';
+import 'vue-material/dist/theme/default.css';
+Vue.use(VueMaterial)
+
+export default {
+    name: 'app',
+    data() {
+        return {};
+    },
+    beforeRouteUpdate(to) {
+        this.address = to.params.address;
+    },
+    computed: { },
+    watch: {},
+    updated() {},
+    created() {},
+    mounted() {
+    },
+    methods: {
+    }
+};
 </script>
