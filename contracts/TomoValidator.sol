@@ -8,6 +8,8 @@ contract TomoValidator is IValidator {
 
     event Vote(address _candidate, uint256 _cap);
     event Unvote(address _candidate, uint256 _cap);
+    event Propose(address _candidate, uint256 _cap);
+    event Retire(address _candidate, uint256 _cap);
 
     struct ValidatorState {
         bool isCandidate;
@@ -45,7 +47,9 @@ contract TomoValidator is IValidator {
             isCandidate: true,
             cap: msg.value
         });
+        validatorsState[msg.sender].voters[msg.sender] = msg.value;
         candidateCount = candidateCount + 1;
+        emit Propose(msg.sender, msg.value);
     }
 
     function vote(address _candidate) external payable {
@@ -72,12 +76,29 @@ contract TomoValidator is IValidator {
     }
 
     function unvote(address _candidate, uint256 _cap) public {
-        require(validatorsState[_candidate].isCandidate);
         require(validatorsState[_candidate].voters[msg.sender] >= _cap);
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(_cap);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].sub(_cap);
         // refunding to user after unvoting
         msg.sender.transfer(_cap);
         emit Unvote(_candidate, _cap);
+    }
+
+    function retire() public {
+        require(validatorsState[msg.sender].isCandidate);
+        uint256 cap = validatorsState[msg.sender].voters[msg.sender];
+        validatorsState[msg.sender].cap = validatorsState[msg.sender].cap.sub(cap);
+        validatorsState[msg.sender].voters[msg.sender] = 0;
+        validatorsState[msg.sender].isCandidate = false;
+        candidateCount = candidateCount - 1;
+        for (uint256 i = 0; i < candidates.length; i++) {
+            if (candidates[i] == msg.sender) {
+                delete candidates[i];
+                break;
+            }
+        }
+        // refunding to user after retiring
+        msg.sender.transfer(cap);
+        emit Retire(msg.sender, cap);
     }
 }

@@ -14,8 +14,8 @@
                 </md-card-content>
 
                 <md-card-actions>
-                    <md-button class="md-raised md-primary" @click="voteActive = true;">Vote</md-button>
-                    <md-button class="md-raised md-accent" @click="unvoteActive = true;">Unvote</md-button>
+                    <md-button @click="voteActive = true;" class="md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
+                    <md-button @click="unvoteActive = true;" class="md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
             </md-card>
         </div>
