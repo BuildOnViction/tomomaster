@@ -27,30 +27,19 @@
                                               md-input-maxlength="30"
                                               md-input-placeholder="Type $TOMO..."
                                               md-confirm-text="Confirm" @md-confirm="vote()"/>
-            <md-dialog-alert
-                                              :md-active.sync="isNotReady"
-                                              md-title="Note!"
-                                              md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
+        <md-dialog-alert
+                                          :md-active.sync="isNotReady"
+                                          md-title="Note!"
+                                          md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
     </div>
 </template>
 <script>
-import Vue from 'vue';
-import VueMaterial from 'vue-material';
-import 'vue-material/dist/vue-material.css';
-import 'vue-material/dist/theme/default.css';
-import { default as contract } from 'truffle-contract';
-import TomoValidatorArtifacts from '../../../build/contracts/TomoValidator.json';
-Vue.use(VueMaterial)
-
-var web3 = window.web3 || false;
-var TomoValidator = contract(TomoValidatorArtifacts);
-var account;
 
 export default {
     name: 'app',
     data() {
         return {
-            isNotReady: !web3,
+            isNotReady: !this.web3,
             voteActive: false,
             voteValue: 1,
             voteItem: {},
@@ -62,21 +51,8 @@ export default {
     updated() {},
     created() {
         var vm = this;
-        TomoValidator.setProvider(web3.currentProvider);
-        web3.eth.getAccounts(function(err, accs) {
-            if (err != null) {
-                console.log("There was an error fetching your accounts.");
-                return;
-            }
-
-            if (accs.length == 0) {
-                console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-                return;
-            }
-
-            account = accs[0];
-        });
-        TomoValidator.deployed().then(function(tv) {
+        var account = vm.account;
+        vm.TomoValidator.deployed().then(function(tv) {
             return tv.getCandidates.call({from: account}).then(cs => {
                 var map = cs.map(it => { 
                     return tv.getCandidateCap.call(it, {from: account}).then(d => {
@@ -97,9 +73,11 @@ export default {
     },
     methods: {
         vote: function() {
+            var vm = this;
+            var account = vm.account;
             var candidate = this.voteItem;
             var value = this.voteValue
-            TomoValidator.deployed().then(function(tv) {
+            vm.TomoValidator.deployed().then(function(tv) {
                 return tv.vote(candidate.address, {from: account, value: parseFloat(value)*10**18}).then((d) => {
                     return tv.getCandidateCap.call(candidate.address, {from: account}).then(d => {
                         candidate.cap = String(d/10**18) + ' $TOMO';
