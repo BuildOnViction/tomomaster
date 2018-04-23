@@ -12,7 +12,7 @@
                     <md-table-head>Capacity</md-table-head>
                     <md-table-head></md-table-head>
                 </md-table-row>
-                <md-table-row v-for="c, key in candidates">
+                <md-table-row v-for="(c, key) in candidates" :key="key">
                     <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                     <md-table-cell><router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link></md-table-cell>
                     <md-table-cell>{{ c.cap }}</md-table-cell>
@@ -21,16 +21,16 @@
             </md-table>
         </div>
         <md-dialog-prompt
-                                              :md-active.sync="voteActive"
-                                              v-model="voteValue"
-                                              md-title="How much?"
-                                              md-input-maxlength="30"
-                                              md-input-placeholder="Type $TOMO..."
-                                              md-confirm-text="Confirm" @md-confirm="vote()"/>
+            :md-active.sync="voteActive"
+            v-model="voteValue"
+            md-title="How much?"
+            md-input-maxlength="30"
+            md-input-placeholder="Type $TOMO..."
+            md-confirm-text="Confirm" @md-confirm="vote()"/>
         <md-dialog-alert
-                                          :md-active.sync="isNotReady"
-                                          md-title="Note!"
-                                          md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
+            :md-active.sync="isNotReady"
+            md-title="Note!"
+            md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
     </div>
 </template>
 <script>

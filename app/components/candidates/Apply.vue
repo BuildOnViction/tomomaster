@@ -27,17 +27,17 @@
             </md-card>
         </div>
         <md-dialog-prompt
-                                              :md-active.sync="applyActive"
-                                              v-model="applyValue"
-                                              md-title="How much? (at least 10000 $TOMO)"
-                                              md-input-maxlength="30"
-                                              md-input-placeholder="Type $TOMO..."
-                                              md-confirm-text="Confirm" @md-confirm="apply()"/>
+            :md-active.sync="applyActive"
+            v-model="applyValue"
+            md-title="How much? (at least 10000 $TOMO)"
+            md-input-maxlength="30"
+            md-input-placeholder="Type $TOMO..."
+            md-confirm-text="Confirm" @md-confirm="apply()"/>
         <md-dialog-confirm
-                                              :md-active.sync="retireActive"
-                                              md-title="Do you want to retire?"
-                                              md-content="If you retire, you will receive back all your deposit."
-                                              md-confirm-text="Confirm" @md-confirm="retire()"/>
+            :md-active.sync="retireActive"
+            md-title="Do you want to retire?"
+            md-content="If you retire, you will receive back all your deposit."
+            md-confirm-text="Confirm" @md-confirm="retire()"/>
     </div>
 </template>
 <script>
