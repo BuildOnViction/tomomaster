@@ -18,6 +18,7 @@ contract TomoValidator is IValidator {
     }
 
     mapping(address => ValidatorState) validatorsState;
+    mapping(address => address[]) voters;
     address[] public candidates;
     uint256 candidateCount = 0;
     uint256 public constant minCandidateCap = 10000 ether;
@@ -56,6 +57,7 @@ contract TomoValidator is IValidator {
         require(validatorsState[_candidate].isCandidate);
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.add(msg.value);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].add(msg.value);
+        voters[_candidate].push(msg.sender);
         emit Vote(_candidate, msg.value);
     }
 
@@ -69,6 +71,10 @@ contract TomoValidator is IValidator {
 
     function getVoterCap(address _candidate, address _voter) public view returns(uint256) {
         return validatorsState[_candidate].voters[_voter];
+    }
+
+    function getVoters(address _candidate) public view returns(address[]) {
+        return voters[_candidate];
     }
 
     function isCandidate(address _candidate) public view returns(bool) {
@@ -101,4 +107,5 @@ contract TomoValidator is IValidator {
         msg.sender.transfer(cap);
         emit Retire(msg.sender, cap);
     }
+
 }
