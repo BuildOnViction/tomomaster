@@ -17,6 +17,22 @@
                     <md-button @click="voteActive = true;" class="md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     <md-button @click="unvoteActive = true;" class="md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
+                <md-table>
+                    <md-table-toolbar>
+                        <div class="md-title">Voters</div>
+                    </md-table-toolbar>
+
+                    <md-table-row>
+                        <md-table-head md-numeric>ID</md-table-head>
+                        <md-table-head>Address</md-table-head>
+                        <md-table-head>Capacity</md-table-head>
+                    </md-table-row>
+                    <md-table-row v-for="v, key in voters">
+                        <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
+                        <md-table-cell>{{ v.address }}</md-table-cell>
+                        <md-table-cell>{{ v.cap }}</md-table-cell>
+                    </md-table-row>
+                </md-table>
             </md-card>
         </div>
         <md-dialog-prompt
@@ -44,6 +60,7 @@ export default {
             voteValue: 1,
             unvoteActive: false,
             unvoteValue: 1,
+            voters: [],
             candidate: this.$route.params.address,
             cap: 0,
             iCap: 0
@@ -61,7 +78,18 @@ export default {
                     vm.cap = String(cap/10**18);
                     return tv.getVoterCap.call(candidate, account, {from: account}).then(iCap => {
                         vm.iCap = String(iCap/10**18);
-                    })
+                        return tv.getVoters.call(candidate, {from: account}).then(vs => {
+                            var map = vs.map(it => {
+                                return tv.getVoterCap(candidate, it, {from: account}).then(cap => {
+                                    vm.voters.push({
+                                        address: it,
+                                        cap: String(cap/10**18)
+                                    });
+                                });
+                            });
+                            Promise.all(map);
+                        });
+                    });
                 });
             }).catch(e => {
                 console.log(e);
