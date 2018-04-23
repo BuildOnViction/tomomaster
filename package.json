@@ -2,7 +2,7 @@
     "name": "tomochain-governance",
     "version": "1.0.0",
     "description": "TomoChain Governance DApp",
-    "main": "index.js",
+    "main": "elect.js",
     "directories": {
         "test": "test"
     },
