@@ -1,51 +1,54 @@
 {
-  "name": "tomochain-governance",
-  "version": "1.0.0",
-  "description": "TomoChain Governance DApp",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "lint": "eslint ./",
-    "build": "node ./node_modules/webpack/bin/webpack.js",
-    "dev": "npm run webpack & npm run nodemon",
-    "nodemon": "./node_modules/.bin/nodemon index.js",
-    "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tomochain/tomo-governance.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tomochain/tomo-governance/issues"
-  },
-  "homepage": "https://github.com/tomochain/tomo-governance#readme",
-  "dependencies": {
-    "body-parser": "^1.18.2",
-    "config": "^1.30.0",
-    "ejs": "^2.5.8",
-    "express": "^4.16.3",
-    "express-validator": "^5.1.2"
-  },
-  "devDependencies": {
-    "babel-loader": "^7.1.4",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "css-loader": "^0.28.11",
-    "eslint": "^4.19.1",
-    "nodemon": "^1.17.3",
-    "style-loader": "^0.20.3",
-    "truffle-contract": "^3.0.4",
-    "vue": "^2.5.16",
-    "vue-loader": "^14.2.2",
-    "vue-material": "^1.0.0-beta-8",
-    "vue-router": "^3.0.1",
-    "vue-template-compiler": "^2.5.16",
-    "web3": "^1.0.0-beta.34",
-    "webpack": "^4.5.0",
-    "webpack-cli": "^2.0.14"
-  }
+    "name": "tomochain-governance",
+    "version": "1.0.0",
+    "description": "TomoChain Governance DApp",
+    "main": "elect.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "lint": "eslint ./",
+        "nodemon": "./node_modules/.bin/nodemon index.js",
+        "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
+        "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tomochain/tomo-governance.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/tomochain/tomo-governance/issues"
+    },
+    "homepage": "https://github.com/tomochain/tomo-governance#readme",
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "config": "^1.30.0",
+        "express": "^4.16.3",
+        "express-validator": "^5.1.2"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.4",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-env": "^1.6.0",
+        "babel-preset-stage-3": "^6.24.1",
+        "cross-env": "^5.0.5",
+        "css-loader": "^0.28.11",
+        "eslint": "^4.19.1",
+        "nodemon": "^1.17.3",
+        "style-loader": "^0.20.3",
+        "truffle-contract": "^3.0.4",
+        "vue": "^2.5.16",
+        "vue-loader": "^14.2.2",
+        "vue-material": "^1.0.0-beta-8",
+        "vue-router": "^3.0.1",
+        "vue-template-compiler": "^2.5.16",
+        "webpack": "^4.6.0",
+        "webpack-cli": "^2.0.15",
+        "webpack-dev-server": "^3.1.3"
+    }
 }
