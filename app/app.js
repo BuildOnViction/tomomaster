@@ -13,6 +13,8 @@ import { default as contract } from 'truffle-contract';
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json';
 Vue.use(VueMaterial)
 
+Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts);
+
 if (typeof web3 !== 'undefined') {
     var web3js = new Web3(web3.currentProvider);
 } else {
@@ -21,7 +23,6 @@ if (typeof web3 !== 'undefined') {
 
 if (web3js instanceof Web3) {
     Vue.prototype.web3 = web3js;
-    Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts);
     Vue.prototype.TomoValidator.setProvider(web3js.currentProvider);
     Vue.prototype.getAccount = function() {
         var p = new Promise(function(resolve, reject) {
@@ -41,8 +42,6 @@ if (web3js instanceof Web3) {
         });
         return p;
     }
-} else {
-    Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts);
 }
 
 Vue.use(VueRouter);

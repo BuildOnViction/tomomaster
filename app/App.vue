@@ -8,6 +8,7 @@
           </div>
 
           <md-autocomplete
+                v-if="!isNotReady"
                 class="search"
                 v-model="selectedCandidate"
                 @md-selected="goPage"
@@ -15,7 +16,7 @@
                 md-layout="box">
                 <label>Search...</label>
           </md-autocomplete>
-          <div class="md-toolbar-section-end">
+          <div class="md-toolbar-section-end" v-if="!isNotReady">
               <md-button class="md-raised" to="/apply">Become a candidate</md-button>
 
             <!--md-menu md-direction="bottom-start" md-align-trigger>
@@ -42,6 +43,7 @@ export default {
     name: 'app',
     data() {
         return {
+            isNotReady: !this.web3,
             selectedCandidate: null,
             candidates: []
         };
