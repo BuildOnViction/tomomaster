@@ -8,8 +8,8 @@
           </div>
 
           <md-autocomplete
-                v-if="!isNotReady"
                 class="search"
+                v-if="!isNotReady"
                 v-model="selectedCandidate"
                 @md-selected="goPage"
                 :md-options="candidates"
@@ -17,7 +17,7 @@
                 <label>Search...</label>
           </md-autocomplete>
           <div class="md-toolbar-section-end" v-if="!isNotReady">
-              <md-button class="md-raised" to="/apply">Become a candidate</md-button>
+              <md-button class="md-raised" to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
 
             <!--md-menu md-direction="bottom-start" md-align-trigger>
               <md-button md-menu-trigger>
@@ -45,12 +45,20 @@ export default {
         return {
             isNotReady: !this.web3,
             selectedCandidate: null,
-            candidates: []
+            candidates: [],
+            isCandidate: false
         };
     },
     created() {
         var vm = this;
         var account = vm.account;
+        vm.getAccount().then( account => {
+            vm.TomoValidator.deployed().then(function(tv) {
+                return tv.isCandidate(account).then(rs => {
+                    vm.isCandidate = rs;
+                });
+            });
+        });
         vm.TomoValidator.deployed().then(function(tv) {
             return tv.getCandidates.call({from: account}).then(cs => {
                 vm.candidates = cs;
