@@ -8,12 +8,12 @@
           </div>
 
           <md-autocomplete
-                                 class="search"
-                                 v-model="selectedCandidate"
-                                 @md-selected="goPage"
-                                 :md-options="candidates"
-                                 md-layout="box">
-              <label>Search...</label>
+                class="search"
+                v-model="selectedCandidate"
+                @md-selected="goPage"
+                :md-options="candidates"
+                md-layout="box">
+                <label>Search...</label>
           </md-autocomplete>
           <div class="md-toolbar-section-end">
               <md-button class="md-raised" to="/apply">Become a candidate</md-button>
