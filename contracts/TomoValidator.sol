@@ -62,7 +62,7 @@ contract TomoValidator is IValidator {
     }
 
     function getCandidates() public view returns(address[]) {
-       return candidates;
+        return candidates;
     }
 
     function getCandidateCap(address _candidate) public view returns(uint256) {
@@ -78,7 +78,7 @@ contract TomoValidator is IValidator {
     }
 
     function isCandidate(address _candidate) public view returns(bool) {
-       return validatorsState[_candidate].isCandidate;
+        return validatorsState[_candidate].isCandidate;
     }
 
     function unvote(address _candidate, uint256 _cap) public {

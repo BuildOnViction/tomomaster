@@ -1,9 +1,16 @@
 <template>
     <div>
-        <div class="table-container">
+        <md-empty-state
+            v-if="isNotReady"
+            md-icon="account_balance_wallet"
+            md-label="MetaMask is not installed"
+            md-description="Please install &amp; login Metamask Extension then connect it to Tomochain Mainnet or Testnet">
+            <md-button class="md-primary md-raised" href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">Install Metamask</md-button>
+        </md-empty-state>
+        <div class="table-container" v-if="!isNotReady">
             <md-table md-card>
                 <md-table-toolbar>
-                    <div class="md-title">Candidates</div>
+                    <div class="md-title">Candidatessssss</div>
                 </md-table-toolbar>
 
                 <md-table-row>
@@ -12,7 +19,8 @@
                     <md-table-head>Capacity</md-table-head>
                     <md-table-head></md-table-head>
                 </md-table-row>
-                <md-table-row v-for="c, key in candidates" :key="c.address">
+                
+                <md-table-row v-for="(c, key) in candidates" :key="key">
                     <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                     <md-table-cell><router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link></md-table-cell>
                     <md-table-cell>{{ c.cap }}</md-table-cell>
@@ -21,16 +29,12 @@
             </md-table>
         </div>
         <md-dialog-prompt
-                                              :md-active.sync="voteActive"
-                                              v-model="voteValue"
-                                              md-title="How much?"
-                                              md-input-maxlength="30"
-                                              md-input-placeholder="Type $TOMO..."
-                                              md-confirm-text="Confirm" @md-confirm="vote()"/>
-        <md-dialog-alert
-                                          :md-active.sync="isNotReady"
-                                          md-title="Note!"
-                                          md-content="You have to:<ul><li>Using chrome browser</li><li>Install/Login Metamask Plugin</li><li>Connect Metamask to Tomochain Mainnet or Testnet</li></ul>" />
+            :md-active.sync="voteActive"
+            v-model="voteValue"
+            md-title="How much?"
+            md-input-maxlength="30"
+            md-input-placeholder="Type $TOMO..."
+            md-confirm-text="Confirm" @md-confirm="vote()"/>
     </div>
 </template>
 <script>

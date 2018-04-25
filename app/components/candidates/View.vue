@@ -27,7 +27,7 @@
                         <md-table-head>Address</md-table-head>
                         <md-table-head>Capacity</md-table-head>
                     </md-table-row>
-                    <md-table-row v-for="v, key in voters" :key="v.address">
+                    <md-table-row v-for="(v, key) in voters" :key="key">
                         <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                         <md-table-cell>{{ v.address }}</md-table-cell>
                         <md-table-cell>{{ v.cap }}</md-table-cell>
@@ -36,19 +36,19 @@
             </md-card>
         </div>
         <md-dialog-prompt
-                                              :md-active.sync="voteActive"
-                                              v-model="voteValue"
-                                              md-title="How much?"
-                                              md-input-maxlength="30"
-                                              md-input-placeholder="Type $TOMO..."
-                                              md-confirm-text="Confirm" @md-confirm="vote()"/>
+            :md-active.sync="voteActive"
+            v-model="voteValue"
+            md-title="How much?"
+            md-input-maxlength="30"
+            md-input-placeholder="Type $TOMO..."
+            md-confirm-text="Confirm" @md-confirm="vote()"/>
         <md-dialog-prompt
-                                              :md-active.sync="unvoteActive"
-                                              v-model="unvoteValue"
-                                              md-title="How much?"
-                                              md-input-maxlength="30"
-                                              md-input-placeholder="Type $TOMO..."
-                                              md-confirm-text="Confirm" @md-confirm="unvote()"/>
+            :md-active.sync="unvoteActive"
+            v-model="unvoteValue"
+            md-title="How much?"
+            md-input-maxlength="30"
+            md-input-placeholder="Type $TOMO..."
+            md-confirm-text="Confirm" @md-confirm="unvote()"/>
     </div>
 </template>
 <script>
