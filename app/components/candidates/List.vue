@@ -12,7 +12,7 @@
                     <md-table-head>Capacity</md-table-head>
                     <md-table-head></md-table-head>
                 </md-table-row>
-                <md-table-row v-for="c, key in candidates">
+                <md-table-row v-for="c, key in candidates" :key="c.address">
                     <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                     <md-table-cell><router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link></md-table-cell>
                     <md-table-cell>{{ c.cap }}</md-table-cell>

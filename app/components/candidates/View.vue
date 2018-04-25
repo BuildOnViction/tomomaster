@@ -27,7 +27,7 @@
                         <md-table-head>Address</md-table-head>
                         <md-table-head>Capacity</md-table-head>
                     </md-table-row>
-                    <md-table-row v-for="v, key in voters">
+                    <md-table-row v-for="v, key in voters" :key="v.address">
                         <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                         <md-table-cell>{{ v.address }}</md-table-cell>
                         <md-table-cell>{{ v.cap }}</md-table-cell>

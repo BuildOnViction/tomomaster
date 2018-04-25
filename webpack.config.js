@@ -2,11 +2,12 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
+  mode: 'development',
   entry: './app/app.js',
   output: {
     path: path.resolve(__dirname, './build'),
     publicPath: '/build/',
-    filename: 'build.js'
+    filename: 'app.js'
   },
   module: {
     rules: [
