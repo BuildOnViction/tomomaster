@@ -16,18 +16,26 @@
                 md-layout="box">
                 <label>Search...</label>
           </md-autocomplete>
-          <div class="md-toolbar-section-end" v-if="!isNotReady">
-              <md-button class="md-raised" to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
 
-            <!--md-menu md-direction="bottom-start" md-align-trigger>
-              <md-button md-menu-trigger>
-                <md-icon>more_vert</md-icon>
-              </md-button>
+          <div class="md-toolbar-section-end">
+            <md-menu md-size="auto" md-align-trigger>
+                <md-button class="md-icon-button" md-menu-trigger>
+                    <md-icon>more_vert</md-icon>
+                </md-button>
 
-              <md-menu-content>
-                <md-menu-item><md-button class="md-primary">Balance</md-button></md-menu-item>
-              </md-menu-content>
-            </md-menu-->
+                <md-menu-content>
+                    <md-menu-item v-if="isCandidate">
+                        <router-link class="md-primary" :to="'/candidates/' + account">Show Voters</router-link>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <router-link :class="{ 'md-accent': isCandidate, 'md-primary': !isCandidate }" to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</router-link>
+                    </md-menu-item>
+                    <!-- <md-menu-item>
+                        <md-button class="md-primary">Balance</md-button>
+                    </md-menu-item> -->
+                </md-menu-content>
+
+            </md-menu>
           </div>
         </div>
       </md-toolbar>
@@ -46,13 +54,14 @@ export default {
             isNotReady: !this.web3,
             selectedCandidate: null,
             candidates: [],
-            isCandidate: false
+            isCandidate: false,
+            account: ''
         };
     },
     created() {
         var vm = this;
-        var account = vm.account;
         vm.getAccount().then( account => {
+            vm.account = account;
             vm.TomoValidator.deployed().then(function(tv) {
                 return tv.isCandidate(account).then(rs => {
                     vm.isCandidate = rs;
