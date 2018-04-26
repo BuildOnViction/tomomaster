@@ -27,6 +27,7 @@ Vue.prototype.setupProvider = function(wjs) {
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs;
         Vue.prototype.TomoValidator.setProvider(wjs.currentProvider);
+        console.log('aaaa', wjs);
         Vue.prototype.getAccount = function() {
             var p = new Promise(function(resolve, reject) {
                 wjs.eth.getAccounts(function(err, accs) {
