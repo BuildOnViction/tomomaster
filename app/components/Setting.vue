@@ -60,7 +60,7 @@ export default {
             if (this.provider === 'metamask') {
                 var web3js = new Web3(web3.currentProvider);
             } else {
-                const walletProvider = new HDWalletProvider(this.mnemonic, networks[provider]);
+                const walletProvider = new HDWalletProvider(this.mnemonic, networks[this.provider]);
                 var web3js = new Web3(walletProvider);
             } 
             vm.NetworProvider = this.provider;
