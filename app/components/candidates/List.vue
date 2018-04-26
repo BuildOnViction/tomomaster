@@ -57,7 +57,7 @@ export default {
         var vm = this;
         var account = vm.account;
         vm.TomoValidator.deployed().then(function(tv) {
-            return tv.getCandidates.call({from: account}).then(cs => {
+            return tv.getCandidates.call().then(cs => {
                 var map = cs.map(it => { 
                     return tv.getCandidateCap.call(it, {from: account}).then(d => {
                         vm.candidates.push({

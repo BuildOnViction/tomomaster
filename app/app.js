@@ -4,6 +4,7 @@ import App from './App.vue'
 import CandidateView from './components/candidates/View.vue'
 import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
+import Setting from './components/Setting.vue'
 
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.css';
@@ -15,34 +16,39 @@ Vue.use(VueMaterial)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts);
 
+Vue.prototype.NetworkProvider = 'metamask';
 if (typeof web3 !== 'undefined') {
     var web3js = new Web3(web3.currentProvider);
 } else {
     web3js = false;
 } 
 
-if (web3js instanceof Web3) {
-    Vue.prototype.web3 = web3js;
-    Vue.prototype.TomoValidator.setProvider(web3js.currentProvider);
-    Vue.prototype.getAccount = function() {
-        var p = new Promise(function(resolve, reject) {
-            web3js.eth.getAccounts(function(err, accs) {
-                if (err != null) {
-                    console.log("There was an error fetching your accounts.");
-                    reject(err);
-                }
+Vue.prototype.setupProvider = function(wjs) {
+    if (wjs instanceof Web3) {
+        Vue.prototype.web3 = wjs;
+        Vue.prototype.TomoValidator.setProvider(wjs.currentProvider);
+        Vue.prototype.getAccount = function() {
+            var p = new Promise(function(resolve, reject) {
+                wjs.eth.getAccounts(function(err, accs) {
+                    
+                    if (err != null) {
+                        console.log("There was an error fetching your accounts.");
+                        reject(err);
+                    }
 
-                if (accs.length == 0) {
-                    console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-                    reject(err);
-                }
+                    if (accs.length == 0) {
+                        console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+                        reject(err);
+                    }
 
-                resolve(accs[0]);
+                    resolve(accs[0]);
+                });
             });
-        });
-        return p;
+            return p;
+        }
     }
 }
+Vue.prototype.setupProvider(web3js);
 
 Vue.use(VueRouter);
 
@@ -60,7 +66,10 @@ const router = new VueRouter({
         },
         {
             path: '/candidates/:address', component: CandidateView
-        }
+        },
+        {
+            path: '/setting', component: Setting
+        },
     ]
 });
 

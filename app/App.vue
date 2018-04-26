@@ -16,25 +16,21 @@
                 md-layout="box">
                 <label>Search...</label>
           </md-autocomplete>
-
+          
           <div class="md-toolbar-section-end">
-            <md-menu md-size="auto" md-align-trigger>
-                <md-button class="md-icon-button" md-menu-trigger>
-                    <md-icon>more_vert</md-icon>
-                </md-button>
+            <md-button class="md-raised" to="/apply" v-if="!isNotReady">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
+            
+            <md-menu md-direction="bottom-start" md-align-trigger>  
+               <md-button md-menu-trigger>
+                 <md-icon>more_vert</md-icon>
+               </md-button>
 
-                <md-menu-content>
-                    <md-menu-item v-if="isCandidate">
-                        <router-link class="md-primary" :to="'/candidates/' + account">Show Voters</router-link>
-                    </md-menu-item>
-                    <md-menu-item>
-                        <router-link :class="{ 'md-accent': isCandidate, 'md-primary': !isCandidate }" to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</router-link>
-                    </md-menu-item>
-                    <!-- <md-menu-item>
-                        <md-button class="md-primary">Balance</md-button>
-                    </md-menu-item> -->
-                </md-menu-content>
-
+               <md-menu-content>
+                <md-menu-item>
+                    <md-button to="/setting" class="md-primary"><md-icon>settings</md-icon> Settings</md-button>
+                </md-menu-item>
+               </md-menu-content>
+              
             </md-menu>
           </div>
         </div>
@@ -69,7 +65,7 @@ export default {
             });
         });
         vm.TomoValidator.deployed().then(function(tv) {
-            return tv.getCandidates.call({from: account}).then(cs => {
+            return tv.getCandidates.call().then(cs => {
                 vm.candidates = cs;
             });
         }).catch(e => {
