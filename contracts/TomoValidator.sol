@@ -25,6 +25,28 @@ contract TomoValidator is IValidator {
     uint256 public constant maxCandidateNumber = 500;
     uint256 public constant maxValidatorNumber = 99;
 
+    modifier onlyValidCandidateCap {
+        // anyone can deposit 10000 TOMO to become a candidate
+        require(msg.value >= minCandidateCap);
+        require(candidateCount <= maxCandidateNumber);
+        _;
+    }
+
+    modifier onlyCandidate {
+        require(validatorsState[msg.sender].isCandidate);
+        _;
+    }
+
+    modifier onlyNotCandidate {
+        require(!validatorsState[msg.sender].isCandidate);
+        _;
+    }
+
+    modifier onlyValidVote (address _candidate, uint256 _cap) {
+        require(validatorsState[_candidate].voters[msg.sender] >= _cap);
+        _;
+    }
+
     function TomoValidator(address[] _candidates, uint256[] _caps) public {
         candidates = _candidates;
         
@@ -38,11 +60,7 @@ contract TomoValidator is IValidator {
 
     }
 
-    function propose() external payable {
-        // anyone can deposit 10000 TOMO to become a candidate
-        require(msg.value >= minCandidateCap);
-        require(!validatorsState[msg.sender].isCandidate);
-        require(candidateCount <= maxCandidateNumber);
+    function propose() external payable onlyValidCandidateCap  onlyNotCandidate {
         candidates.push(msg.sender);
         validatorsState[msg.sender] = ValidatorState({
             isCandidate: true,
@@ -53,8 +71,7 @@ contract TomoValidator is IValidator {
         emit Propose(msg.sender, msg.value);
     }
 
-    function vote(address _candidate) external payable {
-        require(validatorsState[_candidate].isCandidate);
+    function vote(address _candidate) external payable onlyCandidate {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.add(msg.value);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].add(msg.value);
         voters[_candidate].push(msg.sender);
@@ -81,8 +98,7 @@ contract TomoValidator is IValidator {
         return validatorsState[_candidate].isCandidate;
     }
 
-    function unvote(address _candidate, uint256 _cap) public {
-        require(validatorsState[_candidate].voters[msg.sender] >= _cap);
+    function unvote(address _candidate, uint256 _cap) public onlyValidVote(_candidate, _cap) {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(_cap);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].sub(_cap);
         // refunding to user after unvoting
@@ -90,8 +106,7 @@ contract TomoValidator is IValidator {
         emit Unvote(_candidate, _cap);
     }
 
-    function retire() public {
-        require(validatorsState[msg.sender].isCandidate);
+    function retire() public onlyCandidate {
         uint256 cap = validatorsState[msg.sender].voters[msg.sender];
         validatorsState[msg.sender].cap = validatorsState[msg.sender].cap.sub(cap);
         validatorsState[msg.sender].voters[msg.sender] = 0;
