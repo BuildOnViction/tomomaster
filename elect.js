@@ -11,7 +11,7 @@ app.on('ready', function () {
 
   // Specify entry point to default entry point of vue.js
   win.loadURL(url.format({
-    pathname: path.join(__dirname, 'dist/index.html'),
+    pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes: true
   }));

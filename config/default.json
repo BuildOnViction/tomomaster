@@ -3,6 +3,7 @@
     "host": "0.0.0.0",
     "port": 80
   },
+  "tomo": "https://core.tomocoin.io",
   "db": {
     "uri": "mongodb://mongodb:27017/wallets"
   },
