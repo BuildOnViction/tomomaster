@@ -16,18 +16,18 @@
                 md-layout="box">
                 <label>Search...</label>
           </md-autocomplete>
-          <div class="md-toolbar-section-end" v-if="!isNotReady">
-              <md-button class="md-raised" to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
+          <div class="md-toolbar-section-end">
+              <md-button class="md-raised" to="/apply" v-if="!isNotReady">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
 
-            <!--md-menu md-direction="bottom-start" md-align-trigger>
+            <md-menu md-direction="bottom-start" md-align-trigger>
               <md-button md-menu-trigger>
                 <md-icon>more_vert</md-icon>
               </md-button>
 
               <md-menu-content>
-                <md-menu-item><md-button class="md-primary">Balance</md-button></md-menu-item>
+                  <md-menu-item><md-button class="md-primary"><md-icon>settings</md-icon> <router-link to="/setting">Settings</router-link></md-button></md-menu-item>
               </md-menu-content>
-            </md-menu-->
+            </md-menu>
           </div>
         </div>
       </md-toolbar>

@@ -10,7 +10,7 @@
         <div class="table-container" v-if="!isNotReady">
             <md-table md-card>
                 <md-table-toolbar>
-                    <div class="md-title">Candidatessssss</div>
+                    <div class="md-title">Candidates</div>
                 </md-table-toolbar>
 
                 <md-table-row>

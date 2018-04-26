@@ -1,6 +1,4 @@
 const {app, BrowserWindow} = require('electron')
-var url = require('url');
-var path = require('path');
 
 let win = null;
 
@@ -10,11 +8,7 @@ app.on('ready', function () {
   win = new BrowserWindow({width: 1000, height: 600});
 
   // Specify entry point to default entry point of vue.js
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, 'dist/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+  win.loadURL('http://localhost:3000');
 
   // Remove window once app is closed
   win.on('closed', function () {
