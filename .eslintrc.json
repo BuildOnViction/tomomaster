@@ -1,0 +1,19 @@
+{
+    "parser": "babel-eslint",
+    "extends": [
+        "standard",
+        "plugin:vue/recommended"
+    ],
+    "plugins": [
+        "babel",
+        "vue"
+    ],
+    "rules": {
+        "key-spacing"          : 0,
+        "jsx-quotes"           : [2, "prefer-single"],
+        "max-len"              : [2, 120, 2],
+        "object-curly-spacing" : [2, "always"],
+        "promise/catch-or-return": "warn",
+        "indent": ["warn", 4]
+    }
+}
