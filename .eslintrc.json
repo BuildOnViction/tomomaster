@@ -1,0 +1,29 @@
+{
+    "parserOptions": {
+        "parser": "babel-eslint",
+        "ecmaVersion": 2017,
+        "sourceType": "module"
+    },
+    "extends": [
+        "standard",
+        "plugin:vue/recommended"
+    ],
+    "plugins": [
+        "vue",
+        "babel"
+    ],
+    "rules": {
+        "key-spacing"          : 0,
+        "jsx-quotes"           : [2, "prefer-single"],
+        "max-len"              : [2, 120, 2],
+        "object-curly-spacing" : [2, "always"],
+        "promise/catch-or-return": "warn",
+        "indent": ["warn", 4],
+        "vue/html-indent": ["error", 4, {
+            "attribute": 1,
+            "closeBracket": 0,
+            "alignAttributesVertically": true,
+            "ignores": []
+        }]
+    }
+}
