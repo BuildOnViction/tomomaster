@@ -20,21 +20,36 @@
                     </md-autocomplete>
                     <div class="md-toolbar-section-end">
                         <md-button
-                            v-if="!isNotReady"
+                            v-if="!isNotReady && !isCandidate"
                             class="md-raised"
-                            to="/apply">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
+                            to="/apply">
+                            Become a candidate
+                        </md-button>
 
                         <md-menu
                             md-direction="bottom-start"
                             md-align-trigger>
-                            <md-button md-menu-trigger>
+                            <md-button
+                                class="md-icon-button"
+                                md-menu-trigger>
                                 <md-icon>more_vert</md-icon>
                             </md-button>
 
                             <md-menu-content>
-                                <md-menu-item><md-button class="md-primary">
-                                    <md-icon>settings</md-icon> <router-link to="/setting">Settings</router-link>
-                                </md-button></md-menu-item>
+                                <md-menu-item>
+                                    <md-button
+                                        to="/retire"
+                                        class="md-accent">
+                                        <md-icon>arrow_downward</md-icon> Retire
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button
+                                        to="/setting"
+                                        class="md-primary">
+                                        <md-icon>settings</md-icon> Settings
+                                    </md-button>
+                                </md-menu-item>
                             </md-menu-content>
                         </md-menu>
                     </div>
