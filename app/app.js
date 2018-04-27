@@ -17,8 +17,8 @@ Vue.use(VueMaterial)
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 
 Vue.prototype.NetworkProvider = 'metamask'
-if (typeof web3 !== 'undefined') {
-    var web3js = new Web3(web3.currentProvider)
+if (window.web3) {
+    var web3js = new Web3(window.web3.currentProvider)
 } else {
     web3js = false
 }
@@ -35,8 +35,9 @@ Vue.prototype.setupProvider = function (wjs) {
                         reject(err)
                     }
 
-                    if (accs.length == 0) {
-                        console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.")
+                    if (accs.length === 0) {
+                        console.log(`Couldn't get any accounts! Make sure
+                        your Ethereum client is configured correctly.`)
                         reject(err)
                     }
 
@@ -72,9 +73,9 @@ const router = new VueRouter({
     ]
 })
 
-new Vue({
+new Vue({ // eslint-disable-line no-new
     el: '#app',
     router: router,
-    template: '<App/>',
-    components: { App }
+    components: { App },
+    template: '<App/>'
 })
