@@ -4,6 +4,7 @@ import App from './App.vue'
 import CandidateView from './components/candidates/View.vue'
 import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
+import CandidateRetire from './components/candidates/Retire.vue'
 import Setting from './components/Setting.vue'
 
 import VueMaterial from 'vue-material';
@@ -27,11 +28,11 @@ Vue.prototype.setupProvider = function(wjs) {
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs;
         Vue.prototype.TomoValidator.setProvider(wjs.currentProvider);
-        console.log('aaaa', wjs);
+
         Vue.prototype.getAccount = function() {
             var p = new Promise(function(resolve, reject) {
                 wjs.eth.getAccounts(function(err, accs) {
-                    
+
                     if (err != null) {
                         console.log("There was an error fetching your accounts.");
                         reject(err);
@@ -61,6 +62,9 @@ const router = new VueRouter({
         },
         {
             path: '/apply', component: CandidateApply
+        },
+        {
+            path: '/retire', component: CandidateRetire
         },
         {
             path: '/candidates', component: CandidateList

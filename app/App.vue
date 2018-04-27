@@ -18,18 +18,21 @@
           </md-autocomplete>
           
           <div class="md-toolbar-section-end">
-            <md-button class="md-raised" to="/apply" v-if="!isNotReady">{{ isCandidate ? 'Retire' : 'Become a candidate' }}</md-button>
+            <md-button class="md-raised" to="/apply" v-if="!isNotReady && !isCandidate">Become a candidate</md-button>
             
-            <md-menu md-direction="bottom-start" md-align-trigger>  
-               <md-button md-menu-trigger>
-                 <md-icon>more_vert</md-icon>
-               </md-button>
+            <md-menu md-direction="bottom-start" md-align-trigger>
+                <md-button class="md-icon-button" md-menu-trigger>
+                    <md-icon>more_vert</md-icon>
+                </md-button>
 
-               <md-menu-content>
-                <md-menu-item>
-                    <md-button to="/setting" class="md-primary"><md-icon>settings</md-icon> Settings</md-button>
-                </md-menu-item>
-               </md-menu-content>
+                <md-menu-content>
+                    <md-menu-item>
+                        <md-button to="/retire" class="md-accent"><md-icon>arrow_downward</md-icon> Retire</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button to="/setting" class="md-primary"><md-icon>settings</md-icon> Settings</md-button>
+                    </md-menu-item>
+                </md-menu-content>
               
             </md-menu>
           </div>
