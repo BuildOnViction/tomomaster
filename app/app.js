@@ -17,14 +17,14 @@ Vue.use(VueMaterial)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 
-Vue.prototype.NetworkProvider = 'metamask'
 if (window.web3) {
     var web3js = new Web3(window.web3.currentProvider)
 } else {
     web3js = false
 }
 
-Vue.prototype.setupProvider = function (wjs) {
+Vue.prototype.setupProvider = function (provider, wjs) {
+    Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
@@ -49,7 +49,7 @@ Vue.prototype.setupProvider = function (wjs) {
         }
     }
 }
-Vue.prototype.setupProvider(web3js)
+Vue.prototype.setupProvider('metamask', web3js)
 
 Vue.use(VueRouter)
 
