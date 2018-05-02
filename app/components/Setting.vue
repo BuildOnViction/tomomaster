@@ -34,6 +34,15 @@
                     class="md-primary md-raised"
                     @click="save()">Save</md-button>
             </md-card-actions>
+            <md-card-header>
+                <div class="md-title">Account Information</div>
+            </md-card-header>
+
+            <md-card-content>
+                <p>Address: {{ address }}</p>
+                <p>Balance: {{ balance }} $TOMO</p>
+            </md-card-content>
+
         </md-card>
     </div>
 </template>
@@ -49,7 +58,9 @@ export default {
     data () {
         return {
             mnemonic: '',
-            provider: 'metamask'
+            provider: 'metamask',
+            address: '',
+            balance: 0
         }
     },
     computed: {},
@@ -57,6 +68,14 @@ export default {
     updated () {},
     created () {
         this.provider = this.NetworkProvider
+        var vm = this
+        this.getAccount().then(acc => {
+            vm.address = acc
+            vm.web3.eth.getBalance(vm.address, function (a, b) {
+                vm.balance = b / 10 ** 18
+                if (a) console.log('got an error', a)
+            })
+        }).catch(e => console.log(e))
     },
     mounted () {},
     methods: {
@@ -72,8 +91,7 @@ export default {
                 const walletProvider = new HDWalletProvider(this.mnemonic, networks[this.provider])
                 wjs = new Web3(walletProvider)
             }
-            vm.NetworProvider = this.provider
-            vm.setupProvider(wjs)
+            vm.setupProvider(this.provider, wjs)
             vm.$router.push({ path: '/' })
         }
     }
