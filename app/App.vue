@@ -3,10 +3,10 @@
         <div class="page-layout">
             <md-toolbar class="md-primary">
                 <div class="md-toolbar-row">
-                    <div class="md-toolbar-section-start">
+                    <div class="md-toolbar-section-start"><router-link to="/">
                         <h3
                             class="md-title"
-                            style="flex: 1">TomoChain Governance</h3>
+                            style="flex: 1">TomoChain Governance</h3></router-link>
                     </div>
 
                     <md-autocomplete
