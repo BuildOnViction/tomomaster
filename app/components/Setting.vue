@@ -23,6 +23,11 @@
                             <label>MNEMONIC</label>
                             <md-input v-model="mnemonic"/>
                         </md-field>
+                        <div
+                            v-if="isNotReady && provider === 'metamask'">
+                            <p>Please install &amp; login
+                            Metamask Extension then connect it to Tomochain Mainnet or Testnet.</p>
+                        </div>
 
                     </div>
 
@@ -57,6 +62,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isNotReady: !this.web3,
             mnemonic: '',
             provider: 'metamask',
             address: '',
@@ -75,7 +81,9 @@ export default {
                 vm.balance = b / 10 ** 18
                 if (a) console.log('got an error', a)
             })
-        }).catch(e => console.log(e))
+        }).catch(e => {
+            this.isNotReady = true
+        })
     },
     mounted () {},
     methods: {
