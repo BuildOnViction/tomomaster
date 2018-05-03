@@ -3,13 +3,11 @@
         <md-empty-state
             v-if="isNotReady"
             md-icon="account_balance_wallet"
-            md-label="MetaMask is not installed"
-            md-description="Please install &amp; login
-            Metamask Extension then connect it to Tomochain Mainnet or Testnet">
+            md-label="Disconnected!"
+            md-description="Please setup your wallet provider.">
             <md-button
-                class="md-primary md-raised"
-                href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-                target="_blank">Install Metamask</md-button>
+                class="md-raised"
+                href="/setting">Change Settings</md-button>
         </md-empty-state>
         <div
             v-if="!isNotReady"
