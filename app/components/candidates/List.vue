@@ -33,7 +33,7 @@
                     <md-table-cell>
                         <router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link>
                     </md-table-cell>
-                    <md-table-cell>{{ c.cap }}</md-table-cell>
+                    <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
                     <md-table-cell><md-button
                         class="md-raised md-primary"
                         @click="voteActive = true; voteItem = c">Vote</md-button></md-table-cell>
@@ -68,17 +68,18 @@ export default {
     updated () {},
     created () {
         var vm = this
-        var account = vm.account
-        vm.TomoValidator.deployed().then(function (tv) {
-            return tv.getCandidates.call({ from: account }).then(cs => {
-                var map = cs.map(it => {
-                    return tv.getCandidateCap.call(it, { from: account }).then(d => {
-                        vm.candidates.push({
-                            address: it, cap: String(d / 10 ** 18) + ' $TOMO'
+        vm.getAccount().then(account => {
+            return vm.TomoValidator.deployed().then(function (tv) {
+                return tv.getCandidates.call({ from: account }).then(cs => {
+                    var map = cs.map(it => {
+                        return tv.getCandidateCap.call(it, { from: account }).then(d => {
+                            vm.candidates.push({
+                                address: it, cap: String(d / 10 ** 18)
+                            })
                         })
                     })
+                    return Promise.all(map)
                 })
-                return Promise.all(map)
             })
         }).catch(e => {
             this.isNotReady = true

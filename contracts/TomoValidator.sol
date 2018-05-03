@@ -37,6 +37,11 @@ contract TomoValidator is IValidator {
         _;
     }
 
+    modifier onlyValidCandidate (address _candidate) {
+        require(validatorsState[_candidate].isCandidate);
+        _;
+    }
+
     modifier onlyNotCandidate {
         require(!validatorsState[msg.sender].isCandidate);
         _;
@@ -60,7 +65,7 @@ contract TomoValidator is IValidator {
 
     }
 
-    function propose() external payable onlyValidCandidateCap  onlyNotCandidate {
+    function propose() external payable onlyValidCandidateCap onlyNotCandidate {
         candidates.push(msg.sender);
         validatorsState[msg.sender] = ValidatorState({
             isCandidate: true,
@@ -71,10 +76,12 @@ contract TomoValidator is IValidator {
         emit Propose(msg.sender, msg.value);
     }
 
-    function vote(address _candidate) external payable onlyCandidate {
+    function vote(address _candidate) external payable onlyValidCandidate(_candidate) {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.add(msg.value);
+        if (validatorsState[_candidate].voters[msg.sender] == 0) {
+            voters[_candidate].push(msg.sender);
+        }
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].add(msg.value);
-        voters[_candidate].push(msg.sender);
         emit Vote(_candidate, msg.value);
     }
 
