@@ -3,13 +3,11 @@
         <md-empty-state
             v-if="isNotReady"
             md-icon="account_balance_wallet"
-            md-label="MetaMask is not installed"
-            md-description="Please install &amp; login
-            Metamask Extension then connect it to Tomochain Mainnet or Testnet">
+            md-label="Disconnected!"
+            md-description="Please setup your wallet provider.">
             <md-button
-                class="md-primary md-raised"
-                href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-                target="_blank">Install Metamask</md-button>
+                class="md-raised"
+                href="/setting">Change Settings</md-button>
         </md-empty-state>
         <div
             v-if="!isNotReady"
@@ -33,7 +31,7 @@
                     <md-table-cell>
                         <router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link>
                     </md-table-cell>
-                    <md-table-cell>{{ c.cap }}</md-table-cell>
+                    <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
                     <md-table-cell><md-button
                         class="md-raised md-primary"
                         @click="voteActive = true; voteItem = c">Vote</md-button></md-table-cell>
@@ -67,24 +65,23 @@ export default {
     watch: {},
     updated () {},
     created () {
-        let self = this
-        ;(async () => {
-            try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                let candidates = await contract.getCandidates.call({ from: account })
-                candidates.map(async (candidate) => {
-                    let cap = await contract.getCandidateCap.call(candidate, { from: account })
-                    self.candidates.push({
-                        address: candidate,
-                        cap: String(cap / 10 ** 18) + ' $TOMO'
+        var vm = this
+        vm.getAccount().then(account => {
+            return vm.TomoValidator.deployed().then(function (tv) {
+                return tv.getCandidates.call({ from: account }).then(cs => {
+                    var map = cs.map(it => {
+                        return tv.getCandidateCap.call(it, { from: account }).then(d => {
+                            vm.candidates.push({
+                                address: it, cap: String(d / 10 ** 18)
+                            })
+                        })
                     })
+                    return Promise.all(map)
                 })
-            } catch (e) {
-                self.isNotReady = true
-                console.log(e)
-            }
-        })()
+            })
+        }).catch(e => {
+            this.isNotReady = true
+        })
     },
     mounted () {
     },
