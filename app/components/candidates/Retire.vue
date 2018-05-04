@@ -18,7 +18,7 @@
                 </md-card-header>
 
                 <md-card-content>
-                    You deposited <b>{{ candidateCap }}</b>. We will return this deposit to you.
+                    You deposited <b>{{ candidateCap }} $TOMO</b>. We will return this deposit to you.
                 </md-card-content>
 
                 <md-card-actions>
@@ -60,29 +60,27 @@ export default {
     computed: { },
     watch: {},
     updated () {},
-    created () {
-        var self = this
-        ;(async () => {
-            try {
-                var account = await self.getAccount()
-                var contract = await self.TomoValidator.deployed()
-                self.isCandidate = await contract.isCandidate(account)
-                self.candidateCap = await contract.getCandidateCap(account)
+    created: async function () {
+        let self = this
+        try {
+            let account = await self.getAccount()
+            let contract = await self.TomoValidator.deployed()
+            let cap = await contract.getCandidateCap(account)
 
-                self.candidateCap = String(self.candidateCap / 10 ** 18) + ' $TOMO'
-            } catch (e) {
-                console.log(e)
-            }
-        })()
+            self.isCandidate = await contract.isCandidate(account)
+            self.candidateCap = String(cap / 10 ** 18)
+        } catch (e) {
+            console.log(e)
+        }
     },
     mounted () {
     },
     methods: {
         retire: async function () {
-            var self = this
+            let self = this
             try {
-                var account = await self.getAccount()
-                var contract = await self.TomoValidator.deployed()
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
                 await contract.retire({ from: account })
                 self.showSnackbar = true
             } catch (e) {

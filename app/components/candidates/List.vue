@@ -64,43 +64,44 @@ export default {
     computed: { },
     watch: {},
     updated () {},
-    created () {
-        var vm = this
-        vm.getAccount().then(account => {
-            return vm.TomoValidator.deployed().then(function (tv) {
-                return tv.getCandidates.call({ from: account }).then(cs => {
-                    var map = cs.map(it => {
-                        return tv.getCandidateCap.call(it, { from: account }).then(d => {
-                            vm.candidates.push({
-                                address: it, cap: String(d / 10 ** 18)
-                            })
-                        })
-                    })
-                    return Promise.all(map)
+    created: async function () {
+        let self = this
+        try {
+            let account = await self.getAccount()
+            let contract = await self.TomoValidator.deployed()
+            let candidates = await contract.getCandidates.call({ from: account })
+            candidates.map(async (candidate) => {
+                let cap = await contract.getCandidateCap.call(candidate, { from: account })
+                self.candidates.push({
+                    address: candidate,
+                    cap: String(cap / 10 ** 18)
                 })
             })
-        }).catch(e => {
-            this.isNotReady = true
-        })
+        } catch (e) {
+            self.isNotReady = true
+            console.log(e)
+        }
     },
     mounted () {
     },
     methods: {
-        vote: function () {
-            var vm = this
-            var candidate = this.voteItem
-            var value = this.voteValue
-            vm.getAccount().then(account => {
-                return vm.TomoValidator.deployed().then(function (tv) {
-                    return tv.vote(candidate.address, {
-                        from: account, value: parseFloat(value) * 10 ** 18
-                    }).then((d) => {
-                        return tv.getCandidateCap.call(candidate.address, { from: account }).then(d => {
-                            candidate.cap = String(d / 10 ** 18) + ' $TOMO'
-                        })
-                    })
+        vote: async function () {
+            let self = this
+            let candidate = this.voteItem
+            let value = this.voteValue
+
+            try {
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                await contract.vote(candidate.address, {
+                    from: account,
+                    value: parseFloat(value) * 10 ** 18
                 })
-            }).catch(e => console.log(e))
+                let cap = await contract.getCandidateCap.call(candidate.address, { from: candidate.address })
+                candidate.cap = String(cap / 10 ** 18)
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }
