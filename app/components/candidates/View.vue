@@ -32,7 +32,7 @@
                         <md-table-head>Capacity</md-table-head>
                     </md-table-row>
                     <md-table-row
-                        v-for="(v, key) in voters"
+                        v-for="(v, key) in sortedVoters"
                         :key="key">
                         <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                         <md-table-cell>{{ v.address }}</md-table-cell>
@@ -74,7 +74,13 @@ export default {
             iCap: 0
         }
     },
-    computed: { },
+    computed: {
+        sortedVoters: function () {
+            return this.voters.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {
@@ -93,7 +99,7 @@ export default {
                 let voterCap = await contract.getVoterCap.call(candidate, voter, { from: account })
                 self.voters.push({
                     address: voter,
-                    cap: String(voterCap / 10 ** 18)
+                    cap: (voterCap / 10 ** 18)
                 })
             })
         } catch (e) {

@@ -25,7 +25,7 @@
                 </md-table-row>
 
                 <md-table-row
-                    v-for="(c, key) in candidates"
+                    v-for="(c, key) in sortedCandidates"
                     :key="key">
                     <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                     <md-table-cell>
@@ -61,7 +61,13 @@ export default {
             candidates: []
         }
     },
-    computed: { },
+    computed: {
+        sortedCandidates: function () {
+            return this.candidates.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {
@@ -74,7 +80,7 @@ export default {
                 let cap = await contract.getCandidateCap.call(candidate, { from: account })
                 self.candidates.push({
                     address: candidate,
-                    cap: String(cap / 10 ** 18)
+                    cap: (cap / 10 ** 18)
                 })
             })
         } catch (e) {
