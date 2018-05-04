@@ -48,7 +48,7 @@
             :md-active.sync="showSnackbar"
             md-position="center"
             md-persistent>
-            <span>{{ snackbarMessage }}</span>
+            <span>You have successfully applied!</span>
             <md-button
                 class="md-primary"
                 @click="showSnackbar = false">OK</md-button>
@@ -64,47 +64,43 @@ export default {
             retireActive: false,
             showSnackbar: false,
             isCandidate: false,
-            snackbarMessage: 'You have successfully applied!',
             applyValue: 10000
         }
     },
     computed: { },
     watch: {},
     updated () {},
-    created () {
-        var vm = this
-        vm.getAccount().then(account => {
-            return vm.TomoValidator.deployed().then(function (tv) {
-                return tv.isCandidate(account).then(rs => {
-                    vm.isCandidate = rs
-                })
-            })
-        }).catch(e => console.log(e))
+    created: async function () {
+        let self = this
+
+        try {
+            let account = await self.getAccount()
+            let contract = await self.TomoValidator.deployed()
+            self.isCandidate = await contract.isCandidate(account, { from: account })
+        } catch (e) {
+            console.log(e)
+        }
     },
     mounted () {
     },
     methods: {
-        apply: function () {
-            var vm = this
-            var value = this.applyValue
-            vm.getAccount().then(account => {
-                return vm.TomoValidator.deployed().then(function (tv) {
-                    return tv.propose({ from: account, value: parseFloat(value) * 10 ** 18 }).then(() => {
-                        vm.showSnackbar = true
-                    })
+        apply: async function () {
+            let self = this
+            let value = this.applyValue
+            try {
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let result = await contract.propose({
+                    from: account,
+                    value: parseFloat(value) * 10 ** 18
                 })
-            }).catch(e => console.log(e))
-        },
-        retire: function () {
-            var vm = this
-            vm.getAccount().then(account => {
-                return vm.TomoValidator.deployed().then(function (tv) {
-                    return tv.retire({ from: account }).then(() => {
-                        vm.showSnackbar = true
-                        vm.snackbarMessage = 'You have successfully retired. Thank you!'
-                    })
-                })
-            }).catch(e => console.log(e))
+
+                if (result.tx) {
+                    self.showSnackbar = true
+                }
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }

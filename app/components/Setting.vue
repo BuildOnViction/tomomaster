@@ -72,18 +72,22 @@ export default {
     computed: {},
     watch: {},
     updated () {},
-    created () {
+    created: async function () {
         this.provider = this.NetworkProvider
-        var vm = this
-        this.getAccount().then(acc => {
-            vm.address = acc
-            vm.web3.eth.getBalance(vm.address, function (a, b) {
-                vm.balance = b / 10 ** 18
-                if (a) console.log('got an error', a)
+        let self = this
+
+        try {
+            let account = await self.getAccount()
+            self.address = account
+            self.web3.eth.getBalance(self.address, function (a, b) {
+                self.balance = b / 10 ** 18
+                if (a) {
+                    console.log('got an error', a)
+                }
             })
-        }).catch(e => {
-            this.isNotReady = true
-        })
+        } catch (e) {
+            console.log(e)
+        }
     },
     mounted () {},
     methods: {
