@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(validator({}))
 
+// apis
+app.use(require('./apis'))
+
 // error handler
 app.use(require('./middlewares/error'))
 
