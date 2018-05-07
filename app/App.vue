@@ -73,23 +73,18 @@ export default {
             isCandidate: false
         }
     },
-    created () {
-        var vm = this
-        var account = vm.account
-        vm.getAccount().then(account => {
-            return vm.TomoValidator.deployed().then(function (tv) {
-                return tv.isCandidate(account).then(rs => {
-                    vm.isCandidate = rs
-                })
-            })
-        }).catch(e => console.log(e))
-        vm.TomoValidator.deployed().then(function (tv) {
-            return tv.getCandidates.call({ from: account }).then(cs => {
-                vm.candidates = cs
-            })
-        }).catch(e => {
-            this.isNotReady = true
-        })
+    created: async function () {
+        let self = this
+
+        try {
+            let account = await self.getAccount()
+            let contract = await self.TomoValidator.deployed()
+            self.isCandidate = await contract.isCandidate(account, { from: account })
+            self.candidates = await contract.getCandidates.call({ from: account })
+        } catch (e) {
+            console.log(e)
+            self.isNotReady = true
+        }
     },
     methods: {
         goPage: function (s) {
