@@ -38,7 +38,7 @@
             :md-active.sync="showSnackbar"
             md-position="center"
             md-persistent>
-            <span>You have successfully applied!</span>
+            <span>{{ snackBarMessage }}</span>
             <md-button
                 class="md-primary"
                 @click="showSnackbar = false">OK</md-button>
@@ -52,6 +52,7 @@ export default {
         return {
             applyActive: false,
             showSnackbar: false,
+            snackBarMessage: '',
             isCandidate: false,
             applyValue: 10000
         }
@@ -84,10 +85,13 @@ export default {
                     value: parseFloat(value) * 10 ** 18
                 })
 
-                if (result.tx) {
-                    self.showSnackbar = true
-                }
+                self.isCandidate = true
+                self.showSnackbar = true
+                self.snackBarMessage = result.tx ? 'You have successfully applied!'
+                    : 'An error occurred while applying, please try again'
             } catch (e) {
+                self.showSnackbar = true
+                self.snackBarMessage = 'An error occurred while applying, please try again'
                 console.log(e)
             }
         }

@@ -121,7 +121,7 @@ export default {
                     from: account,
                     value: parseFloat(value) * 10 ** 18
                 })
-                let cap = await contract.getCandidateCap.call(candidate, { from: candidate.address })
+                let cap = await contract.getCandidateCap.call(candidate, { from: account })
                 self.cap = String(cap / 10 ** 18)
             } catch (e) {
                 console.log(e)
