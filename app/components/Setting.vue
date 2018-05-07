@@ -39,11 +39,11 @@
                     class="md-primary md-raised"
                     @click="save()">Save</md-button>
             </md-card-actions>
-            <md-card-header>
+            <md-card-header v-if="!isNotReady">
                 <div class="md-title">Account Information</div>
             </md-card-header>
 
-            <md-card-content>
+            <md-card-content v-if="!isNotReady">
                 <p>Address: {{ address }}</p>
                 <p>Balance: {{ balance }} $TOMO</p>
             </md-card-content>

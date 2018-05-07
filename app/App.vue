@@ -36,7 +36,7 @@
                             </md-button>
 
                             <md-menu-content>
-                                <md-menu-item>
+                                <md-menu-item v-if="!isNotReady && isCandidate">
                                     <md-button
                                         to="/retire"
                                         class="md-accent">
