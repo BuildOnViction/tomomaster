@@ -75,6 +75,9 @@ export default {
     },
     created () {
         var vm = this
+        if (vm.isNotReady) {
+            return false
+        }
         var account = vm.account
         vm.getAccount().then(account => {
             return vm.TomoValidator.deployed().then(function (tv) {

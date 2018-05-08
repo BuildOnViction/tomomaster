@@ -73,6 +73,9 @@ export default {
     created: async function () {
         let self = this
         try {
+            if (self.isNotReady) {
+                throw Error('Is not ready')
+            }
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
             let candidates = await contract.getCandidates.call({ from: account })

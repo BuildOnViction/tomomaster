@@ -77,6 +77,9 @@ export default {
         let self = this
 
         try {
+            if (self.isNotReady) {
+                throw Error('Is not ready')
+            }
             let account = await self.getAccount()
             self.address = account
             self.web3.eth.getBalance(self.address, function (a, b) {
