@@ -8,7 +8,6 @@
                 </md-card-header>
 
                 <md-card-content>
-
                     <p>Total: {{ cap }} $TOMO</p>
                     <p>You voted: {{ iCap }} $TOMO</p>
                 </md-card-content>
@@ -35,7 +34,9 @@
                         v-for="(v, key) in sortedVoters"
                         :key="key">
                         <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                        <md-table-cell>{{ v.address }}</md-table-cell>
+                        <md-table-cell>
+                            <router-link :to="'/voter/' + v.address">{{ v.address }}</router-link>
+                        </md-table-cell>
                         <md-table-cell>{{ v.cap }}</md-table-cell>
                     </md-table-row>
                 </md-table>
