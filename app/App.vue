@@ -77,6 +77,9 @@ export default {
         let self = this
 
         try {
+            if (self.isNotReady) {
+                return false
+            }
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
             self.isCandidate = await contract.isCandidate(account, { from: account })
