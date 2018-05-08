@@ -21,7 +21,7 @@
                         class="md-accent"
                         @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
-                <md-table>
+                <md-table v-if="voters.length > 0">
                     <md-table-toolbar>
                         <div class="md-title">Voters</div>
                     </md-table-toolbar>
@@ -121,7 +121,7 @@ export default {
                     from: account,
                     value: parseFloat(value) * 10 ** 18
                 })
-                let cap = await contract.getCandidateCap.call(candidate, { from: candidate.address })
+                let cap = await contract.getCandidateCap.call(candidate, { from: account })
                 self.cap = String(cap / 10 ** 18)
             } catch (e) {
                 console.log(e)
