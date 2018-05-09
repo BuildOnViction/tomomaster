@@ -15,7 +15,7 @@
                 <md-table>
                     <md-table-toolbar>
                         <div class="md-title">Candidates
-                            <div class="md-subhead">People who you voted</div>
+                            <div class="md-subhead">All candidates are voted by this voter</div>
                         </div>
                     </md-table-toolbar>
 
@@ -23,7 +23,6 @@
                         <md-table-head md-numeric>ID</md-table-head>
                         <md-table-head>Address</md-table-head>
                         <md-table-head>Capacity</md-table-head>
-                        <md-table-head/>
                     </md-table-row>
 
                     <md-table-row
@@ -34,12 +33,6 @@
                             <router-link :to="'/candidate/' + c.address">{{ c.address }}</router-link>
                         </md-table-cell>
                         <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
-                        <md-table-cell>
-                            <md-button
-                                class="md-raised md-primary">Vote</md-button>
-                            <md-button
-                                class="md-raised md-accent">Unvote</md-button>
-                        </md-table-cell>
                     </md-table-row>
                 </md-table>
             </md-card>
@@ -76,8 +69,6 @@ export default {
 
             candidates.map(async (candidate) => {
                 let voters = await contract.getVoters.call(candidate, { from: account })
-                // console.log(candidate)
-                // console.log(voters)
 
                 voters.map(async (v) => {
                     if (v === voter) {
@@ -90,7 +81,7 @@ export default {
                     }
                 })
             })
-            // let cap = await contract.getVoterCap.call()
+
             self.web3.eth.getBalance(voter, function (a, b) {
                 self.balance = b / 10 ** 18
                 if (a) {
