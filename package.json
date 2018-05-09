@@ -29,7 +29,8 @@
         "config": "^1.30.0",
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
-        "mongoose": "^5.0.17"
+        "mongoose": "^5.0.17",
+        "truffle-contract": "^3.0.5"
     },
     "devDependencies": {
         "babel-core": "^6.26.0",
@@ -51,7 +52,6 @@
         "eslint-plugin-vue": "^4.5.0",
         "nodemon": "^1.17.3",
         "style-loader": "^0.20.3",
-        "truffle-contract": "^3.0.4",
         "truffle-hdwallet-provider": "0.0.3",
         "vue": "^2.5.16",
         "vue-loader": "^14.2.2",
