@@ -70,10 +70,7 @@ const router = new VueRouter({
             path: '/candidates', component: CandidateList
         },
         {
-            path: '/candidates/:address', component: CandidateView
-        },
-        {
-            path: '/voter', component: VoterView
+            path: '/candidate/:address', component: CandidateView
         },
         {
             path: '/voter/:address', component: VoterView
