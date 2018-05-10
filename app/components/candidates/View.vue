@@ -1,13 +1,25 @@
 <template>
     <div>
+        <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
+            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
+            crossorigin="anonymous">
         <div class="table-container">
             <md-card>
                 <md-card-header>
-                    <div class="md-title">Candidate</div>
-                    <div class="md-subhead">{{ candidate }}</div>
+                    <md-content>
+                        <div class="md-headline">Kevin Joy</div>
+                        <div class="md-subhead">{{ candidate }}</div>
+                    </md-content>
                 </md-card-header>
 
                 <md-card-content>
+                    <md-content>
+                        <a href="#"><md-icon class="fab fa-github" /></a>
+                        <a href="#"><md-icon class="fab fa-linkedin" /></a>
+                        <a href="#"><md-icon class="far fa-envelope" /></a>
+                    </md-content>
                     <md-list class="md-double-line">
                         <md-list-item>
                             <md-icon md-src="/app/assets/tomo.svg" />
@@ -18,23 +30,13 @@
                         </md-list-item>
 
                         <md-list-item>
-                            <md-icon>send</md-icon>
-                            <span class="md-list-item-text">Sent Mail</span>
+                            <md-icon class="far fa-thumbs-up"/>
+                            <div class="md-list-item-text">
+                                <span><strong>{{ iCap }}</strong> $TOMO</span>
+                                <span>You voted</span>
+                            </div>
                         </md-list-item>
-
-                        <md-list-item>
-                            <md-icon>delete</md-icon>
-                            <span class="md-list-item-text">Trash</span>
-                        </md-list-item>
-
-                        <md-list-item>
-                            <md-icon>error</md-icon>
-                            <span class="md-list-item-text">Spam</span>
-                        </md-list-item>
-
-                        <md-divider class="md-inset"/>
                     </md-list>
-                    <p>You voted: <strong>{{ iCap }} $TOMO</strong></p>
                 </md-card-content>
 
                 <md-divider/>
