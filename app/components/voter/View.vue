@@ -40,6 +40,7 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
@@ -63,22 +64,12 @@ export default {
         let self = this
         try {
             let voter = self.$route.params.address
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let candidates = await contract.getCandidates.call({ from: account })
+            let candidates = await axios.get(`/api/voters/${voter}/candidates`)
 
-            candidates.map(async (candidate) => {
-                let voters = await contract.getVoters.call(candidate, { from: account })
-
-                voters.map(async (v) => {
-                    if (v === voter) {
-                        let cap = await contract.getVoterCap.call(candidate, v, { from: account })
-                        self.totalVoted += parseFloat(cap / 10 ** 18)
-                        self.candidates.push({
-                            address: candidate,
-                            cap: (cap / 10 ** 18)
-                        })
-                    }
+            candidates.data.map(async (c) => {
+                self.candidates.push({
+                    address: c.candidate,
+                    cap: (c.capacity / 10 ** 18)
                 })
             })
 

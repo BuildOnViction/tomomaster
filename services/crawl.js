@@ -30,7 +30,7 @@ async function watch () {
         let event = res.event
         let candidate = res.args._candidate
         let voter = res.args._voter
-        let capacity = res.args._capacity
+        let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
             blockNumber: res.blockNumber,
