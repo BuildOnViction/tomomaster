@@ -29,7 +29,7 @@
                     :key="key">
                     <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
                     <md-table-cell>
-                        <router-link :to="'/candidates/' + c.address">{{ c.address }}</router-link>
+                        <router-link :to="'/candidate/' + c.address">{{ c.address }}</router-link>
                     </md-table-cell>
                     <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
                     <md-table-cell><md-button

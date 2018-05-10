@@ -8,9 +8,8 @@
                 </md-card-header>
 
                 <md-card-content>
-
-                    <p>Total: {{ cap }} $TOMO</p>
-                    <p>You voted: {{ iCap }} $TOMO</p>
+                    <p>Total: <strong>{{ cap }} $TOMO</strong></p>
+                    <p>You voted: <strong>{{ iCap }} $TOMO</strong></p>
                 </md-card-content>
 
                 <md-card-actions>
@@ -21,9 +20,12 @@
                         class="md-accent"
                         @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
-                <md-table>
+
+                <md-table v-if="voters.length > 0">
                     <md-table-toolbar>
-                        <div class="md-title">Voters</div>
+                        <div class="md-title">Voters
+                            <p class="md-subhead">People who voted for this candidate</p>
+                        </div>
                     </md-table-toolbar>
 
                     <md-table-row>
@@ -31,12 +33,15 @@
                         <md-table-head>Address</md-table-head>
                         <md-table-head>Capacity</md-table-head>
                     </md-table-row>
+
                     <md-table-row
                         v-for="(v, key) in sortedVoters"
                         :key="key">
                         <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                        <md-table-cell>{{ v.address }}</md-table-cell>
-                        <md-table-cell>{{ v.cap }}</md-table-cell>
+                        <md-table-cell>
+                            <router-link :to="'/voter/' + v.address">{{ v.address }}</router-link>
+                        </md-table-cell>
+                        <md-table-cell>{{ v.cap }} $TOMO</md-table-cell>
                     </md-table-row>
                 </md-table>
             </md-card>
@@ -121,7 +126,7 @@ export default {
                     from: account,
                     value: parseFloat(value) * 10 ** 18
                 })
-                let cap = await contract.getCandidateCap.call(candidate, { from: candidate.address })
+                let cap = await contract.getCandidateCap.call(candidate, { from: account })
                 self.cap = String(cap / 10 ** 18)
             } catch (e) {
                 console.log(e)
