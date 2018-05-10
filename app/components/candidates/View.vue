@@ -52,27 +52,32 @@
 
                 <md-divider/>
 
-                <md-table v-if="voters.length > 0">
+                <md-table
+                    v-if="voters.length > 0"
+                    v-model="voters"
+                    md-sort="cap"
+                    md-sort-order="desc">
                     <md-table-toolbar>
                         <div class="md-title">Voters
                             <p class="md-subhead">People who voted for this candidate</p>
                         </div>
                     </md-table-toolbar>
 
-                    <md-table-row>
-                        <md-table-head md-numeric>ID</md-table-head>
-                        <md-table-head>Address</md-table-head>
-                        <md-table-head>Capacity</md-table-head>
-                    </md-table-row>
-
                     <md-table-row
-                        v-for="(v, key) in sortedVoters"
-                        :key="key">
-                        <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                        <md-table-cell>
-                            <router-link :to="'/voter/' + v.address">{{ v.address }}</router-link>
+                        slot="md-table-row"
+                        slot-scope="{ item }">
+                        <md-table-cell
+                            md-label="ID"
+                            md-numeric>{{ item.id }}</md-table-cell>
+                        <md-table-cell
+                            md-label="Address"
+                            md-sort-by="address">
+                            <router-link :to="'/voter/' + item.address">{{ item.address }}</router-link>
                         </md-table-cell>
-                        <md-table-cell>{{ v.cap }} $TOMO</md-table-cell>
+                        <md-table-cell
+                            md-numeric
+                            md-label="Capacity"
+                            md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
                     </md-table-row>
                 </md-table>
             </md-card>
@@ -110,13 +115,7 @@ export default {
             iCap: 0
         }
     },
-    computed: {
-        sortedVoters: function () {
-            return this.voters.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        }
-    },
+    computed: {},
     watch: {},
     updated () {},
     created: async function () {
@@ -131,9 +130,11 @@ export default {
 
             self.cap = String(cap / 10 ** 18)
             self.iCap = String(iCap / 10 ** 18)
+            let id = 0
             voters.map(async (voter) => {
                 let voterCap = await contract.getVoterCap.call(candidate, voter, { from: account })
                 self.voters.push({
+                    id: ++id,
                     address: voter,
                     cap: (voterCap / 10 ** 18)
                 })
