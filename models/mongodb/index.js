@@ -6,7 +6,7 @@ const db = {}
 const config = require('config')
 
 mongoose.Promise = global.Promise
-mongoose.connect(config.get('db.uri'), { useMongoClient: true })
+mongoose.connect(config.get('db.uri'))
 
 // import all file in this dir, except index.js
 fs.readdirSync(__dirname)

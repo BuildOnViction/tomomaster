@@ -17,6 +17,8 @@ app.use(validator({}))
 // apis
 app.use(require('./apis'))
 
+require('./services/crawl.js')
+
 // error handler
 app.use(require('./middlewares/error'))
 
