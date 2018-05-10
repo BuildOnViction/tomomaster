@@ -31,11 +31,6 @@
     "express-validator": "^5.1.2"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome": "^1.1.7",
-    "@fortawesome/vue-fontawesome": "0.0.22",
-    "@fortawesome/fontawesome-free-brands": "^5.0.12",
-    "@fortawesome/fontawesome-free-regular": "^5.0.12",
-    "@fortawesome/fontawesome-free-solid": "^5.0.12",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-loader": "^7.1.4",

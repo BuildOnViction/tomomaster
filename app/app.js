@@ -11,12 +11,10 @@ import Setting from './components/Setting.vue'
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.css'
 import 'vue-material/dist/theme/default.css'
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import Web3 from 'web3'
 import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 Vue.use(VueMaterial)
-Vue.component(FontAwesomeIcon.name, FontAwesomeIcon)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 

@@ -8,18 +8,47 @@
                 </md-card-header>
 
                 <md-card-content>
-                    <p>Total: <strong>{{ cap }} $TOMO</strong></p>
+                    <md-list class="md-double-line">
+                        <md-list-item>
+                            <md-icon md-src="/app/assets/tomo.svg" />
+                            <div class="md-list-item-text">
+                                <span><strong>{{ cap }}</strong> $TOMO</span>
+                                <span>Total</span>
+                            </div>
+                        </md-list-item>
+
+                        <md-list-item>
+                            <md-icon>send</md-icon>
+                            <span class="md-list-item-text">Sent Mail</span>
+                        </md-list-item>
+
+                        <md-list-item>
+                            <md-icon>delete</md-icon>
+                            <span class="md-list-item-text">Trash</span>
+                        </md-list-item>
+
+                        <md-list-item>
+                            <md-icon>error</md-icon>
+                            <span class="md-list-item-text">Spam</span>
+                        </md-list-item>
+
+                        <md-divider class="md-inset"/>
+                    </md-list>
                     <p>You voted: <strong>{{ iCap }} $TOMO</strong></p>
                 </md-card-content>
 
+                <md-divider/>
+
                 <md-card-actions>
                     <md-button
-                        class="md-primary"
+                        class="md-raised md-primary"
                         @click="voteActive = true;"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     <md-button
-                        class="md-accent"
+                        class="md-raised md-accent"
                         @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
+
+                <md-divider/>
 
                 <md-table v-if="voters.length > 0">
                     <md-table-toolbar>
