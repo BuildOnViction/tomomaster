@@ -8,10 +8,6 @@ var CrawlState = new Schema({
         type: String,
         index: true
     },
-    networkId: {
-        type: Number,
-        index: true
-    },
     blockNumber: {
         type: Number,
         index: true
