@@ -44,6 +44,37 @@
                         <md-table-cell>{{ v.cap }} $TOMO</md-table-cell>
                     </md-table-row>
                 </md-table>
+                <md-table v-if="transactions.length > 0">
+                    <md-table-toolbar>
+                        <div class="md-title">Transactions
+                            <p class="md-subhead">All transactions for this candidate</p>
+                        </div>
+                    </md-table-toolbar>
+
+                    <md-table-row>
+                        <md-table-head md-numeric>ID</md-table-head>
+                        <md-table-head>Voter</md-table-head>
+                        <md-table-head>Candidate</md-table-head>
+                        <md-table-head>Event</md-table-head>
+                        <md-table-head>Capacity</md-table-head>
+                    </md-table-row>
+
+                    <md-table-row
+                        v-for="(t, key) in transactions"
+                        :key="key">
+                        <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
+                        <md-table-cell>
+                            <router-link :to="'/voter/' + t.voter">{{ t.voter }}</router-link>
+                        </md-table-cell>
+                        <md-table-cell>
+                            {{ t.candidate }}
+                        </md-table-cell>
+                        <md-table-cell>
+                            {{ t.event }}
+                        </md-table-cell>
+                        <md-table-cell>{{ t.cap }} $TOMO</md-table-cell>
+                    </md-table-row>
+                </md-table>
             </md-card>
         </div>
         <md-dialog-prompt
@@ -65,6 +96,7 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
@@ -74,6 +106,7 @@ export default {
             unvoteActive: false,
             unvoteValue: 1,
             voters: [],
+            transactions: [],
             candidate: this.$route.params.address,
             cap: 0,
             iCap: 0
@@ -92,19 +125,20 @@ export default {
         let self = this
         try {
             let candidate = self.$route.params.address
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let cap = await contract.getCandidateCap.call(candidate, { from: account })
-            let iCap = await contract.getVoterCap.call(candidate, account, { from: account })
-            let voters = await contract.getVoters.call(candidate, { from: account })
-
-            self.cap = String(cap / 10 ** 18)
-            self.iCap = String(iCap / 10 ** 18)
-            voters.map(async (voter) => {
-                let voterCap = await contract.getVoterCap.call(candidate, voter, { from: account })
+            let voters = await axios.get(`/api/candidates/${candidate}/voters`)
+            voters.data.map((v) => {
                 self.voters.push({
-                    address: voter,
-                    cap: (voterCap / 10 ** 18)
+                    address: v.voter,
+                    cap: (v.capacity / 10 ** 18)
+                })
+            })
+            let txs = await axios.get(`/api/transactions/candidate/${candidate}`)
+            txs.data.map(tx => {
+                self.transactions.push({
+                    voter: tx.voter,
+                    candidate: tx.candidate,
+                    event: tx.event,
+                    cap: (tx.capacity / 10 ** 18)
                 })
             })
         } catch (e) {
