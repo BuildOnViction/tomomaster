@@ -1,5 +1,4 @@
 .*.sw*
-build/
 node_modules
 .vscode/
 .eslintcache 
