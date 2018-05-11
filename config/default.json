@@ -3,7 +3,10 @@
     "host": "0.0.0.0",
     "port": 3001
   },
-  "tomo": "https://core.tomocoin.io",
+  "blockchain": {
+      "rpc": "https://core.tomocoin.io",
+      "networkId": 40686
+  },
   "db": {
     "uri": "mongodb://mongodb:27017/wallets"
   },

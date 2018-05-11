@@ -6,8 +6,8 @@ import "./libs/SafeMath.sol";
 contract TomoValidator is IValidator {
     using SafeMath for uint256;
 
-    event Vote(address _candidate, uint256 _cap);
-    event Unvote(address _candidate, uint256 _cap);
+    event Vote(address _voter, address _candidate, uint256 _cap);
+    event Unvote(address _voter, address _candidate, uint256 _cap);
     event Propose(address _candidate, uint256 _cap);
     event Retire(address _candidate, uint256 _cap);
 
@@ -82,7 +82,7 @@ contract TomoValidator is IValidator {
             voters[_candidate].push(msg.sender);
         }
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].add(msg.value);
-        emit Vote(_candidate, msg.value);
+        emit Vote(msg.sender, _candidate, msg.value);
     }
 
     function getCandidates() public view returns(address[]) {
@@ -110,7 +110,7 @@ contract TomoValidator is IValidator {
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].sub(_cap);
         // refunding to user after unvoting
         msg.sender.transfer(_cap);
-        emit Unvote(_candidate, _cap);
+        emit Unvote(msg.sender, _candidate, _cap);
     }
 
     function retire() public onlyCandidate {

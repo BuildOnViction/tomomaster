@@ -50,6 +50,7 @@
 </template>
 <script>
 
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
@@ -76,14 +77,14 @@ export default {
             if (self.isNotReady) {
                 throw Error('Is not ready')
             }
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let candidates = await contract.getCandidates.call({ from: account })
-            candidates.map(async (candidate) => {
-                let cap = await contract.getCandidateCap.call(candidate, { from: account })
+            // let account = await self.getAccount()
+            // let contract = await self.TomoValidator.deployed()
+            // let candidates = await contract.getCandidates.call({ from: account })
+            let candidates = await axios.get('/api/candidates')
+            candidates.data.map(async (candidate) => {
                 self.candidates.push({
-                    address: candidate,
-                    cap: (cap / 10 ** 18)
+                    address: candidate.candidate,
+                    cap: (candidate.capacity / 10 ** 18)
                 })
             })
         } catch (e) {
