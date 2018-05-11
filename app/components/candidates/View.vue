@@ -1,47 +1,83 @@
 <template>
     <div>
+        <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
+            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
+            crossorigin="anonymous">
         <div class="table-container">
             <md-card>
                 <md-card-header>
-                    <div class="md-title">Candidate</div>
-                    <div class="md-subhead">{{ candidate }}</div>
+                    <md-content>
+                        <div class="md-headline">Kevin Joy</div>
+                        <div class="md-subhead">{{ candidate }}</div>
+                    </md-content>
                 </md-card-header>
 
                 <md-card-content>
-                    <p>Total: <strong>{{ cap }} $TOMO</strong></p>
-                    <p>You voted: <strong>{{ iCap }} $TOMO</strong></p>
+                    <md-content>
+                        <a href="#"><md-icon class="fab fa-github" /></a>
+                        <a href="#"><md-icon class="fab fa-linkedin" /></a>
+                        <a href="#"><md-icon class="far fa-envelope" /></a>
+                    </md-content>
+                    <md-list class="md-double-line">
+                        <md-list-item>
+                            <md-icon md-src="/app/assets/tomo.svg" />
+                            <div class="md-list-item-text">
+                                <span><strong>{{ cap }}</strong> $TOMO</span>
+                                <span>Total</span>
+                            </div>
+                        </md-list-item>
+
+                        <md-list-item>
+                            <md-icon class="far fa-thumbs-up"/>
+                            <div class="md-list-item-text">
+                                <span><strong>{{ iCap }}</strong> $TOMO</span>
+                                <span>You voted</span>
+                            </div>
+                        </md-list-item>
+                    </md-list>
                 </md-card-content>
+
+                <md-divider/>
 
                 <md-card-actions>
                     <md-button
-                        class="md-primary"
+                        class="md-raised md-primary"
                         @click="voteActive = true;"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     <md-button
-                        class="md-accent"
+                        class="md-raised md-accent"
                         @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                 </md-card-actions>
 
-                <md-table v-if="voters.length > 0">
+                <md-divider/>
+
+                <md-table
+                    v-if="voters.length > 0"
+                    v-model="voters"
+                    md-sort="cap"
+                    md-sort-order="asc">
                     <md-table-toolbar>
                         <div class="md-title">Voters
                             <p class="md-subhead">People who voted for this candidate</p>
                         </div>
                     </md-table-toolbar>
 
-                    <md-table-row>
-                        <md-table-head md-numeric>ID</md-table-head>
-                        <md-table-head>Address</md-table-head>
-                        <md-table-head>Capacity</md-table-head>
-                    </md-table-row>
-
                     <md-table-row
-                        v-for="(v, key) in sortedVoters"
-                        :key="key">
-                        <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                        <md-table-cell>
-                            <router-link :to="'/voter/' + v.address">{{ v.address }}</router-link>
+                        slot="md-table-row"
+                        slot-scope="{ item }">
+                        <md-table-cell
+                            md-label="ID"
+                            md-numeric>{{ item.id }}</md-table-cell>
+                        <md-table-cell
+                            md-label="Address"
+                            md-sort-by="address">
+                            <router-link :to="'/voter/' + item.address">{{ item.address }}</router-link>
                         </md-table-cell>
-                        <md-table-cell>{{ v.cap }} $TOMO</md-table-cell>
+                        <md-table-cell
+                            md-numeric
+                            md-label="Capacity"
+                            md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
                     </md-table-row>
                 </md-table>
                 <md-table v-if="transactions.length > 0">
@@ -112,13 +148,7 @@ export default {
             iCap: 0
         }
     },
-    computed: {
-        sortedVoters: function () {
-            return this.voters.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        }
-    },
+    computed: {},
     watch: {},
     updated () {},
     created: async function () {
@@ -131,6 +161,9 @@ export default {
                     address: v.voter,
                     cap: (v.capacity / 10 ** 18)
                 })
+            })
+            voters.sort((a, b) => {
+                return b.cap - a.cap
             })
             let txs = await axios.get(`/api/transactions/candidate/${candidate}`)
             txs.data.map(tx => {
