@@ -15,6 +15,10 @@ async function watch () {
         toBlock: 'latest'
     })
     return allEvents.watch((err, res) => {
+        if (err || !(res || {}).args) {
+            console.error(err, res)
+            return false
+        }
         console.info('New event %s from block %s', res.event, res.blockNumber)
         if (cs) {
             cs.blockNumber = res.blockNumber
@@ -23,9 +27,6 @@ async function watch () {
                 smartContractAddress: v.address,
                 blockNumber: res.blockNumber
             })
-        }
-        if (err) {
-            throw Error('Listen events errors')
         }
         let event = res.event
         let candidate = res.args._candidate
@@ -92,15 +93,22 @@ async function updateVoterCap (candidate, voter) {
 
 // Get current candates
 async function getCurrentCandidates () {
-    let validator = await Validator.deployed()
-    let candidates = await validator.getCandidates.call()
+    try {
+        let validator = await Validator.deployed()
+        let candidates = await validator.getCandidates.call()
 
-    let map = candidates.map((candidate) => {
-        return updateCandidateCap(candidate)
-    })
-
-    return Promise.all(map).catch(e => console.error(e))
+        let map = candidates.map((candidate) => {
+            return updateCandidateCap(candidate)
+        })
+        return Promise.all(map).catch(e => console.error(e))
+    } catch (e) {
+        console.error(e)
+    }
 }
 
-getCurrentCandidates()
-watch()
+try {
+    getCurrentCandidates()
+    watch()
+} catch (e) {
+    console.error(e)
+}
