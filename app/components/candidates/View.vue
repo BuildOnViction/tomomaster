@@ -162,8 +162,10 @@ export default {
                     cap: (v.capacity / 10 ** 18)
                 })
             })
-            voters.sort((a, b) => {
+            self.voters.sort((a, b) => {
                 return b.cap - a.cap
+            }).map((v, i) => {
+                v.id = i + 1
             })
             let txs = await axios.get(`/api/transactions/candidate/${candidate}`)
             txs.data.map(tx => {
