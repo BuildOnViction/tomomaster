@@ -56,7 +56,7 @@
                     v-if="voters.length > 0"
                     v-model="voters"
                     md-sort="cap"
-                    md-sort-order="desc">
+                    md-sort-order="asc">
                     <md-table-toolbar>
                         <div class="md-title">Voters
                             <p class="md-subhead">People who voted for this candidate</p>
@@ -130,15 +130,26 @@ export default {
 
             self.cap = String(cap / 10 ** 18)
             self.iCap = String(iCap / 10 ** 18)
-            let id = 0
+            let tmpArr = []
             voters.map(async (voter) => {
                 let voterCap = await contract.getVoterCap.call(candidate, voter, { from: account })
-                self.voters.push({
-                    id: ++id,
+                tmpArr.push({
                     address: voter,
                     cap: (voterCap / 10 ** 18)
                 })
             })
+            setTimeout(function () {
+                tmpArr.sort(function (a, b) {
+                    return b.cap - a.cap
+                })
+                tmpArr.map((item, index) => {
+                    self.voters.push({
+                        id: index + 1,
+                        address: item.address,
+                        cap: item.cap
+                    })
+                })
+            }, 100)
         } catch (e) {
             console.log(e)
         }
