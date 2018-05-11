@@ -15,8 +15,8 @@ async function watch () {
         toBlock: 'latest'
     })
     return allEvents.watch((err, res) => {
-        if (err) {
-            console.error(err)
+        if (err || !(res || {}).args) {
+            console.error(err, res)
             return false
         }
         console.info('New event %s from block %s', res.event, res.blockNumber)
