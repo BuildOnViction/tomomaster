@@ -98,15 +98,20 @@ export default {
 </script>
 <style>
 .main-content {
-    width: 960px;
+    width: 1170px;
     margin: 0 auto;
 }
 
 .table-container {
     padding-top: 40px;
 }
+
 .search {
     max-width: 500px;
+}
+
+.md-card {
+    margin-bottom: 30px;
 }
 
 </style>
