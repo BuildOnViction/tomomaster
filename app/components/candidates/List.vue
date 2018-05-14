@@ -1,26 +1,32 @@
 <template>
     <div>
         <div class="table-container">
-            <md-table md-card>
+            <md-table
+                v-model="candidates"
+                md-card
+                md-fixed-header
+                md-sort="cap"
+                md-sort-order="asc">
                 <md-table-toolbar>
                     <div class="md-title">Candidates</div>
                 </md-table-toolbar>
 
-                <md-table-row>
-                    <md-table-head md-numeric>ID</md-table-head>
-                    <md-table-head>Address</md-table-head>
-                    <md-table-head>Capacity</md-table-head>
-                    <md-table-head/>
-                </md-table-row>
-
                 <md-table-row
-                    v-for="(c, key) in sortedCandidates"
-                    :key="key">
-                    <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                    <md-table-cell>
-                        <router-link :to="'/candidate/' + c.address">{{ c.address }}</router-link>
+                    slot="md-table-row"
+                    slot-scope="{ item }">
+                    <md-table-cell
+                        md-numeric
+                        md-label="ID">{{ item.id }}
                     </md-table-cell>
-                    <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
+                    <md-table-cell
+                        md-label="Address"
+                        md-sort-by="address">
+                        <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                    </md-table-cell>
+                    <md-table-cell
+                        md-label="Capacity"
+                        md-sort-by="cap">{{ item.cap }} $TOMO
+                    </md-table-cell>
                     <md-table-cell><md-button
                         class="md-raised md-primary"
                         @click="voteActive = true; voteItem = c">Vote</md-button></md-table-cell>
