@@ -12,6 +12,13 @@ router.get('/', async function (req, res, next) {
     return res.json(candidates)
 })
 
+router.get('/:candidate', async function (req, res, next) {
+    let candidate = await db.Candidate.findOne({
+        candidate: req.params.candidate
+    })
+    return res.json(candidate)
+})
+
 router.get('/:candidate/voters', async function (req, res, next) {
     let validator = await Validator.deployed()
     let voters = await db.Voter.find({
