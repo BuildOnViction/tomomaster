@@ -40,8 +40,6 @@
                         </md-list>
                     </md-card-content>
 
-                    <md-divider/>
-
                     <md-card-actions>
                         <md-button
                             class="md-raised md-primary"
@@ -90,7 +88,7 @@
                     v-model="transactions"
                     md-card
                     md-fixed-header
-                    md-sort="cap"
+                    md-sort="id"
                     md-sort-order="asc">
                     <md-table-toolbar>
                         <div class="md-title">Transactions
@@ -105,23 +103,22 @@
                             md-label="ID">{{ item.id }}</md-table-cell>
                         <md-table-cell
                             md-label="Voter"
-                            md-sort="voter">
+                            md-sort-by="voter">
                             <router-link :to="'/voter/' + item.voter">{{ item.voter }}</router-link>
                         </md-table-cell>
                         <md-table-cell
-                            md-label="Candidate"
-                            md-sort="candidate">
-                            <router-link :to="'/candidate/' + item.candidate">{{ item.candidate }}</router-link>
+                            md-label="Candidate">
+                            {{ item.candidate }}
                         </md-table-cell>
                         <md-table-cell
                             md-label="Event"
-                            md-sort="event">
+                            md-sort-by="event">
                             <md-chip>{{ item.event }}</md-chip>
                         </md-table-cell>
                         <md-table-cell
                             md-numeric
                             md-label="Capacity"
-                            md-short="cap">
+                            md-sort-by="cap">
                             {{ item.cap }} $TOMO
                         </md-table-cell>
                     </md-table-row>
