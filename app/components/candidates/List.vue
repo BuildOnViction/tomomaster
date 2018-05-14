@@ -1,37 +1,32 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="isNotReady"
-            md-icon="account_balance_wallet"
-            md-label="Disconnected!"
-            md-description="Please setup your wallet provider.">
-            <md-button
-                class="md-raised"
-                href="/setting">Change Settings</md-button>
-        </md-empty-state>
-        <div
-            v-if="!isNotReady"
-            class="table-container">
-            <md-table md-card>
+        <div class="table-container">
+            <md-table
+                v-model="candidates"
+                md-card
+                md-fixed-header
+                md-sort="cap"
+                md-sort-order="asc">
                 <md-table-toolbar>
                     <div class="md-title">Candidates</div>
                 </md-table-toolbar>
 
-                <md-table-row>
-                    <md-table-head md-numeric>ID</md-table-head>
-                    <md-table-head>Address</md-table-head>
-                    <md-table-head>Capacity</md-table-head>
-                    <md-table-head/>
-                </md-table-row>
-
                 <md-table-row
-                    v-for="(c, key) in sortedCandidates"
-                    :key="key">
-                    <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                    <md-table-cell>
-                        <router-link :to="'/candidate/' + c.address">{{ c.address }}</router-link>
+                    slot="md-table-row"
+                    slot-scope="{ item }">
+                    <md-table-cell
+                        md-numeric
+                        md-label="ID">{{ item.id }}
                     </md-table-cell>
-                    <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
+                    <md-table-cell
+                        md-label="Address"
+                        md-sort-by="address">
+                        <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                    </md-table-cell>
+                    <md-table-cell
+                        md-label="Capacity"
+                        md-sort-by="cap">{{ item.cap }} $TOMO
+                    </md-table-cell>
                     <md-table-cell><md-button
                         class="md-raised md-primary"
                         @click="voteActive = true; voteItem = c">Vote</md-button></md-table-cell>
@@ -55,7 +50,6 @@ export default {
     name: 'App',
     data () {
         return {
-            isNotReady: !this.web3,
             voteActive: false,
             voteValue: 1,
             voteItem: {},
@@ -74,18 +68,17 @@ export default {
     created: async function () {
         let self = this
         try {
-            if (self.isNotReady) {
-                throw Error('Is not ready')
-            }
-            // let account = await self.getAccount()
-            // let contract = await self.TomoValidator.deployed()
-            // let candidates = await contract.getCandidates.call({ from: account })
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate) => {
                 self.candidates.push({
                     address: candidate.candidate,
                     cap: (candidate.capacity / 10 ** 18)
                 })
+            })
+            self.candidates.sort((a, b) => {
+                return b.cap - a.cap
+            }).map((c, i) => {
+                c.id = i + 1
             })
         } catch (e) {
             self.isNotReady = true

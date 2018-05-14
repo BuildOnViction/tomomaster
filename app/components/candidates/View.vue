@@ -74,7 +74,8 @@
                         slot-scope="{ item }">
                         <md-table-cell
                             md-label="ID"
-                            md-numeric>{{ item.id }}</md-table-cell>
+                            md-numeric>{{ item.id }}
+                        </md-table-cell>
                         <md-table-cell
                             md-label="Address"
                             md-sort-by="address">
@@ -106,7 +107,8 @@
                         slot-scope="{ item }">
                         <md-table-cell
                             md-numeric
-                            md-label="ID">{{ item.id }}</md-table-cell>
+                            md-label="ID">{{ item.id }}
+                        </md-table-cell>
                         <md-table-cell
                             md-label="Voter"
                             md-sort-by="voter">
