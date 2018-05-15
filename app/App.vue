@@ -114,4 +114,8 @@ export default {
     margin-bottom: 30px;
 }
 
+.md-table-fixed-header + .md-table-content {
+    height: auto !important;
+}
+
 </style>
