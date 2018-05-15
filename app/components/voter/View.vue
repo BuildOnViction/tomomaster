@@ -1,5 +1,10 @@
 <template>
     <div>
+        <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
+            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
+            crossorigin="anonymous">
         <div class="table-container">
             <md-card>
                 <md-card-header>
@@ -8,34 +13,53 @@
                 </md-card-header>
 
                 <md-card-content>
-                    <p>Balance: <strong>{{ balance }} $TOMO</strong></p>
-                    <p>Voted: <strong>{{ totalVoted }} $TOMO</strong></p>
+                    <md-list class="md-double-line">
+                        <md-list-item>
+                            <md-icon md-src="/app/assets/tomo.svg" />
+                            <div class="md-list-item-text">
+                                <span><strong>{{ balance }}</strong> $TOMO</span>
+                                <span>Balance</span>
+                            </div>
+                        </md-list-item>
+                        <md-list-item>
+                            <md-icon>arrow_upward</md-icon>
+                            <div class="md-list-item-text">
+                                <span><strong>{{ totalVoted }}</strong> $TOMO</span>
+                                <span>Total voted</span>
+                            </div>
+                        </md-list-item>
+                    </md-list>
                 </md-card-content>
-
-                <md-table>
-                    <md-table-toolbar>
-                        <div class="md-title">Candidates
-                            <div class="md-subhead">All candidates are voted by this voter</div>
-                        </div>
-                    </md-table-toolbar>
-
-                    <md-table-row>
-                        <md-table-head md-numeric>ID</md-table-head>
-                        <md-table-head>Address</md-table-head>
-                        <md-table-head>Capacity</md-table-head>
-                    </md-table-row>
-
-                    <md-table-row
-                        v-for="(c, key) in candidates"
-                        :key="key">
-                        <md-table-cell md-numeric>{{ key + 1 }}</md-table-cell>
-                        <md-table-cell>
-                            <router-link :to="'/candidate/' + c.address">{{ c.address }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell>{{ c.cap }} $TOMO</md-table-cell>
-                    </md-table-row>
-                </md-table>
             </md-card>
+            <md-table
+                v-if="candidates.length > 0"
+                v-model="candidates"
+                md-card
+                md-fixed-header
+                md-sort="cap"
+                md-sort-order="asc">
+                <md-table-toolbar>
+                    <div class="md-title">Candidates
+                        <div class="md-subhead">All candidates are voted by this voter</div>
+                    </div>
+                </md-table-toolbar>
+                <md-table-row
+                    slot="md-table-row"
+                    slot-scope="{ item }">
+                    <md-table-cell
+                        md-label="ID"
+                        md-numeric>{{ item.id }}</md-table-cell>
+                    <md-table-cell
+                        md-label="Candidate"
+                        md-sort-by="address">
+                        <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                    </md-table-cell>
+                    <md-table-cell
+                        md-numeric
+                        md-label="Capacity"
+                        md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
+                </md-table-row>
+            </md-table>
         </div>
     </div>
 </template>
@@ -71,6 +95,13 @@ export default {
                     address: c.candidate,
                     cap: (c.capacity / 10 ** 18)
                 })
+                self.totalVoted += (c.capacity / 10 ** 18)
+            })
+
+            self.candidates.sort((a, b) => {
+                return b.cap - a.cap
+            }).map((c, i) => {
+                c.id = i + 1
             })
 
             self.web3.eth.getBalance(voter, function (a, b) {
