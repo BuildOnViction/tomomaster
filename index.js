@@ -15,10 +15,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(validator({}))
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/index.html'))
-})
-
 app.use('/build', express.static('build'))
 
 // apis
@@ -28,6 +24,10 @@ require('./services/crawl.js')
 
 // error handler
 app.use(require('./middlewares/error'))
+
+app.get('*', function (req, res) {
+    return res.sendFile(path.join(__dirname, '/index.html'))
+})
 
 // start server
 server.listen(config.get('server.port'), config.get('server.host'), function () {
