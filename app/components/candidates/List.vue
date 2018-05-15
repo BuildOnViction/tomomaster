@@ -28,8 +28,8 @@
                         md-sort-by="cap">{{ item.cap }} $TOMO
                     </md-table-cell>
                     <md-table-cell><md-button
-                        class="md-raised md-primary"
-                        @click="voteActive = true; voteItem = item">Vote</md-button></md-table-cell>
+                        :to="'confirm/' + item.address"
+                        class="md-raised md-primary">Vote</md-button></md-table-cell>
                 </md-table-row>
             </md-table>
         </div>
