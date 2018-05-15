@@ -5,6 +5,8 @@ services:
     build: ./
     image: tomochain/governance
     restart: "on-failure:10"
+    ports:
+      - "3001:3001"
     depends_on:
       - mongodb
 
