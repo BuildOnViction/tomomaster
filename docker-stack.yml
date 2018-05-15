@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  app:
+    build: ./
+    image: tomochain/governance
+    restart: "on-failure:10"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:3.6
+    restart: "on-failure:10"
+    volumes:
+      - "mongodb:/data/db"
+
+volumes:
+  mongodb:
