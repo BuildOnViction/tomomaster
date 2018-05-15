@@ -4,6 +4,7 @@ const express = require('express')
 const config = require('config')
 const bodyParser = require('body-parser')
 const validator = require('express-validator')
+const path = require('path')
 
 // body parse
 const app = express()
@@ -14,6 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(validator({}))
 
+app.use('/build', express.static('build'))
+
 // apis
 app.use(require('./apis'))
 
@@ -21,6 +24,10 @@ require('./services/crawl.js')
 
 // error handler
 app.use(require('./middlewares/error'))
+
+app.get('*', function (req, res) {
+    return res.sendFile(path.join(__dirname, '/index.html'))
+})
 
 // start server
 server.listen(config.get('server.port'), config.get('server.host'), function () {

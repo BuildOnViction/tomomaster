@@ -8,7 +8,7 @@
       "networkId": 40686
   },
   "db": {
-    "uri": "mongodb://mongodb:27017/wallets"
+    "uri": "mongodb://mongodb:27017/governance"
   },
   "redis": {
       "host": "redis",
