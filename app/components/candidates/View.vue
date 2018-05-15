@@ -37,7 +37,7 @@
                                 </div>
                             </md-list-item>
                             <md-list-item>
-                                <md-icon class="far fa-thumbs-up"/>
+                                <md-icon>receipt</md-icon>
                                 <div class="md-list-item-text">
                                     <span><strong>{{ voted }}</strong> $TOMO</span>
                                     <span>You voted</span>

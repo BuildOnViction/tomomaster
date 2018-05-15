@@ -9,10 +9,17 @@
                 <md-card-content>
                     <md-list class="md-double-line">
                         <md-list-item>
-                            <md-icon md-src="/app/assets/tomo.svg" />
+                            <md-icon>how_to_vote</md-icon>
                             <div class="md-list-item-text">
                                 <span>{{ voter }}</span>
                                 <span>Voter</span>
+                            </div>
+                        </md-list-item>
+                        <md-list-item>
+                            <md-icon>account_circle</md-icon>
+                            <div class="md-list-item-text">
+                                <span>{{ candidate }}</span>
+                                <span>Candidate</span>
                             </div>
                         </md-list-item>
                     </md-list>
@@ -27,7 +34,8 @@ export default {
     name: 'App',
     data () {
         return {
-            voter: ''
+            voter: '',
+            candidate: this.$route.params.address
         }
     },
     computed: {
