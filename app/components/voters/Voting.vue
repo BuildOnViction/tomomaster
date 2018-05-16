@@ -101,6 +101,7 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
+            isNotReady: !this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
             voteValue: 1
@@ -150,12 +151,16 @@ export default {
             let value = this.voteValue
 
             try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                await contract.vote(self.candidate, {
-                    from: account,
-                    value: parseFloat(value) * 10 ** 18
-                })
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                } else {
+                    let account = await self.getAccount()
+                    let contract = await self.TomoValidator.deployed()
+                    await contract.vote(self.candidate, {
+                        from: account,
+                        value: parseFloat(value) * 10 ** 18
+                    })
+                }
             } catch (e) {
                 console.log(e)
             }
