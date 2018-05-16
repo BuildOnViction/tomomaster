@@ -81,7 +81,7 @@ const router = new VueRouter({
             path: '/voting/:candidate', component: VotingView
         },
         {
-            path: '/confirm', component: ConfirmView
+            path: '/confirm/:transaction', component: ConfirmView
         },
         {
             path: '/setting', component: Setting

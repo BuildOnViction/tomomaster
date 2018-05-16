@@ -35,11 +35,13 @@ async function watch () {
         let tx = new db.Transaction({
             smartContractAddress: v.address,
             blockNumber: res.blockNumber,
+            tx: res.transactionHash,
             event: event,
             voter: voter,
             candidate: candidate,
             capacity: capacity
         })
+        console.log(res)
         tx.save()
         cs.save()
         if (event === 'Vote' || event === 'Unvote') {

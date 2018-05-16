@@ -8,6 +8,10 @@ var Transaction = new Schema({
         type: String,
         index: true
     },
+    tx: {
+        type: String,
+        index: true
+    },
     event: {
         type: String,
         index: true
