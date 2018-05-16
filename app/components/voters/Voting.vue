@@ -1,7 +1,10 @@
 <template>
     <div>
         <div class="table-container md-layout md-gutter md-alignment-center">
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <form
+                novalidate
+                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100"
+                @submit.prevent="validate()">
                 <md-card>
                     <md-card-header>
                         <div class="md-title">Voting</div>
@@ -27,17 +30,24 @@
                                 </div>
                             </md-list-item>
                             <md-list-item class="md-layout">
-                                <div class="md-layout-item md-xlarge-size-90 md-large-size-40 md-xsmall-size-100">
-                                    <md-field>
+                                <div class="md-layout-item md-xlarge-size-70 md-large-size-70 md-xsmall-size-100">
+                                    <md-field :class="getValidationClass('voteValue')">
                                         <label>Vote</label>
                                         <md-input
                                             v-model="voteValue"
+                                            name="vote-value"
                                             min="0.1"
                                             step="0.1"
                                             type="number"/>
                                         <md-icon md-src="/app/assets/tomo.svg" />
-                                        <span class="md-helper-text">
-                                            How much $TOMO would you like to vote for this candidate?</span>
+                                        <md-tooltip>
+                                            How much $TOMO would you like to vote for this candidate?</md-tooltip>
+                                        <span
+                                            v-if="!$v.voteValue.required"
+                                            class="md-error">Required field</span>
+                                        <span
+                                            v-else-if="!$v.voteValue.minValue"
+                                            class="md-error">Must be greater than 0</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -49,10 +59,10 @@
                             @click="$router.go(-1)">Cancel</md-button>
                         <md-button
                             class="md-raised md-primary"
-                            @click="vote()"><md-icon>check</md-icon> Submit</md-button>
+                            type="submit"><md-icon>check</md-icon> Submit</md-button>
                     </md-card-actions>
                 </md-card>
-            </div>
+            </form>
         </div>
         <div class="md-layout md-gutter md-alignment-center">
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
@@ -81,13 +91,25 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import {
+    required,
+    minValue
+} from 'vuelidate/lib/validators'
 export default {
     name: 'App',
+    mixins: [validationMixin],
     data () {
         return {
             voter: '',
             candidate: this.$route.params.candidate,
             voteValue: 1
+        }
+    },
+    validations: {
+        voteValue: {
+            required,
+            minValue: minValue(0.1)
         }
     },
     computed: {
@@ -107,6 +129,22 @@ export default {
     mounted () {
     },
     methods: {
+        getValidationClass: function (fieldName) {
+            const field = this.$v[fieldName]
+
+            if (field) {
+                return {
+                    'md-invalid': field.$invalid
+                }
+            }
+        },
+        validate: function () {
+            this.$v.$touch()
+
+            if (!this.$v.$invalid) {
+                this.vote()
+            }
+        },
         vote: async function () {
             let self = this
             let value = this.voteValue
