@@ -99,7 +99,7 @@
                     md-sort-order="asc">
                     <md-table-toolbar>
                         <div class="md-title">Transactions
-                            <p class="md-subhead">People who voted for this candidate</p>
+                            <p class="md-subhead">All transactions of this candidate</p>
                         </div>
                     </md-table-toolbar>
                     <md-table-row
