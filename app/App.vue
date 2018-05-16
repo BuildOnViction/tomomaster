@@ -10,17 +10,28 @@
                     </div>
 
                     <md-autocomplete
-                        v-if="!isNotReady"
                         v-model="selectedCandidate"
                         :md-options="candidates"
                         class="search"
                         md-layout="box"
                         @md-selected="goPage">
-                        <label>Search...</label>
+                        <label>Search &hellip;</label>
+
+                        <template
+                            slot="md-autocomplete-item"
+                            slot-scope="{ item, term }">
+                            <md-highlight-text :md-term="term">{{ item }}</md-highlight-text>
+                        </template>
+
+                        <template
+                            slot="md-autocomplete-empty"
+                            slot-scope="{ term }">
+                            No candidates matching "{{ term }}" were found
+                        </template>
                     </md-autocomplete>
                     <div class="md-toolbar-section-end">
                         <md-button
-                            v-if="!isNotReady && !isCandidate"
+                            v-if=" !isCandidate"
                             class="md-raised"
                             to="/apply">
                             Become a candidate
@@ -36,7 +47,7 @@
                             </md-button>
 
                             <md-menu-content>
-                                <md-menu-item v-if="!isNotReady && isCandidate">
+                                <md-menu-item v-if="isCandidate">
                                     <md-button
                                         to="/retire"
                                         class="md-accent">
@@ -67,7 +78,6 @@ export default {
     name: 'App',
     data () {
         return {
-            isNotReady: !this.web3,
             selectedCandidate: null,
             candidates: [],
             isCandidate: false
@@ -77,21 +87,18 @@ export default {
         let self = this
 
         try {
-            if (self.isNotReady) {
-                return false
-            }
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
             self.isCandidate = await contract.isCandidate(account, { from: account })
             self.candidates = await contract.getCandidates.call({ from: account })
         } catch (e) {
             console.log(e)
-            self.isNotReady = true
         }
     },
     methods: {
         goPage: function (s) {
-            this.$router.push({ path: '/candidates/' + s })
+            console.log(s)
+            this.$router.push({ path: '/candidate/' + s })
         }
     }
 }

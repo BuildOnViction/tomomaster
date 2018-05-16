@@ -6,7 +6,7 @@
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
         <div class="table-container md-layout md-gutter">
-            <div class="md-layout-item md-xlarge-size-50 md-xsmall-size-100">
+            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
                     <md-card-header>
                         <md-content>
@@ -37,7 +37,7 @@
                                 </div>
                             </md-list-item>
                             <md-list-item>
-                                <md-icon class="far fa-thumbs-up"/>
+                                <md-icon>receipt</md-icon>
                                 <div class="md-list-item-text">
                                     <span><strong>{{ voted }}</strong> $TOMO</span>
                                     <span>You voted</span>
@@ -48,15 +48,15 @@
 
                     <md-card-actions>
                         <md-button
-                            class="md-raised md-primary"
-                            @click="voteActive = true;"><md-icon>arrow_upward</md-icon> Vote</md-button>
-                        <md-button
                             class="md-raised md-accent"
                             @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
+                        <md-button
+                            :to="'/voting/' + candidate"
+                            class="md-raised md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
-            <div class="md-layout-item md-xlarge-size-50 md-xsmall-size-100">
+            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-table
                     v-if="voters.length > 0"
                     v-model="voters"
@@ -134,14 +134,6 @@
             </div>
         </div>
         <md-dialog-prompt
-            :md-active.sync="voteActive"
-            v-model="voteValue"
-            md-title="How much?"
-            md-input-maxlength="30"
-            md-input-placeholder="Type $TOMO..."
-            md-confirm-text="Confirm"
-            @md-confirm="vote()"/>
-        <md-dialog-prompt
             :md-active.sync="unvoteActive"
             v-model="unvoteValue"
             md-title="How much?"
@@ -215,24 +207,6 @@ export default {
     mounted () {
     },
     methods: {
-        vote: async function () {
-            let self = this
-            let candidate = this.candidate
-            let value = this.voteValue
-
-            try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                await contract.vote(candidate, {
-                    from: account,
-                    value: parseFloat(value) * 10 ** 18
-                })
-                let cap = await contract.getCandidateCap.call(candidate, { from: account })
-                self.cap = String(cap / 10 ** 18)
-            } catch (e) {
-                console.log(e)
-            }
-        },
         unvote: async function () {
             let self = this
             let candidate = this.candidate

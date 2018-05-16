@@ -5,7 +5,8 @@ import CandidateView from './components/candidates/View.vue'
 import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
 import CandidateRetire from './components/candidates/Retire.vue'
-import VoterView from './components/voter/View'
+import VoterView from './components/voters/View'
+import VotingView from './components/voters/Voting'
 import Setting from './components/Setting.vue'
 
 import VueMaterial from 'vue-material'
@@ -74,6 +75,9 @@ const router = new VueRouter({
         },
         {
             path: '/voter/:address', component: VoterView
+        },
+        {
+            path: '/voting/:candidate', component: VotingView
         },
         {
             path: '/setting', component: Setting

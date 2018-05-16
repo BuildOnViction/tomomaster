@@ -28,19 +28,11 @@
                         md-sort-by="cap">{{ item.cap }} $TOMO
                     </md-table-cell>
                     <md-table-cell><md-button
-                        class="md-raised md-primary"
-                        @click="voteActive = true; voteItem = item">Vote</md-button></md-table-cell>
+                        :to="'/voting/' + item.address"
+                        class="md-raised md-primary">Vote</md-button></md-table-cell>
                 </md-table-row>
             </md-table>
         </div>
-        <md-dialog-prompt
-            :md-active.sync="voteActive"
-            v-model="voteValue"
-            md-title="How much?"
-            md-input-maxlength="30"
-            md-input-placeholder="Type $TOMO..."
-            md-confirm-text="Confirm"
-            @md-confirm="vote()"/>
     </div>
 </template>
 <script>
@@ -87,25 +79,6 @@ export default {
     },
     mounted () {
     },
-    methods: {
-        vote: async function () {
-            let self = this
-            let candidate = this.voteItem
-            let value = this.voteValue
-
-            try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                await contract.vote(candidate.address, {
-                    from: account,
-                    value: parseFloat(value) * 10 ** 18
-                })
-                let cap = await contract.getCandidateCap.call(candidate.address, { from: candidate.address })
-                candidate.cap = String(cap / 10 ** 18)
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    }
+    methods: {}
 }
 </script>
