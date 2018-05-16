@@ -47,7 +47,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.voteValue.minValue"
-                                            class="md-error">Must be greater than 0</span>
+                                            class="md-error">Must be greater than 10<sup>-18</sup></span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -110,7 +110,7 @@ export default {
     validations: {
         voteValue: {
             required,
-            minValue: minValue(0.1)
+            minValue: minValue(10 ** -18)
         }
     },
     computed: {
@@ -156,10 +156,11 @@ export default {
                 } else {
                     let account = await self.getAccount()
                     let contract = await self.TomoValidator.deployed()
-                    await contract.vote(self.candidate, {
+                    let tx = await contract.vote(self.candidate, {
                         from: account,
                         value: parseFloat(value) * 10 ** 18
                     })
+                    console.log(tx)
                 }
             } catch (e) {
                 console.log(e)
