@@ -41,7 +41,6 @@ async function watch () {
             candidate: candidate,
             capacity: capacity
         })
-        console.log(res)
         tx.save()
         cs.save()
         if (event === 'Vote' || event === 'Unvote') {
