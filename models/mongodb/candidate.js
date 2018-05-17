@@ -8,10 +8,6 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
-    tx: {
-        type: String,
-        index: true
-    },
     candidate: {
         type: String,
         index: true
