@@ -5,7 +5,7 @@
             href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
-        <div class="table-container md-layout md-gutter">
+        <div class="table-container md-layout md-gutter md-alignment-top-center">
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
                     <md-card-header>
@@ -56,9 +56,10 @@
                     </md-card-actions>
                 </md-card>
             </div>
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <div
+                v-if="voters.length > 0"
+                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-table
-                    v-if="voters.length > 0"
                     v-model="voters"
                     md-card
                     md-fixed-header
@@ -89,9 +90,10 @@
                     </md-table-row>
                 </md-table>
             </div>
-            <div class="md-layout-item md-xsmall-size-100">
+            <div
+                v-if="transactions.length > 0"
+                class="md-layout-item md-xsmall-size-100">
                 <md-table
-                    v-if="transactions.length > 0"
                     v-model="transactions"
                     md-card
                     md-fixed-header
