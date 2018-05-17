@@ -47,7 +47,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.voteValue.minValue"
-                                            class="md-error">Must be greater than 0</span>
+                                            class="md-error">Must be greater than 10<sup>-18</sup></span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -55,11 +55,18 @@
                     </md-card-content>
                     <md-card-actions>
                         <md-button
+                            v-if="!loading"
                             class="md-raised md-accent"
                             @click="$router.go(-1)">Cancel</md-button>
                         <md-button
+                            v-if="!loading"
                             class="md-raised md-primary"
                             type="submit"><md-icon>check</md-icon> Submit</md-button>
+                        <md-progress-spinner
+                            v-if="loading"
+                            :md-diameter="30"
+                            :md-stroke="3"
+                            md-mode="indeterminate"/>
                     </md-card-actions>
                 </md-card>
             </form>
@@ -68,7 +75,7 @@
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
                     <md-card-header>
-                        <div class="md-title">Benefit</div>
+                        <p class="md-title">Benefit</p>
                     </md-card-header>
                     <md-card-content>
                         <md-content>
@@ -101,15 +108,17 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
+            isNotReady: !this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
-            voteValue: 1
+            voteValue: 1,
+            loading: false
         }
     },
     validations: {
         voteValue: {
             required,
-            minValue: minValue(0.1)
+            minValue: minValue(10 ** -18)
         }
     },
     computed: {
@@ -150,13 +159,24 @@ export default {
             let value = this.voteValue
 
             try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                await contract.vote(self.candidate, {
-                    from: account,
-                    value: parseFloat(value) * 10 ** 18
-                })
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                } else {
+                    self.loading = true
+                    let account = await self.getAccount()
+                    let contract = await self.TomoValidator.deployed()
+                    let rs = await contract.vote(self.candidate, {
+                        from: account,
+                        value: parseFloat(value) * 10 ** 18
+                    })
+
+                    self.loading = false
+                    if (rs.tx) {
+                        self.$router.push('/confirm/' + rs.tx)
+                    }
+                }
             } catch (e) {
+                self.loading = false
                 console.log(e)
             }
         }

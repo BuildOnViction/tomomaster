@@ -3,7 +3,7 @@
         <div class="table-container">
             <md-card>
                 <md-card-header>
-                    <div class="md-title">Become a Candidate</div>
+                    <p class="md-title">Become a Candidate</p>
                 </md-card-header>
 
                 <md-card-content>
