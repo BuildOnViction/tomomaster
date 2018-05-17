@@ -2,7 +2,7 @@
     <div class="setting-container">
         <md-card>
             <md-card-header>
-                <div class="md-title">Settings</div>
+                <p class="md-title">Settings</p>
             </md-card-header>
 
             <md-card-content>
@@ -40,7 +40,7 @@
                     @click="save()">Save</md-button>
             </md-card-actions>
             <md-card-header v-if="!isNotReady">
-                <div class="md-title">Account Information</div>
+                <p class="md-title">Account Information</p>
             </md-card-header>
 
             <md-card-content v-if="!isNotReady">

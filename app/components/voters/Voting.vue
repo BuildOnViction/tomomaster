@@ -68,7 +68,7 @@
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
                     <md-card-header>
-                        <div class="md-title">Benefit</div>
+                        <p class="md-title">Benefit</p>
                     </md-card-header>
                     <md-card-content>
                         <md-content>
@@ -156,11 +156,14 @@ export default {
                 } else {
                     let account = await self.getAccount()
                     let contract = await self.TomoValidator.deployed()
-                    let tx = await contract.vote(self.candidate, {
+                    let rs = await contract.vote(self.candidate, {
                         from: account,
                         value: parseFloat(value) * 10 ** 18
                     })
-                    console.log(tx)
+
+                    if (rs.tx) {
+                        self.$router.push('/confirm/' + rs.tx)
+                    }
                 }
             } catch (e) {
                 console.log(e)

@@ -8,8 +8,8 @@
         <div class="table-container">
             <md-card>
                 <md-card-header>
-                    <div class="md-title">Voter</div>
-                    <div class="md-subhead">{{ voter }}</div>
+                    <p class="md-title">Voter</p>
+                    <p class="md-subhead">{{ voter }}</p>
                 </md-card-header>
 
                 <md-card-content>
@@ -40,7 +40,7 @@
                 md-sort-order="asc">
                 <md-table-toolbar>
                     <div class="md-title">Candidates
-                        <div class="md-subhead">All candidates are voted by this voter</div>
+                        <p class="md-subhead">All candidates are voted by this voter</p>
                     </div>
                 </md-table-toolbar>
                 <md-table-row
