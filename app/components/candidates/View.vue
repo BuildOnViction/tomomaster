@@ -117,10 +117,6 @@
                             <router-link :to="'/voter/' + item.voter">{{ item.voter }}</router-link>
                         </md-table-cell>
                         <md-table-cell
-                            md-label="Candidate">
-                            {{ item.candidate }}
-                        </md-table-cell>
-                        <md-table-cell
                             md-label="Event"
                             md-sort-by="event">
                             <md-chip>{{ item.event }}</md-chip>
@@ -130,6 +126,16 @@
                             md-label="Capacity"
                             md-sort-by="cap">
                             {{ item.cap }} $TOMO
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="">
+                            <md-button
+                                :href="'http://explorer.tomochain.com/txs/' + item.tx"
+                                target="_blank"
+                                class="md-icon-button">
+                                <md-icon>remove_red_eye</md-icon>
+                                <md-tooltip md-direction="right">See this transactions on TOMO Explorer</md-tooltip>
+                            </md-button>
                         </md-table-cell>
                     </md-table-row>
                 </md-table>
@@ -192,6 +198,7 @@ export default {
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     id: idx + 1,
+                    tx: tx.tx,
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
