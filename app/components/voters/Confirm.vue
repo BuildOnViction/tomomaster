@@ -57,7 +57,7 @@ export default {
                 <a href="/candidate/${result.to}">${result.to}</a> successfully.
                 <br/><br/>
                 Transaction Hash: <a href="#" target="_blank">${self.tx}</a>`
-                self.buttonText = 'See all Candidates'
+                self.buttonText = 'View all Candidates'
             } else {
                 self.icon = 'error_outline'
                 self.title = 'Transaction Failed'

@@ -43,7 +43,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.applyValue.minValue"
-                                            class="md-error">Must be greater than 10,000</span>
+                                            class="md-error">Must be greater than 10,000 $TOMO</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
