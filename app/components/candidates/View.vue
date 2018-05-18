@@ -92,7 +92,7 @@
             </div>
             <div
                 v-if="transactions.length > 0"
-                class="md-layout-item md-xsmall-size-100">
+                class="md-layout-item md-xlarge-size-100 md-large-size-100 md-xsmall-size-100">
                 <md-table
                     v-model="transactions"
                     md-card
