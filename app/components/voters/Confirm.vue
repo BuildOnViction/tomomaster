@@ -56,7 +56,7 @@ export default {
                 <strong>${result.value.toNumber() / 10 ** 18} $TOMO</strong> for candidate 
                 <a href="/candidate/${result.to}">${result.to}</a> successfully.
                 <br/><br/>
-                Transaction Hash: ${self.tx}`
+                Transaction Hash: <a href="#" target="_blank">${self.tx}</a>`
                 self.buttonText = 'See all Candidates'
             } else {
                 self.icon = 'error_outline'
