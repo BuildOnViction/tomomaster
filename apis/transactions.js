@@ -4,6 +4,14 @@ const router = express.Router()
 const db = require('../models/mongodb')
 const { Validator } = require('../models/blockchain/validator')
 
+router.get('/:tx', async function (req, res, next) {
+    let tx = await db.Transaction.findOne({
+        tx: req.params.tx
+    })
+
+    return res.json(tx)
+})
+
 router.get('/voter/:voter', async function (req, res, next) {
     let validator = await Validator.deployed()
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
