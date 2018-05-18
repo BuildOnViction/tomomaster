@@ -7,6 +7,7 @@ import CandidateApply from './components/candidates/Apply.vue'
 import CandidateRetire from './components/candidates/Retire.vue'
 import VoterView from './components/voters/View'
 import VotingView from './components/voters/Voting'
+import UnvotingView from './components/voters/Unvoting'
 import ConfirmView from './components/voters/Confirm'
 import Setting from './components/Setting.vue'
 
@@ -79,6 +80,9 @@ const router = new VueRouter({
         },
         {
             path: '/voting/:candidate', component: VotingView
+        },
+        {
+            path: '/unvoting/:candidate', component: UnvotingView
         },
         {
             path: '/confirm/:transaction', component: ConfirmView
