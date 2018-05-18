@@ -7,7 +7,7 @@
                 @submit.prevent="validate()">
                 <md-card>
                     <md-card-header>
-                        <div class="md-title">Voting</div>
+                        <p class="md-title">Voting</p>
                     </md-card-header>
 
                     <md-card-content>
@@ -47,7 +47,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.voteValue.minValue"
-                                            class="md-error">Must be greater than 10<sup>-18</sup></span>
+                                            class="md-error">Must be greater than 10<sup>-18 $TOMO</sup></span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -55,18 +55,13 @@
                     </md-card-content>
                     <md-card-actions>
                         <md-button
-                            v-if="!loading"
+                            :disabled="this.$parent.showProgressBar"
                             class="md-raised md-accent"
                             @click="$router.go(-1)">Cancel</md-button>
                         <md-button
-                            v-if="!loading"
+                            :disabled="this.$parent.showProgressBar"
                             class="md-raised md-primary"
                             type="submit"><md-icon>check</md-icon> Submit</md-button>
-                        <md-progress-spinner
-                            v-if="loading"
-                            :md-diameter="30"
-                            :md-stroke="3"
-                            md-mode="indeterminate"/>
                     </md-card-actions>
                 </md-card>
             </form>
@@ -111,8 +106,7 @@ export default {
             isNotReady: !this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
-            voteValue: 1,
-            loading: false
+            voteValue: 1
         }
     },
     validations: {
@@ -162,7 +156,8 @@ export default {
                 if (self.isNotReady) {
                     self.$router.push('/setting')
                 } else {
-                    self.loading = true
+                    self.$parent.showProgressBar = true
+
                     let account = await self.getAccount()
                     let contract = await self.TomoValidator.deployed()
                     let rs = await contract.vote(self.candidate, {
@@ -170,13 +165,13 @@ export default {
                         value: parseFloat(value) * 10 ** 18
                     })
 
-                    self.loading = false
+                    self.$parent.showProgressBar = false
                     if (rs.tx) {
                         self.$router.push('/confirm/' + rs.tx)
                     }
                 }
             } catch (e) {
-                self.loading = false
+                self.$parent.showProgressBar = false
                 console.log(e)
             }
         }

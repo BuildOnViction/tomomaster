@@ -66,6 +66,10 @@
                     </div>
                 </div>
             </md-toolbar>
+            <md-progress-bar
+                v-if="showProgressBar"
+                class="md-accent"
+                md-mode="indeterminate"/>
             <div class="main-content">
                 <router-view/>
             </div>
@@ -78,6 +82,7 @@ export default {
     name: 'App',
     data () {
         return {
+            showProgressBar: false,
             selectedCandidate: null,
             candidates: [],
             isCandidate: false
