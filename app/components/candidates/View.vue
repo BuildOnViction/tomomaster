@@ -120,7 +120,8 @@
                         <md-table-cell
                             md-label="Event"
                             md-sort-by="event">
-                            <md-chip>{{ item.event }}</md-chip>
+                            <md-chip
+                                :class="getChipClass(item.event)">{{ item.event }}</md-chip>
                         </md-table-cell>
                         <md-table-cell
                             md-numeric
@@ -206,7 +207,7 @@ export default {
                     cap: (tx.capacity / 10 ** 18)
                 })
 
-                if (tx.voter === account) {
+                if (tx.voter === account && tx.event === 'Vote') {
                     self.voted += (parseFloat(tx.capacity) / 10 ** 18)
                 }
             })
@@ -217,6 +218,16 @@ export default {
     mounted () {
     },
     methods: {
+        getChipClass (event) {
+            let clazz = ''
+            if (event === 'Vote') {
+                clazz = 'md-primary'
+            } else if (event === 'Unvote') {
+                clazz = 'md-accent'
+            }
+
+            return clazz
+        },
         unvote: async function () {
             let self = this
             let candidate = this.candidate
@@ -225,7 +236,8 @@ export default {
             try {
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                await contract.unvote(candidate, String(parseFloat(value) * 10 ** 18), { from: account })
+                let tx = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), { from: account })
+                console.log(tx)
                 let cap = await contract.getCandidateCap.call(candidate, { from: account })
                 self.cap = String(cap / 10 ** 18)
             } catch (e) {
