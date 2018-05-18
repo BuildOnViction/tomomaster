@@ -48,6 +48,7 @@
 
                     <md-card-actions>
                         <md-button
+                            v-if="voted > 0"
                             class="md-raised md-accent"
                             @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                         <md-button
