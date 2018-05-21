@@ -8,7 +8,7 @@
                 md-sort="cap"
                 md-sort-order="asc">
                 <md-table-toolbar>
-                    <div class="md-title">Candidates</div>
+                    <p class="md-title">Candidates</p>
                 </md-table-toolbar>
 
                 <md-table-row

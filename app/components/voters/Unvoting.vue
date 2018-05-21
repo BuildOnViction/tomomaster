@@ -7,7 +7,8 @@
                 @submit.prevent="validate()">
                 <md-card>
                     <md-card-header>
-                        <p class="md-title">Voting</p>
+                        <p class="md-title">Unvoting</p>
+                        <div class="md-subhead">You will receive $TOMO after unvoting</div>
                     </md-card-header>
 
                     <md-card-content>
@@ -29,25 +30,35 @@
                                     <span>Candidate</span>
                                 </div>
                             </md-list-item>
+                            <md-list-item>
+                                <md-icon>receipt</md-icon>
+                                <div class="md-list-item-text">
+                                    <span><strong>{{ voted }}</strong> $TOMO</span>
+                                    <span>You voted</span>
+                                </div>
+                            </md-list-item>
                             <md-list-item class="md-layout">
                                 <div class="md-layout-item md-xlarge-size-70 md-large-size-70 md-xsmall-size-100">
-                                    <md-field :class="getValidationClass('voteValue')">
-                                        <label>Vote</label>
+                                    <md-field :class="getValidationClass('unvoteValue')">
+                                        <label>Amount</label>
                                         <md-input
-                                            v-model="voteValue"
+                                            v-model="unvoteValue"
                                             name="vote-value"
                                             min="0.1"
                                             step="0.1"
                                             type="number"/>
                                         <md-icon md-src="/app/assets/tomo.svg" />
                                         <md-tooltip>
-                                            How much $TOMO would you like to vote for this candidate?</md-tooltip>
+                                            The amount of TOMO to unvote</md-tooltip>
                                         <span
-                                            v-if="!$v.voteValue.required"
+                                            v-if="!$v.unvoteValue.required"
                                             class="md-error">Required field</span>
                                         <span
-                                            v-else-if="!$v.voteValue.minValue"
+                                            v-else-if="!$v.unvoteValue.minValue"
                                             class="md-error">Must be greater than 10<sup>-18 $TOMO</sup></span>
+                                        <span
+                                            v-else-if="!$v.unvoteValue.maxValue"
+                                            class="md-error">Must be less than {{ voted }} $TOMO</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -66,37 +77,15 @@
                 </md-card>
             </form>
         </div>
-        <div class="md-layout md-gutter md-alignment-center">
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Benefit</p>
-                    </md-card-header>
-                    <md-card-content>
-                        <md-content>
-                            Far far away, behind the word mountains,
-                            far from the countries Vokalia and Consonantia,
-                            there live the blind texts. Separated they live in
-                            Bookmarksgrove right at the coast of the Semantics,
-                            a large language ocean. A small river named Duden
-                            flows by their place and supplies it with the necessary
-                            regelialia. It is a paradisematic country, in which roasted
-                            parts of sentences fly into your mouth. Even the all-powerful
-                            Pointing has no control about the blind texts it is an almost
-                            unorthographic life One day however a small line of blind text
-                        </md-content>
-                    </md-card-content>
-                </md-card>
-            </div>
-        </div>
     </div>
 </template>
-
 <script>
+import axios from 'axios'
 import { validationMixin } from 'vuelidate'
 import {
     required,
-    minValue
+    minValue,
+    maxValue
 } from 'vuelidate/lib/validators'
 export default {
     name: 'App',
@@ -106,31 +95,40 @@ export default {
             isNotReady: !this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
-            voteValue: 1
+            voted: 0,
+            unvoteValue: 1
         }
     },
-    validations: {
-        voteValue: {
-            required,
-            minValue: minValue(10 ** -18)
+    validations () {
+        return {
+            unvoteValue: {
+                required,
+                minValue: minValue(10 ** -18),
+                maxValue: maxValue(this.voted)
+            }
         }
     },
-    computed: {
-    },
-    watch: {
-    },
+    watch: {},
     updated () {},
     created: async function () {
         let self = this
+        let candidate = self.candidate
+
         try {
             let account = await self.getAccount()
             self.voter = account
+
+            let voters = await axios.get(`/api/candidates/${candidate}/voters`)
+            voters.data.map((v) => {
+                if (v.voter === account) {
+                    self.voted += (parseFloat(v.capacity) / 10 ** 18)
+                }
+            })
         } catch (e) {
             console.log(e)
         }
     },
-    mounted () {
-    },
+    mounted () {},
     methods: {
         getValidationClass: function (fieldName) {
             const field = this.$v[fieldName]
@@ -145,33 +143,27 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                this.vote()
+                this.unvote()
             }
         },
-        vote: async function () {
+        unvote: async function () {
             let self = this
-            let value = this.voteValue
+            let candidate = this.candidate
+            let value = this.unvoteValue
 
             try {
-                if (self.isNotReady) {
-                    self.$router.push('/setting')
-                } else {
-                    self.$parent.showProgressBar = true
+                self.$parent.showProgressBar = true
 
-                    let account = await self.getAccount()
-                    let contract = await self.TomoValidator.deployed()
-                    let rs = await contract.vote(self.candidate, {
-                        from: account,
-                        value: parseFloat(value) * 10 ** 18
-                    })
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), { from: account })
+                self.vote -= value
 
-                    self.$parent.showProgressBar = false
-                    if (rs.tx) {
-                        self.$router.push('/confirm/' + rs.tx)
-                    }
+                self.$parent.showProgressBar = false
+                if (rs.tx) {
+                    self.$router.push('/confirm/' + rs.tx)
                 }
             } catch (e) {
-                self.$parent.showProgressBar = false
                 console.log(e)
             }
         }

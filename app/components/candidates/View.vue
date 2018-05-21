@@ -5,7 +5,7 @@
             href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
-        <div class="table-container md-layout md-gutter">
+        <div class="table-container md-layout md-gutter md-alignment-top-center">
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
                     <md-card-header>
@@ -48,17 +48,19 @@
 
                     <md-card-actions>
                         <md-button
-                            class="md-raised md-accent"
-                            @click="unvoteActive = true;"><md-icon>arrow_downward</md-icon> Unvote</md-button>
+                            v-if="voted > 0"
+                            :to="'/unvoting/' + candidate"
+                            class="md-raised md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                         <md-button
                             :to="'/voting/' + candidate"
                             class="md-raised md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <div
+                v-if="voters.length > 0"
+                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-table
-                    v-if="voters.length > 0"
                     v-model="voters"
                     md-card
                     md-fixed-header
@@ -89,9 +91,10 @@
                     </md-table-row>
                 </md-table>
             </div>
-            <div class="md-layout-item md-xsmall-size-100">
+            <div
+                v-if="transactions.length > 0"
+                class="md-layout-item md-xlarge-size-100 md-large-size-100 md-xsmall-size-100">
                 <md-table
-                    v-if="transactions.length > 0"
                     v-model="transactions"
                     md-card
                     md-fixed-header
@@ -99,7 +102,7 @@
                     md-sort-order="asc">
                     <md-table-toolbar>
                         <div class="md-title">Transactions
-                            <p class="md-subhead">People who voted for this candidate</p>
+                            <p class="md-subhead">All transactions of this candidate</p>
                         </div>
                     </md-table-toolbar>
                     <md-table-row
@@ -115,13 +118,10 @@
                             <router-link :to="'/voter/' + item.voter">{{ item.voter }}</router-link>
                         </md-table-cell>
                         <md-table-cell
-                            md-label="Candidate">
-                            {{ item.candidate }}
-                        </md-table-cell>
-                        <md-table-cell
                             md-label="Event"
                             md-sort-by="event">
-                            <md-chip>{{ item.event }}</md-chip>
+                            <md-chip
+                                :class="getChipClass(item.event)">{{ item.event }}</md-chip>
                         </md-table-cell>
                         <md-table-cell
                             md-numeric
@@ -129,18 +129,20 @@
                             md-sort-by="cap">
                             {{ item.cap }} $TOMO
                         </md-table-cell>
+                        <md-table-cell
+                            md-label="">
+                            <md-button
+                                :href="'http://explorer.tomochain.com/txs/' + item.tx"
+                                target="_blank"
+                                class="md-icon-button">
+                                <md-icon>remove_red_eye</md-icon>
+                                <md-tooltip md-direction="right">View on TOMO Explorer</md-tooltip>
+                            </md-button>
+                        </md-table-cell>
                     </md-table-row>
                 </md-table>
             </div>
         </div>
-        <md-dialog-prompt
-            :md-active.sync="unvoteActive"
-            v-model="unvoteValue"
-            md-title="How much?"
-            md-input-maxlength="30"
-            md-input-placeholder="Type $TOMO..."
-            md-confirm-text="Confirm"
-            @md-confirm="unvote()"/>
     </div>
 </template>
 <script>
@@ -151,7 +153,6 @@ export default {
         return {
             voteActive: false,
             voteValue: 1,
-            unvoteActive: false,
             unvoteValue: 1,
             voters: [],
             transactions: [],
@@ -167,7 +168,7 @@ export default {
     created: async function () {
         let self = this
         try {
-            let candidate = self.$route.params.address
+            let candidate = self.candidate
             let account = await self.getAccount()
             let c = await axios.get(`/api/candidates/${candidate}`)
             self.cap = parseFloat(c.data.capacity) / 10 ** 18
@@ -179,6 +180,9 @@ export default {
                     cap: (v.capacity / 10 ** 18)
                 })
                 self.totalVoted += (v.capacity / 10 ** 18)
+                if (v.voter === account) {
+                    self.voted += (parseFloat(v.capacity) / 10 ** 18)
+                }
             })
             self.voters.sort((a, b) => {
                 return b.cap - a.cap
@@ -190,15 +194,12 @@ export default {
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     id: idx + 1,
+                    tx: tx.tx,
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
                     cap: (tx.capacity / 10 ** 18)
                 })
-
-                if (tx.voter === account) {
-                    self.voted += (parseFloat(tx.capacity) / 10 ** 18)
-                }
             })
         } catch (e) {
             console.log(e)
@@ -207,20 +208,15 @@ export default {
     mounted () {
     },
     methods: {
-        unvote: async function () {
-            let self = this
-            let candidate = this.candidate
-            let value = this.voteValue
-
-            try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                await contract.unvote(candidate, String(parseFloat(value) * 10 ** 18), { from: account })
-                let cap = await contract.getCandidateCap.call(candidate, { from: account })
-                self.cap = String(cap / 10 ** 18)
-            } catch (e) {
-                console.log(e)
+        getChipClass (event) {
+            let clazz = ''
+            if (event === 'Vote') {
+                clazz = 'md-primary'
+            } else if (event === 'Unvote') {
+                clazz = 'md-accent'
             }
+
+            return clazz
         }
     }
 }

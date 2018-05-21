@@ -14,7 +14,7 @@
             class="table-container">
             <md-card>
                 <md-card-header>
-                    <div class="md-title">Retire</div>
+                    <p class="md-title">Retire</p>
                 </md-card-header>
 
                 <md-card-content>

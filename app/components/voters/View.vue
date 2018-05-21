@@ -5,61 +5,66 @@
             href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
-        <div class="table-container">
-            <md-card>
-                <md-card-header>
-                    <div class="md-title">Voter</div>
-                    <div class="md-subhead">{{ voter }}</div>
-                </md-card-header>
+        <div class="table-container md-layout md-gutter md-alignment-top-center">
+            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+                <md-card>
+                    <md-card-header>
+                        <p class="md-title">Voter</p>
+                        <p class="md-subhead">{{ voter }}</p>
+                    </md-card-header>
 
-                <md-card-content>
-                    <md-list class="md-double-line">
-                        <md-list-item>
-                            <md-icon md-src="/app/assets/tomo.svg" />
-                            <div class="md-list-item-text">
-                                <span><strong>{{ balance }}</strong> $TOMO</span>
-                                <span>Balance</span>
-                            </div>
-                        </md-list-item>
-                        <md-list-item>
-                            <md-icon>arrow_upward</md-icon>
-                            <div class="md-list-item-text">
-                                <span><strong>{{ totalVoted }}</strong> $TOMO</span>
-                                <span>Total voted</span>
-                            </div>
-                        </md-list-item>
-                    </md-list>
-                </md-card-content>
-            </md-card>
-            <md-table
+                    <md-card-content>
+                        <md-list class="md-double-line">
+                            <md-list-item>
+                                <md-icon md-src="/app/assets/tomo.svg" />
+                                <div class="md-list-item-text">
+                                    <span><strong>{{ balance }}</strong> $TOMO</span>
+                                    <span>Balance</span>
+                                </div>
+                            </md-list-item>
+                            <md-list-item>
+                                <md-icon>arrow_upward</md-icon>
+                                <div class="md-list-item-text">
+                                    <span><strong>{{ totalVoted }}</strong> $TOMO</span>
+                                    <span>Total voted</span>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-card-content>
+                </md-card>
+            </div>
+            <div
                 v-if="candidates.length > 0"
-                v-model="candidates"
-                md-card
-                md-fixed-header
-                md-sort="cap"
-                md-sort-order="asc">
-                <md-table-toolbar>
-                    <div class="md-title">Candidates
-                        <div class="md-subhead">All candidates are voted by this voter</div>
-                    </div>
-                </md-table-toolbar>
-                <md-table-row
-                    slot="md-table-row"
-                    slot-scope="{ item }">
-                    <md-table-cell
-                        md-label="ID"
-                        md-numeric>{{ item.id }}</md-table-cell>
-                    <md-table-cell
-                        md-label="Candidate"
-                        md-sort-by="address">
-                        <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
-                    </md-table-cell>
-                    <md-table-cell
-                        md-numeric
-                        md-label="Capacity"
-                        md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
-                </md-table-row>
-            </md-table>
+                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+                <md-table
+                    v-model="candidates"
+                    md-card
+                    md-fixed-header
+                    md-sort="cap"
+                    md-sort-order="asc">
+                    <md-table-toolbar>
+                        <div class="md-title">Candidates
+                            <p class="md-subhead">All candidates are voted by this voter</p>
+                        </div>
+                    </md-table-toolbar>
+                    <md-table-row
+                        slot="md-table-row"
+                        slot-scope="{ item }">
+                        <md-table-cell
+                            md-label="ID"
+                            md-numeric>{{ item.id }}</md-table-cell>
+                        <md-table-cell
+                            md-label="Candidate"
+                            md-sort-by="address">
+                            <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                        </md-table-cell>
+                        <md-table-cell
+                            md-numeric
+                            md-label="Capacity"
+                            md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
+                    </md-table-row>
+                </md-table>
+            </div>
         </div>
     </div>
 </template>
