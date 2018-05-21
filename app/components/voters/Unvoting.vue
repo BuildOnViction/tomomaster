@@ -163,6 +163,10 @@ export default {
             let value = this.unvoteValue
 
             try {
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                }
+
                 self.$parent.showProgressBar = true
 
                 let account = await self.getAccount()

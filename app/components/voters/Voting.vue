@@ -166,26 +166,26 @@ export default {
             try {
                 if (self.isNotReady) {
                     self.$router.push('/setting')
-                } else {
-                    self.$parent.showProgressBar = true
-
-                    let account = await self.getAccount()
-                    let contract = await self.TomoValidator.deployed()
-                    let rs = await contract.vote(self.candidate, {
-                        from: account,
-                        value: parseFloat(value) * 10 ** 18
-                    })
-
-                    self.showSnackbar = true
-                    self.snackBarMessage = rs.tx ? 'You have successfully voted!'
-                        : 'An error occurred while voting, please try again'
-                    setTimeout(() => {
-                        self.$parent.showProgressBar = false
-                        if (rs.tx) {
-                            self.$router.push(`/confirm/${rs.tx}`)
-                        }
-                    }, 2000)
                 }
+
+                self.$parent.showProgressBar = true
+
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let rs = await contract.vote(self.candidate, {
+                    from: account,
+                    value: parseFloat(value) * 10 ** 18
+                })
+
+                self.showSnackbar = true
+                self.snackBarMessage = rs.tx ? 'You have successfully voted!'
+                    : 'An error occurred while voting, please try again'
+                setTimeout(() => {
+                    self.$parent.showProgressBar = false
+                    if (rs.tx) {
+                        self.$router.push(`/confirm/${rs.tx}`)
+                    }
+                }, 2000)
             } catch (e) {
                 self.$parent.showProgressBar = false
                 self.showSnackbar = true
