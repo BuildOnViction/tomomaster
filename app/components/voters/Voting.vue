@@ -89,6 +89,15 @@
                 </md-card>
             </div>
         </div>
+        <md-snackbar
+            :md-active.sync="showSnackbar"
+            md-position="left"
+            md-persistent>
+            <span>{{ snackBarMessage }}</span>
+            <md-button
+                class="md-primary"
+                @click="showSnackbar = false">OK</md-button>
+        </md-snackbar>
     </div>
 </template>
 
@@ -106,7 +115,9 @@ export default {
             isNotReady: !this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
-            voteValue: 1
+            voteValue: 1,
+            showSnackbar: false,
+            snackBarMessage: ''
         }
     },
     validations: {
@@ -155,23 +166,30 @@ export default {
             try {
                 if (self.isNotReady) {
                     self.$router.push('/setting')
-                } else {
-                    self.$parent.showProgressBar = true
+                }
 
-                    let account = await self.getAccount()
-                    let contract = await self.TomoValidator.deployed()
-                    let rs = await contract.vote(self.candidate, {
-                        from: account,
-                        value: parseFloat(value) * 10 ** 18
-                    })
+                self.$parent.showProgressBar = true
 
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let rs = await contract.vote(self.candidate, {
+                    from: account,
+                    value: parseFloat(value) * 10 ** 18
+                })
+
+                self.showSnackbar = true
+                self.snackBarMessage = rs.tx ? 'You have successfully voted!'
+                    : 'An error occurred while voting, please try again'
+                setTimeout(() => {
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push('/confirm/' + rs.tx)
+                        self.$router.push(`/confirm/${rs.tx}`)
                     }
-                }
+                }, 2000)
             } catch (e) {
                 self.$parent.showProgressBar = false
+                self.showSnackbar = true
+                self.snackBarMessage = 'An error occurred while voting, please try again'
                 console.log(e)
             }
         }

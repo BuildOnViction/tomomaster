@@ -77,6 +77,15 @@
                 </md-card>
             </form>
         </div>
+        <md-snackbar
+            :md-active.sync="showSnackbar"
+            md-position="left"
+            md-persistent>
+            <span>{{ snackBarMessage }}</span>
+            <md-button
+                class="md-primary"
+                @click="showSnackbar = false">OK</md-button>
+        </md-snackbar>
     </div>
 </template>
 <script>
@@ -96,7 +105,9 @@ export default {
             voter: '',
             candidate: this.$route.params.candidate,
             voted: 0,
-            unvoteValue: 1
+            unvoteValue: 1,
+            showSnackbar: false,
+            snackBarMessage: ''
         }
     },
     validations () {
@@ -152,6 +163,10 @@ export default {
             let value = this.unvoteValue
 
             try {
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                }
+
                 self.$parent.showProgressBar = true
 
                 let account = await self.getAccount()
@@ -159,11 +174,19 @@ export default {
                 let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), { from: account })
                 self.vote -= value
 
-                self.$parent.showProgressBar = false
-                if (rs.tx) {
-                    self.$router.push('/confirm/' + rs.tx)
-                }
+                self.showSnackbar = true
+                self.snackBarMessage = rs.tx ? 'You have successfully unvoted!'
+                    : 'An error occurred while unvoting, please try again'
+                setTimeout(() => {
+                    self.$parent.showProgressBar = false
+                    if (rs.tx) {
+                        self.$router.push(`/confirm/${rs.tx}`)
+                    }
+                }, 2000)
             } catch (e) {
+                self.$parent.showProgressBar = false
+                self.showSnackbar = true
+                self.snackBarMessage = 'An error occurred while unvoting, please try again'
                 console.log(e)
             }
         }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <md-empty-state
-            v-if="!isCandidate"
+            v-if="!this.$parent.isCandidate && !this.$parent.showProgressBar"
             md-icon="account_circle"
             md-label="Opps!!"
             md-description="You are not a candidate, so you cannot retire">
@@ -10,36 +10,39 @@
                 to="/apply">Become a candidate</md-button>
         </md-empty-state>
         <div
-            v-if="isCandidate"
-            class="table-container">
-            <md-card>
-                <md-card-header>
-                    <p class="md-title">Retire</p>
-                </md-card-header>
+            v-if="this.$parent.isCandidate"
+            class="table-container md-layout md-gutter md-alignment-top-center">
+            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+                <md-card>
+                    <md-card-header>
+                        <p class="md-title">Retire</p>
+                    </md-card-header>
 
-                <md-card-content>
-                    You deposited <b>{{ candidateCap }} $TOMO</b>. We will return this deposit to you.
-                </md-card-content>
+                    <md-card-content>
+                        You deposited <b>{{ candidateCap }} $TOMO</b>. We will return this deposit to you.
+                    </md-card-content>
 
-                <md-card-actions>
-                    <md-button
-                        v-if="isCandidate"
-                        class="md-accent"
-                        @click="retireActive = true;"><md-icon>arrow_downward</md-icon> Retire</md-button>
-                </md-card-actions>
-            </md-card>
+                    <md-card-actions>
+                        <md-button
+                            :disabled="this.$parent.showProgressBar"
+                            class="md-accent md-raised"
+                            @click="retireActive = true;"><md-icon>arrow_downward</md-icon> Retire</md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
         </div>
         <md-dialog-confirm
             :md-active.sync="retireActive"
             md-title="Do you want to retire?"
             md-content="If you retire, you will receive back all your deposit."
-            md-confirm-text="Confirm"
+            md-confirm-text="Yes"
+            md-cancel-text="No"
             @md-confirm="retire()"/>
         <md-snackbar
             :md-active.sync="showSnackbar"
-            md-position="center"
+            md-position="left"
             md-persistent>
-            <span>You have successfully retired. Thank you!</span>
+            <span>{{ snackBarMessage }}</span>
             <md-button
                 class="md-primary"
                 @click="showSnackbar = false">OK</md-button>
@@ -53,7 +56,7 @@ export default {
         return {
             retireActive: false,
             showSnackbar: false,
-            isCandidate: true,
+            snackBarMessage: '',
             candidateCap: 10000
         }
     },
@@ -67,7 +70,6 @@ export default {
             let contract = await self.TomoValidator.deployed()
             let cap = await contract.getCandidateCap(account)
 
-            self.isCandidate = await contract.isCandidate(account)
             self.candidateCap = String(cap / 10 ** 18)
         } catch (e) {
             console.log(e)
@@ -79,11 +81,30 @@ export default {
         retire: async function () {
             let self = this
             try {
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                }
+
+                self.$parent.showProgressBar = true
+
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                await contract.retire({ from: account })
+                let rs = await contract.retire({ from: account })
+
                 self.showSnackbar = true
+                self.snackBarMessage = rs.tx ? 'You have successfully retired!'
+                    : 'An error occurred while retiring, please try again'
+                setTimeout(() => {
+                    self.$parent.isCandidate = rs.tx === 'undefined'
+                    self.$parent.showProgressBar = false
+                    if (rs.tx) {
+                        self.$router.push('/')
+                    }
+                }, 2000)
             } catch (e) {
+                self.$parent.showProgressBar = false
+                self.showSnackbar = true
+                self.snackBarMessage = 'An error occurred while retiring, please try again'
                 console.log(e)
             }
         }
