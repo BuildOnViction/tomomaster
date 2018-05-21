@@ -51,7 +51,8 @@
                     </md-card-content>
                     <md-card-actions>
                         <md-button
-                            v-if="!isCandidate"
+                            v-if="!this.$parent.isCandidate"
+                            :disabled="this.$parent.showProgressBar"
                             class="md-raised md-primary"
                             type="submit"><md-icon>arrow_upward</md-icon> Apply</md-button>
                     </md-card-actions>
@@ -83,8 +84,10 @@
         </div>
         <md-snackbar
             :md-active.sync="showSnackbar"
-            md-position="center"
-            md-persistent>
+            :md-duration="1000"
+            md-position="left"
+            md-persistent
+            @md-closed="snackBarClose()">
             <span>{{ snackBarMessage }}</span>
             <md-button
                 class="md-primary"
@@ -103,9 +106,10 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
+            account: '',
+            isNotReady: !this.web3,
             showSnackbar: false,
             snackBarMessage: '',
-            isCandidate: false,
             applyValue: 10000
         }
     },
@@ -118,17 +122,7 @@ export default {
     computed: { },
     watch: {},
     updated () {},
-    created: async function () {
-        let self = this
-
-        try {
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            self.isCandidate = await contract.isCandidate(account, { from: account })
-        } catch (e) {
-            console.log(e)
-        }
-    },
+    created () {},
     mounted () {
     },
     methods: {
@@ -152,21 +146,34 @@ export default {
             let self = this
             let value = this.applyValue
             try {
-                let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                let result = await contract.propose({
-                    from: account,
-                    value: parseFloat(value) * 10 ** 18
-                })
-
-                self.isCandidate = true
-                self.showSnackbar = true
-                self.snackBarMessage = result.tx ? 'You have successfully applied!'
-                    : 'An error occurred while applying, please try again'
+                if (self.isNotReady) {
+                    self.$router.push('/setting')
+                } else {
+                    self.$parent.showProgressBar = true
+                    let account = await self.getAccount()
+                    let contract = await self.TomoValidator.deployed()
+                    let result = await contract.propose({
+                        from : account,
+                        value: parseFloat(value) * 10 ** 18
+                    })
+                    self.account = account
+                    self.showSnackbar = true
+                    self.snackBarMessage = result.tx ? 'You have successfully applied!'
+                        : 'An error occurred while applying, please try again'
+                    self.$parent.isCandidate = result.tx !== 'undefined'
+                }
             } catch (e) {
+                self.$parent.showProgressBar = false
                 self.showSnackbar = true
                 self.snackBarMessage = 'An error occurred while applying, please try again'
                 console.log(e)
+            }
+        },
+        snackBarClose: function () {
+            if (this.account !== '') {
+                this.$parent.showProgressBar = false
+                self.showSnackbar = true
+                this.$router.push(`/candidate/${this.account}`)
             }
         }
     }

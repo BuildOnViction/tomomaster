@@ -31,7 +31,7 @@
                     </md-autocomplete>
                     <div class="md-toolbar-section-end">
                         <md-button
-                            v-if=" !isCandidate"
+                            v-if="!isCandidate"
                             class="md-raised"
                             to="/apply">
                             Become a candidate
