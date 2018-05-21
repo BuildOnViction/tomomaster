@@ -45,7 +45,7 @@ export default {
         self.$parent.showProgressBar = true
 
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
-            if (response == null) {
+            if (response.data == null) {
                 location.reload()
             }
             let transaction = response.data
