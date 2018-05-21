@@ -84,10 +84,8 @@
         </div>
         <md-snackbar
             :md-active.sync="showSnackbar"
-            :md-duration="1000"
             md-position="left"
-            md-persistent
-            @md-closed="snackBarClose()">
+            md-persistent>
             <span>{{ snackBarMessage }}</span>
             <md-button
                 class="md-primary"
@@ -150,30 +148,29 @@ export default {
                     self.$router.push('/setting')
                 } else {
                     self.$parent.showProgressBar = true
+
                     let account = await self.getAccount()
                     let contract = await self.TomoValidator.deployed()
                     let result = await contract.propose({
                         from : account,
                         value: parseFloat(value) * 10 ** 18
                     })
-                    self.account = account
                     self.showSnackbar = true
                     self.snackBarMessage = result.tx ? 'You have successfully applied!'
                         : 'An error occurred while applying, please try again'
                     self.$parent.isCandidate = result.tx !== 'undefined'
+                    setTimeout(() => {
+                        self.$parent.showProgressBar = false
+                        if (result.tx) {
+                            self.$router.push(`/candidate/${account}`)
+                        }
+                    }, 2000)
                 }
             } catch (e) {
                 self.$parent.showProgressBar = false
                 self.showSnackbar = true
                 self.snackBarMessage = 'An error occurred while applying, please try again'
                 console.log(e)
-            }
-        },
-        snackBarClose: function () {
-            if (this.account !== '') {
-                this.$parent.showProgressBar = false
-                self.showSnackbar = true
-                this.$router.push(`/candidate/${this.account}`)
             }
         }
     }
