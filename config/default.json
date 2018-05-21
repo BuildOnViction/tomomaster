@@ -5,7 +5,7 @@
   },
   "blockchain": {
       "rpc": "https://core.tomocoin.io",
-      "networkId": 40686
+      "networkId": 89
   },
   "db": {
     "uri": "mongodb://mongodb:27017/governance"
