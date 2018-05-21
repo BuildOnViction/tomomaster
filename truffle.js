@@ -13,7 +13,8 @@ module.exports = {
             provider: function () {
                 return new HDWalletProvider(process.env.MNEMONIC, config.get('blockchain.rpc'))
             },
-            network_id: 40686
+            network_id: config.get('blockchain.rpc'),
+            gasPrice: 1
         }
     }
 }
