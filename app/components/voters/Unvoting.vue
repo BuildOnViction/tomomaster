@@ -40,8 +40,8 @@
                             </md-list-item>
                             <md-list-item class="md-layout">
                                 <div
-                                    class="md-layout-item md-xlarge-size-50 md-large-size-50
-                                    md-medium-size-70 md-small-size-90 md-xsmall-size-90">
+                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
+                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
                                     <md-field :class="getValidationClass('unvoteValue')">
                                         <label>Amount</label>
                                         <md-input
