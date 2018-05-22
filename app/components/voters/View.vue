@@ -28,6 +28,8 @@
                     </md-card-content>
                 </md-card>
             </div>
+        </div>
+        <div class="md-layout md-gutter md-alignment-center">
             <div
                 v-if="candidates.length > 0"
                 class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
