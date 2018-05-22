@@ -92,6 +92,9 @@ export default {
         let self = this
 
         try {
+            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
+            }
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
             self.isCandidate = await contract.isCandidate(account, { from: account })
@@ -103,7 +106,7 @@ export default {
     methods: {
         goPage: function (s) {
             console.log(s)
-            this.$router.push({ path: '/candidate/' + s })
+            this.$router.push({ path: `/candidate/${s}` })
         }
     }
 }

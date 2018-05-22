@@ -73,7 +73,7 @@ export default {
                 c.id = i + 1
             })
         } catch (e) {
-            self.isNotReady = true
+            self.isReady = false
             console.log(e)
         }
     },

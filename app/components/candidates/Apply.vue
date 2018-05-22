@@ -62,6 +62,10 @@
                     </md-card-content>
                     <md-card-actions>
                         <md-button
+                            :disabled="this.$parent.showProgressBar"
+                            class="md-raised md-accent"
+                            @click="$router.go(-1)">Cancel</md-button>
+                        <md-button
                             v-if="!this.$parent.isCandidate"
                             :disabled="this.$parent.showProgressBar"
                             class="md-raised md-primary"
@@ -118,7 +122,7 @@ export default {
     data () {
         return {
             account: '',
-            isNotReady: !this.web3,
+            isReady: this.web3,
             showSnackbar: false,
             snackBarMessage: '',
             applyValue: 10000
@@ -134,9 +138,13 @@ export default {
     watch: {},
     updated () {},
     created: async function () {
+        let self = this
         try {
-            let account = await this.getAccount()
-            this.account = account
+            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
+            }
+            let account = await self.getAccount()
+            self.account = account
         } catch (e) {
             console.log(e)
         }
@@ -164,8 +172,9 @@ export default {
             let self = this
             let value = this.applyValue
             try {
-                if (self.isNotReady) {
-                    self.$router.push('/setting')
+                if (!self.isReady) {
+                    self.$router.push({ path: '/setting' })
+                    throw Error('Web3 is not properly detected.')
                 }
 
                 self.$parent.showProgressBar = true
@@ -183,7 +192,7 @@ export default {
                     self.$parent.isCandidate = rs.tx !== 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push(`/candidate/${account}`)
+                        self.$router.push({ path: `/candidate/${account}` })
                     }
                 }, 2000)
             } catch (e) {
