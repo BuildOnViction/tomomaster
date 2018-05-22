@@ -4,7 +4,7 @@
     "port": 3001
   },
   "blockchain": {
-      "rpc": "https://core.tomocoin.io",
+      "rpc": "https://testnet.tomochain.com",
       "networkId": 89
   },
   "db": {

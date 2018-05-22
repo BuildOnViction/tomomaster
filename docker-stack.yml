@@ -7,7 +7,6 @@ services:
     volumes:
       - ./nginx/app.template:/etc/nginx/conf.d/default.conf
       - ./nginx/nginx.template:/etc/nginx/nginx.conf
-      - ./nginx/.htpasswd:/etc/nginx/.htpasswd
       - ./nginx/certs:/certs
     depends_on:
       - validators
