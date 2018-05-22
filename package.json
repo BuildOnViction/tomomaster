@@ -10,9 +10,10 @@
         "lint": "eslint --cache ./ --ext .vue --ext .js",
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
         "nodemon": "./node_modules/.bin/nodemon index.js",
+        "crawl": "./node_modules/.bin/nodemon ./services/crawl.js",
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
+        "dev": "npm run crawl & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
         "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules"
     },
     "repository": {
