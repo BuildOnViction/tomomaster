@@ -54,6 +54,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isReady: this.web3,
             retireActive: false,
             showSnackbar: false,
             snackBarMessage: '',
@@ -81,8 +82,8 @@ export default {
         retire: async function () {
             let self = this
             try {
-                if (self.isNotReady) {
-                    self.$router.push('/setting')
+                if (!self.isReady) {
+                    self.$router.push({ path: '/setting' })
                 }
 
                 self.$parent.showProgressBar = true
@@ -98,7 +99,7 @@ export default {
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push('/')
+                        self.$router.push({ path: '/' })
                     }
                 }, 2000)
             } catch (e) {

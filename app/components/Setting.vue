@@ -1,54 +1,58 @@
 <template>
-    <div class="setting-container">
-        <md-card>
-            <md-card-header>
-                <p class="md-title">Settings</p>
-            </md-card-header>
+    <div class="setting-container md-layout md-gutter md-alignment-top-center">
+        <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <md-card>
+                <md-card-header>
+                    <p class="md-title">Settings</p>
+                </md-card-header>
 
-            <md-card-content>
-                <div>
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="provider">Network Providers</label>
-                            <md-select
-                                id="provider"
-                                v-model="provider"
-                                name="provider">
-                                <md-option value="metamask">Metamask</md-option>
-                                <md-option value="mainnet">TomoChain Mainnet</md-option>
-                                <md-option value="testnet">Tomochain Testnet</md-option>
-                            </md-select>
-                        </md-field>
-                        <md-field v-if="provider !== 'metamask'">
-                            <label>MNEMONIC</label>
-                            <md-input v-model="mnemonic"/>
-                        </md-field>
-                        <div
-                            v-if="isNotReady && provider === 'metamask'">
-                            <p>Please install &amp; login
-                            Metamask Extension then connect it to Tomochain Mainnet or Testnet.</p>
+                <md-card-content>
+                    <div>
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="provider">Network Providers</label>
+                                <md-select
+                                    id="provider"
+                                    v-model="provider"
+                                    name="provider">
+                                    <md-option value="metamask">Metamask</md-option>
+                                    <md-option value="mainnet">TomoChain Mainnet</md-option>
+                                    <md-option value="testnet">Tomochain Testnet</md-option>
+                                </md-select>
+                            </md-field>
+                            <md-field v-if="provider !== 'metamask'">
+                                <label>MNEMONIC</label>
+                                <md-input v-model="mnemonic"/>
+                            </md-field>
+                            <div
+                                v-if="!isReady && provider === 'metamask'">
+                                <p>Please install &amp; login
+                                    <a
+                                        href="http://bitly.com/2gmvrGG"
+                                        target="_blank">Metamask Extension</a>
+                                    then connect it to Tomochain Mainnet or Testnet.</p>
+                            </div>
+
                         </div>
 
                     </div>
+                </md-card-content>
 
-                </div>
-            </md-card-content>
+                <md-card-actions>
+                    <md-button
+                        class="md-primary md-raised"
+                        @click="save()">Save</md-button>
+                </md-card-actions>
+                <md-card-header v-if="isReady">
+                    <p class="md-title">Account Information</p>
+                </md-card-header>
 
-            <md-card-actions>
-                <md-button
-                    class="md-primary md-raised"
-                    @click="save()">Save</md-button>
-            </md-card-actions>
-            <md-card-header v-if="!isNotReady">
-                <p class="md-title">Account Information</p>
-            </md-card-header>
-
-            <md-card-content v-if="!isNotReady">
-                <p>Address: {{ address }}</p>
-                <p>Balance: {{ balance }} $TOMO</p>
-            </md-card-content>
-
-        </md-card>
+                <md-card-content v-if="isReady">
+                    <p>Address: {{ address }}</p>
+                    <p>Balance: {{ balance }} $TOMO</p>
+                </md-card-content>
+            </md-card>
+        </div>
     </div>
 </template>
 <script>
@@ -62,7 +66,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isNotReady: !this.web3,
+            isReady: this.web3,
             mnemonic: '',
             provider: 'metamask',
             address: '',
@@ -77,8 +81,8 @@ export default {
         let self = this
 
         try {
-            if (self.isNotReady) {
-                throw Error('Is not ready')
+            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
             let account = await self.getAccount()
             self.address = account
@@ -95,24 +99,24 @@ export default {
     mounted () {},
     methods: {
         save: function () {
-            const vm = this
+            const self = this
             var wjs = false
-            if (this.provider === 'metamask') {
+            if (self.provider === 'metamask') {
                 if (window.web3) {
                     var p = window.web3.currentProvider
                     wjs = new Web3(p)
                 }
             } else {
-                const walletProvider = new HDWalletProvider(this.mnemonic, networks[this.provider])
+                const walletProvider = new HDWalletProvider(self.mnemonic, networks[self.provider])
                 wjs = new Web3(walletProvider)
             }
-            vm.setupProvider(this.provider, wjs)
-            vm.$router.push({ path: '/' })
+            self.setupProvider(this.provider, wjs)
+            self.$router.push({ path: '/' })
         }
     }
 }
 </script>
-<style>
+<style scoped>
 .setting-container {
     padding-top: 40px;
 }

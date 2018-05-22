@@ -101,7 +101,7 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
-            isNotReady: !this.web3,
+            isReady: this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
             voted: 0,
@@ -163,8 +163,8 @@ export default {
             let value = this.unvoteValue
 
             try {
-                if (self.isNotReady) {
-                    self.$router.push('/setting')
+                if (!self.isReady) {
+                    self.$router.push({ path: '/setting' })
                 }
 
                 self.$parent.showProgressBar = true
@@ -180,7 +180,7 @@ export default {
                 setTimeout(() => {
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push(`/confirm/${rs.tx}`)
+                        self.$router.push({ path: `/confirm/${rs.tx}` })
                     }
                 }, 2000)
             } catch (e) {
