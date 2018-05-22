@@ -1,6 +1,17 @@
 <template>
     <div>
-        <div class="table-container md-layout md-gutter md-alignment-center">
+        <md-empty-state
+            v-if="!voted"
+            md-icon="account_circle"
+            md-label="Opps!!"
+            md-description="You have not voted for this candidate, so you can't unvote.">
+            <md-button
+                :to="'/voting/' + candidate"
+                class="md-primary md-raised">Vote</md-button>
+        </md-empty-state>
+        <div
+            v-if="voted"
+            class="table-container md-layout md-gutter md-alignment-center">
             <form
                 novalidate
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
