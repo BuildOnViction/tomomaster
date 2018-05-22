@@ -20,8 +20,6 @@ app.use('/build', express.static('build'))
 // apis
 app.use(require('./apis'))
 
-require('./services/crawl.js')
-
 // error handler
 app.use(require('./middlewares/error'))
 
