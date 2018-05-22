@@ -165,7 +165,7 @@ export default {
 
             try {
                 if (self.isNotReady) {
-                    self.$router.push('/setting')
+                    self.$router.push({ path: '/setting' })
                 }
 
                 self.$parent.showProgressBar = true
@@ -183,7 +183,7 @@ export default {
                 setTimeout(() => {
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push(`/confirm/${rs.tx}`)
+                        self.$router.push({ path: `/confirm/${rs.tx}` })
                     }
                 }, 2000)
             } catch (e) {

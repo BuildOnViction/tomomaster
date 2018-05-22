@@ -165,7 +165,7 @@ export default {
             let value = this.applyValue
             try {
                 if (self.isNotReady) {
-                    self.$router.push('/setting')
+                    self.$router.push({ path: '/setting' })
                 }
 
                 self.$parent.showProgressBar = true
@@ -183,7 +183,7 @@ export default {
                     self.$parent.isCandidate = rs.tx !== 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push(`/candidate/${account}`)
+                        self.$router.push({ path: `/candidate/${account}` })
                     }
                 }, 2000)
             } catch (e) {

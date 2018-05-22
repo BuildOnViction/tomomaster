@@ -36,7 +36,7 @@
                                     <span>Total voted</span>
                                 </div>
                             </md-list-item>
-                            <md-list-item>
+                            <md-list-item v-if="!isNotReady">
                                 <md-icon>receipt</md-icon>
                                 <div class="md-list-item-text">
                                     <span><strong>{{ voted }}</strong> $TOMO</span>
@@ -151,6 +151,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isNotReady: !this.web3,
             voteActive: false,
             voteValue: 1,
             unvoteValue: 1,
@@ -169,7 +170,7 @@ export default {
         let self = this
         try {
             let candidate = self.candidate
-            let account = await self.getAccount()
+            let account = self.isNotReady ? '' : await self.getAccount()
             let c = await axios.get(`/api/candidates/${candidate}`)
             self.cap = parseFloat(c.data.capacity) / 10 ** 18
 

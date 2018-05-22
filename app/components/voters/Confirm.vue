@@ -46,7 +46,7 @@ export default {
 
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
             if (response.data == null) {
-                location.reload()
+                self.$router.push({ path: '/' })
             }
             let transaction = response.data
             let event = transaction.event === 'Vote' ? 'voted' : 'unvoted'

@@ -82,7 +82,7 @@ export default {
             let self = this
             try {
                 if (self.isNotReady) {
-                    self.$router.push('/setting')
+                    self.$router.push({ path: '/setting' })
                 }
 
                 self.$parent.showProgressBar = true
@@ -98,7 +98,7 @@ export default {
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push('/')
+                        self.$router.push({ path: '/' })
                     }
                 }, 2000)
             } catch (e) {

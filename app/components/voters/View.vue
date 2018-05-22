@@ -109,12 +109,14 @@ export default {
                 c.id = i + 1
             })
 
-            self.web3.eth.getBalance(voter, function (a, b) {
-                self.balance = b / 10 ** 18
-                if (a) {
-                    console.log('Got an error', a)
-                }
-            })
+            if (typeof self.web3 !== 'undefined') {
+                self.web3.eth.getBalance(voter, function (a, b) {
+                    self.balance = b / 10 ** 18
+                    if (a) {
+                        console.log('Got an error', a)
+                    }
+                })
+            }
         } catch (e) {
             console.log(e)
         }
