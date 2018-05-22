@@ -6,7 +6,9 @@
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
         <div class="table-container md-layout md-gutter md-alignment-top-center">
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <div
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
                     <md-card-header>
                         <md-content>
@@ -59,7 +61,8 @@
             </div>
             <div
                 v-if="voters.length > 0"
-                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-table
                     v-model="voters"
                     md-card
@@ -93,7 +96,8 @@
             </div>
             <div
                 v-if="transactions.length > 0"
-                class="md-layout-item md-xlarge-size-100 md-large-size-100 md-xsmall-size-100">
+                class="md-layout-item md-xlarge-size-100 md-large-size-100
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-table
                     v-model="transactions"
                     md-card

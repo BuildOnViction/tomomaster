@@ -1,40 +1,36 @@
 <template>
     <div class="setting-container md-layout md-gutter md-alignment-top-center">
-        <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+        <div
+            class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
             <md-card>
                 <md-card-header>
                     <p class="md-title">Settings</p>
                 </md-card-header>
 
                 <md-card-content>
-                    <div>
-                        <div class="md-layout-item">
-                            <md-field>
-                                <label for="provider">Network Providers</label>
-                                <md-select
-                                    id="provider"
-                                    v-model="provider"
-                                    name="provider">
-                                    <md-option value="metamask">Metamask</md-option>
-                                    <md-option value="mainnet">TomoChain Mainnet</md-option>
-                                    <md-option value="testnet">Tomochain Testnet</md-option>
-                                </md-select>
-                            </md-field>
-                            <md-field v-if="provider !== 'metamask'">
-                                <label>MNEMONIC</label>
-                                <md-input v-model="mnemonic"/>
-                            </md-field>
-                            <div
-                                v-if="!isReady && provider === 'metamask'">
-                                <p>Please install &amp; login
-                                    <a
-                                        href="http://bitly.com/2gmvrGG"
-                                        target="_blank">Metamask Extension</a>
-                                    then connect it to Tomochain Mainnet or Testnet.</p>
-                            </div>
-
-                        </div>
-
+                    <md-field>
+                        <label for="provider">Network Providers</label>
+                        <md-select
+                            id="provider"
+                            v-model="provider"
+                            name="provider">
+                            <md-option value="metamask">Metamask</md-option>
+                            <md-option value="mainnet">TomoChain Mainnet</md-option>
+                            <md-option value="testnet">Tomochain Testnet</md-option>
+                        </md-select>
+                    </md-field>
+                    <md-field v-if="provider !== 'metamask'">
+                        <label>MNEMONIC</label>
+                        <md-input v-model="mnemonic"/>
+                    </md-field>
+                    <div
+                        v-if="!isReady && provider === 'metamask'">
+                        <p>Please install &amp; login
+                            <a
+                                href="http://bitly.com/2gmvrGG"
+                                target="_blank">Metamask Extension</a>
+                            then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
                 </md-card-content>
 
@@ -49,7 +45,7 @@
 
                 <md-card-content v-if="isReady">
                     <p>Address: {{ address }}</p>
-                    <p>Balance: {{ balance }} $TOMO</p>
+                    <p>Balance: <strong>{{ balance }}</strong> $TOMO</p>
                 </md-card-content>
             </md-card>
         </div>

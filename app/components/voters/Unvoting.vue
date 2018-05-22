@@ -3,7 +3,8 @@
         <div class="table-container md-layout md-gutter md-alignment-center">
             <form
                 novalidate
-                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100"
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90"
                 @submit.prevent="validate()">
                 <md-card>
                     <md-card-header>
@@ -38,7 +39,9 @@
                                 </div>
                             </md-list-item>
                             <md-list-item class="md-layout">
-                                <div class="md-layout-item md-xlarge-size-70 md-large-size-70 md-xsmall-size-100">
+                                <div
+                                    class="md-layout-item md-xlarge-size-50 md-large-size-50
+                                    md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                                     <md-field :class="getValidationClass('unvoteValue')">
                                         <label>Amount</label>
                                         <md-input

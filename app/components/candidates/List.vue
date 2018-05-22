@@ -1,37 +1,39 @@
 <template>
     <div>
-        <div class="table-container">
-            <md-table
-                v-model="candidates"
-                md-card
-                md-fixed-header
-                md-sort="cap"
-                md-sort-order="asc">
-                <md-table-toolbar>
-                    <p class="md-title">Candidates</p>
-                </md-table-toolbar>
+        <div class="table-container md-layout md-gutter md-alignment-top-center">
+            <div class="md-layout-item">
+                <md-table
+                    v-model="candidates"
+                    md-card
+                    md-fixed-header
+                    md-sort="cap"
+                    md-sort-order="asc">
+                    <md-table-toolbar>
+                        <p class="md-title">Candidates</p>
+                    </md-table-toolbar>
 
-                <md-table-row
-                    slot="md-table-row"
-                    slot-scope="{ item }">
-                    <md-table-cell
-                        md-numeric
-                        md-label="ID">{{ item.id }}
-                    </md-table-cell>
-                    <md-table-cell
-                        md-label="Address"
-                        md-sort-by="address">
-                        <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
-                    </md-table-cell>
-                    <md-table-cell
-                        md-label="Capacity"
-                        md-sort-by="cap">{{ item.cap }} $TOMO
-                    </md-table-cell>
-                    <md-table-cell><md-button
-                        :to="'/voting/' + item.address"
-                        class="md-raised md-primary">Vote</md-button></md-table-cell>
-                </md-table-row>
-            </md-table>
+                    <md-table-row
+                        slot="md-table-row"
+                        slot-scope="{ item }">
+                        <md-table-cell
+                            md-numeric
+                            md-label="ID">{{ item.id }}
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="Address"
+                            md-sort-by="address">
+                            <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="Capacity"
+                            md-sort-by="cap">{{ item.cap }} $TOMO
+                        </md-table-cell>
+                        <md-table-cell><md-button
+                            :to="'/voting/' + item.address"
+                            class="md-raised md-primary">Vote</md-button></md-table-cell>
+                    </md-table-row>
+                </md-table>
+            </div>
         </div>
     </div>
 </template>

@@ -1,7 +1,9 @@
 <template>
     <div>
         <div class="table-container md-layout md-gutter md-alignment-top-center">
-            <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+            <div
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
                     <md-card-header>
                         <p class="md-title">Voter</p>
@@ -32,7 +34,8 @@
         <div class="md-layout md-gutter md-alignment-center">
             <div
                 v-if="candidates.length > 0"
-                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-table
                     v-model="candidates"
                     md-card
