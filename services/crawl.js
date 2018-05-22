@@ -54,17 +54,27 @@ async function updateCandidateCap (candidate) {
     try {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
+        let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
-        return db.Candidate.update({
-            smartContractAddress: validator.address,
-            candidate: candidate
-        }, {
-            $set: {
+        if (capacity > 0) {
+            result = db.Candidate.update({
                 smartContractAddress: validator.address,
-                candidate: candidate,
-                capacity: String(capacity)
-            }
-        }, { upsert: true })
+                candidate: candidate
+            }, {
+                $set: {
+                    smartContractAddress: validator.address,
+                    candidate: candidate,
+                    capacity: String(capacity)
+                }
+            }, { upsert: true })
+        } else {
+            result = db.Candidate.deleteOne({
+                smartContractAddress: validator.address,
+                candidate: candidate
+            })
+        }
+
+        return result
     } catch (e) {
         console.error(e)
     }
