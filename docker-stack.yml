@@ -20,9 +20,6 @@ services:
     restart: "on-failure:10"
     depends_on:
       - mongodb
-    env_file: .env
-    volumes:
-      - "contracts:/build/build/contracts"
 
   mongodb:
     image: mongo:3.6
@@ -32,4 +29,3 @@ services:
 
 volumes:
   mongodb:
-  contracts:
