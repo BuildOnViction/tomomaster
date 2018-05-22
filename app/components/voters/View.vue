@@ -1,10 +1,5 @@
 <template>
     <div>
-        <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
-            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
-            crossorigin="anonymous">
         <div class="table-container md-layout md-gutter md-alignment-top-center">
             <div class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100">
                 <md-card>
@@ -15,7 +10,7 @@
 
                     <md-card-content>
                         <md-list class="md-double-line">
-                            <md-list-item>
+                            <md-list-item v-if="isReady">
                                 <md-icon md-src="/app/assets/tomo.svg" />
                                 <div class="md-list-item-text">
                                     <span><strong>{{ balance }}</strong> $TOMO</span>
@@ -74,6 +69,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isReady: this.web3,
             voter: this.$route.params.address,
             candidates: [],
             balance: 0,
@@ -113,7 +109,7 @@ export default {
                 self.web3.eth.getBalance(voter, function (a, b) {
                     self.balance = b / 10 ** 18
                     if (a) {
-                        console.log('Got an error', a)
+                        throw Error(a)
                     }
                 })
             }

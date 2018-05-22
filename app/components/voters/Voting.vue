@@ -12,7 +12,7 @@
 
                     <md-card-content>
                         <md-list class="md-double-line">
-                            <md-list-item>
+                            <md-list-item v-if="isReady">
                                 <md-icon>how_to_vote</md-icon>
                                 <div class="md-list-item-text">
                                     <span><router-link :to="'/voter/' + voter">{{ voter }}</router-link></span>
@@ -112,7 +112,7 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
-            isNotReady: !this.web3,
+            isReady: this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
             voteValue: 1,
@@ -134,6 +134,9 @@ export default {
     created: async function () {
         let self = this
         try {
+            if (!self.isReady && self.NetworkProvider === 'metamask') {
+                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
+            }
             let account = await self.getAccount()
             self.voter = account
         } catch (e) {
@@ -164,8 +167,9 @@ export default {
             let value = this.voteValue
 
             try {
-                if (self.isNotReady) {
+                if (!self.isReady) {
                     self.$router.push({ path: '/setting' })
+                    throw Error('Web3 is not properly detected.')
                 }
 
                 self.$parent.showProgressBar = true

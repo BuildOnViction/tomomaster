@@ -54,6 +54,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isReady: this.web3,
             retireActive: false,
             showSnackbar: false,
             snackBarMessage: '',
@@ -81,7 +82,7 @@ export default {
         retire: async function () {
             let self = this
             try {
-                if (self.isNotReady) {
+                if (!self.isReady) {
                     self.$router.push({ path: '/setting' })
                 }
 

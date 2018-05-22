@@ -47,35 +47,37 @@ export default {
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
             if (response.data == null) {
                 self.$router.push({ path: '/' })
-            }
-            let transaction = response.data
-            let event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
+            } else {
+                let transaction = response.data
+                let event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
 
-            self.web3.eth.getTransaction(self.tx, function (err, result) {
-                if (!err) {
-                    self.status = result == null ? 'fail' : 'success'
-                } else {
-                    self.status = 'fail'
-                    console.log(err)
-                }
+                self.web3.eth.getTransaction(self.tx, function (err, result) {
+                    if (!err) {
+                        self.status = result == null ? 'fail' : 'success'
+                    } else {
+                        self.status = 'fail'
+                        console.log(err)
+                    }
 
-                if (self.status === 'success') {
-                    self.icon = 'check'
-                    self.title = 'Success'
-                    self.description = `You have ${event} 
-                    <strong>${transaction.capacity / 10 ** 18} $TOMO</strong> for candidate 
-                    <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
-                    <br/><br/>
-                    Transaction Hash: <a href="#" target="_blank">${self.tx}</a>`
-                    self.buttonText = 'View all Candidates'
-                } else {
-                    self.icon = 'error_outline'
-                    self.title = 'Transaction Failed'
-                    self.description = 'You have voted unsuccessfully'
-                    self.buttonText = 'Try Again'
-                }
+                    if (self.status === 'success') {
+                        self.icon = 'check'
+                        self.title = 'Success'
+                        self.description = `You have ${event} 
+                        <strong>${transaction.capacity / 10 ** 18} $TOMO</strong> for candidate 
+                        <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
+                        <br/><br/>
+                        Transaction Hash: <a href="#" target="_blank">${self.tx}</a>`
+                        self.buttonText = 'View all Candidates'
+                    } else {
+                        self.icon = 'error_outline'
+                        self.title = 'Transaction Failed'
+                        self.description = 'You have voted unsuccessfully'
+                        self.buttonText = 'Try Again'
+                    }
+                })
+
                 self.$parent.showProgressBar = false
-            })
+            }
         }).catch((e) => {
             self.$parent.showProgressBar = false
             console.log(e)

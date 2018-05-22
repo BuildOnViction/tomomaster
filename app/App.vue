@@ -92,8 +92,8 @@ export default {
         let self = this
 
         try {
-            if (typeof self.web3 === 'undefined') {
-                throw Error('Is not ready')
+            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
