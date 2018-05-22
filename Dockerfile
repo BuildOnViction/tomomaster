@@ -9,6 +9,7 @@ COPY ./package.json /build
 COPY ./package-lock.json /build
 RUN npm install
 COPY ./ /build
+RUN npm run build
 
 EXPOSE 80
 

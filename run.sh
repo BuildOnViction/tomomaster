@@ -7,14 +7,14 @@ wait
 
 if [ "${service_name}" == "all" ] || [ "${service_name}" == "" ];
 then
-  docker-compose -f docker-stack.yml build && \
+  docker-compose -f docker-stack.yml pull && \
     docker-compose -f docker-stack.yml stop && \
     docker-compose -f docker-stack.yml up -d && \
     bash ./clean.sh
 else
   for n in $@
   do
-    docker-compose -f docker-stack.yml build ${n} && \
+    docker-compose -f docker-stack.yml pull ${n} && \
       docker-compose -f docker-stack.yml stop ${n} && \
       docker-compose -f docker-stack.yml up -d ${n}
   done
