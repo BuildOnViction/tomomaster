@@ -8,6 +8,11 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
+    backer: {
+        type: String,
+        index: true
+    },
+    nodeUrl: String,
     candidate: {
         type: String,
         index: true
