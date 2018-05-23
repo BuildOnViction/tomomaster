@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="container status-container md-layout md-gutter md-alignment-top-center">
+        <div
+            v-if="isReady"
+            class="container status-container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-25 md-large-size-25
                 md-medium-size-50 md-small-size-50 md-xsmall-size-50">
@@ -86,6 +88,7 @@ export default {
     name: 'App',
     data () {
         return {
+            isReady: this.web3,
             blockNumber: 0,
             nextCheckpoint: 0,
             voteActive: false,
@@ -129,7 +132,6 @@ export default {
                 }
             })
         } catch (e) {
-            self.isReady = false
             console.log(e)
         }
     },
