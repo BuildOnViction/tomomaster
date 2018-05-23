@@ -78,6 +78,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
@@ -95,10 +96,13 @@ export default {
             if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
+            let candidates = await axios.get('/api/candidates')
+            candidates.data.map(async (candidate) => {
+                self.candidates.push(candidate.candidate)
+            })
             let account = await self.getAccount()
             let contract = await self.TomoValidator.deployed()
             self.isCandidate = await contract.isCandidate(account, { from: account })
-            self.candidates = await contract.getCandidates.call({ from: account })
         } catch (e) {
             console.log(e)
         }
@@ -117,7 +121,7 @@ export default {
     margin: 0 auto;
 }
 
-.table-container {
+.container {
     padding-top: 40px;
 }
 

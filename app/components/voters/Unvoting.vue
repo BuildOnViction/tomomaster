@@ -1,9 +1,21 @@
 <template>
     <div>
-        <div class="table-container md-layout md-gutter md-alignment-center">
+        <md-empty-state
+            v-if="!voted"
+            md-icon="account_circle"
+            md-label="Opps!!"
+            md-description="You have not voted for this candidate, so you can't unvote.">
+            <md-button
+                :to="'/voting/' + candidate"
+                class="md-primary md-raised">Vote</md-button>
+        </md-empty-state>
+        <div
+            v-if="voted"
+            class="container md-layout md-gutter md-alignment-center">
             <form
                 novalidate
-                class="md-layout-item md-xlarge-size-50 md-large-size-50 md-xsmall-size-100"
+                class="md-layout-item md-xlarge-size-50 md-large-size-50
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90"
                 @submit.prevent="validate()">
                 <md-card>
                     <md-card-header>
@@ -38,7 +50,9 @@
                                 </div>
                             </md-list-item>
                             <md-list-item class="md-layout">
-                                <div class="md-layout-item md-xlarge-size-70 md-large-size-70 md-xsmall-size-100">
+                                <div
+                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
+                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
                                     <md-field :class="getValidationClass('unvoteValue')">
                                         <label>Amount</label>
                                         <md-input
