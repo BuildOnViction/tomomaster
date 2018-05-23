@@ -46,14 +46,16 @@ async function watch () {
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
-        updateCandidateCap(candidate)
+        updateCandidateInfo(candidate)
     })
 }
 
-async function updateCandidateCap (candidate) {
+async function updateCandidateInfo (candidate) {
     try {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
+        let nodeUrl = await validator.getCandidateNodeUrl.call(candidate)
+        let backer = await validator.getCandidateBacker.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
         if (capacity > 0) {
@@ -64,7 +66,9 @@ async function updateCandidateCap (candidate) {
                 $set: {
                     smartContractAddress: validator.address,
                     candidate: candidate,
-                    capacity: String(capacity)
+                    capacity: String(capacity),
+                    nodeUrl: nodeUrl,
+                    backer: String(backer)
                 }
             }, { upsert: true })
         } else {
@@ -109,7 +113,7 @@ async function getCurrentCandidates () {
         let candidates = await validator.getCandidates.call()
 
         let map = candidates.map((candidate) => {
-            return updateCandidateCap(candidate)
+            return updateCandidateInfo(candidate)
         })
         return Promise.all(map).catch(e => console.error(e))
     } catch (e) {

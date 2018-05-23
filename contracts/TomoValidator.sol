@@ -9,9 +9,12 @@ contract TomoValidator is IValidator {
     event Vote(address _voter, address _candidate, uint256 _cap);
     event Unvote(address _voter, address _candidate, uint256 _cap);
     event Propose(address _candidate, uint256 _cap);
-    event Retire(address _candidate, uint256 _cap);
+    event Retire(address _backer, address _candidate, uint256 _cap);
+    event SetNodeInfo(address _backer, address _candidate, string _nodeUrl);
 
     struct ValidatorState {
+        address backer;
+        string nodeUrl;
         bool isCandidate;
         uint256 cap;
         mapping(address => uint256) voters;
@@ -32,8 +35,9 @@ contract TomoValidator is IValidator {
         _;
     }
 
-    modifier onlyCandidate {
-        require(validatorsState[msg.sender].isCandidate);
+    modifier onlyBacker(address _candidate) {
+        require(validatorsState[_candidate].isCandidate);
+        require(validatorsState[_candidate].backer == msg.sender);
         _;
     }
 
@@ -42,8 +46,8 @@ contract TomoValidator is IValidator {
         _;
     }
 
-    modifier onlyNotCandidate {
-        require(!validatorsState[msg.sender].isCandidate);
+    modifier onlyNotCandidate (address _candidate) {
+        require(!validatorsState[_candidate].isCandidate);
         _;
     }
 
@@ -57,6 +61,8 @@ contract TomoValidator is IValidator {
         
         for (uint256 i = 0; i < _candidates.length; i++) {
             validatorsState[_candidates[i]] = ValidatorState({
+                backer: msg.sender,
+                nodeUrl: '',
                 isCandidate: true,
                 cap: _caps[i]
             });
@@ -65,9 +71,11 @@ contract TomoValidator is IValidator {
 
     }
 
-    function propose() external payable onlyValidCandidateCap onlyNotCandidate {
-        candidates.push(msg.sender);
-        validatorsState[msg.sender] = ValidatorState({
+    function propose(address _candidate, string _nodeUrl) external payable onlyValidCandidateCap onlyNotCandidate(_candidate) {
+        candidates.push(_candidate);
+        validatorsState[_candidate] = ValidatorState({
+            backer: msg.sender,
+            nodeUrl: _nodeUrl,
             isCandidate: true,
             cap: msg.value
         });
@@ -93,6 +101,14 @@ contract TomoValidator is IValidator {
         return validatorsState[_candidate].cap;
     }
 
+    function getCandidateNodeUrl(address _candidate) public view returns(string) {
+        return validatorsState[_candidate].nodeUrl;
+    }
+
+    function getCandidateBacker(address _candidate) public view returns(address) {
+        return validatorsState[_candidate].backer;
+    }
+
     function getVoterCap(address _candidate, address _voter) public view returns(uint256) {
         return validatorsState[_candidate].voters[_voter];
     }
@@ -113,21 +129,25 @@ contract TomoValidator is IValidator {
         emit Unvote(msg.sender, _candidate, _cap);
     }
 
-    function retire() public onlyCandidate {
-        uint256 cap = validatorsState[msg.sender].voters[msg.sender];
-        validatorsState[msg.sender].cap = validatorsState[msg.sender].cap.sub(cap);
-        validatorsState[msg.sender].voters[msg.sender] = 0;
-        validatorsState[msg.sender].isCandidate = false;
+    function setNodeInfo(address _candidate, string _nodeUrl) public onlyBacker(_candidate) {
+        validatorsState[_candidate].nodeUrl = _nodeUrl;
+        emit SetNodeInfo(msg.sender, _candidate, _nodeUrl);
+    }
+
+    function retire(address _candidate) public onlyBacker(_candidate) {
+        uint256 cap = validatorsState[_candidate].voters[msg.sender];
+        validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
+        validatorsState[_candidate].voters[msg.sender] = 0;
+        validatorsState[_candidate].isCandidate = false;
         candidateCount = candidateCount - 1;
         for (uint256 i = 0; i < candidates.length; i++) {
-            if (candidates[i] == msg.sender) {
+            if (candidates[i] == _candidate) {
                 delete candidates[i];
                 break;
             }
         }
         // refunding to user after retiring
         msg.sender.transfer(cap);
-        emit Retire(msg.sender, cap);
+        emit Retire(msg.sender, _candidate, cap);
     }
-
 }
