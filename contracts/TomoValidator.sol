@@ -10,7 +10,7 @@ contract TomoValidator is IValidator {
     event Unvote(address _voter, address _candidate, uint256 _cap);
     event Propose(address _candidate, uint256 _cap);
     event Retire(address _backer, address _candidate, uint256 _cap);
-    event SetNodeInfo(address _backer, address _candidate, string _nodeUrl);
+    event SetNodeUrl(address _backer, address _candidate, string _nodeUrl);
 
     struct ValidatorState {
         address backer;
@@ -129,9 +129,9 @@ contract TomoValidator is IValidator {
         emit Unvote(msg.sender, _candidate, _cap);
     }
 
-    function setNodeInfo(address _candidate, string _nodeUrl) public onlyBacker(_candidate) {
+    function setNodeUrl(address _candidate, string _nodeUrl) public onlyBacker(_candidate) {
         validatorsState[_candidate].nodeUrl = _nodeUrl;
-        emit SetNodeInfo(msg.sender, _candidate, _nodeUrl);
+        emit SetNodeUrl(msg.sender, _candidate, _nodeUrl);
     }
 
     function retire(address _candidate) public onlyBacker(_candidate) {
