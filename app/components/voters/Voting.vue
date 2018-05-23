@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="table-container md-layout md-gutter md-alignment-center">
+        <div class="container md-layout md-gutter md-alignment-center">
             <form
                 novalidate
                 class="md-layout-item md-xlarge-size-50 md-large-size-50

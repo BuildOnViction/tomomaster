@@ -1,5 +1,5 @@
 <template>
-    <div class="setting-container md-layout md-gutter md-alignment-top-center">
+    <div class="container md-layout md-gutter md-alignment-top-center">
         <div
             class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
@@ -112,8 +112,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-.setting-container {
-    padding-top: 40px;
-}
-</style>

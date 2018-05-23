@@ -1,5 +1,5 @@
 <template>
-    <div class="table-container md-layout md-gutter md-alignment-center">
+    <div class="container md-layout md-gutter md-alignment-center">
         <div
             class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">

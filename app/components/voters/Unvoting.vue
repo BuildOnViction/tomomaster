@@ -11,7 +11,7 @@
         </md-empty-state>
         <div
             v-if="voted"
-            class="table-container md-layout md-gutter md-alignment-center">
+            class="container md-layout md-gutter md-alignment-center">
             <form
                 novalidate
                 class="md-layout-item md-xlarge-size-50 md-large-size-50

@@ -11,7 +11,7 @@
         </md-empty-state>
         <div
             v-if="!this.$parent.isCandidate"
-            class="table-container md-layout md-gutter md-alignment-top-center">
+            class="container md-layout md-gutter md-alignment-top-center">
             <form
                 novalidate
                 class="md-layout-item md-xlarge-size-50 md-large-size-50

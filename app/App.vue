@@ -121,7 +121,7 @@ export default {
     margin: 0 auto;
 }
 
-.table-container {
+.container {
     padding-top: 40px;
 }
 

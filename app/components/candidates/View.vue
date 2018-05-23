@@ -5,7 +5,7 @@
             href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
             integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
             crossorigin="anonymous">
-        <div class="table-container md-layout md-gutter md-alignment-top-center">
+        <div class="container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
