@@ -12,8 +12,8 @@
                 <md-card>
                     <md-card-header>
                         <md-content>
-                            <div class="md-headline">Kevin Joy</div>
-                            <div class="md-subhead">{{ candidate }}</div>
+                            <div class="md-headline">{{ candidate.name }}</div>
+                            <div class="md-subhead">{{ candidate.address }}</div>
                         </md-content>
                     </md-card-header>
 
@@ -27,21 +27,21 @@
                             <md-list-item>
                                 <md-icon md-src="/app/assets/tomo.svg" />
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ cap }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.cap }}</strong> $TOMO</span>
                                     <span>Capacity</span>
                                 </div>
                             </md-list-item>
                             <md-list-item>
                                 <md-icon>arrow_upward</md-icon>
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ totalVoted }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.totalVoted }}</strong> $TOMO</span>
                                     <span>Total voted</span>
                                 </div>
                             </md-list-item>
                             <md-list-item v-if="isReady">
                                 <md-icon>receipt</md-icon>
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ voted }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.voted }}</strong> $TOMO</span>
                                     <span>You voted</span>
                                 </div>
                             </md-list-item>
@@ -50,7 +50,7 @@
 
                     <md-card-actions>
                         <md-button
-                            v-if="voted > 0"
+                            v-if="candidate.voted > 0"
                             :to="'/unvoting/' + candidate"
                             class="md-raised md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                         <md-button
@@ -161,10 +161,20 @@ export default {
             unvoteValue: 1,
             voters: [],
             transactions: [],
-            candidate: this.$route.params.address,
-            cap: 0,
-            voted: 0,
-            totalVoted: 0
+            candidate: {
+                address: this.$route.params.address,
+                name: '',
+                balance: '',
+                cap: 0,
+                latestBlock: '',
+                totalSignedBlocks: 0,
+                rewarded: 0,
+                hardwareInfo: '',
+                dataCenterInfo: {},
+                socialInfo: {},
+                voted: 0,
+                totalVoted: 0
+            }
         }
     },
     computed: {},
@@ -173,20 +183,25 @@ export default {
     created: async function () {
         let self = this
         try {
-            let candidate = self.candidate
+            let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
-            let c = await axios.get(`/api/candidates/${candidate}`)
-            self.cap = parseFloat(c.data.capacity) / 10 ** 18
+            let c = await axios.get(`/api/candidates/${address}`)
 
-            let voters = await axios.get(`/api/candidates/${candidate}/voters`)
+            if (c.data) {
+                let data = c.data
+                self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                self.candidate.cap = parseFloat(data.capacity) / 10 ** 18
+            }
+
+            let voters = await axios.get(`/api/candidates/${address}/voters`)
             voters.data.map((v) => {
                 self.voters.push({
                     address: v.voter,
                     cap: (v.capacity / 10 ** 18)
                 })
-                self.totalVoted += (v.capacity / 10 ** 18)
+                self.candidate.totalVoted += (v.capacity / 10 ** 18)
                 if (v.voter === account) {
-                    self.voted += (parseFloat(v.capacity) / 10 ** 18)
+                    self.candidate.voted += (parseFloat(v.capacity) / 10 ** 18)
                 }
             })
             self.voters.sort((a, b) => {
@@ -195,7 +210,7 @@ export default {
                 v.id = i + 1
             })
 
-            let txs = await axios.get(`/api/transactions/candidate/${candidate}`)
+            let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     id: idx + 1,

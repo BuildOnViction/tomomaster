@@ -12,7 +12,15 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
-    capacity: String
+    name: String,
+    balance: String,
+    capacity: String,
+    latestBlock: String,
+    totalSignedBlocks: String,
+    rewarded: String,
+    hardwareInfo: String,
+    dataCenterInfo: Object,
+    socialInfo: Object
 }, { timestamps: true })
 
 module.exports = mongoose.model('Candidate', Candidate)
