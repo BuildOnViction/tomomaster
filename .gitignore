@@ -1,6 +1,6 @@
 .*.sw*
 node_modules
 .vscode/
-.eslintcache 
+.eslintcache
 build/
 .idea/
