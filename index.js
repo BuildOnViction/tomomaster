@@ -16,6 +16,7 @@ app.use(bodyParser.json())
 app.use(validator({}))
 
 app.use('/build', express.static('build'))
+app.use('/app/assets', express.static('app/assets'))
 
 // apis
 app.use(require('./apis'))

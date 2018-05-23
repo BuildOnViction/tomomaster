@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   nginx:
-    build: ./nginx
+    image: nginx:1.14
     restart: "on-failure:10"
     volumes:
       - ./nginx/app.template:/etc/nginx/conf.d/default.conf
@@ -20,9 +20,6 @@ services:
     restart: "on-failure:10"
     depends_on:
       - mongodb
-    env_file: .env
-    volumes:
-      - "contracts:/build/build/contracts"
 
   mongodb:
     image: mongo:3.6
@@ -32,4 +29,3 @@ services:
 
 volumes:
   mongodb:
-  contracts:
