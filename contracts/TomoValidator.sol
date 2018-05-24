@@ -11,12 +11,14 @@ contract TomoValidator is IValidator {
     event Propose(address _candidate, uint256 _cap);
     event Retire(address _backer, address _candidate, uint256 _cap);
     event SetNodeUrl(address _backer, address _candidate, string _nodeUrl);
+    event Withdraw(address _backer, address _candidate, uint256 _cap);
 
     struct ValidatorState {
         address backer;
         string nodeUrl;
         bool isCandidate;
         uint256 cap;
+        uint256 withdrawBlockNumber;
         mapping(address => uint256) voters;
     }
 
@@ -64,6 +66,7 @@ contract TomoValidator is IValidator {
                 backer: msg.sender,
                 nodeUrl: '',
                 isCandidate: true,
+                withdrawBlockNumber: 0,
                 cap: _caps[i]
             });
             candidateCount = candidateCount + 1;
@@ -77,6 +80,7 @@ contract TomoValidator is IValidator {
             backer: msg.sender,
             nodeUrl: _nodeUrl,
             isCandidate: true,
+            withdrawBlockNumber: 0,
             cap: msg.value
         });
         validatorsState[msg.sender].voters[msg.sender] = msg.value;
@@ -147,7 +151,15 @@ contract TomoValidator is IValidator {
             }
         }
         // refunding to user after retiring
-        msg.sender.transfer(cap);
+        //msg.sender.transfer(cap);
+        validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(10);
         emit Retire(msg.sender, _candidate, cap);
+    }
+
+    function withdraw(address _candidate) public onlyBacker(_candidate) {
+        uint256 cap = validatorsState[_candidate].voters[msg.sender];
+        require(block.number >= validatorsState[_candidate].withdrawBlockNumber);
+        msg.sender.transfer(cap);
+        emit Withdraw(msg.sender, _candidate, cap);
     }
 }
