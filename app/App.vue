@@ -56,6 +56,13 @@
                                 </md-menu-item>
                                 <md-menu-item>
                                     <md-button
+                                        to="/withdraw"
+                                        class="md-accent">
+                                        <md-icon>arrow_back</md-icon> Withdraw
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button
                                         to="/setting"
                                         class="md-primary">
                                         <md-icon>settings</md-icon> Settings

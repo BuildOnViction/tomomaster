@@ -9,7 +9,7 @@ contract TomoValidator is IValidator {
     event Vote(address _voter, address _candidate, uint256 _cap);
     event Unvote(address _voter, address _candidate, uint256 _cap);
     event Propose(address _candidate, uint256 _cap);
-    event Retire(address _backer, address _candidate, uint256 _cap);
+    event Resign(address _backer, address _candidate, uint256 _cap);
     event SetNodeUrl(address _backer, address _candidate, string _nodeUrl);
     event Withdraw(address _backer, address _candidate, uint256 _cap);
 
@@ -138,7 +138,7 @@ contract TomoValidator is IValidator {
         emit SetNodeUrl(msg.sender, _candidate, _nodeUrl);
     }
 
-    function retire(address _candidate) public onlyBacker(_candidate) {
+    function resign(address _candidate) public onlyBacker(_candidate) {
         uint256 cap = validatorsState[_candidate].voters[msg.sender];
         validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
         validatorsState[_candidate].voters[msg.sender] = 0;
@@ -150,10 +150,9 @@ contract TomoValidator is IValidator {
                 break;
             }
         }
-        // refunding to user after retiring
-        //msg.sender.transfer(cap);
+        // refunding after retiring 10 blocks
         validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(10);
-        emit Retire(msg.sender, _candidate, cap);
+        emit Resign(msg.sender, _candidate, cap);
     }
 
     function withdraw(address _candidate) public onlyBacker(_candidate) {
