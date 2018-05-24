@@ -93,7 +93,7 @@ export default {
         let self = this
 
         try {
-            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+            if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
             let candidates = await axios.get('/api/candidates')
@@ -135,6 +135,16 @@ export default {
 
 .md-table-fixed-header + .md-table-content {
     height: auto !important;
+}
+
+.md-list.md-list-2-col {
+    flex-flow: row wrap;
+}
+
+.md-list.md-list-2-col .md-list-item {
+    flex: 0 1 50%;
+    max-width: 50%;
+    width: 50%;
 }
 
 </style>

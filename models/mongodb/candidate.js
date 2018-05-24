@@ -13,7 +13,6 @@ var Candidate = new Schema({
         index: true
     },
     name: String,
-    balance: String,
     capacity: String,
     latestBlock: String,
     totalSignedBlocks: String,
