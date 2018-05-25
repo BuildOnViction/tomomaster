@@ -47,11 +47,11 @@
                             </md-button>
 
                             <md-menu-content>
-                                <md-menu-item v-if="isCandidate">
+                                <md-menu-item>
                                     <md-button
-                                        to="/retire"
+                                        to="/resign"
                                         class="md-accent">
-                                        <md-icon>arrow_downward</md-icon> Retire
+                                        <md-icon>arrow_downward</md-icon> Resign
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>

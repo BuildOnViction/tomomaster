@@ -31,6 +31,7 @@ async function watch () {
         let event = res.event
         let candidate = res.args._candidate
         let voter = res.args._voter
+        let backer = res.args._backer
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
@@ -38,6 +39,7 @@ async function watch () {
             tx: res.transactionHash,
             event: event,
             voter: voter,
+            backer: backer,
             candidate: candidate,
             capacity: capacity
         })

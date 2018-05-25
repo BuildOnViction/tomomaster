@@ -16,6 +16,10 @@ var Transaction = new Schema({
         type: String,
         index: true
     },
+    backer: {
+        type: String,
+        index: true
+    },
     voter: {
         type: String,
         index: true

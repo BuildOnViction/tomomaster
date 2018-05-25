@@ -1,45 +1,43 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="!this.$parent.isCandidate && !this.$parent.showProgressBar"
-            md-icon="account_circle"
-            md-label="Opps!!"
-            md-description="You are not a candidate, so you cannot retire">
-            <md-button
-                class="md-primary md-raised"
-                to="/apply">Become a candidate</md-button>
-        </md-empty-state>
         <div
-            v-if="this.$parent.isCandidate"
             class="container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
                     <md-card-header>
-                        <p class="md-title">Retire</p>
+                        <p class="md-title">Withdraw</p>
                     </md-card-header>
 
                     <md-card-content>
-                        You deposited <b>{{ candidateCap }} $TOMO</b>. We will return this deposit to you.
+                        <md-list-item class="md-layout">
+                            <md-field>
+                                <label>Coinbase</label>
+                                <md-input
+                                    v-model="coinbase"
+                                    name="withdraw-coinbase"
+                                    type="string"/>
+                            </md-field>
+                        </md-list-item>
                     </md-card-content>
 
                     <md-card-actions>
                         <md-button
                             :disabled="this.$parent.showProgressBar"
                             class="md-accent md-raised"
-                            @click="retireActive = true;"><md-icon>arrow_downward</md-icon> Retire</md-button>
+                            @click="withdrawActive = true;"><md-icon>arrow_downward</md-icon> Withdraw</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
         </div>
         <md-dialog-confirm
-            :md-active.sync="retireActive"
-            md-title="Do you want to retire?"
-            md-content="If you retire, you will receive back all your deposit."
+            :md-active.sync="withdrawActive"
+            md-title="Do you want to withdraw?"
+            md-content="If you withdraw, you will receive all your deposit."
             md-confirm-text="Yes"
             md-cancel-text="No"
-            @md-confirm="retire()"/>
+            @md-confirm="withdraw()"/>
         <md-snackbar
             :md-active.sync="showSnackbar"
             md-position="left"
@@ -57,10 +55,11 @@ export default {
     data () {
         return {
             isReady: this.web3,
-            retireActive: false,
+            withdrawActive: false,
             showSnackbar: false,
             snackBarMessage: '',
-            candidateCap: 10000
+            candidateCap: 10000,
+            coinbase: ''
         }
     },
     computed: { },
@@ -81,7 +80,7 @@ export default {
     mounted () {
     },
     methods: {
-        retire: async function () {
+        withdraw: async function () {
             let self = this
             try {
                 if (!self.isReady) {
@@ -92,10 +91,11 @@ export default {
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                let rs = await contract.retire({ from: account })
+                let coinbase = this.coinbase
+                let rs = await contract.withdraw(coinbase, { from: account })
 
                 self.showSnackbar = true
-                self.snackBarMessage = rs.tx ? 'You have successfully retired!'
+                self.snackBarMessage = rs.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while retiring, please try again'
                 setTimeout(() => {
                     self.$parent.isCandidate = rs.tx === 'undefined'
