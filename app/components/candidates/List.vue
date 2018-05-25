@@ -73,8 +73,7 @@
                             md-sort-by="cap">{{ item.cap }} $TOMO
                         </md-table-cell>
                         <md-table-cell
-                            md-label="Status"
-                            md-sort-by="cap">{{ item.status }}
+                            md-label="Status">{{ item.status }}
                         </md-table-cell>
                         <md-table-cell><md-button
                             :to="'/voting/' + item.address"
