@@ -29,7 +29,7 @@
                 <md-card md-with-hover>
                     <md-card-header>
                         <p class="md-subheading">epoch</p>
-                        <p class="md-display-1">990</p>
+                        <p class="md-display-1">990 blocks</p>
                     </md-card-header>
                 </md-card>
             </div>

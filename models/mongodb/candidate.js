@@ -17,12 +17,19 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
+    name: String,
+    capacity: String,
+    latestBlock: String,
+    totalSignedBlocks: String,
+    rewarded: String,
+    hardwareInfo: String,
+    dataCenterInfo: Object,
+    socialInfo: Object,
     status: {
         type: String,
         enum: ['PROPOSED', 'RESIGNED'],
         index: true
-    },
-    capacity: String
+    }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Candidate', Candidate)

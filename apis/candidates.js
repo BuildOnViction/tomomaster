@@ -15,7 +15,9 @@ router.get('/', async function (req, res, next) {
 })
 
 router.get('/:candidate', async function (req, res, next) {
+    let validator = await Validator.deployed()
     let candidate = await db.Candidate.findOne({
+        smartContractAddress: validator.address,
         candidate: req.params.candidate
     })
     return res.json(candidate)

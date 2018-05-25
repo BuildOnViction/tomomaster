@@ -77,7 +77,7 @@ export default {
         let self = this
 
         try {
-            if (typeof self.web3 === 'undefined' && self.NetworkProvider === 'metamask') {
+            if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
             let account = await self.getAccount()
