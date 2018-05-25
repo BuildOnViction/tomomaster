@@ -72,6 +72,10 @@
                             md-label="Capacity"
                             md-sort-by="cap">{{ item.cap }} $TOMO
                         </md-table-cell>
+                        <md-table-cell
+                            md-label="Status"
+                            md-sort-by="cap">{{ item.status }}
+                        </md-table-cell>
                         <md-table-cell><md-button
                             :to="'/voting/' + item.address"
                             class="md-raised md-primary">Vote</md-button></md-table-cell>
@@ -113,6 +117,7 @@ export default {
             candidates.data.map(async (candidate) => {
                 self.candidates.push({
                     address: candidate.candidate,
+                    status: candidate.status,
                     cap: (candidate.capacity / 10 ** 18)
                 })
             })

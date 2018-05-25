@@ -92,11 +92,12 @@ export default {
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = this.coinbase
+
                 let rs = await contract.withdraw(coinbase, { from: account })
 
                 self.showSnackbar = true
                 self.snackBarMessage = rs.tx ? 'You have successfully withdrawed!'
-                    : 'An error occurred while retiring, please try again'
+                    : 'An error occurred while withdrawing, please try again'
                 setTimeout(() => {
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
@@ -107,7 +108,7 @@ export default {
             } catch (e) {
                 self.$parent.showProgressBar = false
                 self.showSnackbar = true
-                self.snackBarMessage = 'An error occurred while retiring, please try again'
+                self.snackBarMessage = 'An error occurred while withdrawing, please try again'
                 console.log(e)
             }
         }
