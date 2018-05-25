@@ -8,8 +8,8 @@ contract TomoValidator is IValidator {
 
     event Vote(address _voter, address _candidate, uint256 _cap);
     event Unvote(address _voter, address _candidate, uint256 _cap);
-    event Propose(address _candidate, uint256 _cap);
-    event Resign(address _backer, address _candidate, uint256 _cap);
+    event Propose(address _backer, address _candidate, uint256 _cap);
+    event Resign(address _backer, address _candidate);
     event SetNodeUrl(address _backer, address _candidate, string _nodeUrl);
     event Withdraw(address _backer, address _candidate, uint256 _cap);
 
@@ -48,6 +48,7 @@ contract TomoValidator is IValidator {
     }
 
     modifier onlyAlreadyResigned(address _candidate) {
+        require(validatorsState[_candidate].withdrawBlockNumber > 0);
         require(block.number >= validatorsState[_candidate].withdrawBlockNumber);
         _;
     }
@@ -92,9 +93,9 @@ contract TomoValidator is IValidator {
             withdrawBlockNumber: 0,
             cap: msg.value
         });
-        validatorsState[msg.sender].voters[msg.sender] = msg.value;
+        validatorsState[_candidate].voters[msg.sender] = msg.value;
         candidateCount = candidateCount + 1;
-        emit Propose(msg.sender, msg.value);
+        emit Propose(msg.sender, _candidate, msg.value);
     }
 
     function vote(address _candidate) external payable onlyValidCandidate(_candidate) {
@@ -120,6 +121,10 @@ contract TomoValidator is IValidator {
 
     function getCandidateBacker(address _candidate) public view returns(address) {
         return validatorsState[_candidate].backer;
+    }
+
+    function getCandidateWithdrawBlockNumber(address _candidate) public view returns(uint256) {
+        return validatorsState[_candidate].withdrawBlockNumber;
     }
 
     function getVoterCap(address _candidate, address _voter) public view returns(uint256) {
@@ -148,9 +153,6 @@ contract TomoValidator is IValidator {
     }
 
     function resign(address _candidate) public onlyBacker(_candidate) onlyCandidate(_candidate) {
-        uint256 cap = validatorsState[_candidate].voters[msg.sender];
-        validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
-        validatorsState[_candidate].voters[msg.sender] = 0;
         validatorsState[_candidate].isCandidate = false;
         candidateCount = candidateCount - 1;
         for (uint256 i = 0; i < candidates.length; i++) {
@@ -160,14 +162,16 @@ contract TomoValidator is IValidator {
             }
         }
         // refunding after retiring 10 blocks
-        validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(10);
-        emit Resign(msg.sender, _candidate, cap);
+        validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(100);
+        emit Resign(msg.sender, _candidate);
     }
 
-    function withdraw(address _candidate) public onlyBacker(_candidate) onlyAlreadyResigned(_candidate) {
+    function withdraw(address _candidate) public onlyBacker(_candidate) onlyNotCandidate(_candidate) onlyAlreadyResigned(_candidate) {
         uint256 cap = validatorsState[_candidate].voters[msg.sender];
-        msg.sender.transfer(cap);
+        validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
         validatorsState[_candidate].voters[msg.sender] = 0;
+        validatorsState[_candidate].withdrawBlockNumber = 0;
+        msg.sender.transfer(cap);
         emit Withdraw(msg.sender, _candidate, cap);
     }
 }

@@ -43,7 +43,7 @@
         <md-dialog-confirm
             :md-active.sync="resignActive"
             md-title="Do you want to resign?"
-            md-content="If you resign, you will be able to withdraw all your deposit after 2 months."
+            md-content="If you resign, you will be able to withdraw all your deposit after 100 * 2 seconds."
             md-confirm-text="Yes"
             md-cancel-text="No"
             @md-confirm="resign()"/>
