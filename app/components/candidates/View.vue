@@ -112,7 +112,7 @@
                                     <md-icon :class="'fa ' + (key == 'name' ? 'fa-server' : 'fa-map-marker-alt')" />
                                     <div class="md-list-item-text">
                                         <span>{{ value }}</span>
-                                        <span>Data Center</span>
+                                        <span>{{ key }}</span>
                                     </div>
                                 </md-list-item>
                             </md-list>
@@ -285,7 +285,6 @@ export default {
             if (self.web3) {
                 self.web3.eth.getBalance(self.candidate.address, function (a, b) {
                     self.candidate.balance = b / 10 ** 18
-                    console.log(b)
                     if (a) {
                         console.log('got an error', a)
                     }
@@ -388,7 +387,11 @@ a.candidate-address.candidate-address {
     color: #60d156;
 }
 
-.md-card:not(.md-expand-active).candidate-expand-content {
+.md-card:not(.md-expand-active) .candidate-expand-content {
     margin-top: -232px !important;
+}
+
+.md-list.md-theme-default.md-double-line .md-list-item-text :nth-child(2) {
+    text-transform: capitalize;
 }
 </style>
