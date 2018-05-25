@@ -58,6 +58,7 @@ async function updateCandidateInfo (candidate) {
         let capacity = await validator.getCandidateCap.call(candidate)
         let nodeUrl = await validator.getCandidateNodeUrl.call(candidate)
         let backer = await validator.getCandidateBacker.call(candidate)
+        let status = await validator.isCandidate.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
         if (capacity > 0) {
@@ -70,6 +71,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     nodeUrl: nodeUrl,
+                    status: (status) ? 'PROPOSED' : 'RESIGNED',
                     backer: String(backer)
                 }
             }, { upsert: true })

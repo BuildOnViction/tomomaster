@@ -161,14 +161,14 @@ contract TomoValidator is IValidator {
                 break;
             }
         }
-        // refunding after retiring 10 blocks
+        // refunding after retiring 100 blocks
         validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(100);
         emit Resign(msg.sender, _candidate);
     }
 
     function withdraw(address _candidate) public onlyBacker(_candidate) onlyNotCandidate(_candidate) onlyAlreadyResigned(_candidate) {
         uint256 cap = validatorsState[_candidate].voters[msg.sender];
-        validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
+        validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(cap);
         validatorsState[_candidate].voters[msg.sender] = 0;
         validatorsState[_candidate].withdrawBlockNumber = 0;
         msg.sender.transfer(cap);

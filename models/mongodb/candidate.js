@@ -17,6 +17,11 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
+    status: {
+        type: String,
+        enum: ['PROPOSED', 'RESIGNED'],
+        index: true
+    },
     capacity: String
 }, { timestamps: true })
 
