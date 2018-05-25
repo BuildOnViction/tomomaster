@@ -61,6 +61,42 @@
                                     </md-field>
                                 </div>
                             </md-list-item>
+                            <md-list-item class="md-layout">
+                                <div
+                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
+                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
+                                    <md-field>
+                                        <label>Coinbase</label>
+                                        <md-input
+                                            v-model="coinbase"
+                                            name="apply-coinbase"
+                                            type="string"/>
+                                        <md-tooltip>
+                                            What is your node coinbase?</md-tooltip>
+                                        <span
+                                            v-if="!$v.applyValue.required"
+                                            class="md-error">Required field</span>
+                                    </md-field>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-layout">
+                                <div
+                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
+                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
+                                    <md-field>
+                                        <label>Node Url</label>
+                                        <md-input
+                                            v-model="nodeUrl"
+                                            name="apply-nodeurl"
+                                            type="string"/>
+                                        <md-tooltip>
+                                            What is your node url?</md-tooltip>
+                                        <span
+                                            v-if="!$v.applyValue.required"
+                                            class="md-error">Required field</span>
+                                    </md-field>
+                                </div>
+                            </md-list-item>
                         </md-list>
                     </md-card-content>
                     <md-card-actions>
@@ -130,7 +166,9 @@ export default {
             isReady: this.web3,
             showSnackbar: false,
             snackBarMessage: '',
-            applyValue: 10000
+            applyValue: 10000,
+            coinbase: '',
+            nodeUrl: ''
         }
     },
     validations: {
@@ -176,6 +214,8 @@ export default {
         apply: async function () {
             let self = this
             let value = this.applyValue
+            let coinbase = this.coinbase
+            let nodeUrl = this.nodeUrl
             try {
                 if (!self.isReady) {
                     self.$router.push({ path: '/setting' })
@@ -186,7 +226,7 @@ export default {
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                let rs = await contract.propose({
+                let rs = await contract.propose(coinbase, nodeUrl, {
                     from : account,
                     value: parseFloat(value) * 10 ** 18
                 })

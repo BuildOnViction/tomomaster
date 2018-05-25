@@ -31,6 +31,7 @@ async function watch () {
         let event = res.event
         let candidate = res.args._candidate
         let voter = res.args._voter
+        let backer = res.args._backer
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
@@ -38,6 +39,7 @@ async function watch () {
             tx: res.transactionHash,
             event: event,
             voter: voter,
+            backer: backer,
             candidate: candidate,
             capacity: capacity
         })
@@ -46,14 +48,17 @@ async function watch () {
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
-        updateCandidateCap(candidate)
+        updateCandidateInfo(candidate)
     })
 }
 
-async function updateCandidateCap (candidate) {
+async function updateCandidateInfo (candidate) {
     try {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
+        let nodeUrl = await validator.getCandidateNodeUrl.call(candidate)
+        let backer = await validator.getCandidateBacker.call(candidate)
+        let status = await validator.isCandidate.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
         if (capacity > 0) {
@@ -64,7 +69,10 @@ async function updateCandidateCap (candidate) {
                 $set: {
                     smartContractAddress: validator.address,
                     candidate: candidate,
-                    capacity: String(capacity)
+                    capacity: String(capacity),
+                    nodeUrl: nodeUrl,
+                    status: (status) ? 'PROPOSED' : 'RESIGNED',
+                    backer: String(backer)
                 }
             }, { upsert: true })
         } else {
@@ -109,7 +117,7 @@ async function getCurrentCandidates () {
         let candidates = await validator.getCandidates.call()
 
         let map = candidates.map((candidate) => {
-            return updateCandidateCap(candidate)
+            return updateCandidateInfo(candidate)
         })
         return Promise.all(map).catch(e => console.error(e))
     } catch (e) {

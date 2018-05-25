@@ -8,6 +8,11 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
+    backer: {
+        type: String,
+        index: true
+    },
+    nodeUrl: String,
     candidate: {
         type: String,
         index: true
@@ -19,7 +24,12 @@ var Candidate = new Schema({
     rewarded: String,
     hardwareInfo: String,
     dataCenterInfo: Object,
-    socialInfo: Object
+    socialInfo: Object,
+    status: {
+        type: String,
+        enum: ['PROPOSED', 'RESIGNED'],
+        index: true
+    }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Candidate', Candidate)

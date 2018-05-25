@@ -4,7 +4,8 @@ import App from './App.vue'
 import CandidateView from './components/candidates/View.vue'
 import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
-import CandidateRetire from './components/candidates/Retire.vue'
+import CandidateResign from './components/candidates/Resign.vue'
+import CandidateWithdraw from './components/candidates/Withdraw.vue'
 import VoterView from './components/voters/View'
 import VotingView from './components/voters/Voting'
 import UnvotingView from './components/voters/Unvoting'
@@ -67,7 +68,10 @@ const router = new VueRouter({
             path: '/apply', component: CandidateApply
         },
         {
-            path: '/retire', component: CandidateRetire
+            path: '/resign', component: CandidateResign
+        },
+        {
+            path: '/withdraw', component: CandidateWithdraw
         },
         {
             path: '/candidates', component: CandidateList
