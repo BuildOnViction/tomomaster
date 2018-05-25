@@ -27,7 +27,7 @@ contract TomoValidator is IValidator {
     address[] public candidates;
     uint256 candidateCount = 0;
     uint256 public constant minCandidateCap = 10000 ether;
-    uint256 public constant maxCandidateNumber = 500;
+    uint256 public constant maxCandidateNumber = 1000;
     uint256 public constant maxValidatorNumber = 99;
 
     modifier onlyValidCandidateCap {
@@ -38,8 +38,17 @@ contract TomoValidator is IValidator {
     }
 
     modifier onlyBacker(address _candidate) {
-        require(validatorsState[_candidate].isCandidate);
         require(validatorsState[_candidate].backer == msg.sender);
+        _;
+    }
+
+    modifier onlyCandidate(address _candidate) {
+        require(validatorsState[_candidate].isCandidate);
+        _;
+    }
+
+    modifier onlyAlreadyResigned(address _candidate) {
+        require(block.number >= validatorsState[_candidate].withdrawBlockNumber);
         _;
     }
 
@@ -138,7 +147,7 @@ contract TomoValidator is IValidator {
         emit SetNodeUrl(msg.sender, _candidate, _nodeUrl);
     }
 
-    function resign(address _candidate) public onlyBacker(_candidate) {
+    function resign(address _candidate) public onlyBacker(_candidate) onlyCandidate(_candidate) {
         uint256 cap = validatorsState[_candidate].voters[msg.sender];
         validatorsState[_candidate].cap = validatorsState[msg.sender].cap.sub(cap);
         validatorsState[_candidate].voters[msg.sender] = 0;
@@ -155,10 +164,10 @@ contract TomoValidator is IValidator {
         emit Resign(msg.sender, _candidate, cap);
     }
 
-    function withdraw(address _candidate) public onlyBacker(_candidate) {
+    function withdraw(address _candidate) public onlyBacker(_candidate) onlyAlreadyResigned(_candidate) {
         uint256 cap = validatorsState[_candidate].voters[msg.sender];
-        require(block.number >= validatorsState[_candidate].withdrawBlockNumber);
         msg.sender.transfer(cap);
+        validatorsState[_candidate].voters[msg.sender] = 0;
         emit Withdraw(msg.sender, _candidate, cap);
     }
 }
