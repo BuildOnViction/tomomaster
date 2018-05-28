@@ -44,7 +44,7 @@
                                 <md-icon>offline_bolt</md-icon>
                                 <div class="md-list-item-text">
                                     <span>{{ candidate.status }}</span>
-                                    <span>Status</span>
+                                    <span>Node Status</span>
                                 </div>
                             </md-list-item>
                             <md-list-item>
