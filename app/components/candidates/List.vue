@@ -75,9 +75,20 @@
                         <md-table-cell
                             md-label="Status">{{ item.status }}
                         </md-table-cell>
-                        <md-table-cell><md-button
-                            :to="'/voting/' + item.address"
-                            class="md-raised md-primary">Vote</md-button></md-table-cell>
+                        <md-table-cell>
+                            <md-button
+                                v-if="item.status === 'PROPOSED'"
+                                :to="'/voting/' + item.address"
+                                class="md-raised md-primary">Vote</md-button>
+                            <md-button
+                                v-if="item.status === 'PROPOSED'"
+                                :to="'/resign/' + item.address"
+                                class="md-raised">Resign</md-button>
+                            <md-button
+                                v-if="item.status === 'RESIGNED'"
+                                :to="'/withdraw/' + item.address"
+                                class="md-raised">Withdraw</md-button>
+                        </md-table-cell>
                     </md-table-row>
                 </md-table>
             </div>
@@ -116,6 +127,7 @@ export default {
             candidates.data.map(async (candidate) => {
                 self.candidates.push({
                     address: candidate.candidate,
+                    backer: candidate.backer,
                     status: candidate.status,
                     cap: (candidate.capacity / 10 ** 18)
                 })

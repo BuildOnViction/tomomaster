@@ -59,7 +59,7 @@ export default {
             showSnackbar: false,
             snackBarMessage: '',
             candidateCap: 10000,
-            coinbase: ''
+            coinbase: this.$route.params.address
         }
     },
     computed: { },
