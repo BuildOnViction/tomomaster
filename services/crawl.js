@@ -61,7 +61,7 @@ async function updateCandidateInfo (candidate) {
         let status = await validator.isCandidate.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
-        if (capacity > 0) {
+        if (candidate !== '0x0000000000000000000000000000000000000000') {
             result = db.Candidate.update({
                 smartContractAddress: validator.address,
                 candidate: candidate
