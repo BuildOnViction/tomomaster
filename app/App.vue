@@ -31,7 +31,6 @@
                     </md-autocomplete>
                     <div class="md-toolbar-section-end">
                         <md-button
-                            v-if="!isCandidate"
                             class="md-raised"
                             to="/apply">
                             Become a candidate
@@ -78,8 +77,7 @@ export default {
         return {
             showProgressBar: false,
             selectedCandidate: null,
-            candidates: [],
-            isCandidate: false
+            candidates: []
         }
     },
     created: async function () {
@@ -93,9 +91,6 @@ export default {
             candidates.data.map(async (candidate) => {
                 self.candidates.push(candidate.candidate)
             })
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            self.isCandidate = await contract.isCandidate(account, { from: account })
         } catch (e) {
             console.log(e)
         }

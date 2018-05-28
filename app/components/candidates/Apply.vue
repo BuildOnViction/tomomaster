@@ -1,16 +1,6 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="this.$parent.isCandidate && !this.$parent.showProgressBar"
-            md-icon="account_circle"
-            md-label="You are a candidate"
-            md-description="You are a candidate, so you do not need to apply again">
-            <md-button
-                :to="'/candidate/' + account"
-                class="md-primary md-raised">Your Profile</md-button>
-        </md-empty-state>
         <div
-            v-if="!this.$parent.isCandidate"
             class="container md-layout md-gutter md-alignment-top-center">
             <form
                 novalidate
@@ -105,7 +95,6 @@
                             class="md-raised md-accent"
                             @click="$router.go(-1)">Cancel</md-button>
                         <md-button
-                            v-if="!this.$parent.isCandidate"
                             :disabled="this.$parent.showProgressBar"
                             class="md-raised md-primary"
                             type="submit"><md-icon>arrow_upward</md-icon> Apply</md-button>
@@ -114,7 +103,6 @@
             </form>
         </div>
         <div
-            v-if="!this.$parent.isCandidate"
             class="md-layout md-gutter md-alignment-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
@@ -234,10 +222,9 @@ export default {
                 self.snackBarMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
                 setTimeout(() => {
-                    self.$parent.isCandidate = rs.tx !== 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push({ path: `/candidate/${account}` })
+                        self.$router.push({ path: `/candidate/${coinbase}` })
                     }
                 }, 2000)
             } catch (e) {
