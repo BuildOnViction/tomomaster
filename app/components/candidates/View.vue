@@ -12,49 +12,125 @@
                 <md-card>
                     <md-card-header>
                         <md-content>
-                            <div class="md-headline">Kevin Joy</div>
-                            <div class="md-subhead">{{ candidate }}</div>
+                            <div class="md-headline">
+                                <span :class="'candidate-status candidate-status--' + candidate.status">
+                                    <md-tooltip
+                                        class="candidate-status-tooltip"
+                                        md-direction="left">{{ candidate.status }}</md-tooltip>
+                                </span>
+                                {{ candidate.name }}
+                            </div>
+                            <div class="md-subhead">
+                                <a
+                                    class="candidate-address"
+                                    href="#"
+                                    target="__blank">{{ candidate.address }}</a>
+                            </div>
                         </md-content>
                     </md-card-header>
 
                     <md-card-content>
-                        <md-content>
-                            <a href="#"><md-icon class="fab fa-github" /></a>
-                            <a href="#"><md-icon class="fab fa-linkedin" /></a>
-                            <a href="#"><md-icon class="far fa-envelope" /></a>
+                        <md-content class="social-wrap">
+                            <a
+                                v-for="(value, key) in candidate.socialInfo"
+                                :key="key"
+                                :href="value">
+                                <md-icon :class="key == 'mail' ? 'fas fa-envelope' : 'fab ' + 'fa-' + key" />
+                                {{ key }}
+                            </a>
                         </md-content>
-                        <md-list class="md-double-line">
+                        <md-list class="md-double-line md-list-2-col">
+                            <md-list-item :class="'md-list-item-status md-list-item-status--' + candidate.status">
+                                <md-icon>offline_bolt</md-icon>
+                                <div class="md-list-item-text">
+                                    <span>{{ candidate.status }}</span>
+                                    <span>Status</span>
+                                </div>
+                            </md-list-item>
+                            <md-list-item>
+                                <md-icon md-src="/app/assets/tomo.svg"/>
+                                <div class="md-list-item-text">
+                                    <span><strong>{{ candidate.balance }}</strong> $TOMO</span>
+                                    <span>Balance</span>
+                                </div>
+                            </md-list-item>
                             <md-list-item>
                                 <md-icon md-src="/app/assets/tomo.svg" />
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ cap }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.cap }}</strong> $TOMO</span>
                                     <span>Capacity</span>
                                 </div>
                             </md-list-item>
                             <md-list-item>
                                 <md-icon>arrow_upward</md-icon>
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ totalVoted }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.totalVoted }}</strong> $TOMO</span>
                                     <span>Total voted</span>
                                 </div>
                             </md-list-item>
                             <md-list-item v-if="isReady">
                                 <md-icon>receipt</md-icon>
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ voted }}</strong> $TOMO</span>
+                                    <span><strong>{{ candidate.voted }}</strong> $TOMO</span>
                                     <span>You voted</span>
                                 </div>
                             </md-list-item>
+                            <md-list-item>
+                                <md-icon>card_giftcard</md-icon>
+                                <div class="md-list-item-text">
+                                    <span><strong>{{ candidate.rewarded }}</strong> $TOMO</span>
+                                    <span>Rewarded</span>
+                                </div>
+                            </md-list-item>
+                            <md-list-item>
+                                <md-icon class="fa fa-cube" />
+                                <div class="md-list-item-text">
+                                    <span>#{{ candidate.latestBlock }}</span>
+                                    <span>Latest Block</span>
+                                </div>
+                            </md-list-item>
+                            <md-list-item>
+                                <md-icon class="fa fa-cubes" />
+                                <div class="md-list-item-text">
+                                    <span>{{ candidate.totalSignedBlocks }}</span>
+                                    <span>Total Signed Blocks</span>
+                                </div>
+                            </md-list-item>
                         </md-list>
+                        <md-card-expand-content class="candidate-expand-content">
+                            <md-list class="md-double-line">
+                                <md-list-item>
+                                    <md-icon class="fa fa-microchip" />
+                                    <div class="md-list-item-text">
+                                        <span>{{ candidate.hardwareInfo }}</span>
+                                        <span>Hardware</span>
+                                    </div>
+                                </md-list-item>
+                                <md-list-item
+                                    v-for="(value, key) in candidate.dataCenterInfo"
+                                    :key="key">
+                                    <md-icon :class="'fa ' + (key == 'name' ? 'fa-server' : 'fa-map-marker-alt')" />
+                                    <div class="md-list-item-text">
+                                        <span>{{ value }}</span>
+                                        <span>{{ key }}</span>
+                                    </div>
+                                </md-list-item>
+                            </md-list>
+                        </md-card-expand-content>
                     </md-card-content>
 
                     <md-card-actions>
+                        <md-card-expand-trigger>
+                            <md-button class="md-icon-button">
+                                <md-icon>keyboard_arrow_down</md-icon>
+                            </md-button>
+                        </md-card-expand-trigger>
                         <md-button
-                            v-if="voted > 0"
-                            :to="'/unvoting/' + candidate"
+                            v-if="candidate.voted > 0"
+                            :to="'/unvoting/' + candidate.address"
                             class="md-raised md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
                         <md-button
-                            :to="'/voting/' + candidate"
+                            :to="'/voting/' + candidate.address"
                             class="md-raised md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
                     </md-card-actions>
                 </md-card>
@@ -161,10 +237,25 @@ export default {
             unvoteValue: 1,
             voters: [],
             transactions: [],
-            candidate: this.$route.params.address,
-            cap: 0,
-            voted: 0,
-            totalVoted: 0
+            candidate: {
+                address: this.$route.params.address,
+                name: '',
+                balance: '',
+                status: 'active',
+                cap: 0,
+                latestBlock: '',
+                totalSignedBlocks: 0,
+                rewarded: 0,
+                hardwareInfo: '',
+                dataCenterInfo: {},
+                socialInfo: {
+                    github: '#',
+                    linkedin: '#',
+                    mail: '#'
+                },
+                voted: 0,
+                totalVoted: 0
+            }
         }
     },
     computed: {},
@@ -173,20 +264,42 @@ export default {
     created: async function () {
         let self = this
         try {
-            let candidate = self.candidate
+            let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
-            let c = await axios.get(`/api/candidates/${candidate}`)
-            self.cap = parseFloat(c.data.capacity) / 10 ** 18
+            let c = await axios.get(`/api/candidates/${address}`)
 
-            let voters = await axios.get(`/api/candidates/${candidate}/voters`)
+            if (c.data) {
+                let data = c.data
+                self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                self.candidate.cap = parseFloat(data.capacity) / 10 ** 18
+                self.candidate.rewarded = 1
+                self.candidate.latestBlock = '123,456'
+                self.candidate.totalSignedBlocks = 100
+                self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
+                self.candidate.dataCenterInfo = {
+                    name: 'AWS',
+                    location: 'Singapre'
+                }
+            }
+
+            if (self.web3) {
+                self.web3.eth.getBalance(self.candidate.address, function (a, b) {
+                    self.candidate.balance = b / 10 ** 18
+                    if (a) {
+                        console.log('got an error', a)
+                    }
+                })
+            }
+
+            let voters = await axios.get(`/api/candidates/${address}/voters`)
             voters.data.map((v) => {
                 self.voters.push({
                     address: v.voter,
                     cap: (v.capacity / 10 ** 18)
                 })
-                self.totalVoted += (v.capacity / 10 ** 18)
+                self.candidate.totalVoted += (v.capacity / 10 ** 18)
                 if (v.voter === account) {
-                    self.voted += (parseFloat(v.capacity) / 10 ** 18)
+                    self.candidate.voted += (parseFloat(v.capacity) / 10 ** 18)
                 }
             })
             self.voters.sort((a, b) => {
@@ -195,7 +308,7 @@ export default {
                 v.id = i + 1
             })
 
-            let txs = await axios.get(`/api/transactions/candidate/${candidate}`)
+            let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     id: idx + 1,
@@ -226,3 +339,59 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+.candidate-status {
+    cursor: pointer;
+    font-size: 0;
+    display: inline-block;
+    vertical-align: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    margin-right: 2px;
+}
+
+.candidate-status-tooltip {
+    text-transform: capitalize;
+}
+
+.candidate-status--active {
+    background-color: #60d156;
+}
+
+.candidate-status--inactive {
+    opacity: .5;
+    background-color: #aaaaaa;
+}
+
+a.candidate-address.candidate-address {
+    color: rgba(0, 0, 0, .87);
+}
+
+.social-wrap a {
+    font-size: 0;
+    margin-right: 5px;
+}
+
+.social-wrap a .md-icon {
+    font-size: 24px;
+}
+
+.md-list-item-status .md-list-item-text {
+    text-transform: capitalize;
+}
+
+.md-list-item-status.md-list-item-status--active .md-icon {
+    color: #60d156;
+}
+
+.md-card:not(.md-expand-active) .candidate-expand-content {
+    margin-top: -232px !important;
+}
+
+.md-list.md-theme-default.md-double-line .md-list-item-text :nth-child(2) {
+    text-transform: capitalize;
+}
+</style>
