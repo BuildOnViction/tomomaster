@@ -73,7 +73,9 @@
                             md-sort-by="cap">{{ item.cap }} $TOMO
                         </md-table-cell>
                         <md-table-cell
-                            md-label="Status">{{ item.status }}
+                            md-label="Status">
+                            <md-chip :class="item.status == 'PROPOSED' ? 'md-primary' : 'md-accent'">
+                                {{ item.status }}</md-chip>
                         </md-table-cell>
                         <md-table-cell>
                             <md-button
