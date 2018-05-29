@@ -76,17 +76,20 @@
                                 <div
                                     class="md-layout-item md-xlarge-size-70 md-large-size-70
                                     md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field>
-                                        <label>Node Url</label>
+                                    <md-field :class="getValidationClass('nodeUrl')">
+                                        <label>Node URL</label>
                                         <md-input
                                             v-model="nodeUrl"
-                                            name="apply-nodeurl"
+                                            name="nodeurl"
                                             type="string"/>
                                         <md-tooltip>
                                             What is your node url?</md-tooltip>
                                         <span
-                                            v-if="!$v.applyValue.required"
+                                            v-if="!$v.nodeUrl.required"
                                             class="md-error">Required field</span>
+                                        <span
+                                            v-if="!$v.nodeUrl.nodeUrl"
+                                            class="md-error">Wrong node URL format</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -149,6 +152,7 @@ import {
     minValue
 } from 'vuelidate/lib/validators'
 import coinbaseAddress from '../../../validators/coinbaseAddress.js'
+import nodeUrl from '../../../validators/nodeUrl.js'
 export default {
     name: 'App',
     mixins: [validationMixin],
@@ -171,6 +175,10 @@ export default {
         coinbase: {
             required,
             coinbaseAddress
+        },
+        nodeUrl: {
+            required,
+            nodeUrl
         }
     },
     computed: { },
