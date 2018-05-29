@@ -38,16 +38,16 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                 wjs.eth.getAccounts(function (err, accs) {
                     if (err != null) {
                         console.log('There was an error fetching your accounts.')
-                        reject(err)
+                        return reject(err)
                     }
 
                     if (accs.length === 0) {
                         console.log(`Couldn't get any accounts! Make sure
                         your Ethereum client is configured correctly.`)
-                        reject(err)
+                        return resolve('')
                     }
 
-                    resolve(accs[0])
+                    return resolve(accs[0])
                 })
             })
             return p
