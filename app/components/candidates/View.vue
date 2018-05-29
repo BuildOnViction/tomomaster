@@ -278,7 +278,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             voteActive: false,
             voteValue: 1,
             unvoteValue: 1,
