@@ -55,17 +55,20 @@
                                 <div
                                     class="md-layout-item md-xlarge-size-70 md-large-size-70
                                     md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field>
-                                        <label>Coinbase</label>
+                                    <md-field :class="getValidationClass('coinbase')">
+                                        <label>Coinbase Address</label>
                                         <md-input
                                             v-model="coinbase"
-                                            name="apply-coinbase"
+                                            name="coinbase"
                                             type="string"/>
                                         <md-tooltip>
-                                            What is your node coinbase?</md-tooltip>
+                                            What is your node coinbase address?</md-tooltip>
                                         <span
-                                            v-if="!$v.applyValue.required"
+                                            v-if="!$v.coinbase.required"
                                             class="md-error">Required field</span>
+                                        <span
+                                            v-if="!$v.coinbase.coinbaseAddress"
+                                            class="md-error">Wrong coinbase address format</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -145,6 +148,7 @@ import {
     required,
     minValue
 } from 'vuelidate/lib/validators'
+import coinbaseAddress from '../../../validators/coinbaseAddress.js'
 export default {
     name: 'App',
     mixins: [validationMixin],
@@ -163,6 +167,10 @@ export default {
         applyValue: {
             required,
             minValue: minValue(10000)
+        },
+        coinbase: {
+            required,
+            coinbaseAddress
         }
     },
     computed: { },
