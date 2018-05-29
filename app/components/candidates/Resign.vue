@@ -1,14 +1,5 @@
 <template>
     <div>
-        <!--md-empty-state
-            v-if="!this.$parent.isCandidate && !this.$parent.showProgressBar"
-            md-icon="account_circle"
-            md-label="Opps!!"
-            md-description="You are not a candidate, so you cannot resign">
-            <md-button
-                class="md-primary md-raised"
-                to="/apply">Become a candidate</md-button>
-        </md-empty-state-->
         <div
             class="container md-layout md-gutter md-alignment-top-center">
             <div
@@ -20,22 +11,29 @@
                     </md-card-header>
 
                     <md-card-content>
-                        <md-list-item class="md-layout">
-                            <md-field>
-                                <label>Coinbase</label>
-                                <md-input
-                                    v-model="coinbase"
-                                    name="resign-coinbase"
-                                    type="string"/>
-                            </md-field>
-                        </md-list-item>
+                        <md-list
+                            class="md-double-line">
+                            <md-list-item
+                                class="md-layout">
+                                <md-icon>account_balance_wallet</md-icon>
+                                <div class="md-list-item-text">
+                                    <span>{{ coinbase }}</span>
+                                    <span>Coinbase Address</span>
+                                </div>
+                            </md-list-item>
+                        </md-list>
                     </md-card-content>
 
                     <md-card-actions>
+                        <p v-if="backer !== account">
+                        <md-icon>error_outline</md-icon> You are not a backer of this candidate</p>
                         <md-button
-                            :disabled="this.$parent.showProgressBar"
+                            v-if="backer === account"
+                            :disabled="this.$parent.showProgressBar || backer !== account"
                             class="md-accent md-raised"
-                            @click="resignActive = true;"><md-icon>arrow_downward</md-icon> Retire</md-button>
+                            @click="resignActive = true;">
+                            <md-icon>arrow_downward</md-icon>
+                            &nbsp;Resign</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
@@ -59,11 +57,14 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
+            account: '',
+            backer: '',
             resignActive: false,
             showSnackbar: false,
             snackBarMessage: '',
@@ -77,11 +78,17 @@ export default {
     created: async function () {
         let self = this
         try {
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let cap = await contract.getCandidateCap(account)
+            if (self.isReady) {
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let cap = await contract.getCandidateCap(account)
 
-            self.candidateCap = String(cap / 10 ** 18)
+                self.account = account
+                self.candidateCap = String(cap / 10 ** 18)
+            }
+
+            let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
+            self.backer = candidate.data.backer
         } catch (e) {
             console.log(e)
         }
@@ -100,14 +107,13 @@ export default {
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                let coinbase = this.coinbase
+                let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, { from: account })
 
                 self.showSnackbar = true
                 self.snackBarMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'
                 setTimeout(() => {
-                    self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
                         self.$router.push({ path: '/' })

@@ -54,7 +54,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             withdrawActive: false,
             showSnackbar: false,
             snackBarMessage: '',

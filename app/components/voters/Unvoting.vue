@@ -115,7 +115,7 @@ export default {
     mixins: [validationMixin],
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
             voted: 0,

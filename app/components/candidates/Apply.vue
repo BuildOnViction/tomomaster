@@ -159,7 +159,7 @@ export default {
     data () {
         return {
             account: '',
-            isReady: this.web3,
+            isReady: !!this.web3,
             showSnackbar: false,
             snackBarMessage: '',
             applyValue: 10000,

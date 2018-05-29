@@ -185,12 +185,12 @@
                     <md-card-content>
                         <iframe
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=2"
+                            orgId=1&panelId=2&theme=light"
                             width="1200"
                             frameborder="0" />
                         <iframe
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=6"
+                            orgId=1&panelId=6&theme=light"
                             width="1200"
                             frameborder="0" />
                     </md-card-content>
@@ -211,7 +211,7 @@
                     <md-card-content>
                         <iframe
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
-                            ?orgId=1&panelId=4"
+                            ?orgId=1&panelId=4&theme=light"
                             width="1200"
                             frameborder="0" />
                     </md-card-content>
@@ -254,7 +254,7 @@
                             md-numeric
                             md-label="Capacity"
                             md-sort-by="cap">
-                            {{ item.cap }} $TOMO
+                            {{ isNaN(item.cap) ? '--' : item.cap + ' $TOMO' }}
                         </md-table-cell>
                         <md-table-cell
                             md-label="">
