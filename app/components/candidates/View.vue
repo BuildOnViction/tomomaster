@@ -254,7 +254,7 @@
                             md-numeric
                             md-label="Capacity"
                             md-sort-by="cap">
-                            {{ item.cap }} $TOMO
+                            {{ isNaN(item.cap) ? '--' : item.cap + ' $TOMO' }}
                         </md-table-cell>
                         <md-table-cell
                             md-label="">
