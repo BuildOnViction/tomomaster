@@ -7,26 +7,32 @@
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
                     <md-card-header>
-                        <p class="md-title">Resign</p>
+                        <div class="md-title">Resign
+                            <p class="md-subhead">You are not a backer of this candidate</p>
+                        </div>
                     </md-card-header>
 
                     <md-card-content>
-                        <md-list-item class="md-layout">
-                            <md-field>
-                                <label>Coinbase</label>
-                                <md-input
-                                    v-model="coinbase"
-                                    name="resign-coinbase"
-                                    type="string"/>
-                            </md-field>
-                        </md-list-item>
+                        <md-list
+                            class="md-double-line">
+                            <md-list-item
+                                class="md-layout">
+                                <md-icon>account_balance_wallet</md-icon>
+                                <div class="md-list-item-text">
+                                    <span>{{ coinbase }}</span>
+                                    <span>Coinbase Address</span>
+                                </div>
+                            </md-list-item>
+                        </md-list>
                     </md-card-content>
 
                     <md-card-actions>
                         <md-button
-                            :disabled="this.$parent.showProgressBar"
+                            :disabled="this.$parent.showProgressBar || backer !== account"
                             class="md-accent md-raised"
-                            @click="resignActive = true;"><md-icon>arrow_downward</md-icon> Retire</md-button>
+                            @click="resignActive = true;">
+                            <md-icon>{{ backer === account ? 'arrow_downward' : 'error_outline' }}</md-icon>
+                            &nbsp;Resign</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
@@ -50,11 +56,14 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
     name: 'App',
     data () {
         return {
             isReady: !!this.web3,
+            account: '',
+            backer: '',
             resignActive: false,
             showSnackbar: false,
             snackBarMessage: '',
@@ -68,11 +77,17 @@ export default {
     created: async function () {
         let self = this
         try {
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let cap = await contract.getCandidateCap(account)
+            if (self.isReady) {
+                let account = await self.getAccount()
+                let contract = await self.TomoValidator.deployed()
+                let cap = await contract.getCandidateCap(account)
 
-            self.candidateCap = String(cap / 10 ** 18)
+                self.account = account
+                self.candidateCap = String(cap / 10 ** 18)
+            }
+
+            let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
+            self.backer = candidate.data.backer
         } catch (e) {
             console.log(e)
         }
@@ -91,7 +106,7 @@ export default {
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                let coinbase = this.coinbase
+                let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, { from: account })
 
                 self.showSnackbar = true

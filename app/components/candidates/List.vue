@@ -83,11 +83,11 @@
                                 :to="'/voting/' + item.address"
                                 class="md-raised md-primary">Vote</md-button>
                             <md-button
-                                v-if="item.status === 'PROPOSED'"
+                                v-if="item.status === 'PROPOSED' && item.backer === account"
                                 :to="'/resign/' + item.address"
                                 class="md-raised">Resign</md-button>
                             <md-button
-                                v-if="item.status === 'RESIGNED'"
+                                v-if="item.status === 'RESIGNED' && item.backer === account"
                                 :to="'/withdraw/' + item.address"
                                 class="md-raised">Withdraw</md-button>
                         </md-table-cell>
@@ -105,6 +105,7 @@ export default {
     data () {
         return {
             isReady: !!this.web3,
+            account: '',
             blockNumber: 0,
             nextCheckpoint: 0,
             voteActive: false,
@@ -125,6 +126,11 @@ export default {
     created: async function () {
         let self = this
         try {
+            if (self.isReady) {
+                let account = await self.getAccount()
+                self.account = account
+            }
+
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate) => {
                 self.candidates.push({
