@@ -1,14 +1,5 @@
 <template>
     <div>
-        <!--md-empty-state
-            v-if="!this.$parent.isCandidate && !this.$parent.showProgressBar"
-            md-icon="account_circle"
-            md-label="Opps!!"
-            md-description="You are not a candidate, so you cannot resign">
-            <md-button
-                class="md-primary md-raised"
-                to="/apply">Become a candidate</md-button>
-        </md-empty-state-->
         <div
             class="container md-layout md-gutter md-alignment-top-center">
             <div
@@ -107,7 +98,6 @@ export default {
                 self.snackBarMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'
                 setTimeout(() => {
-                    self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
                         self.$router.push({ path: '/' })
