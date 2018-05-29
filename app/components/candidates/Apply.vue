@@ -1,16 +1,6 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="this.$parent.isCandidate && !this.$parent.showProgressBar"
-            md-icon="account_circle"
-            md-label="You are a candidate"
-            md-description="You are a candidate, so you do not need to apply again">
-            <md-button
-                :to="'/candidate/' + account"
-                class="md-primary md-raised">Your Profile</md-button>
-        </md-empty-state>
         <div
-            v-if="!this.$parent.isCandidate"
             class="container md-layout md-gutter md-alignment-top-center">
             <form
                 novalidate
@@ -65,17 +55,20 @@
                                 <div
                                     class="md-layout-item md-xlarge-size-70 md-large-size-70
                                     md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field>
-                                        <label>Coinbase</label>
+                                    <md-field :class="getValidationClass('coinbase')">
+                                        <label>Coinbase Address</label>
                                         <md-input
                                             v-model="coinbase"
-                                            name="apply-coinbase"
+                                            name="coinbase"
                                             type="string"/>
                                         <md-tooltip>
-                                            What is your node coinbase?</md-tooltip>
+                                            What is your node coinbase address?</md-tooltip>
                                         <span
-                                            v-if="!$v.applyValue.required"
+                                            v-if="!$v.coinbase.required"
                                             class="md-error">Required field</span>
+                                        <span
+                                            v-if="!$v.coinbase.coinbaseAddress"
+                                            class="md-error">Wrong coinbase address format</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -83,17 +76,20 @@
                                 <div
                                     class="md-layout-item md-xlarge-size-70 md-large-size-70
                                     md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field>
-                                        <label>Node Url</label>
+                                    <md-field :class="getValidationClass('nodeUrl')">
+                                        <label>Node URL</label>
                                         <md-input
                                             v-model="nodeUrl"
-                                            name="apply-nodeurl"
+                                            name="nodeurl"
                                             type="string"/>
                                         <md-tooltip>
                                             What is your node url?</md-tooltip>
                                         <span
-                                            v-if="!$v.applyValue.required"
+                                            v-if="!$v.nodeUrl.required"
                                             class="md-error">Required field</span>
+                                        <span
+                                            v-if="!$v.nodeUrl.nodeUrl"
+                                            class="md-error">Wrong node URL format</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -105,7 +101,6 @@
                             class="md-raised md-accent"
                             @click="$router.go(-1)">Cancel</md-button>
                         <md-button
-                            v-if="!this.$parent.isCandidate"
                             :disabled="this.$parent.showProgressBar"
                             class="md-raised md-primary"
                             type="submit"><md-icon>arrow_upward</md-icon> Apply</md-button>
@@ -114,7 +109,6 @@
             </form>
         </div>
         <div
-            v-if="!this.$parent.isCandidate"
             class="md-layout md-gutter md-alignment-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
@@ -157,6 +151,8 @@ import {
     required,
     minValue
 } from 'vuelidate/lib/validators'
+import coinbaseAddress from '../../../validators/coinbaseAddress.js'
+import nodeUrl from '../../../validators/nodeUrl.js'
 export default {
     name: 'App',
     mixins: [validationMixin],
@@ -175,6 +171,14 @@ export default {
         applyValue: {
             required,
             minValue: minValue(10000)
+        },
+        coinbase: {
+            required,
+            coinbaseAddress
+        },
+        nodeUrl: {
+            required,
+            nodeUrl
         }
     },
     computed: { },
@@ -234,10 +238,9 @@ export default {
                 self.snackBarMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
                 setTimeout(() => {
-                    self.$parent.isCandidate = rs.tx !== 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
-                        self.$router.push({ path: `/candidate/${account}` })
+                        self.$router.push({ path: `/candidate/${coinbase}` })
                     }
                 }, 2000)
             } catch (e) {
