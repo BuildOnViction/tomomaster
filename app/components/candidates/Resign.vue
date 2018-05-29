@@ -7,9 +7,7 @@
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
                     <md-card-header>
-                        <div class="md-title">Resign
-                            <p class="md-subhead">You are not a backer of this candidate</p>
-                        </div>
+                        <p class="md-title">Resign</p>
                     </md-card-header>
 
                     <md-card-content>
@@ -27,11 +25,14 @@
                     </md-card-content>
 
                     <md-card-actions>
+                        <p v-if="backer !== account">
+                        <md-icon>error_outline</md-icon> You are not a backer of this candidate</p>
                         <md-button
+                            v-if="backer === account"
                             :disabled="this.$parent.showProgressBar || backer !== account"
                             class="md-accent md-raised"
                             @click="resignActive = true;">
-                            <md-icon>{{ backer === account ? 'arrow_downward' : 'error_outline' }}</md-icon>
+                            <md-icon>arrow_downward</md-icon>
                             &nbsp;Resign</md-button>
                     </md-card-actions>
                 </md-card>
