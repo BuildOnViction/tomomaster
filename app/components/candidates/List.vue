@@ -104,7 +104,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             blockNumber: 0,
             nextCheckpoint: 0,
             voteActive: false,

@@ -74,7 +74,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             voter: this.$route.params.address,
             candidates: [],
             balance: 0,

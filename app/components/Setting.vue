@@ -62,7 +62,7 @@ export default {
     name: 'App',
     data () {
         return {
-            isReady: this.web3,
+            isReady: !!this.web3,
             mnemonic: '',
             provider: 'metamask',
             address: '',
