@@ -16,12 +16,17 @@
                             v-model="provider"
                             name="provider">
                             <md-option value="metamask">Metamask</md-option>
-                            <md-option value="mainnet">TomoChain Mainnet</md-option>
+                            <!--md-option value="mainnet">TomoChain Mainnet</md-option-->
                             <md-option value="testnet">Tomochain Testnet</md-option>
                         </md-select>
+                        <span
+                            v-if="provider !== 'metamask'"
+                            class="md-helper-text">
+                            Using node at https://testnet.tomochain.com.
+                        </span>
                     </md-field>
                     <md-field v-if="provider !== 'metamask'">
-                        <label>MNEMONIC</label>
+                        <label>MNEMONIC/PrivateKey</label>
                         <md-input v-model="mnemonic"/>
                     </md-field>
                     <div
@@ -54,9 +59,10 @@
 <script>
 import Web3 from 'web3'
 const HDWalletProvider = require('truffle-hdwallet-provider')
+const PrivateKeyProvider = require('truffle-privatekey-provider')
 const networks = {
-    mainnet: 'https://core.tomocoin.io',
-    testnet: 'https://core.tomocoin.io'
+    // mainnet: 'https://core.tomocoin.io',
+    testnet: 'https://testnet.tomochain.com'
 }
 export default {
     name: 'App',
@@ -103,7 +109,11 @@ export default {
                     wjs = new Web3(p)
                 }
             } else {
-                const walletProvider = new HDWalletProvider(self.mnemonic, networks[self.provider])
+                const walletProvider =
+                    (self.mnemonic.indexOf(' ') >= 0)
+                        ? new HDWalletProvider(self.mnemonic, networks[self.provider])
+                        : new PrivateKeyProvider(self.mnemonic, networks[self.provider])
+
                 wjs = new Web3(walletProvider)
             }
             self.setupProvider(this.provider, wjs)
