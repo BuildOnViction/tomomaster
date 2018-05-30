@@ -21,6 +21,7 @@ import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 Vue.use(VueMaterial)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
+Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
 if (window.web3) {
     var web3js = new Web3(window.web3.currentProvider)
@@ -54,7 +55,9 @@ Vue.prototype.setupProvider = function (provider, wjs) {
         }
     }
 }
-Vue.prototype.setupProvider('metamask', web3js)
+
+let provider = (Vue.prototype.isElectron) ? 'testnet' : 'metamask'
+Vue.prototype.setupProvider(provider, web3js)
 
 Vue.use(VueRouter)
 
