@@ -259,7 +259,7 @@
                         <md-table-cell
                             md-label="">
                             <md-button
-                                :href="'http://explorer-testnet.tomochain.com/txs/' + item.tx"
+                                :href="'https://explorer-testnet.tomochain.com/txs/' + item.tx"
                                 target="_blank"
                                 class="md-icon-button">
                                 <md-icon>remove_red_eye</md-icon>
