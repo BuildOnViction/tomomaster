@@ -15,7 +15,9 @@
                             id="provider"
                             v-model="provider"
                             name="provider">
-                            <md-option value="metamask">Metamask</md-option>
+                            <md-option
+                                v-if="!isElectron"
+                                value="metamask">Metamask</md-option>
                             <!--md-option value="mainnet">TomoChain Mainnet</md-option-->
                             <md-option value="testnet">Tomochain Testnet</md-option>
                         </md-select>
