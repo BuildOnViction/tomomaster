@@ -68,7 +68,8 @@ export default {
                         <strong>${transaction.capacity / 10 ** 18} $TOMO</strong> for candidate 
                         <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
                         <br/><br/>
-                        Transaction Hash: <a href="#" target="_blank">${self.tx}</a>`
+                        Transaction Hash: <a href="https://explorer-testnet.tomochain.com/txs/${self.tx}"
+                        target="_blank">${self.tx}</a>`
                         self.buttonText = 'View all Candidates'
                     } else {
                         self.icon = 'error_outline'
