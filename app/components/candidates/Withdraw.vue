@@ -58,7 +58,6 @@ export default {
             withdrawActive: false,
             showSnackbar: false,
             snackBarMessage: '',
-            candidateCap: 10000,
             coinbase: this.$route.params.address
         }
     },
@@ -72,7 +71,6 @@ export default {
             let contract = await self.TomoValidator.deployed()
             let cap = await contract.getCandidateCap(account)
 
-            self.candidateCap = String(cap / 10 ** 18)
         } catch (e) {
             console.log(e)
         }

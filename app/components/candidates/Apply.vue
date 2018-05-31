@@ -15,7 +15,7 @@
                         <md-list>
                             <md-list-item>
                                 <md-icon md-src="/app/assets/tomo.svg" />
-                                <span class="md-list-item-text">You have to deposit at least 10,000 $TOMO</span>
+                                <span class="md-list-item-text">You have to deposit at least 50,000 $TOMO</span>
                             </md-list-item>
                             <md-list-item>
                                 <md-icon>lock</md-icon>
@@ -47,7 +47,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.applyValue.minValue"
-                                            class="md-error">Must be greater than 10,000 $TOMO</span>
+                                            class="md-error">Must be greater than 50,000 $TOMO</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -159,7 +159,7 @@ export default {
             isReady: !!this.web3,
             showSnackbar: false,
             snackBarMessage: '',
-            applyValue: 10000,
+            applyValue: 50000,
             coinbase: '',
             nodeUrl: ''
         }
@@ -167,7 +167,7 @@ export default {
     validations: {
         applyValue: {
             required,
-            minValue: minValue(10000)
+            minValue: minValue(50000)
         },
         coinbase: {
             required,
