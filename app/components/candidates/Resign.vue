@@ -68,7 +68,6 @@ export default {
             resignActive: false,
             showSnackbar: false,
             snackBarMessage: '',
-            candidateCap: 10000,
             coinbase: this.$route.params.address
         }
     },
@@ -84,7 +83,6 @@ export default {
                 let cap = await contract.getCandidateCap(account)
 
                 self.account = account
-                self.candidateCap = String(cap / 10 ** 18)
             }
 
             let candidate = await axios.get(`/api/candidates/${self.coinbase}`)

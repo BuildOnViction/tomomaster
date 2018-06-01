@@ -15,7 +15,7 @@
                         <md-list>
                             <md-list-item>
                                 <md-icon md-src="/app/assets/tomo.svg" />
-                                <span class="md-list-item-text">You have to deposit at least 10,000 $TOMO</span>
+                                <span class="md-list-item-text">You have to deposit at least 50,000 $TOMO</span>
                             </md-list-item>
                             <md-list-item>
                                 <md-icon>lock</md-icon>
@@ -47,7 +47,7 @@
                                             class="md-error">Required field</span>
                                         <span
                                             v-else-if="!$v.applyValue.minValue"
-                                            class="md-error">Must be greater than 10,000 $TOMO</span>
+                                            class="md-error">Must be greater than 50,000 $TOMO</span>
                                     </md-field>
                                 </div>
                             </md-list-item>
@@ -119,16 +119,13 @@
                     </md-card-header>
                     <md-card-content>
                         <md-content>
-                            Far far away, behind the word mountains,
-                            far from the countries Vokalia and Consonantia,
-                            there live the blind texts. Separated they live in
-                            Bookmarksgrove right at the coast of the Semantics,
-                            a large language ocean. A small river named Duden
-                            flows by their place and supplies it with the necessary
-                            regelialia. It is a paradisematic country, in which roasted
-                            parts of sentences fly into your mouth. Even the all-powerful
-                            Pointing has no control about the blind texts it is an almost
-                            unorthographic life One day however a small line of blind text
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident,
+                            sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </md-content>
                     </md-card-content>
                 </md-card>
@@ -162,7 +159,7 @@ export default {
             isReady: !!this.web3,
             showSnackbar: false,
             snackBarMessage: '',
-            applyValue: 10000,
+            applyValue: 50000,
             coinbase: '',
             nodeUrl: ''
         }
@@ -170,7 +167,7 @@ export default {
     validations: {
         applyValue: {
             required,
-            minValue: minValue(10000)
+            minValue: minValue(50000)
         },
         coinbase: {
             required,

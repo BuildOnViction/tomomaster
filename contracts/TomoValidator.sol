@@ -26,14 +26,12 @@ contract TomoValidator is IValidator {
     mapping(address => address[]) voters;
     address[] public candidates;
     uint256 candidateCount = 0;
-    uint256 public constant minCandidateCap = 10000 ether;
-    uint256 public constant maxCandidateNumber = 1000;
+    uint256 public constant minCandidateCap = 50000 ether;
     uint256 public constant maxValidatorNumber = 99;
 
     modifier onlyValidCandidateCap {
         // anyone can deposit 10000 TOMO to become a candidate
         require(msg.value >= minCandidateCap);
-        require(candidateCount <= maxCandidateNumber);
         _;
     }
 
