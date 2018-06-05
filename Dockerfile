@@ -1,18 +1,15 @@
 FROM node:8
-MAINTAINER ToMo Team
-
-RUN npm install -g pm2 truffle
 
 WORKDIR /build
 
+RUN npm install -g pm2
 COPY ./package.json /build
 COPY ./package-lock.json /build
 RUN npm install
 COPY ./ /build
-RUN npm run build
+RUN npm run build && rm -rf /build/node_modules
 
-EXPOSE 80
+RUN npm install --production
 
 RUN chmod +x ./entrypoint.sh
-
 ENTRYPOINT ["./entrypoint.sh"]
