@@ -1,0 +1,8 @@
+dist: trusty
+language: node_js
+node_js:
+	- '8'
+sudo: required
+install: npm install
+script:
+	- npm run test
