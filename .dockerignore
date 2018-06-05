@@ -4,4 +4,4 @@ node_modules
 .*.sw*
 .cache
 .eslintcache
-tomochain
+build/app.js*
