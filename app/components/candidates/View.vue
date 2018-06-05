@@ -274,6 +274,8 @@
 </template>
 <script>
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
+
 export default {
     name: 'App',
     data () {
@@ -318,7 +320,7 @@ export default {
             if (c.data) {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
-                self.candidate.cap = parseFloat(data.capacity) / 10 ** 18
+                self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
                 self.candidate.rewarded = 1
                 self.candidate.latestBlock = '123,456'
                 self.candidate.totalSignedBlocks = 100
@@ -363,7 +365,7 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: (tx.capacity / 10 ** 18)
+                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toString()
                 })
             })
         } catch (e) {

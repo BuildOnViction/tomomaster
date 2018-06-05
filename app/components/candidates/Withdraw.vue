@@ -64,17 +64,7 @@ export default {
     computed: { },
     watch: {},
     updated () {},
-    created: async function () {
-        let self = this
-        try {
-            let account = await self.getAccount()
-            let contract = await self.TomoValidator.deployed()
-            let cap = await contract.getCandidateCap(account)
-
-        } catch (e) {
-            console.log(e)
-        }
-    },
+    created: async function () {},
     mounted () {
     },
     methods: {

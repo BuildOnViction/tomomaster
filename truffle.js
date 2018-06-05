@@ -5,9 +5,12 @@ const config = require('config')
 module.exports = {
     networks: {
         development: {
-            host: '127.0.0.1',
-            port: 8545,
-            network_id: '*'
+            provider: function () {
+                let wallet = new HDWalletProvider(process.env.MNEMONIC, 'http://127.0.0.1:8545')
+                return wallet
+            },
+            gas: 4000000,
+            network_id: 889
         },
         tomo: {
             provider: function () {

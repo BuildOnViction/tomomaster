@@ -79,9 +79,6 @@ export default {
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
-                let contract = await self.TomoValidator.deployed()
-                let cap = await contract.getCandidateCap(account)
-
                 self.account = account
             }
 

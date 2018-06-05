@@ -22,7 +22,7 @@
                             <md-list-item>
                                 <md-icon>arrow_upward</md-icon>
                                 <div class="md-list-item-text">
-                                    <span><strong>{{ totalVoted }}</strong> $TOMO</span>
+                                    <span><strong>{{ totalVoted.toString() }}</strong> $TOMO</span>
                                     <span>Total voted</span>
                                 </div>
                             </md-list-item>
@@ -70,6 +70,8 @@
 </template>
 <script>
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
+
 export default {
     name: 'App',
     data () {
@@ -99,9 +101,9 @@ export default {
             candidates.data.map(async (c) => {
                 self.candidates.push({
                     address: c.candidate,
-                    cap: (c.capacity / 10 ** 18)
+                    cap: (new BigNumber(c.capacity)).div(10 ** 18).toString()
                 })
-                self.totalVoted += (c.capacity / 10 ** 18)
+                self.totalVoted += c.capacity / 10 ** 18
             })
 
             self.candidates.sort((a, b) => {

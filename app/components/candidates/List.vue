@@ -66,7 +66,13 @@
                         <md-table-cell
                             md-label="Address"
                             md-sort-by="address">
-                            <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
+                            <router-link :to="'/candidate/' + item.address">
+                                {{ item.address.substring(0, 8) + '...' }}
+                            </router-link>
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="Name">
+                            {{ item.name }}
                         </md-table-cell>
                         <md-table-cell
                             md-label="Capacity"
@@ -100,6 +106,8 @@
 
 <script>
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
+
 export default {
     name: 'App',
     data () {
@@ -137,7 +145,8 @@ export default {
                     address: candidate.candidate,
                     backer: candidate.backer,
                     status: candidate.status,
-                    cap: (candidate.capacity / 10 ** 18)
+                    name: candidate.name || 'Anonymous',
+                    cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toString()
                 })
             })
             self.candidates.sort((a, b) => {
