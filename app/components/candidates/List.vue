@@ -80,8 +80,12 @@
                         </md-table-cell>
                         <md-table-cell
                             md-label="Status">
-                            <md-chip :class="item.status == 'PROPOSED' ? 'md-primary' : 'md-accent'">
+                            <md-chip
+                                v-if="!item.isMasternode"
+                                :class="item.status == 'PROPOSED' ? 'md-primary' : 'md-accent'">
                                 {{ item.status }}</md-chip>
+                            <md-chip v-if="item.isMasternode">
+                                MASTERNODE</md-chip>
                         </md-table-cell>
                         <md-table-cell>
                             <md-button
@@ -139,12 +143,15 @@ export default {
                 self.account = account
             }
 
+            let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate) => {
+                let isMasternode = (signers.data.signers || []).indexOf(candidate.candidate) >= 0
                 self.candidates.push({
                     address: candidate.candidate,
                     backer: candidate.backer,
                     status: candidate.status,
+                    isMasternode: isMasternode,
                     name: candidate.name || 'Anonymous',
                     cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toString()
                 })
