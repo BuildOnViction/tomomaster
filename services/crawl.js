@@ -1,7 +1,8 @@
 'use strict'
 
-const { Validator } = require('../models/blockchain/validator')
+const { Validator, chain } = require('../models/blockchain/validator')
 const db = require('../models/mongodb')
+const config = require('config')
 
 async function watch () {
     let v = await Validator.deployed()
@@ -14,6 +15,28 @@ async function watch () {
         fromBlock: blockNumber,
         toBlock: 'latest'
     })
+
+    chain.eth.filter('latest').watch(async (err, block) => {
+        if (err) {
+            return false
+        }
+        let blk = chain.eth.getBlock('latest')
+        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
+        let sbuff = buff.slice(32, buff.length - 65)
+        let signers = []
+        if (sbuff.length > 0) {
+            for (let i = 1; i <= sbuff.length / 20; i++) {
+                let address = sbuff.slice((i - 1) * 20, i * 20)
+                signers.push('0x' + address.toString('hex'))
+            }
+            db.Signer.create({
+                networkId: config.get('blockchain.networkId'),
+                blockNumber: blk.number,
+                signers: signers
+            })
+        }
+    })
+
     return allEvents.watch((err, res) => {
         if (err || !(res || {}).args) {
             console.error(err, res)
