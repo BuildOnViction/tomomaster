@@ -20,12 +20,17 @@
                                 value="metamask">Metamask</md-option>
                             <!--md-option value="mainnet">TomoChain Mainnet</md-option-->
                             <md-option value="testnet">Tomochain Testnet</md-option>
+                            <md-option value="custom">Custom Network</md-option>
                         </md-select>
                         <span
-                            v-if="provider !== 'metamask'"
+                            v-if="provider === 'testnet'"
                             class="md-helper-text">
                             Using node at https://testnet.tomochain.com.
                         </span>
+                    </md-field>
+                    <md-field v-if="provider === 'custom'">
+                        <label>Network Url</label>
+                        <md-input v-model="networks.custom"/>
                     </md-field>
                     <md-field v-if="provider !== 'metamask'">
                         <label>MNEMONIC/PrivateKey</label>
@@ -62,10 +67,6 @@
 import Web3 from 'web3'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
-const networks = {
-    // mainnet: 'https://core.tomocoin.io',
-    testnet: 'https://testnet.tomochain.com'
-}
 export default {
     name: 'App',
     data () {
@@ -74,7 +75,12 @@ export default {
             mnemonic: '',
             provider: 'metamask',
             address: '',
-            balance: 0
+            balance: 0,
+            networks: {
+                // mainnet: 'https://core.tomochain.com',
+                testnet: 'https://testnet.tomochain.com',
+                custom: 'http://localhost:8545'
+            }
         }
     },
     computed: {},
@@ -113,8 +119,8 @@ export default {
             } else {
                 const walletProvider =
                     (self.mnemonic.indexOf(' ') >= 0)
-                        ? new HDWalletProvider(self.mnemonic, networks[self.provider])
-                        : new PrivateKeyProvider(self.mnemonic, networks[self.provider])
+                        ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
+                        : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
 
                 wjs = new Web3(walletProvider)
             }
