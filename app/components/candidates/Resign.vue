@@ -25,11 +25,11 @@
                     </md-card-content>
 
                     <md-card-actions>
-                        <p v-if="backer !== account">
-                        <md-icon>error_outline</md-icon> You are not a backer of this candidate</p>
+                        <p v-if="owner !== account">
+                        <md-icon>error_outline</md-icon> You are not a owner of this candidate</p>
                         <md-button
-                            v-if="backer === account"
-                            :disabled="this.$parent.showProgressBar || backer !== account"
+                            v-if="owner === account"
+                            :disabled="this.$parent.showProgressBar || owner !== account"
                             class="md-accent md-raised"
                             @click="resignActive = true;">
                             <md-icon>arrow_downward</md-icon>
@@ -64,7 +64,7 @@ export default {
         return {
             isReady: !!this.web3,
             account: '',
-            backer: '',
+            owner: '',
             resignActive: false,
             showSnackbar: false,
             snackBarMessage: '',
@@ -83,7 +83,7 @@ export default {
             }
 
             let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
-            self.backer = candidate.data.backer
+            self.owner = candidate.data.owner
         } catch (e) {
             console.log(e)
         }

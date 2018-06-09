@@ -1,6 +1,7 @@
 'use strict'
 
-const { Validator, chain } = require('../models/blockchain/validator')
+const { Validator } = require('../models/blockchain/validator')
+const chain = require('../models/blockchain/chain')
 const db = require('../models/mongodb')
 const config = require('config')
 
@@ -9,6 +10,7 @@ async function watch () {
     let cs = await db.CrawlState.findOne({
         smartContractAddress: v.address
     })
+
     const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
     console.info('Listen events from block number %s ...', blockNumber)
     const allEvents = v.allEvents({

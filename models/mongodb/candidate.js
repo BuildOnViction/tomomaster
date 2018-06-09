@@ -8,7 +8,7 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
-    backer: {
+    owner: {
         type: String,
         index: true
     },
