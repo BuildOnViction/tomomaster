@@ -66,7 +66,7 @@ contract TomoValidator is IValidator {
         _;
     }
 
-    function TomoValidator(address[] _candidates, uint256[] _caps) public {
+    constructor (address[] _candidates, uint256[] _caps) public {
         candidates = _candidates;
         
         for (uint256 i = 0; i < _candidates.length; i++) {
