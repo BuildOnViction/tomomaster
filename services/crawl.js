@@ -56,7 +56,7 @@ async function watch () {
         let event = res.event
         let candidate = res.args._candidate
         let voter = res.args._voter
-        let backer = res.args._backer
+        let owner = res.args._owner
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
@@ -64,7 +64,7 @@ async function watch () {
             tx: res.transactionHash,
             event: event,
             voter: voter,
-            backer: backer,
+            owner: owner,
             candidate: candidate,
             capacity: capacity
         })
@@ -82,7 +82,7 @@ async function updateCandidateInfo (candidate) {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
         let nodeUrl = await validator.getCandidateNodeUrl.call(candidate)
-        let backer = await validator.getCandidateBacker.call(candidate)
+        let owner = await validator.getCandidateOwner.call(candidate)
         let status = await validator.isCandidate.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
@@ -97,7 +97,7 @@ async function updateCandidateInfo (candidate) {
                     capacity: String(capacity),
                     nodeUrl: nodeUrl,
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
-                    backer: String(backer)
+                    owner: String(owner)
                 }
             }, { upsert: true })
         } else {
