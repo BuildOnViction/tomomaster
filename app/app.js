@@ -6,6 +6,7 @@ import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
 import CandidateResign from './components/candidates/Resign.vue'
 import CandidateWithdraw from './components/candidates/Withdraw.vue'
+import BlockSigner from './components/blocksigners/List.vue'
 import VoterView from './components/voters/View'
 import VotingView from './components/voters/Voting'
 import UnvotingView from './components/voters/Unvoting'
@@ -99,6 +100,9 @@ const router = new VueRouter({
         },
         {
             path: '/confirm/:transaction', component: ConfirmView
+        },
+        {
+            path: '/blocksigners', component: BlockSigner
         },
         {
             path: '/setting', component: Setting

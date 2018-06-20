@@ -1,45 +1,66 @@
 'use strict'
 
 const { Validator } = require('../models/blockchain/validator')
+const { BlockSigner } = require('../models/blockchain/blockSigner')
 const chain = require('../models/blockchain/chain')
 const db = require('../models/mongodb')
 const config = require('config')
 
-async function watch () {
+async function watchBlockSigner () {
+    let bs = await BlockSigner.deployed()
+    let cs = await db.CrawlState.findOne({
+        smartContractAddress: bs.address
+    })
+    const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+    console.info('BlockSigner - Listen events from block number %s ...', blockNumber)
+    const allEvents = bs.allEvents({
+        fromBlock: blockNumber,
+        toBlock: 'latest'
+    })
+    return allEvents.watch(async (err, res) => {
+        if (err || !(res || {}).args) {
+            console.error(err, res)
+            return false
+        }
+        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
+        if (cs) {
+            cs.blockNumber = res.blockNumber
+        } else {
+            cs = new db.CrawlState({
+                smartContractAddress: bs.address,
+                blockNumber: res.blockNumber
+            })
+        }
+        let signer = res.args._signer
+        let bN = String(res.args.blockNumber) // TOMO: change param name
+        cs.save()
+        return db.BlockSigner.update({
+            smartContractAddress: bs.address,
+            blockNumber: bN
+        }, {
+            $set: {
+                smartContractAddress: bs.address,
+                blockNumber: bN
+            },
+            $addToSet: { signers: signer }
+        }, { upsert: true })
+    })
+}
+
+async function watchValidator () {
     let v = await Validator.deployed()
     let cs = await db.CrawlState.findOne({
         smartContractAddress: v.address
     })
 
     const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-    console.info('Listen events from block number %s ...', blockNumber)
+    console.info('TomoValidator - Listen events from block number %s ...', blockNumber)
     const allEvents = v.allEvents({
         fromBlock: blockNumber,
         toBlock: 'latest'
     })
 
-    chain.eth.filter('latest').watch(async (err, block) => {
-        if (err) {
-            return false
-        }
-        let blk = chain.eth.getBlock('latest')
-        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
-        let sbuff = buff.slice(32, buff.length - 65)
-        let signers = []
-        if (sbuff.length > 0) {
-            for (let i = 1; i <= sbuff.length / 20; i++) {
-                let address = sbuff.slice((i - 1) * 20, i * 20)
-                signers.push('0x' + address.toString('hex'))
-            }
-            db.Signer.create({
-                networkId: config.get('blockchain.networkId'),
-                blockNumber: blk.number,
-                signers: signers
-            })
-        }
-    })
-
-    return allEvents.watch((err, res) => {
+    return allEvents.watch(async (err, res) => {
         if (err || !(res || {}).args) {
             console.error(err, res)
             return false
@@ -75,6 +96,32 @@ async function watch () {
         }
         updateCandidateInfo(candidate)
     })
+}
+
+async function watch () {
+    chain.eth.filter('latest').watch(async (err, block) => {
+        if (err) {
+            return false
+        }
+        let blk = chain.eth.getBlock('latest')
+        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
+        let sbuff = buff.slice(32, buff.length - 65)
+        let signers = []
+        if (sbuff.length > 0) {
+            for (let i = 1; i <= sbuff.length / 20; i++) {
+                let address = sbuff.slice((i - 1) * 20, i * 20)
+                signers.push('0x' + address.toString('hex'))
+            }
+            db.Signer.create({
+                networkId: config.get('blockchain.networkId'),
+                blockNumber: blk.number,
+                signers: signers
+            })
+        }
+    })
+
+    watchBlockSigner()
+    return watchValidator()
 }
 
 async function updateCandidateInfo (candidate) {
