@@ -1,4 +1,7 @@
 'use strict'
+require('babel-register')
+require('babel-polyfill')
+
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const config = require('config')
 
@@ -10,7 +13,7 @@ module.exports = {
                 return wallet
             },
             gas: 4000000,
-            network_id: 889
+            network_id: '*'
         },
         tomo: {
             provider: function () {

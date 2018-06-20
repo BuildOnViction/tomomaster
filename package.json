@@ -27,6 +27,8 @@
     },
     "homepage": "https://github.com/tomochain/tomo-governance#readme",
     "dependencies": {
+        "babel-polyfill": "^6.26.0",
+        "babel-register": "^6.26.0",
         "bignumber.js": "^7.2.1",
         "body-parser": "^1.18.2",
         "config": "^1.30.0",
