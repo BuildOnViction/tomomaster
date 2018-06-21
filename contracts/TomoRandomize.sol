@@ -4,12 +4,18 @@ import "./libs/SafeMath.sol";
 
 contract TomoRandomize {
     using SafeMath for uint256;
-    uint256 public constant epochNumber = 990;
-    uint256 public constant blockTimeSecret = 900;
-    uint256 public constant blockTimeOpening = 950;
+    uint256 public epochNumber;
+    uint256 public blockTimeSecret;
+    uint256 public blockTimeOpening;
 
     mapping (address=>bytes32[]) randomSecret;
     mapping (address=>bytes32[]) randomOpening;
+
+    constructor (uint256 _epochNumber, uint256 _blockTimeSecret, uint256 _blockTimeOpening) public {
+        epochNumber = _epochNumber;
+        blockTimeOpening = _blockTimeOpening;
+        blockTimeSecret = _blockTimeSecret;
+    }
 
     function setSecret(bytes32[] _secret) public {
         require(_secret.length == epochNumber);
