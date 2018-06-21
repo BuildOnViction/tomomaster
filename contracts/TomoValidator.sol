@@ -28,6 +28,7 @@ contract TomoValidator is IValidator {
     uint256 candidateCount = 0;
     uint256 public constant minCandidateCap = 50000 ether;
     uint256 public constant maxValidatorNumber = 99;
+    uint256 public constant candidateWithdrawDelay = 100; // blocks
 
     modifier onlyValidCandidateCap {
         // anyone can deposit X TOMO to become a candidate
@@ -159,8 +160,8 @@ contract TomoValidator is IValidator {
                 break;
             }
         }
-        // refunding after retiring 100 blocks
-        validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(100);
+        // refunding after retiring X blocks
+        validatorsState[_candidate].withdrawBlockNumber = validatorsState[_candidate].withdrawBlockNumber.add(block.number).add(candidateWithdrawDelay);
         emit Resign(msg.sender, _candidate);
     }
 
