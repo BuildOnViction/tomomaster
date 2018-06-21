@@ -6,7 +6,7 @@ const nodeUrl = 'enode://efbb5dccf38ab207fdf28dedc6d9a12fd28748447e64b6c56f3072f
 
 contract('TomoValidator', (accounts) => {
     it('Become a candidate', async () => {
-        const validator = await TomoValidator.new([], [])
+        const validator = await TomoValidator.new([], [], 5, 99, 100)
 
         await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -14,7 +14,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Can not become an candidate when the deposit is less than the minimum ', async () => {
-        const validator = await TomoValidator.new([], [])
+        const validator = await TomoValidator.new([], [], 5, 99, 100)
 
         await tryCatch(validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 1.0 * 10 ** 18 }), errTypes.revert)
         // await assertRevert(await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 1.0 * 10 ** 18 }))
@@ -22,7 +22,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A candidate cannot become a candidate again', async () => {
-        const validator = await TomoValidator.new([], []);
+        const validator = await TomoValidator.new([], [], 5, 99, 100)
 
         await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
