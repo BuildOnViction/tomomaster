@@ -28,4 +28,16 @@ contract('TomoValidator', (accounts) => {
 
         assert.equal((await validator.getCandidates.call()).valueOf()[0], accounts[0])
     })
+
+    it('Vote a candidate', async () => {
+        const validator = await TomoValidator.new([], [], 5, 99, 100)
+
+        await validator.propose(accounts[1], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
+        assert.equal((await validator.getCandidates.call()).valueOf()[0], accounts[1])
+
+        await validator.vote(accounts[1], { from: accounts[2], value: 2.0 * 10 ** 18 })
+
+
+        assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[0], accounts[2])
+    })
 })
