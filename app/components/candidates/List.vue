@@ -9,7 +9,9 @@
                 <md-card md-with-hover>
                     <md-card-header>
                         <p class="md-subheading">Current Block</p>
-                        <p class="md-display-1">#{{ blockNumber }}</p>
+                        <router-link :to="'/blocksigners'">
+                            <p class="md-display-1">#{{ blockNumber }}</p>
+                        </router-link>
                     </md-card-header>
                 </md-card>
             </div>
