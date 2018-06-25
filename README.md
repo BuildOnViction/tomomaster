@@ -11,11 +11,6 @@ cp config/default.json config/local.json
 ```
 Update `local.json` file to support your environment
 
-
-```cp .env.dev .env```
-
-Update `.env` file to support `truffle` environment 
-
 ## Install
 ```
 npm install
