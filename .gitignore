@@ -5,3 +5,4 @@ node_modules
 build/
 .idea/
 .node-xmlhttprequest*
+.env
