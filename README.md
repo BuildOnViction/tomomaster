@@ -11,15 +11,41 @@ cp config/default.json config/local.json
 ```
 Update `local.json` file to support your environment
 
+
+```cp .env.dev .env```
+
+Update `.env` file to support `truffle` environment 
+
 ## Install
 ```
-truffle deploy --reset --network tomo
 npm install
+truffle deploy --reset --network tomo
 ```
-Note: before deploying to tomochain testnet, make sure you have $TOMO in the wallet. If not, get free at https://faucet.tomochain.com
+Note: before deploying to tomochain testnet, make sure you have $TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.tomochain.com)
 
 ## Run
 ```
 npm run dev
 ```
-The site will run at `http://localhost:3000`
+The site will run at [`http://localhost:3000`](http://localhost:3000)
+
+## Test
+```
+npm run test
+```
+Or run command
+```
+truffle test
+``` 
+
+
+
+To test a special file
+```
+npm run test path_to_file/file.js
+```
+Or run command
+```
+truffle test path_to_file/file.js
+```
+
