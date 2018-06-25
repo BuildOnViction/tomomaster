@@ -5,6 +5,7 @@ require('dotenv').config()
 
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const config = require('config')
+const TestRPC = require('ganache-cli')
 
 module.exports = {
     networks: {
@@ -13,7 +14,10 @@ module.exports = {
             //     let wallet = new HDWalletProvider(process.env.MNEMONIC, 'http://127.0.0.1:8545')
             //     return wallet
             // },
-
+            provider: TestRPC.provider(),
+            network_id: '*' // Match any network id
+        },
+        local: {
             host: 'localhost',
             port: 8545,
             gas: 4000000,
