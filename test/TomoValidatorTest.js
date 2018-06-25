@@ -37,7 +37,6 @@ contract('TomoValidator', (accounts) => {
 
         await validator.vote(accounts[1], { from: accounts[2], value: 2.0 * 10 ** 18 })
 
-
         assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[0], accounts[2])
     })
 })
