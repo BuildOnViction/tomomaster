@@ -5,7 +5,9 @@ node_js:
 sudo: required
 before_install:
 - if [[ `npm -v` != 6* ]]; then npm i -g npm@6; fi
-install: npm install
+install:
+- npm install
+- cp .env.dev .env
 script:
 - npm run lint
 - npm run test
