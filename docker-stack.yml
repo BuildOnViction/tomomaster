@@ -14,9 +14,9 @@ services:
       - "80:80"
       - "443:443"
 
-  validators:
+  tomomaster:
     build: ./
-    image: tomochain/validators
+    image: tomochain/tomomaster
     restart: "on-failure:10"
     depends_on:
       - mongodb
