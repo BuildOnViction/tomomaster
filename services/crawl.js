@@ -12,7 +12,7 @@ async function watchBlockSigner () {
         smartContractAddress: bs.address
     })
     const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-    console.info('BlockSigner - Listen events from block number %s ...', blockNumber)
+    console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
     const allEvents = bs.allEvents({
         fromBlock: blockNumber,
         toBlock: 'latest'
@@ -32,7 +32,7 @@ async function watchBlockSigner () {
             })
         }
         let signer = res.args._signer
-        let bN = String(res.args.blockNumber) // TOMO: change param name
+        let bN = String(res.args._blockNumber)
         cs.save()
         return db.BlockSigner.update({
             smartContractAddress: bs.address,
@@ -54,7 +54,7 @@ async function watchValidator () {
     })
 
     const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-    console.info('TomoValidator - Listen events from block number %s ...', blockNumber)
+    console.info('TomoValidator %s - Listen events from block number %s ...', v.address, blockNumber)
     const allEvents = v.allEvents({
         fromBlock: blockNumber,
         toBlock: 'latest'

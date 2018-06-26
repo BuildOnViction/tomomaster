@@ -148,7 +148,7 @@ export default {
             let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate) => {
-                let isMasternode = (signers.data.signers || []).indexOf(candidate.candidate) >= 0
+                let isMasternode = (((signers || {}).data || {}).signers || []).indexOf(candidate.candidate) >= 0
                 self.candidates.push({
                     address: candidate.candidate,
                     owner: candidate.owner,
