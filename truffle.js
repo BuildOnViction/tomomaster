@@ -21,6 +21,7 @@ module.exports = {
                 return new HDWalletProvider(config.get('truffle.mnemonic'), config.get('blockchain.rpc'))
             },
             network_id: config.get('blockchain.networkId'),
+            gas: 4000000,
             gasPrice: 1
         }
     }
