@@ -18,7 +18,7 @@
   },
   "truffle": {
     "mnemonic": "",
-    "minCandidateCap": 50000,
+    "minCandidateCap": "50000000000000000000000",
     "maxValidatorNumber": 99,
     "candidateWithdrawDelay": 100,
     "epochNumber": 990,

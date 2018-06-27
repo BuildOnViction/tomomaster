@@ -7,7 +7,7 @@ const nodeUrl = 'enode://efbb5dccf38ab207fdf28dedc6d9a12fd28748447e64b6c56f3072f
 
 contract('TomoValidator', (accounts) => {
     it('Become a candidate', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
 
         await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -16,14 +16,14 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Can not become an candidate when the deposit is less than the minimum ', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
 
         await tryCatch(validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 1.0 * 10 ** 18 }), errTypes.revert)
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[0]) < 0, true)
     })
 
     it('A candidate cannot become a candidate again', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
 
         await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -33,7 +33,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Vote a candidate', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
 
         await validator.propose(accounts[1], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[1]) >= 0, true)
@@ -45,7 +45,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('UnVote a candidate', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
 
         await validator.propose(accounts[1], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[1]) >= 0, true)
@@ -63,7 +63,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Update NodeUrl of a candidate', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
         let nurl = 'node url for test'
         await validator.propose(accounts[0], nurl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -75,7 +75,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A candidate resign ', async () => {
-        let validator = await TomoValidator.new((new BigNumber(5 * 10**18)).toString(), 99, 100)
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 100)
         await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
