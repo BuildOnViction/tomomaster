@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/TomoRandomize.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> TomoRandomize.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">80.95% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>17/21</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">41.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>5/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">80% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">80.95% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>17/21</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity ^0.4.21;
+&nbsp;
+import "./libs/SafeMath.sol";
+&nbsp;
+contract TomoRandomize {
+    using SafeMath for uint256;
+    uint256 public epochNumber;
+    uint256 public blockTimeSecret;
+    uint256 public blockTimeOpening;
+&nbsp;
+    mapping (address=&gt;bytes32[]) randomSecret;
+    mapping (address=&gt;bytes32[]) randomOpening;
+&nbsp;
+    constructor (uint256 _epochNumber, uint256 _blockTimeSecret, uint256 _blockTimeOpening) public {
+        epochNumber = _epochNumber;
+        blockTimeOpening = _blockTimeOpening;
+        blockTimeSecret = _blockTimeSecret;
+    }
+&nbsp;
+    function setSecret(bytes32[] _secret) public {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_secret.length == epochNumber);
+&nbsp;
+        uint256 _blockNum = block.number;
+        uint256 _epoch = _blockNum.sub(_blockNum.div(epochNumber).mul(epochNumber));
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_epoch &lt;= blockTimeSecret);
+&nbsp;
+        randomSecret[msg.sender] = _secret;
+    }
+&nbsp;
+    function setOpening(bytes32[] _opening) public {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_opening.length == epochNumber);
+&nbsp;
+        uint256 _blockNum = block.number;
+        uint256 _epoch = _blockNum.sub(_blockNum.div(epochNumber).mul(epochNumber));
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_epoch &gt; blockTimeSecret &amp;&amp; _epoch &lt;= blockTimeOpening);
+&nbsp;
+        randomOpening[msg.sender] = _opening;
+&nbsp;
+    }
+&nbsp;
+    function getSecret(address _validator) public view returns(bytes32[]) {
+        uint256 _blockNum = block.number;
+        uint256 _epoch = _blockNum.sub(_blockNum.div(epochNumber).mul(epochNumber));
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_epoch &gt; blockTimeSecret);
+&nbsp;
+        return randomSecret[_validator];
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getOpening(address _validator) public view returns(bytes32[]</span>) {
+<span class="cstat-no" title="statement not covered" >        uint256 _blockNum = block.number</span>;
+<span class="cstat-no" title="statement not covered" >        uint256 _epoch = _blockNum.sub(_blockNum.div(epochNumber).mul(epochNumber))</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        require(_epoch &gt; blockTimeOpening)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return randomOpening[_validator];</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jun 27 2018 16:38:43 GMT+0700 (Indochina Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

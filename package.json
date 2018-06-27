@@ -14,7 +14,8 @@
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
         "dev": "npm run crawl & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
-        "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules"
+        "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
+        "coverage": "./node_modules/.bin/solidity-coverage"
     },
     "repository": {
         "type": "git",
@@ -33,6 +34,7 @@
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
         "mongoose": "^5.0.17",
+        "solidity-coverage": "^0.5.4",
         "truffle-contract": "^3.0.5"
     },
     "devDependencies": {

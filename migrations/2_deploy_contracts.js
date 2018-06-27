@@ -1,16 +1,17 @@
-const config = require('config');
-
 const TomoValidator = artifacts.require('./TomoValidator');
 const TomoRandomize = artifacts.require('./TomoRandomize');
 const BlockSigner = artifacts.require('./BlockSigner');
 
-const minCandidateCap = config.get('truffle.minCandidateCap');
-const maxValidatorNumber = config.get('truffle.maxValidatorNumber');
-const candidateWithdrawDelay = config.get('truffle.candidateWithdrawDelay');
-const epochNumber = config.get('truffle.epochNumber');
-const blockTimeSecret = config.get('truffle.blockTimeSecret');
-const blockTimeOpening = config.get('truffle.blockTimeOpening');
-
+const config = require('config');
+minCandidateCap = maxValidatorNumber = candidateWithdrawDelay = epochNumber = blockTimeSecret = blockTimeOpening = 0;
+if (config.has('truffle')){
+    minCandidateCap = config.get('truffle.minCandidateCap');
+    maxValidatorNumber = config.get('truffle.maxValidatorNumber');
+    candidateWithdrawDelay = config.get('truffle.candidateWithdrawDelay');
+    epochNumber = config.get('truffle.epochNumber');
+    blockTimeSecret = config.get('truffle.blockTimeSecret');
+    blockTimeOpening = config.get('truffle.blockTimeOpening');
+}
 
 module.exports = function(deployer) {
 
