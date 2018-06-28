@@ -6,3 +6,5 @@ build/
 .idea/
 .node-xmlhttprequest*
 .env
+coverage
+coverage.json
