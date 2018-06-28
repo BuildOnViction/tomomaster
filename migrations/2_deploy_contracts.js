@@ -15,7 +15,7 @@ if (config.has('truffle')){
 
 module.exports = function(deployer) {
 
-    return deployer.deploy(TomoValidator, [], [], minCandidateCap, maxValidatorNumber, candidateWithdrawDelay).then(() => {
+    return deployer.deploy(TomoValidator, minCandidateCap, maxValidatorNumber, candidateWithdrawDelay).then(() => {
         return  deployer.deploy(TomoRandomize, epochNumber, blockTimeSecret, blockTimeOpening)
     }). then(() => {
         return deployer.deploy(BlockSigner);
