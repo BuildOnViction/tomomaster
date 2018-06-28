@@ -7,6 +7,8 @@ jobs:
     - stage: Lint
       script: npm run lint
     - stage: Test
+    - stage: Coverage
+      script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
     - stage: Build and push Docker images
       install: skip
       script: skip
