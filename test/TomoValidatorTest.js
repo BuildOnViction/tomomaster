@@ -13,6 +13,9 @@ contract('TomoValidator', (accounts) => {
 
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[0]) >= 0, true)
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
+        assert.equal((await validator.getCandidateOwner.call(accounts[0])).valueOf(), accounts[0])
+        assert.equal((await validator.getCandidateCap.call(accounts[0])).valueOf(), 5.0 * 10 ** 18)
+        assert.equal((await validator.getCandidateWithdrawBlockNumber.call(accounts[0])).valueOf(), 0)
     })
 
     it('Can not become an candidate when the deposit is less than the minimum ', async () => {
@@ -39,6 +42,8 @@ contract('TomoValidator', (accounts) => {
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[1]) >= 0, true)
 
         await validator.vote(accounts[1], { from: accounts[2], value: 2.0 * 10 ** 18 })
+        await validator.vote(accounts[1], { from: accounts[1], value: 2.0 * 10 ** 18 })
+        await validator.vote(accounts[1], { from: accounts[0], value: 2.0 * 10 ** 18 })
 
         assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[0], accounts[2])
         assert.equal((await validator.getVoterCap.call(accounts[1], accounts[2])).valueOf(), 2.0 * 10 ** 18)
@@ -70,6 +75,7 @@ contract('TomoValidator', (accounts) => {
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
         assert.equal((await validator.getCandidateNodeUrl.call(accounts[0])).valueOf(), nurl)
 
+        await tryCatch(validator.setNodeUrl(accounts[0], nodeUrl, { from: accounts[2] }), errTypes.revert)
         await validator.setNodeUrl(accounts[0], nodeUrl, { from : accounts[0] })
         assert.equal((await validator.getCandidateNodeUrl.call(accounts[0])).valueOf(), nodeUrl)
     })
@@ -80,9 +86,27 @@ contract('TomoValidator', (accounts) => {
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
 
+        await tryCatch(validator.resign(accounts[0], { from: accounts[2] }), errTypes.revert)
         await validator.resign(accounts[0], { from : accounts[0] })
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), false)
 
         // await validator.withdraw(accounts[0], { from : accounts[0] })
+    })
+
+    it('A candidate withdraw ', async () => {
+        let validator = await TomoValidator.new((new BigNumber(5 * 10 ** 18)).toString(), 99, 0)
+        await validator.propose(accounts[0], nodeUrl, { from : accounts[0], value: 5.0 * 10 ** 18 })
+
+        assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
+        await validator.vote(accounts[0], { from: accounts[2], value: 2.0 * 10 ** 18 })
+
+        await tryCatch(validator.withdraw(accounts[0], { from: accounts[2] }), errTypes.revert)
+        await tryCatch(validator.withdraw(accounts[0], { from: accounts[0] }), errTypes.revert)
+
+        await validator.resign(accounts[0], { from : accounts[0] })
+        assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), false)
+
+        await validator.withdraw(accounts[0], { from : accounts[0] })
+        assert.equal((await validator.getVoterCap.call(accounts[0], accounts[0])).valueOf(), 0)
     })
 })
