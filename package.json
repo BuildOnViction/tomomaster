@@ -1,5 +1,5 @@
 {
-    "name": "tomochain-governance",
+    "name": "tomomaster",
     "version": "1.0.0",
     "description": "TomoChain Governance DApp",
     "main": "elect.js",
@@ -14,18 +14,19 @@
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
         "dev": "npm run crawl & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
-        "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules"
+        "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
+        "coverage": "./node_modules/.bin/solidity-coverage"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/tomochain/tomo-governance.git"
+        "url": "git+https://github.com/tomochain/tomomaster.git"
     },
     "author": "",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/tomochain/tomo-governance/issues"
+        "url": "https://github.com/tomochain/tomomaster/issues"
     },
-    "homepage": "https://github.com/tomochain/tomo-governance#readme",
+    "homepage": "https://github.com/tomochain/tomomaster#readme",
     "dependencies": {
         "bignumber.js": "^7.2.1",
         "body-parser": "^1.18.2",
@@ -33,6 +34,7 @@
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
         "mongoose": "^5.0.17",
+        "solidity-coverage": "^0.5.4",
         "truffle-contract": "^3.0.5"
     },
     "devDependencies": {
@@ -43,6 +45,7 @@
         "babel-plugin-transform-runtime": "^6.23.0",
         "babel-preset-env": "^1.6.0",
         "babel-preset-stage-3": "^6.24.1",
+        "coveralls": "^3.0.1",
         "cross-env": "^5.0.5",
         "css-loader": "^0.28.11",
         "eslint": "^4.19.1",
