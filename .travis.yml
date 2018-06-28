@@ -7,7 +7,7 @@ before_install:
 - if [[ `npm -v` != 6* ]]; then npm i -g npm@6; fi
 install:
 - npm install
-- echo "repo_token: $COVERALLS_TOKEN" >> .coveralls.yml
+- echo $COVERALLS_TOKEN >> .coveralls.yml
 script:
 - npm run lint
 - npm run test
