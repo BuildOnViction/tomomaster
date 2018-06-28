@@ -17,5 +17,4 @@ contract('BlockSigner', (accounts) => {
         await tryCatch(signer.sign(10000, { from : accounts[0] }), errTypes.revert)
         await tryCatch(signer.sign(0, { from : accounts[0] }), errTypes.revert)
     })
-
 })
