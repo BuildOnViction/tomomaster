@@ -1,5 +1,7 @@
 FROM node:8-alpine
 
+LABEL maintainer="etienne@tomochain.com"
+
 ENV HOST 0.0.0.0
 
 WORKDIR /app
