@@ -1,15 +1,23 @@
-FROM node:8
+FROM node:8-alpine
 
-WORKDIR /build
+ENV HOST 0.0.0.0
 
-RUN npm install -g pm2
-COPY ./package.json /build
-COPY ./package-lock.json /build
-RUN npm install
-COPY ./ /build
-RUN npm run build && rm -rf /build/node_modules
+WORKDIR /app
 
-RUN npm install --production
+COPY . .
 
-RUN chmod +x ./entrypoint.sh
+RUN apk --no-cache --virtual deps add \
+      python \
+      make \
+      g++ \
+      bash \
+      git \
+    && npm install -g pm2 truffle \
+    && npm install \
+    && truffle deploy \
+    && npm run build \
+    && rm -rf node_modules \
+    && npm install --production \
+    && apk del deps
+
 ENTRYPOINT ["./entrypoint.sh"]
