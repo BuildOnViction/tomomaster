@@ -15,11 +15,6 @@ RUN apk --no-cache --virtual deps add \
       bash \
       git \
     && npm install -g pm2 truffle \
-    && npm install \
-    && truffle deploy \
-    && npm run build \
-    && rm -rf node_modules \
-    && npm install --production \
-    && apk del deps
+    && npm install
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["npm"]
