@@ -61,6 +61,20 @@ Vue.prototype.setupProvider = function (provider, wjs) {
 let provider = (Vue.prototype.isElectron) ? 'testnet' : 'metamask'
 Vue.prototype.setupProvider(provider, web3js)
 
+Vue.prototype.formatNumber = function (number) {
+    let seps = number.toString().split('.')
+    seps[0] = seps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+    return seps.join('.')
+}
+
+Vue.prototype.formatCurrenctySymbol = function (number, unit = null) {
+    if (unit === null) {
+        unit = '$TOMO'
+    }
+    return `${number} ${unit}`
+}
+
 Vue.use(VueRouter)
 
 const router = new VueRouter({

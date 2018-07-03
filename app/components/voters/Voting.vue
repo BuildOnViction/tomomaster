@@ -42,7 +42,7 @@
                                             min="0.1"
                                             step="0.1"
                                             type="number"/>
-                                        <md-icon md-src="/app/assets/tomo.svg" />
+                                        <md-icon md-src="/app/assets/img/tomo.svg" />
                                         <md-tooltip>
                                             How much $TOMO would you like to vote for this candidate?</md-tooltip>
                                         <span

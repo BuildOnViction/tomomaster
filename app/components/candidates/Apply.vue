@@ -14,7 +14,7 @@
                     <md-card-content>
                         <md-list>
                             <md-list-item>
-                                <md-icon md-src="/app/assets/tomo.svg" />
+                                <md-icon md-src="/app/assets/img/tomo.svg" />
                                 <span class="md-list-item-text">You have to deposit at least 50,000 $TOMO</span>
                             </md-list-item>
                             <md-list-item>
@@ -39,7 +39,7 @@
                                             min="0.1"
                                             step="0.1"
                                             type="number"/>
-                                        <md-icon md-src="/app/assets/tomo.svg" />
+                                        <md-icon md-src="/app/assets/img/tomo.svg" />
                                         <md-tooltip>
                                             How much $TOMO do you want to deposit?</md-tooltip>
                                         <span

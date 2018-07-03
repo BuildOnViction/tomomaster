@@ -48,14 +48,14 @@
                                 </div>
                             </md-list-item>
                             <md-list-item>
-                                <md-icon md-src="/app/assets/tomo.svg"/>
+                                <md-icon md-src="/app/assets/img/tomo.svg"/>
                                 <div class="md-list-item-text">
                                     <span><strong>{{ candidate.balance }}</strong> $TOMO</span>
                                     <span>Balance</span>
                                 </div>
                             </md-list-item>
                             <md-list-item>
-                                <md-icon md-src="/app/assets/tomo.svg" />
+                                <md-icon md-src="/app/assets/img/tomo.svg" />
                                 <div class="md-list-item-text">
                                     <span><strong>{{ candidate.cap }}</strong> $TOMO</span>
                                     <span>Capacity</span>

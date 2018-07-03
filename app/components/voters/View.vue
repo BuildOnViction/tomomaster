@@ -13,7 +13,7 @@
                     <md-card-content>
                         <md-list class="md-double-line">
                             <md-list-item v-if="isReady">
-                                <md-icon md-src="/app/assets/tomo.svg" />
+                                <md-icon md-src="/app/assets/img/tomo.svg" />
                                 <div class="md-list-item-text">
                                     <span><strong>{{ balance }}</strong> $TOMO</span>
                                     <span>Balance</span>
