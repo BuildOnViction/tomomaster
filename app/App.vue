@@ -5,12 +5,14 @@
                 <div class="container">
                     <b-navbar-brand href="#">TOMOMASTER</b-navbar-brand>
 
-                    <b-nav-form>
+                    <b-nav-form class="d-none">
                         <b-form-input placeholder="Search..." />
                         <b-button type="submit">Search</b-button>
                     </b-nav-form>
 
-                    <b-button to="/apply">Become a candidate</b-button>
+                    <b-button
+                        class="d-none"
+                        to="/apply">Become a candidate</b-button>
                 </div>
             </b-navbar>
             <div class="main-content">

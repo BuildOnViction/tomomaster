@@ -33,7 +33,8 @@
         <div class="container">
             <b-table
                 :items="candidates"
-                :fields="fields" >
+                :fields="fields"
+                responsive >
 
                 <template
                     slot="index"
