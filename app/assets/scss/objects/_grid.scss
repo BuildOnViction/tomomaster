@@ -1,0 +1,18 @@
+@for $i from 1 through $grid-columns {
+  .col-2xl-#{$i},
+  .col-3xl-#{$i} {
+    @extend %grid-column;
+  }
+
+  @include media-breakpoint-up(2xl) {
+    .col-2xl-#{$i} {
+      @include make-col($i, $grid-columns);
+    }
+  }
+
+  @include media-breakpoint-up(3xl) {
+    .col-3xl-#{$i} {
+      @include make-col($i, $grid-columns);
+    }
+  }
+}
