@@ -68,13 +68,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-.status-container .md-display-1 {
-    margin-top: 0.5em;
-    margin-bottom: 0;
-}
-
-.status-container .md-card {
-    margin-bottom: 0;
-}
-</style>
