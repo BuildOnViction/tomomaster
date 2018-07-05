@@ -13,14 +13,19 @@ $grid-breakpoints: (
 /* Fonts
    ========================================================================== */
 $global-font: 'SFProText', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif !default;
-$global-font-size: 18px;
+$global-font-size: 16px;
 
 /* Colors
    ========================================================================== */
-$color-body-bg: #f8f8fa;
+$color-body-bg: #1d1e31;
 $color-primary: #373658;
 $color-primary-hover: darker($color-primary);
-$color-text: #868f9b;
+$color-input-bg: #323251;
+$color-input-focus-bg: #2e2e4b;
+$color-btn-bg: #678be0;
+$color-btn-hover-bg: #739DFF;
+
+$color-text: #6a8ae8;
 $color-text-2: #2b2f36;
 $color-purple: #b875f2;
 $color-danger: #fc98a6;
