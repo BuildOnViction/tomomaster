@@ -50,7 +50,8 @@
             <b-table
                 :items="candidates"
                 :fields="fields"
-                responsive >
+                class="tomo-table tomo-table--candidates"
+                stacked="md" >
 
                 <template
                     slot="index"
@@ -60,7 +61,9 @@
                 <template
                     slot="address"
                     slot-scope="data">
-                    <router-link :to="'/candidate/' + data.item.address">
+                    <router-link
+                        :to="'/candidate/' + data.item.address"
+                        class="text-truncate">
                         {{ data.item.address }}
                     </router-link>
                 </template>
@@ -72,13 +75,17 @@
                 <template
                     slot="status"
                     slot-scope="data">
-                    <span
-                        v-if="!data.item.isMasternode"
-                        :class="'tomo-chip '
-                        + (data.item.status === 'PROPOSED' ? 'tomo-chip--primary' : 'tomo-chip--accent') ">
-                        {{ data.item.status }}
-                    </span>
-                    <span v-if="data.item.isMasternode">MASTERNODE</span>
+                    <div class="mt-2">
+                        <span
+                            v-if="!data.item.isMasternode"
+                            :class="'tomo-chip '
+                            + (data.item.status === 'PROPOSED' ? 'tomo-chip--primary' : 'tomo-chip--accent') ">
+                            {{ data.item.status }}
+                        </span>
+                        <span
+                            v-if="data.item.isMasternode"
+                            class="tomo-chip tomo-chip--yellow">MASTERNODE</span>
+                    </div>
                 </template>
 
                 <template
@@ -86,13 +93,16 @@
                     slot-scope="data">
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
-                        :to="`/voting/${data.item.address}`">Vote</b-button>
+                        :to="`/voting/${data.item.address}`"
+                        class="mt-3">Vote</b-button>
                     <b-button
                         v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
-                        :to="`/resign/${data.item.address}`">Resign</b-button>
+                        :to="`/resign/${data.item.address}`"
+                        class="mt-4">Resign</b-button>
                     <b-button
                         v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
-                        :to="`/withdraw/${data.item.address}`">Withdraw</b-button>
+                        :to="`/withdraw/${data.item.address}`"
+                        class="mt-4">Withdraw</b-button>
                 </template>
             </b-table>
         </div>

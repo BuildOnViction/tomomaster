@@ -1,0 +1,14 @@
+a {
+    color: $color-link;
+    
+    @extend %transit;
+  
+    &:hover {
+      text-decoration: none;
+      color: $color-link-hover;
+    }
+  
+    &:focus {
+      outline: none;
+    }
+  }

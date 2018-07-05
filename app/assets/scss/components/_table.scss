@@ -1,0 +1,121 @@
+.tomo-table {
+    width: 100%;
+    margin-bottom: 50px;
+  
+    thead {
+      display: none;
+
+      @include media-breakpoint-up(lg) {
+        display: block;
+        margin-bottom: 15px;
+  
+        tr {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            padding: 0 20px;
+        }
+      }
+    
+      @include media-breakpoint-up(xl) {
+        tr {
+            padding: 0 30px;
+        }
+      }
+    }
+  
+    tbody {
+  
+        tr {
+            display: block;
+            border-radius: 10px;
+            background-image: linear-gradient(-135deg, #2e2e4b 0%, #323252 100%);
+            box-shadow: 8px 8px 40px 0 rgba(0, 0, 0, .07);
+            padding: 17px 20px 16px;
+            margin-bottom: 20px;
+    
+            @include media-breakpoint-up(lg) {
+                display: grid;
+                align-items: center;
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            }
+    
+            @include media-breakpoint-up(xl) {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+      }
+  
+      @include media-breakpoint-up(sm) {
+        display: grid !important;
+        grid-template-columns: 100%;
+        grid-column-gap: 15px;
+      }
+  
+      @include media-breakpoint-up(md) {
+        grid-template-columns: 50% 50%;
+      }
+  
+      @include media-breakpoint-up(lg) {
+        display: block !important;
+      }
+    }
+  
+    td {
+        align-items: center;
+        border-color: #505078;
+        grid-template-columns: 30% auto !important;
+        grid-column-gap: 15px !important;
+        word-break: break-word;
+        hyphens: auto;
+        margin-bottom: 5px;
+
+        &:first-child {
+            border-top: none;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+  
+      @include media-breakpoint-up(lg) {
+        display: inline-block;
+        margin-bottom: 0;
+      }
+    }
+  
+    td:before {
+        content: attr(data-label);
+        display: inline;
+        text-align: right;
+        font-weight: 600;
+  
+        @include media-breakpoint-up(lg) {
+            display: none;
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .text-truncate {
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 9rem;
+  
+        @include media-breakpoint-only(sm) {
+            max-width: 12rem;
+        }
+      
+        @include media-breakpoint-up(lg) {
+            max-width: 10rem;
+        }
+  
+        @include media-breakpoint-up(xl) {
+            max-width: 12rem;
+        }
+        @include media-breakpoint-up(2xl) {
+            max-width: 15rem;
+        }
+    }
+}
