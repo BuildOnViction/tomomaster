@@ -2,35 +2,51 @@
     <div>
         <div
             v-if="isReady"
-            class="container status-container">
+            class="container section status-section">
             <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-bolt color-pink" />
+                        <span>Network Status</span>
+                    </h3>
+                </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card>
-                        <h6>Current Block</h6>
-                        <h3><router-link :to="'/blocksigners'">#{{ blockNumber }}</router-link></h3>
+                    <b-card class="tomo-card">
+                        <h6 class="tomo-card__title">Current Block</h6>
+                        <p class="tomo-card__text">
+                            <router-link :to="'/blocksigners'">#{{ blockNumber }}</router-link>
+                        </p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card>
-                        <h6>AVG Block Time</h6>
-                        <h3>2.00 s</h3>
+                    <b-card class="tomo-card">
+                        <h6 class="tomo-card__title">AVG Block Time</h6>
+                        <p class="tomo-card__text">2.00 s</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card>
-                        <h6>epoch</h6>
-                        <h3>990 blocks</h3>
+                    <b-card class="tomo-card">
+                        <h6 class="tomo-card__title">epoch</h6>
+                        <p class="tomo-card__text">990 blocks</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card>
-                        <h6>Next Checkpoint</h6>
-                        <h3>#{{ nextCheckpoint }}</h3>
+                    <b-card class="tomo-card">
+                        <h6 class="tomo-card__title">Next Checkpoint</h6>
+                        <p class="tomo-card__text">#{{ nextCheckpoint }}</p>
                     </b-card>
                 </div>
             </div>
         </div>
         <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-flag color-yellow" />
+                        <span>Candidates</span>
+                    </h3>
+                </div>
+            </div>
             <b-table
                 :items="candidates"
                 :fields="fields"
