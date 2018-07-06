@@ -1,5 +1,7 @@
 .tomo-chip {
+    text-align: center;
     color: #ffffff;
+    text-transform: capitalize;
     border-radius: 8px;
     display: inline-block;
     vertical-align: middle;
@@ -16,5 +18,12 @@
 
     &--yellow {
         background-color: $color-purple;
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        &--primary {
+            background-color: #323258;
+        }
     }
 }

@@ -3,24 +3,28 @@
     margin-bottom: 50px;
   
     thead {
-      display: none;
+        display: none;
 
-      @include media-breakpoint-up(lg) {
-        display: block;
-        margin-bottom: 15px;
+        th {
+            border: none;
+            font-weight: 400;
+            font-size: 16px;
+        }
+
+        @include media-breakpoint-up(lg) {
+            display: block;
+            margin-bottom: 20px;
   
-        tr {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            padding: 0 20px;
+            tr {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                padding: 0 30px;
+            }
+
+            th {
+                padding: 0;
+            }
         }
-      }
-    
-      @include media-breakpoint-up(xl) {
-        tr {
-            padding: 0 30px;
-        }
-      }
     }
   
     tbody {
@@ -37,6 +41,7 @@
                 display: grid;
                 align-items: center;
                 grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                padding: 9px 30px;
             }
     
             @include media-breakpoint-up(xl) {
@@ -63,7 +68,7 @@
     td {
         align-items: center;
         border-color: #505078;
-        grid-template-columns: 30% auto !important;
+        grid-template-columns: 40% auto !important;
         grid-column-gap: 15px !important;
         word-break: break-word;
         hyphens: auto;
@@ -79,6 +84,8 @@
   
       @include media-breakpoint-up(lg) {
         display: inline-block;
+        border: none;
+        padding: 0;
         margin-bottom: 0;
       }
     }
@@ -116,6 +123,121 @@
         }
         @include media-breakpoint-up(2xl) {
             max-width: 15rem;
+        }
+    }
+}
+
+.tomo-table--candidates {
+
+    .btn {
+        padding: 9px 14px;
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 12rem;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 5% auto 15% 20% 191px 62px;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-right: 0;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: right;
+            padding-right: 35px;
+        }
+        
+        td[aria-colindex="5"] > div {
+            position: relative;
+
+            &:before,
+            &:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: calc(-35px - 8px);
+                height: 8px;
+                width: 8px;
+            }
+
+            &:before {
+                border-top-right-radius: 8px;
+                background-color: #31304d;
+                z-index: 1;
+            }
+
+            &:after {
+                background-color: $color-body-bg;
+                z-index: 0;
+            }
+        }
+
+        td[aria-colindex="5"] > div > div {
+
+            &:before,
+            &:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: calc(-35px - 8px);
+                height: 8px;
+                width: 8px;
+            }
+
+            &:before {
+                border-bottom-right-radius: 8px;
+                background-color: #31304d;
+                z-index: 1;
+            }
+
+            &:after {
+                background-color: $color-body-bg;
+                z-index: 0;
+            }
+        }
+
+        td[aria-colindex="5"] .tomo-chip {
+            width: 100%;
+        }
+
+        td[aria-colindex="5"],
+        td[aria-colindex="6"] {
+            background-color: $color-body-bg;
+        }
+
+        td[aria-colindex="5"],
+        th[aria-colindex="5"] {
+            padding-left: 35px;
+            padding-right: 35px;
+        }
+
+        td[aria-colindex="6"] {
+            text-align: right;
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+
+        .text-truncate {
+            max-width: 18rem;
+        }
+    }
+    
+    @include media-breakpoint-up(2xl) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 5% auto 15% 15% 191px 62px;
         }
     }
 }

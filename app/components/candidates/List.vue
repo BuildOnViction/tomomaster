@@ -75,12 +75,12 @@
                 <template
                     slot="status"
                     slot-scope="data">
-                    <div class="mt-2">
+                    <div class="mt-2 mt-lg-0">
                         <span
                             v-if="!data.item.isMasternode"
                             :class="'tomo-chip '
                             + (data.item.status === 'PROPOSED' ? 'tomo-chip--primary' : 'tomo-chip--accent') ">
-                            {{ data.item.status }}
+                            {{ data.item.status.toLowerCase() }}
                         </span>
                         <span
                             v-if="data.item.isMasternode"
@@ -94,15 +94,15 @@
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
-                        class="mt-3">Vote</b-button>
+                        class="mt-3 mt-lg-0">Vote</b-button>
                     <b-button
                         v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
                         :to="`/resign/${data.item.address}`"
-                        class="mt-4">Resign</b-button>
+                        class="mt-3 mt-lg-0">Resign</b-button>
                     <b-button
                         v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
                         :to="`/withdraw/${data.item.address}`"
-                        class="mt-4">Withdraw</b-button>
+                        class="mt-3 mt-lg-0">Withdraw</b-button>
                 </template>
             </b-table>
         </div>
