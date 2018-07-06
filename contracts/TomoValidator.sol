@@ -22,6 +22,8 @@ contract TomoValidator is IValidator {
         mapping(address => uint256) voters;
     }
 
+    mapping(address => mapping(uint256 => uint256)) withdrawsState;
+
     mapping(address => ValidatorState) validatorsState;
     mapping(address => address[]) voters;
     address[] public candidates = [
@@ -33,6 +35,7 @@ contract TomoValidator is IValidator {
     uint256 public minCandidateCap;
     uint256 public maxValidatorNumber;
     uint256 public candidateWithdrawDelay; // blocks
+    uint256 public constant voterWithdrawDelay = 10; // blocks
 
     modifier onlyValidCandidateCap {
         // anyone can deposit X TOMO to become a candidate
@@ -152,7 +155,9 @@ contract TomoValidator is IValidator {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(_cap);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].sub(_cap);
         // refunding to user after unvoting
-        msg.sender.transfer(_cap);
+        // msg.sender.transfer(_cap);
+        withdrawsState[msg.sender][voterWithdrawDelay.add(block.nuber)] = _cap;
+
         emit Unvote(msg.sender, _candidate, _cap);
     }
 
