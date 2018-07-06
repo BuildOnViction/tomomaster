@@ -14,4 +14,12 @@
     border-radius: 100px;
     margin-top: 10px;
     margin-bottom: 7px;
+    background-color: $color-btn-bg;
+
+    &.btn:hover,
+    &.btn:focus {
+        box-shadow: none;
+        border-color: $color-btn-hover-bg;
+        background-color: $color-btn-hover-bg;
+    }
 }
