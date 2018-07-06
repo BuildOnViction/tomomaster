@@ -9,6 +9,27 @@
             border: none;
             font-weight: 400;
             font-size: 16px;
+
+            &:focus {
+                outline: none;
+            }
+
+            &.sorting {
+                padding-right: 0 !important;
+                padding-left: 1.5em;
+            }
+
+            &.sorting:before {
+                display: block;
+                left: 0;
+                right: auto !important;
+                @extend %transit;
+            }
+
+            &.sorting:after {
+                left: .5em;
+                right: auto !important;
+            }
         }
 
         @include media-breakpoint-up(lg) {
@@ -154,10 +175,10 @@
             padding-right: 0;
         }
 
-        th[aria-colindex="4"],
+        th[aria-colindex="4"].sorting,
         td[aria-colindex="4"] {
             text-align: right;
-            padding-right: 35px;
+            padding-right: 35px !important;
         }
         
         td[aria-colindex="5"] > div {

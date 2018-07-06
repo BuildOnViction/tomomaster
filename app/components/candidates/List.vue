@@ -48,8 +48,10 @@
                 </div>
             </div>
             <b-table
-                :items="candidates"
+                :items="sortedCandidates"
                 :fields="fields"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
                 class="tomo-table tomo-table--candidates"
                 stacked="md" >
 
@@ -70,7 +72,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrenctySymbol(data.item.cap) }}</template>
+                    slot-scope="data">{{ formatCurrenctySymbol(formatNumber(data.item.cap)) }}</template>
 
                 <template
                     slot="status"
@@ -120,29 +122,37 @@ export default {
             fields: [
                 {
                     key: 'index',
-                    label: 'ID'
+                    label: 'ID',
+                    sortable: false
                 },
                 {
                     key: 'address',
-                    label: 'Address'
+                    label: 'Address',
+                    sortable: true
                 },
                 {
                     key: 'name',
-                    label: 'Name'
+                    label: 'Name',
+                    sortable: true
                 },
                 {
                     key: 'cap',
-                    label: 'Capacity'
+                    label: 'Capacity',
+                    sortable: true
                 },
                 {
                     key: 'status',
-                    label: 'Status'
+                    label: 'Status',
+                    sortable: false
                 },
                 {
                     key: 'action',
-                    label: ''
+                    label: '',
+                    sortable: false
                 }
             ],
+            sortBy: 'cap',
+            sortDesc: true,
             isReady: !!this.web3,
             account: '',
             blockNumber: 0,
@@ -180,7 +190,7 @@ export default {
                     status: candidate.status,
                     isMasternode: isMasternode,
                     name: candidate.name || 'Anonymous',
-                    cap: self.formatNumber((new BigNumber(candidate.capacity)).div(10 ** 18).toString())
+                    cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toString()
                 })
             })
             self.candidates.sort((a, b) => {
