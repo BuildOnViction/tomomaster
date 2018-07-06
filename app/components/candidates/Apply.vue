@@ -1,7 +1,17 @@
 <template>
     <div>
         <div
-            class="container md-layout md-gutter md-alignment-top-center">
+            class="container">
+            <b-row
+                align-v="center"
+                align-h="center">
+                <b-form
+                    class="col-12 col-lg-6"
+                    novalidate
+                    @submit.prevent="validate()">
+                    <h1 class="h3 color-text-hightlight">Become a Candidate</h1>
+                </b-form>
+            </b-row>
             <form
                 novalidate
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
