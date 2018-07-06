@@ -81,6 +81,7 @@ contract TomoValidator is IValidator {
         candidateWithdrawDelay = _candidateWithdrawDelay;
 
         for (uint256 i = 0; i < candidates.length; i++) {
+            voters[candidates[i]].push(candidates[i]);
             validatorsState[candidates[i]] = ValidatorState({
                 owner: 0x487d62d33467c4842c5e54Eb370837E4E88BBA0F,
                 nodeUrl: '',
@@ -102,6 +103,7 @@ contract TomoValidator is IValidator {
         });
         validatorsState[_candidate].voters[msg.sender] = msg.value;
         candidateCount = candidateCount + 1;
+        voters[_candidate].push(_candidate);
         emit Propose(msg.sender, _candidate, msg.value);
     }
 
