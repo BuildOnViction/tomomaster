@@ -35,7 +35,8 @@
         "express-validator": "^5.1.2",
         "mongoose": "^5.0.17",
         "solidity-coverage": "^0.5.4",
-        "truffle-contract": "^3.0.5"
+        "truffle-contract": "^3.0.5",
+        "vue-toasted": "^1.1.24"
     },
     "devDependencies": {
         "axios": "^0.18.0",

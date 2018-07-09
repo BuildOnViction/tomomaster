@@ -19,8 +19,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Web3 from 'web3'
 import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
+import Toasted from 'vue-toasted'
 
 Vue.use(BootstrapVue)
+Vue.use(Toasted, {
+    position: 'bottom-left',
+    theme: 'bubble'
+})
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
