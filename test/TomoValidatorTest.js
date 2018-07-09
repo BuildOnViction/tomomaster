@@ -45,7 +45,7 @@ contract('TomoValidator', (accounts) => {
         await validator.vote(accounts[1], { from: accounts[1], value: 2.0 * 10 ** 18 })
         await validator.vote(accounts[1], { from: accounts[0], value: 2.0 * 10 ** 18 })
 
-        assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[0], accounts[2])
+        assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[1], accounts[2])
         assert.equal((await validator.getVoterCap.call(accounts[1], accounts[2])).valueOf(), 2.0 * 10 ** 18)
     })
 
@@ -57,7 +57,7 @@ contract('TomoValidator', (accounts) => {
 
         await validator.vote(accounts[1], { from: accounts[2], value: 2.0 * 10 ** 18 })
 
-        assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[0], accounts[2])
+        assert.equal((await validator.getVoters.call(accounts[1])).valueOf()[1], accounts[2])
         assert.equal((await validator.getVoterCap.call(accounts[1], accounts[2])).valueOf(), 2.0 * 10 ** 18)
 
         // Cannot unvote if cap is great than amount user vote
@@ -100,13 +100,15 @@ contract('TomoValidator', (accounts) => {
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
         await validator.vote(accounts[0], { from: accounts[2], value: 2.0 * 10 ** 18 })
 
-        await tryCatch(validator.withdraw(accounts[0], { from: accounts[2] }), errTypes.revert)
-        await tryCatch(validator.withdraw(accounts[0], { from: accounts[0] }), errTypes.revert)
+        // await tryCatch(validator.withdraw(1, 1, { from: accounts[2] }), errTypes.revert)
+        // await tryCatch(validator.withdraw(0, 1, { from: accounts[0] }), errTypes.revert)
 
         await validator.resign(accounts[0], { from : accounts[0] })
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), false)
 
-        await validator.withdraw(accounts[0], { from : accounts[0] })
+        let blockNumbers = await validator.getWithdrawBlockNumbers({ from: accounts[0] })
+        console.log(blockNumbers)
+        await validator.withdraw(1, 0, { from : accounts[0] })
         assert.equal((await validator.getVoterCap.call(accounts[0], accounts[0])).valueOf(), 0)
     })
 })

@@ -73,6 +73,13 @@ contract TomoValidator is IValidator {
         _;
     }
 
+    modifier onlyValidWithdraw (uint256 _blockNumber, uint _index) {
+        require(block.number >= _blockNumber);
+        require(withdrawsState[msg.sender].blockNumbers[_index] == _blockNumber);
+        require(withdrawsState[msg.sender].caps[_blockNumber] > 0);
+        _;
+    }
+
     function TomoValidator (
         uint256 _minCandidateCap,
         uint256 _maxValidatorNumber,
@@ -157,10 +164,10 @@ contract TomoValidator is IValidator {
     function unvote(address _candidate, uint256 _cap) public onlyValidVote(_candidate, _cap) {
         validatorsState[_candidate].cap = validatorsState[_candidate].cap.sub(_cap);
         validatorsState[_candidate].voters[msg.sender] = validatorsState[_candidate].voters[msg.sender].sub(_cap);
-        // refunding to user after unvoting
-        // msg.sender.transfer(_cap);
+
+        // refund after delay X blocks
         uint256 withdrawBlockNumber = voterWithdrawDelay.add(block.number);
-        withdrawsState[msg.sender].caps[withdrawBlockNumber] = _cap;
+        withdrawsState[msg.sender].caps[withdrawBlockNumber] = withdrawsState[msg.sender].caps[withdrawBlockNumber].add(_cap);
         withdrawsState[msg.sender].blockNumbers.push(withdrawBlockNumber);
 
         emit Unvote(msg.sender, _candidate, _cap);
@@ -185,12 +192,12 @@ contract TomoValidator is IValidator {
         validatorsState[_candidate].voters[msg.sender] = 0;
         // refunding after retiring X blocks
         uint256 withdrawBlockNumber = candidateWithdrawDelay.add(block.number);
-        withdrawsState[msg.sender].caps[withdrawBlockNumber] = cap;
+        withdrawsState[msg.sender].caps[withdrawBlockNumber] = withdrawsState[msg.sender].caps[withdrawBlockNumber].add(cap);
         withdrawsState[msg.sender].blockNumbers.push(withdrawBlockNumber);
         emit Resign(msg.sender, _candidate);
     }
 
-    function withdraw(uint256 _blockNumber, uint _index) public {
+    function withdraw(uint256 _blockNumber, uint _index) public onlyValidWithdraw(_blockNumber, _index) {
         uint256 cap = withdrawsState[msg.sender].caps[_blockNumber];
         delete withdrawsState[msg.sender].caps[_blockNumber];
         delete withdrawsState[msg.sender].blockNumbers[_index];
