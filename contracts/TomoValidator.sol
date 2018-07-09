@@ -39,8 +39,8 @@ contract TomoValidator is IValidator {
     uint256 candidateCount = 3;
     uint256 public minCandidateCap;
     uint256 public maxValidatorNumber;
-    uint256 public candidateWithdrawDelay; // blocks
-    uint256 public constant voterWithdrawDelay = 10; // blocks
+    uint256 public candidateWithdrawDelay;
+    uint256 public voterWithdrawDelay;
 
     modifier onlyValidCandidateCap {
         // anyone can deposit X TOMO to become a candidate
@@ -74,20 +74,23 @@ contract TomoValidator is IValidator {
     }
 
     modifier onlyValidWithdraw (uint256 _blockNumber, uint _index) {
+        require(_blockNumber > 0);
         require(block.number >= _blockNumber);
-        require(withdrawsState[msg.sender].blockNumbers[_index] == _blockNumber);
         require(withdrawsState[msg.sender].caps[_blockNumber] > 0);
+        require(withdrawsState[msg.sender].blockNumbers[_index] == _blockNumber);
         _;
     }
 
     function TomoValidator (
         uint256 _minCandidateCap,
         uint256 _maxValidatorNumber,
-        uint256 _candidateWithdrawDelay
+        uint256 _candidateWithdrawDelay,
+        uint256 _voterWithdrawDelay
     ) public {
         minCandidateCap = _minCandidateCap;
         maxValidatorNumber = _maxValidatorNumber;
         candidateWithdrawDelay = _candidateWithdrawDelay;
+        voterWithdrawDelay = _voterWithdrawDelay;
 
         for (uint256 i = 0; i < candidates.length; i++) {
             voters[candidates[i]].push(candidates[i]);
