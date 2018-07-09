@@ -1,11 +1,28 @@
-.color-text-hightlight {
-    color: $color-text-highlight;
+.color-hightlight {
+    color: $color-text-highlight !important;
+}
+
+.color-white {
+    color: $color-white !important;
 }
 
 .color-pink {
-    color: $color-pink;
+    color: $color-pink !important;
 }
 
 .color-yellow {
-    color: $color-yellow;
+    color: $color-yellow !important;
+}
+
+.text-muted {
+    color: $color-text-muted !important;
+}
+
+.text-danger {
+    font-size: 12px;
+    color: $color-pink !important;
+}
+
+.toasted.bubble {
+    background-color: $color-pink;
 }

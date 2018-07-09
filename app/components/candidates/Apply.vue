@@ -4,152 +4,119 @@
             class="container">
             <b-row
                 align-v="center"
-                align-h="center">
-                <b-form
-                    class="col-12 col-lg-6"
-                    novalidate
-                    @submit.prevent="validate()">
-                    <h1 class="h3 color-text-hightlight">Become a Candidate</h1>
-                </b-form>
+                align-h="center"
+                class="m-0">
+                <b-card class="col-12 col-lg-6 tomo-card tomo-card--lighter p-0">
+                    <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Become a Candidate</h2>
+                    <ul class="tomo-list list-unstyled">
+                        <li class="tomo-list__item">
+                            <i class="tm-tomo tomo-list__icon" />
+                            <span class="tomo-list__text">You have to deposit at least 50,000 $TOMO</span>
+                        </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-lock tomo-list__icon" />
+                            <span class="tomo-list__text">Your deposit will be locked</span>
+                        </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-arrow-up tomo-list__icon" />
+                            <span class="tomo-list__text">
+                                Coin holder is able to vote for you to become a validator</span>
+                        </li>
+                    </ul>
+
+                    <b-form
+                        class="tomo-form tomo-form--apply"
+                        novalidate
+                        @submit.prevent="validate()">
+                        <b-form-group
+                            label="Vote"
+                            label-for="apply-value"
+                            description="How much $TOMO do you want to deposit?">
+                            <b-input-group>
+                                <b-form-input
+                                    :class="getValidationClass('applyValue')"
+                                    v-model="applyValue"
+                                    name="apply-value"
+                                    min="0.1"
+                                    step="0.1"
+                                    type="number"/>
+                                <b-input-group-append>
+                                    <i class="tm-tomo" />
+                                </b-input-group-append>
+                                <span
+                                    v-if="$v.applyValue.$dirty && !$v.applyValue.required"
+                                    class="text-danger">Required field</span>
+                                <span
+                                    v-else-if="$v.applyValue.$dirty && !$v.applyValue.minValue"
+                                    class="text-danger">Must be greater than 50,000 $TOMO</span>
+                            </b-input-group>
+                        </b-form-group>
+                        <b-form-group
+                            label="Coinbase Address"
+                            label-for="coinbase"
+                            description="What is your node coinbase address?">
+                            <b-form-input
+                                :class="getValidationClass('coinbase')"
+                                v-model="coinbase"
+                                name="coinbase"
+                                type="text"/>
+                            <span
+                                v-if="$v.coinbase.$dirty && !$v.coinbase.required"
+                                class="text-danger">Required field</span>
+                            <span
+                                v-else-if="$v.coinbase.$dirty && !$v.coinbase.coinbaseAddress"
+                                class="text-danger">Wrong coinbase address format</span>
+                        </b-form-group>
+                        <b-form-group
+                            label="Node URL"
+                            label-for="nodeurl"
+                            description="What is your node url?">
+                            <b-form-input
+                                :class="getValidationClass('nodeUrl')"
+                                v-model="nodeUrl"
+                                name="coinbase"
+                                type="text"/>
+                            <span
+                                v-if="$v.nodeUrl.$dirty && !$v.nodeUrl.required"
+                                class="text-danger">Required field</span>
+                            <span
+                                v-else-if="$v.nodeUrl.$dirty && !$v.nodeUrl.nodeUrl"
+                                class="text-danger">Wrong node URL format</span>
+                        </b-form-group>
+                        <div class="buttons">
+                            <b-button
+                                :disabled="this.$parent.showProgressBar"
+                                type="submit"
+                                variant="primary">Apply</b-button>
+                            <b-button
+                                :disabled="this.$parent.showProgressBar"
+                                to="/"
+                                type="reset"
+                                variant="secondary">Cancel</b-button>
+                        </div>
+                    </b-form>
+                </b-card>
             </b-row>
-            <form
-                novalidate
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90"
-                @submit.prevent="validate()">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Become a Candidate</p>
-                    </md-card-header>
-                    <md-card-content>
-                        <md-list>
-                            <md-list-item>
-                                <md-icon md-src="/app/assets/img/tomo.svg" />
-                                <span class="md-list-item-text">You have to deposit at least 50,000 $TOMO</span>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>lock</md-icon>
-                                <span class="md-list-item-text">Your deposit will be locked</span>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>arrow_upward</md-icon>
-                                <span class="md-list-item-text">
-                                    Coin holder is able to vote for you to become a validator
-                                </span>
-                            </md-list-item>
-                            <md-list-item class="md-layout">
-                                <div
-                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
-                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field :class="getValidationClass('applyValue')">
-                                        <label>Vote</label>
-                                        <md-input
-                                            v-model="applyValue"
-                                            name="apply-value"
-                                            min="0.1"
-                                            step="0.1"
-                                            type="number"/>
-                                        <md-icon md-src="/app/assets/img/tomo.svg" />
-                                        <md-tooltip>
-                                            How much $TOMO do you want to deposit?</md-tooltip>
-                                        <span
-                                            v-if="!$v.applyValue.required"
-                                            class="md-error">Required field</span>
-                                        <span
-                                            v-else-if="!$v.applyValue.minValue"
-                                            class="md-error">Must be greater than 50,000 $TOMO</span>
-                                    </md-field>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class="md-layout">
-                                <div
-                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
-                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field :class="getValidationClass('coinbase')">
-                                        <label>Coinbase Address</label>
-                                        <md-input
-                                            v-model="coinbase"
-                                            name="coinbase"
-                                            type="string"/>
-                                        <md-tooltip>
-                                            What is your node coinbase address?</md-tooltip>
-                                        <span
-                                            v-if="!$v.coinbase.required"
-                                            class="md-error">Required field</span>
-                                        <span
-                                            v-if="!$v.coinbase.coinbaseAddress"
-                                            class="md-error">Wrong coinbase address format</span>
-                                    </md-field>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class="md-layout">
-                                <div
-                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
-                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field :class="getValidationClass('nodeUrl')">
-                                        <label>Node URL</label>
-                                        <md-input
-                                            v-model="nodeUrl"
-                                            name="nodeurl"
-                                            type="string"/>
-                                        <md-tooltip>
-                                            What is your node url?</md-tooltip>
-                                        <span
-                                            v-if="!$v.nodeUrl.required"
-                                            class="md-error">Required field</span>
-                                        <span
-                                            v-if="!$v.nodeUrl.nodeUrl"
-                                            class="md-error">Wrong node URL format</span>
-                                    </md-field>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                    </md-card-content>
-                    <md-card-actions>
-                        <md-button
-                            :disabled="this.$parent.showProgressBar"
-                            class="md-raised md-accent"
-                            @click="$router.go(-1)">Cancel</md-button>
-                        <md-button
-                            :disabled="this.$parent.showProgressBar"
-                            class="md-raised md-primary"
-                            type="submit"><md-icon>arrow_upward</md-icon> Apply</md-button>
-                    </md-card-actions>
-                </md-card>
-            </form>
+
+            <b-row
+                align-v="center"
+                align-h="center"
+                class="m-0">
+
+                <b-card class="col-12 col-lg-6 tomo-card p-0">
+                    <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Benefit</h2>
+                    <p class="tomo-form__text">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                        nisi ut aliquip ex ea commodo consequat.
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </b-card>
+            </b-row>
         </div>
-        <div
-            class="md-layout md-gutter md-alignment-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Benefit</p>
-                    </md-card-header>
-                    <md-card-content>
-                        <md-content>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident,
-                            sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </md-content>
-                    </md-card-content>
-                </md-card>
-            </div>
-        </div>
-        <md-snackbar
-            :md-active.sync="showSnackbar"
-            md-position="left"
-            md-persistent>
-            <span>{{ snackBarMessage }}</span>
-            <md-button
-                class="md-primary"
-                @click="showSnackbar = false">OK</md-button>
-        </md-snackbar>
     </div>
 </template>
 <script>
@@ -167,8 +134,6 @@ export default {
         return {
             account: '',
             isReady: !!this.web3,
-            showSnackbar: false,
-            snackBarMessage: '',
             applyValue: 50000,
             coinbase: '',
             nodeUrl: ''
@@ -211,7 +176,7 @@ export default {
 
             if (field) {
                 return {
-                    'md-invalid': field.$invalid
+                    'is-invalid': field.$error
                 }
             }
         },
@@ -241,9 +206,10 @@ export default {
                     from : account,
                     value: parseFloat(value) * 10 ** 18
                 })
-                self.showSnackbar = true
-                self.snackBarMessage = rs.tx ? 'You have successfully applied!'
+                let toastMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
+
+                self.$toasted.show(toastMessage)
                 setTimeout(() => {
                     self.$parent.showProgressBar = false
                     if (rs.tx) {
@@ -252,8 +218,7 @@ export default {
                 }, 2000)
             } catch (e) {
                 self.$parent.showProgressBar = false
-                self.showSnackbar = true
-                self.snackBarMessage = 'An error occurred while applying, please try again'
+                self.$toasted.show('An error occurred while applying, please try again')
                 console.log(e)
             }
         }

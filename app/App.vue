@@ -14,7 +14,8 @@
 
                     <b-button
                         id="btn-become-candidate"
-                        to="/apply">Become a candidate</b-button>
+                        to="/apply"
+                        variant="primary">Become a candidate</b-button>
                 </div>
             </b-navbar>
             <div class="main-content">

@@ -24,7 +24,14 @@ import Toasted from 'vue-toasted'
 Vue.use(BootstrapVue)
 Vue.use(Toasted, {
     position: 'bottom-left',
-    theme: 'bubble'
+    theme: 'bubble',
+    duration: 4000,
+    action : {
+        text : 'Dismiss',
+        onClick : (e, toastObject) => {
+            toastObject.goAway(0)
+        }
+    }
 })
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)

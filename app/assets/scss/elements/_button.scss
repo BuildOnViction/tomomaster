@@ -25,6 +25,20 @@ button,
     }
 }
 
+button.btn-secondary,
+.btn.btn-secondary,
+.btn.btn-secondary.btn-secondary.active {
+    color: $color-text;
+    border-color: #373658;
+    background-color: #373658;
+
+    &:hover,
+    &:focus {
+        border-color: #323251;
+        background-color: #323251;
+    }
+}
+
 .btn-outline-success {
     color: #aca9c4;
     border-color: $color-btn-bg;

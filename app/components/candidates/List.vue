@@ -11,7 +11,7 @@
                     </h3>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card">
+                    <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">Current Block</h6>
                         <p class="tomo-card__text">
                             <router-link :to="'/blocksigners'">#{{ blockNumber }}</router-link>
@@ -19,19 +19,19 @@
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card">
+                    <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">AVG Block Time</h6>
                         <p class="tomo-card__text">2.00 s</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card">
+                    <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">epoch</h6>
                         <p class="tomo-card__text">990 blocks</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card">
+                    <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">Next Checkpoint</h6>
                         <p class="tomo-card__text">#{{ nextCheckpoint }}</p>
                     </b-card>

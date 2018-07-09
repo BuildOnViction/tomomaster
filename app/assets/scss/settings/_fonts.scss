@@ -91,6 +91,10 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
+
+.tm-tomo:before {
+    content: "\e90c";
+}
 .tm-arrow-up:before {
     content: "\e900";
 }
@@ -126,4 +130,7 @@ line-height: 1;
 }
 .tm-time:before {
     content: "\e90b";
+}
+.tm-lock:before {
+    content: "\e90d";
 }
