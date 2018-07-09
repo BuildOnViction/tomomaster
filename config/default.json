@@ -21,6 +21,7 @@
     "minCandidateCap": "50000000000000000000000",
     "maxValidatorNumber": 99,
     "candidateWithdrawDelay": 100,
+    "voterWithdrawDelay": 100,
     "epochNumber": 990,
     "blockTimeSecret": 900,
     "blockTimeOpening": 950
