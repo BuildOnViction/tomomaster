@@ -1,12 +1,13 @@
 <template>
     <div>
-        <div
-            class="container">
+        <div class="container">
             <b-row
                 align-v="center"
                 align-h="center"
                 class="m-0">
-                <b-card :class="'col-12 col-lg-6 tomo-card tomo-card--lighter p-0' + (loading ? ' tomo-loading' : '')">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                    + (loading ? ' tomo-loading' : '')">
                     <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Become a Candidate</h2>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
@@ -82,14 +83,14 @@
                                 v-else-if="$v.nodeUrl.$dirty && !$v.nodeUrl.nodeUrl"
                                 class="text-danger">Wrong node URL format</span>
                         </b-form-group>
-                        <div class="buttons">
-                            <b-button
-                                type="submit"
-                                variant="primary">Apply</b-button>
+                        <div class="buttons text-right">
                             <b-button
                                 to="/"
                                 type="reset"
                                 variant="secondary">Cancel</b-button>
+                            <b-button
+                                type="submit"
+                                variant="primary">Apply</b-button>
                         </div>
                     </b-form>
                 </b-card>
@@ -100,7 +101,7 @@
                 align-h="center"
                 class="m-0">
 
-                <b-card class="col-12 col-lg-6 tomo-card p-0">
+                <b-card class="col-12 col-md-8 col-lg-6 tomo-card p-0">
                     <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Benefit</h2>
                     <p class="tomo-form__text">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit,

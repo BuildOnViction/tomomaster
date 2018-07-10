@@ -33,4 +33,16 @@
         color: $color-text;
         margin-bottom: 0;
     }
+
+    .card-footer {
+        border-radius: 0;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+
+        p {
+            margin-bottom: 0;
+        }
+    }
 }

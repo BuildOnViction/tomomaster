@@ -91,7 +91,15 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
-
+.tm-close:before {
+    content: "\e910";
+}
+.tm-notice:before {
+    content: "\e90f";
+}
+.tm-wallet:before {
+    content: "\e90e";
+}
 .tm-tomo:before {
     content: "\e90c";
 }

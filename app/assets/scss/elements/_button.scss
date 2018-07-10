@@ -34,14 +34,14 @@ button,
 button.btn-secondary,
 .btn.btn-secondary,
 .btn.btn-secondary.btn-secondary.active {
-    color: #fff;//$color-text;
-    border-color: $color-pink ;//#373658;
-    background-color: $color-pink;//#373658;
+    color: #fff;
+    border-color: $color-pink ;
+    background-color: $color-pink;
 
     &:hover,
     &:focus {
-        border-color: #323251;
-        background-color: #323251;
+        border-color: #f49cbb;
+        background-color: #f49cbb;
     }
 }
 

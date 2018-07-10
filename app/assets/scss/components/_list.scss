@@ -14,11 +14,26 @@
         height: 24px;
         font-size: 24px;
         margin-right: 20px;
+        color: $color-text-muted;
     }
 
     &__text {
         flex: 1;
         overflow: hidden;
+        margin: 0;
+
+        * {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        :nth-child(2) {
+            font-size: 12px;
+            color: $color-text-muted;
+            margin-top: 5px;
+        }
     }
 
     @include media-breakpoint-up(lg) {
