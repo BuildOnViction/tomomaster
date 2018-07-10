@@ -95,7 +95,6 @@ contract TomoValidator is IValidator {
         voterWithdrawDelay = _voterWithdrawDelay;
 
         for (uint256 i = 0; i < candidates.length; i++) {
-            voters[candidates[i]].push(candidates[i]);
             validatorsState[candidates[i]] = ValidatorState({
                 owner: firstOwner,
                 nodeUrl: '',
@@ -103,6 +102,7 @@ contract TomoValidator is IValidator {
                 withdrawBlockNumber: 0,
                 cap: minCandidateCap
             });
+            voters[candidates[i]].push(firstOwner);
             validatorsState[candidates[i]].voters[firstOwner] = minCandidateCap;
         }
     }
