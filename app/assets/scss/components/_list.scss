@@ -20,4 +20,10 @@
         flex: 1;
         overflow: hidden;
     }
+
+    @include media-breakpoint-up(lg) {
+        &__icon {
+            margin-right: 32px;
+        }
+    }
 }

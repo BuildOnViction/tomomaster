@@ -22,6 +22,7 @@ import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 
 Vue.use(BootstrapVue)
+
 Vue.use(Toasted, {
     position: 'bottom-left',
     theme: 'bubble',

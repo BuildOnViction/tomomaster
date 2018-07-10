@@ -33,13 +33,12 @@
                             label-for="apply-value"
                             description="How much $TOMO do you want to deposit?">
                             <b-input-group>
-                                <b-form-input
+                                <number-input
                                     :class="getValidationClass('applyValue')"
+                                    :min="0.1"
+                                    :step="0.1"
                                     v-model="applyValue"
-                                    name="apply-value"
-                                    min="0.1"
-                                    step="0.1"
-                                    type="number"/>
+                                    name="apply-value"/>
                                 <b-input-group-append>
                                     <i class="tm-tomo" />
                                 </b-input-group-append>
@@ -127,8 +126,13 @@ import {
 } from 'vuelidate/lib/validators'
 import coinbaseAddress from '../../../validators/coinbaseAddress.js'
 import nodeUrl from '../../../validators/nodeUrl.js'
+import NumberInput from '../NumberInput.vue'
+
 export default {
     name: 'App',
+    components: {
+        NumberInput
+    },
     mixins: [validationMixin],
     data () {
         return {

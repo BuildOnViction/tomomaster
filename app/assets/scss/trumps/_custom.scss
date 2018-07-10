@@ -26,3 +26,13 @@
 .toasted.bubble {
     background-color: $color-pink;
 }
+
+*::selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
+
+*::-moz-selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
