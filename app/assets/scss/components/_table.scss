@@ -161,7 +161,7 @@
         padding: 9px 14px;
     }
 
-    td[aria-colindex="6"] {
+    td[aria-colindex="7"] {
         text-align: center;
         grid-template-columns: 100% !important;
 
@@ -174,7 +174,7 @@
         }
     }
 
-    td[aria-colindex="7"] {
+    td[aria-colindex="6"] {
         border-top: none;
     }
 
@@ -186,7 +186,7 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 5% auto 15% 20% 190px 62px 110px;
+            grid-template-columns: 5% auto 15% 20% 190px 110px 62px;
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
@@ -283,18 +283,7 @@
             padding-right: 35px;
         }
 
-        td[aria-colindex="6"] {
-            text-align: left;
-            position: relative;
-            z-index: 1;
-
-            .btn {
-                margin: 0;
-            }
-        }
-
-        th[aria-colindex="7"] {
-            padding-left: 10px;
+        th[aria-colindex="6"] {
 
             &:after {
                 content: '';
@@ -309,12 +298,26 @@
             }
         }
 
-        td[aria-colindex="7"] {
-            padding-left: 10px;
+        td[aria-colindex="6"] {
 
             .btn {
                 position: relative;
                 z-index: 1;
+            }
+        }
+
+        th[aria-colindex="7"] {
+            padding-left: 10px;
+        }
+
+        td[aria-colindex="7"] {
+            text-align: left;
+            position: relative;
+            z-index: 1;
+            padding-left: 10px;
+
+            .btn {
+                margin: 0;
             }
         }
     }
