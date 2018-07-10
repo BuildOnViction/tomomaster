@@ -96,14 +96,17 @@
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
+                        variant="primary"
                         class="mt-3 mt-lg-0">Vote</b-button>
                     <b-button
                         v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
                         :to="`/resign/${data.item.address}`"
+                        variant="primary"
                         class="mt-3 mt-lg-0">Resign</b-button>
                     <b-button
                         v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
                         :to="`/withdraw/${data.item.address}`"
+                        variant="primary"
                         class="mt-3 mt-lg-0">Withdraw</b-button>
                 </template>
             </b-table>
