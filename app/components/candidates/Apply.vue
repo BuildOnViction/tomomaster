@@ -6,7 +6,7 @@
                 align-v="center"
                 align-h="center"
                 class="m-0">
-                <b-card class="col-12 col-lg-6 tomo-card tomo-card--lighter p-0">
+                <b-card :class="'col-12 col-lg-6 tomo-card tomo-card--lighter p-0' + (loading ? ' tomo-loading' : '')">
                     <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Become a Candidate</h2>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
@@ -84,11 +84,9 @@
                         </b-form-group>
                         <div class="buttons">
                             <b-button
-                                :disabled="this.$parent.showProgressBar"
                                 type="submit"
                                 variant="primary">Apply</b-button>
                             <b-button
-                                :disabled="this.$parent.showProgressBar"
                                 to="/"
                                 type="reset"
                                 variant="secondary">Cancel</b-button>
@@ -140,7 +138,8 @@ export default {
             isReady: !!this.web3,
             applyValue: 50000,
             coinbase: '',
-            nodeUrl: ''
+            nodeUrl: '',
+            loading: false
         }
     },
     validations: {
@@ -202,7 +201,7 @@ export default {
                     throw Error('Web3 is not properly detected.')
                 }
 
-                self.$parent.showProgressBar = true
+                self.loading = true
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
@@ -215,13 +214,13 @@ export default {
 
                 self.$toasted.show(toastMessage)
                 setTimeout(() => {
-                    self.$parent.showProgressBar = false
+                    self.loading = false
                     if (rs.tx) {
                         self.$router.push({ path: `/candidate/${coinbase}` })
                     }
                 }, 2000)
             } catch (e) {
-                self.$parent.showProgressBar = false
+                self.loading = false
                 self.$toasted.show('An error occurred while applying, please try again')
                 console.log(e)
             }

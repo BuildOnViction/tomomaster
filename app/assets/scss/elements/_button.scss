@@ -23,14 +23,20 @@ button,
         border-color: $color-btn-hover-bg !important;
         background-color: $color-btn-hover-bg !important;
     }
+
+    &:disabled {
+        color: $color-text !important;
+        border-color: #373658 !important;
+        background-color: #373658 !important;
+    }
 }
 
 button.btn-secondary,
 .btn.btn-secondary,
 .btn.btn-secondary.btn-secondary.active {
-    color: $color-text;
-    border-color: #373658;
-    background-color: #373658;
+    color: #fff;//$color-text;
+    border-color: $color-pink ;//#373658;
+    background-color: $color-pink;//#373658;
 
     &:hover,
     &:focus {
