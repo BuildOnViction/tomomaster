@@ -36,7 +36,9 @@ contract TomoValidator is IValidator {
         0x31b249fE6F267aa2396Eb2DC36E9c79351d97Ec5,
         0xfC5571921c6d3672e13B58EA23DEA534f2b35fA0
     ];
-    uint256 candidateCount = 3;
+
+    address public firstOwner = 0x487d62d33467c4842c5e54Eb370837E4E88BBA0F;
+    uint256 public candidateCount = 3;
     uint256 public minCandidateCap;
     uint256 public maxValidatorNumber;
     uint256 public candidateWithdrawDelay;
@@ -95,12 +97,13 @@ contract TomoValidator is IValidator {
         for (uint256 i = 0; i < candidates.length; i++) {
             voters[candidates[i]].push(candidates[i]);
             validatorsState[candidates[i]] = ValidatorState({
-                owner: 0x487d62d33467c4842c5e54Eb370837E4E88BBA0F,
+                owner: firstOwner,
                 nodeUrl: '',
                 isCandidate: true,
                 withdrawBlockNumber: 0,
                 cap: minCandidateCap
             });
+            validatorsState[candidates[i]].voters[firstOwner] = minCandidateCap;
         }
     }
 
