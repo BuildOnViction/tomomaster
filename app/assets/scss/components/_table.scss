@@ -161,15 +161,32 @@
         padding: 9px 14px;
     }
 
+    td[aria-colindex="6"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        .btn {
+            margin: 0 5px;
+        }
+
+        &:before {
+            display: none !important;
+        }
+    }
+
+    td[aria-colindex="7"] {
+        border-top: none;
+    }
+
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
-            max-width: 12rem;
+            max-width: 9rem;
         }
 
         thead tr,
         tbody tr {
-            grid-template-columns: 5% auto 15% 20% 191px 62px;
+            grid-template-columns: 5% auto 15% 20% 190px 62px 110px;
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
@@ -180,22 +197,46 @@
             text-align: right;
             padding-right: 35px !important;
         }
+
+        th[aria-colindex="5"] {
+            position: relative;
+
+            &:after {
+                content: '';
+                display: block;
+                height: 1000px;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: $color-body-bg;
+            }
+        }
+
+        td[aria-colindex="5"] {
+            position: relative;
+
+            .tomo-chip {
+                width: 100%;
+            }
+        }
         
         td[aria-colindex="5"] > div {
             position: relative;
+            z-index: 1;
 
             &:before,
             &:after {
                 content: '';
                 position: absolute;
                 top: 0;
-                left: calc(-35px - 8px);
-                height: 8px;
-                width: 8px;
+                left: calc(-35px - 10px);
+                height: 10px;
+                width: 10px;
             }
 
             &:before {
-                border-top-right-radius: 8px;
+                border-top-right-radius: 10px;
                 background-color: #31304d;
                 z-index: 1;
             }
@@ -213,13 +254,13 @@
                 content: '';
                 position: absolute;
                 bottom: 0;
-                left: calc(-35px - 8px);
-                height: 8px;
-                width: 8px;
+                left: calc(-35px - 10px);
+                height: 10px;
+                width: 10px;
             }
 
             &:before {
-                border-bottom-right-radius: 8px;
+                border-bottom-right-radius: 10px;
                 background-color: #31304d;
                 z-index: 1;
             }
@@ -230,12 +271,9 @@
             }
         }
 
-        td[aria-colindex="5"] .tomo-chip {
-            width: 100%;
-        }
-
         td[aria-colindex="5"],
-        td[aria-colindex="6"] {
+        td[aria-colindex="6"],
+        td[aria-colindex="7"] {
             background-color: $color-body-bg;
         }
 
@@ -246,26 +284,45 @@
         }
 
         td[aria-colindex="6"] {
-            text-align: right;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+
+            .btn {
+                margin: 0;
+            }
+        }
+
+        th[aria-colindex="7"] {
+            padding-left: 10px;
+
+            &:after {
+                content: '';
+                display: block;
+                height: 1000px;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                background-color: $color-body-bg;
+            }
+        }
+
+        td[aria-colindex="7"] {
+            padding-left: 10px;
+
+            .btn {
+                position: relative;
+                z-index: 1;
+            }
         }
     }
 
     @include media-breakpoint-up(xl) {
 
         .text-truncate {
-            max-width: 18rem;
-        }
-    }
-    
-    @include media-breakpoint-up(2xl) {
-
-        .text-truncate {
-            max-width: 100%;
-        }
-
-        thead tr,
-        tbody tr {
-            grid-template-columns: 5% auto 15% 15% 191px 62px;
+            max-width: 15rem;
         }
     }
 }

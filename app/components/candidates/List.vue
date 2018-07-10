@@ -101,13 +101,24 @@
                     <b-button
                         v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
                         :to="`/resign/${data.item.address}`"
-                        variant="primary"
-                        class="mt-3 mt-lg-0">Resign</b-button>
+                        variant="secondary"
+                        class="d-inline-block d-md-none mt-3 mt-lg-0">Resign</b-button>
                     <b-button
                         v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
                         :to="`/withdraw/${data.item.address}`"
-                        variant="primary"
+                        variant="secondary"
                         class="mt-3 mt-lg-0">Withdraw</b-button>
+                </template>
+
+                <template
+                    v-if="data.item.owner === account"
+                    slot="resign"
+                    slot-scope="data">
+                    <b-button
+                        v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
+                        :to="`/resign/${data.item.address}`"
+                        variant="secondary"
+                        class="d-none d-md-block">Resign</b-button>
                 </template>
             </b-table>
         </div>
@@ -150,6 +161,11 @@ export default {
                 },
                 {
                     key: 'action',
+                    label: '',
+                    sortable: false
+                },
+                {
+                    key: 'resign',
                     label: '',
                     sortable: false
                 }
