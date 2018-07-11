@@ -5,11 +5,12 @@
             align-h="center"
             class="m-0">
             <b-table
-                v-if="blockSigners.length > 0"
                 :items="blockSigners"
                 :fields="fields"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
+                show-empty="true"
+                empty-text="There are no signers to show"
                 class="tomo-table tomo-table--signers"
                 stacked="md" >
 
