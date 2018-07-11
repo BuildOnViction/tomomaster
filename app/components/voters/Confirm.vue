@@ -5,7 +5,7 @@
             align-h="center"
             class="m-0">
             <b-card
-                class="col-12 col-md-8 col-lg-6 tomo-card p-0">
+                class="col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0">
                 <h2 class="h4 color-white tomo-card__title tomo-card__title--big">
                     <i :class="`tm-${icon}`"/>
                     {{ title }}

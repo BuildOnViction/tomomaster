@@ -6,7 +6,7 @@
                 align-h="center"
                 class="m-0">
                 <b-card
-                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0'
                     + (loading ? ' tomo-loading' : '')">
                     <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Resign</h2>
                     <ul class="tomo-list list-unstyled">
