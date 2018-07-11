@@ -97,6 +97,9 @@ line-height: 1;
 .tm-close:before {
     content: "\e910";
 }
+.tm-checkmark:before {
+    content: "\e912";
+}
 .tm-notice:before {
     content: "\e90f";
 }
