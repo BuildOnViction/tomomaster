@@ -218,6 +218,43 @@
                 </md-card>
             </div>
             <div
+                v-if="signs.length > 0"
+                class="md-layout-item md-xlarge-size-100 md-large-size-100
+                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
+                <md-table
+                    v-model="signs"
+                    md-card
+                    md-fixed-header
+                    md-sort="id"
+                    md-sort-order="asc">
+                    <md-table-toolbar>
+                        <div class="md-title">Signs
+                            <p class="md-subhead">All transactions that the candidate signed</p>
+                        </div>
+                    </md-table-toolbar>
+                    <md-table-row
+                        slot="md-table-row"
+                        slot-scope="{ item }">
+                        <md-table-cell
+                            md-numeric
+                            md-label="ID">{{ item.id }}
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="Block Number">
+                            {{ item.blockNumber }}
+                        </md-table-cell>
+                        <md-table-cell
+                            md-label="">
+                            <a
+                                :href="'https://explorer-testnet.tomochain.com/txs/' + item.tx"
+                                target="_blank">
+                                {{ item.tx }}
+                            </a>
+                        </md-table-cell>
+                    </md-table-row>
+                </md-table>
+            </div>
+            <div
                 v-if="transactions.length > 0"
                 class="md-layout-item md-xlarge-size-100 md-large-size-100
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
@@ -286,6 +323,7 @@ export default {
             unvoteValue: 1,
             voters: [],
             transactions: [],
+            signs: [],
             candidate: {
                 address: this.$route.params.address,
                 name: '',
@@ -366,6 +404,19 @@ export default {
                     candidate: tx.candidate,
                     event: tx.event,
                     cap: (new BigNumber(tx.capacity)).div(10 ** 18).toString()
+                })
+            })
+
+            let blockSigners = await axios.get(`/api/blocksigners/getByCandidate/${address}`)
+            blockSigners.data.map((bs, idx) => {
+                let stx = bs.signers.filter(s => {
+                    return (s.signer === address)
+                })
+                console.log(stx)
+                self.signs.push({
+                    id: idx + 1,
+                    tx: stx[0].tx,
+                    blockNumber: bs.blockNumber
                 })
             })
         } catch (e) {
