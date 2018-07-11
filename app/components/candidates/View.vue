@@ -412,7 +412,6 @@ export default {
                 let stx = bs.signers.filter(s => {
                     return (s.signer === address)
                 })
-                console.log(stx)
                 self.signs.push({
                     id: idx + 1,
                     tx: stx[0].tx,
