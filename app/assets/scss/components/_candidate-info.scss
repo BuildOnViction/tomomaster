@@ -1,0 +1,54 @@
+.candidate-info {
+    margin-bottom: 30px;
+
+    .candidate-info__title {
+        margin-bottom: 5px;
+    }
+
+    .candidate-info__icon {
+        font-size: 6px;
+        vertical-align: middle;
+        color: #6e92f7;
+        margin-right: 6px;
+        max-width: 6px;
+    }
+
+    .candidate-info__text {
+        font-size: 14px;
+        display: inline-block;
+        vertical-align: middle;
+        text-transform: capitalize;
+    }
+
+    .candidate-info__description {
+        font-size: 16px;
+        color: #938fb5;
+        margin-left: 16px;
+        margin-bottom: 0;
+    }
+
+    &--big {
+
+        .candidate-info__icon {
+            font-size: 13px;
+        }
+
+        .candidate-info__description {
+            margin-left: 20px;
+        }
+    }
+}
+
+.candidate-info-status--active {
+
+    .candidate-info__description {
+        color: $color-success;
+    }
+}
+
+.candidate-info-status--inactive {
+
+    .candidate-info__description {
+        color: $color-error;
+    }
+}

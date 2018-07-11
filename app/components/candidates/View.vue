@@ -22,93 +22,122 @@
                     </div>
                 </div>
             </div>
+            <b-card class="tomo-card tomo-card--animated tomo-card--candidate">
+                <div class="row m-md-0">
+                    <div
+                        :class="'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info candidate-info-status--'
+                        + candidate.status">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Note Status</span>
+                        </p>
+                        <p class="candidate-info__description">Active</p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Balance</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatCurrenctySymbol(formatNumber(candidate.balance)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Capacity</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatCurrenctySymbol(formatNumber(candidate.cap)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info candidate-info--big">
+                        <p class="candidate-info__title">
+                            <i class="tm-arrow-up candidate-info__icon" />
+                            <span class="candidate-info__text">Total voted</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatCurrenctySymbol(formatNumber(candidate.totalVoted)) }}
+                        </p>
+                    </div>
+                    <div
+                        v-if="isReady"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">You voted</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatCurrenctySymbol(formatNumber(candidate.voted)) }}
+                        </p>
+                    </div>
+                    <div
+                        v-if="isReady"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Rewarded</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatCurrenctySymbol(formatNumber(candidate.rewarded)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Latest Block</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            #{{ formatNumber(candidate.latestBlock) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Total Signed Blocks</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ formatNumber(candidate.totalSignedBlocks) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">Hardware</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ candidate.hardwareInfo }}
+                        </p>
+                    </div>
+                    <div
+                        v-for="(value, key) in candidate.dataCenterInfo"
+                        :key="key"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
+                        <p class="candidate-info__title">
+                            <i class="tm-dot candidate-info__icon" />
+                            <span class="candidate-info__text">{{ key }}</span>
+                        </p>
+                        <p class="candidate-info__description">
+                            {{ value }}
+                        </p>
+                    </div>
+                </div>
+                <b-card-footer class="text-right">
+                    <b-button
+                        v-if="candidate.voted > 0"
+                        :to="`/unvoting/${candidate.address}`"
+                        variant="secondary">Unvote</b-button>
+                    <b-button
+                        :to="`/voting/${candidate.address}`"
+                        variant="primary">Vote</b-button>
+                </b-card-footer>
+            </b-card>
         </div>
         <div class="container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
-
-                    <md-card-content>
-                        <md-list class="md-double-line md-list-2-col">
-                            <md-list-item :class="'md-list-item-status md-list-item-status--' + candidate.status">
-                                <md-icon>offline_bolt</md-icon>
-                                <div class="md-list-item-text">
-                                    <span>{{ candidate.status }}</span>
-                                    <span>Node Status</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon md-src="/app/assets/img/tomo.svg"/>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.balance }}</strong> $TOMO</span>
-                                    <span>Balance</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon md-src="/app/assets/img/tomo.svg" />
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.cap }}</strong> $TOMO</span>
-                                    <span>Capacity</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>arrow_upward</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.totalVoted }}</strong> $TOMO</span>
-                                    <span>Total voted</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item v-if="isReady">
-                                <md-icon>receipt</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.voted }}</strong> $TOMO</span>
-                                    <span>You voted</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>card_giftcard</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.rewarded }}</strong> $TOMO</span>
-                                    <span>Rewarded</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon class="fa fa-cube" />
-                                <div class="md-list-item-text">
-                                    <span>#{{ candidate.latestBlock }}</span>
-                                    <span>Latest Block</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon class="fa fa-cubes" />
-                                <div class="md-list-item-text">
-                                    <span>{{ candidate.totalSignedBlocks }}</span>
-                                    <span>Total Signed Blocks</span>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                        <md-card-expand-content class="candidate-expand-content">
-                            <md-list class="md-double-line">
-                                <md-list-item>
-                                    <md-icon class="fa fa-microchip" />
-                                    <div class="md-list-item-text">
-                                        <span>{{ candidate.hardwareInfo }}</span>
-                                        <span>Hardware</span>
-                                    </div>
-                                </md-list-item>
-                                <md-list-item
-                                    v-for="(value, key) in candidate.dataCenterInfo"
-                                    :key="key">
-                                    <md-icon :class="'fa ' + (key == 'name' ? 'fa-server' : 'fa-map-marker-alt')" />
-                                    <div class="md-list-item-text">
-                                        <span>{{ value }}</span>
-                                        <span>{{ key }}</span>
-                                    </div>
-                                </md-list-item>
-                            </md-list>
-                        </md-card-expand-content>
-                    </md-card-content>
 
                     <md-card-actions>
                         <md-card-expand-trigger>
