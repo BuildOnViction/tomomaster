@@ -1,0 +1,23 @@
+.social-links {
+
+    .social-links__item {
+        font-size: 14px;
+        text-align: center;
+        margin-right: 15px;
+    }
+
+    .social-links__link {
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        border-radius: 8px;
+        line-height: 30px;
+        color: #525275;
+        background-color: #323251;
+
+        &:hover {
+            color: $color-white;
+            background-color: $color-text;
+        }
+    }
+}

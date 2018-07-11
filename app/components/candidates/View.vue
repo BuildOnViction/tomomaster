@@ -1,44 +1,35 @@
 <template>
     <div>
-        <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
-            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
-            crossorigin="anonymous">
+        <div class="container section section--candidate">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="tm-flag color-yellow" />
+                        <span>Candidate</span>
+                        <span class="text-truncate section-title__description">{{ candidate.address }}</span>
+                        <ul class="list-inline social-links">
+                            <li
+                                v-for="(value, key) in candidate.socialInfo"
+                                :key="key"
+                                class="list-inline-item social-links__item">
+                                <a
+                                    :href="value"
+                                    class="social-links__link">
+                                    <i :class="'social-links__icon tm-' + key" />
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
                 md-medium-size-70 md-small-size-90 md-xsmall-size-90">
                 <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                <span :class="'candidate-status candidate-status--' + candidate.status">
-                                    <md-tooltip
-                                        class="candidate-status-tooltip"
-                                        md-direction="left">{{ candidate.status }}</md-tooltip>
-                                </span>
-                                {{ candidate.name }}
-                            </div>
-                            <div class="md-subhead">
-                                <a
-                                    class="candidate-address"
-                                    href="#"
-                                    target="__blank">{{ candidate.address }}</a>
-                            </div>
-                        </md-content>
-                    </md-card-header>
 
                     <md-card-content>
-                        <md-content class="social-wrap">
-                            <a
-                                v-for="(value, key) in candidate.socialInfo"
-                                :key="key"
-                                :href="value">
-                                <md-icon :class="key == 'mail' ? 'fas fa-envelope' : 'fab ' + 'fa-' + key" />
-                                {{ key }}
-                            </a>
-                        </md-content>
                         <md-list class="md-double-line md-list-2-col">
                             <md-list-item :class="'md-list-item-status md-list-item-status--' + candidate.status">
                                 <md-icon>offline_bolt</md-icon>
@@ -183,7 +174,7 @@
                     </md-card-header>
 
                     <md-card-content>
-                        <iframe
+                        <!-- <iframe
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                             orgId=1&panelId=2&theme=light"
                             width="1200"
@@ -192,7 +183,7 @@
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                             orgId=1&panelId=6&theme=light"
                             width="1200"
-                            frameborder="0" />
+                            frameborder="0" /> -->
                     </md-card-content>
                 </md-card>
             </div>
@@ -209,11 +200,11 @@
                     </md-card-header>
 
                     <md-card-content>
-                        <iframe
+                        <!-- <iframe
                             src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
                             ?orgId=1&panelId=4&theme=light"
                             width="1200"
-                            frameborder="0" />
+                            frameborder="0" /> -->
                     </md-card-content>
                 </md-card>
             </div>
@@ -300,7 +291,7 @@ export default {
                 socialInfo: {
                     github: '#',
                     linkedin: '#',
-                    mail: '#'
+                    email: '#'
                 },
                 voted: 0,
                 totalVoted: 0

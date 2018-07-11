@@ -2,7 +2,7 @@
     <div>
         <div
             v-if="isReady"
-            class="container section status-section">
+            class="container section section--status">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
