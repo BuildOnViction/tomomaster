@@ -13,8 +13,11 @@ var BlockSigner = new Schema({
         index: true
     },
     signers: [{
-        type: String,
-        index: true
+        signer: {
+            type: String,
+            index: true
+        },
+        tx: String
     }]
 }, { timestamps: true })
 

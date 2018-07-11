@@ -21,9 +21,9 @@
                             md-label="Signer">
                             <router-link
                                 v-for="it in item.signers"
-                                :key="it"
-                                :to="'/candidate/' + it">
-                                {{ it }}
+                                :key="it.signer"
+                                :to="'/candidate/' + it.signer">
+                                {{ it.signer }}
                             </router-link>
                         </md-table-cell>
                     </md-table-row>
