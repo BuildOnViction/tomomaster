@@ -196,6 +196,7 @@ export default {
             let value = this.applyValue
             let coinbase = this.coinbase
             let nodeUrl = this.nodeUrl
+
             try {
                 if (!self.isReady) {
                     self.$router.push({ path: '/setting' })

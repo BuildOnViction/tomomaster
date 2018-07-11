@@ -91,6 +91,9 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
+.tm-profile:before {
+    content: "\e911";
+}
 .tm-close:before {
     content: "\e910";
 }
