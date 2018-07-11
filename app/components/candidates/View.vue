@@ -361,8 +361,9 @@ export default {
             }
 
             let voters = await axios.get(`/api/candidates/${address}/voters`)
-            voters.data.map((v) => {
+            voters.data.map((v, idx) => {
                 self.voters.push({
+                    id: idx + 1,
                     address: v.voter,
                     cap: (v.capacity / 10 ** 18)
                 })
@@ -370,11 +371,6 @@ export default {
                 if (v.voter === account) {
                     self.candidate.voted += (parseFloat(v.capacity) / 10 ** 18)
                 }
-            })
-            self.voters.sort((a, b) => {
-                return b.cap - a.cap
-            }).map((v, i) => {
-                v.id = i + 1
             })
 
             let txs = await axios.get(`/api/transactions/candidate/${address}`)

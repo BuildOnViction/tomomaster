@@ -50,6 +50,8 @@
             <b-table
                 :items="sortedCandidates"
                 :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :class="'tomo-table tomo-table--candidates ' + getTableCssClass"
@@ -57,7 +59,7 @@
 
                 <template
                     slot="index"
-                    slot-scope="data">{{ data.index + 1 }}
+                    slot-scope="data">{{ data.item.id }}
                 </template>
 
                 <template
@@ -72,7 +74,8 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrenctySymbol(formatNumber(data.item.cap)) }}</template>
+                    slot-scope="data">{{ formatCurrenctySymbol(formatNumber(data.item.cap)) }}
+                </template>
 
                 <template
                     slot="status"
@@ -121,6 +124,14 @@
                         class="mt-3 mt-lg-0">Withdraw</b-button>
                 </template>
             </b-table>
+
+            <b-pagination
+                v-if="totalRows > 0 && totalRows > perPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                v-model="currentPage"
+                align="center"
+                class="tomo-pagination" />
         </div>
     </div>
 </template>
@@ -179,7 +190,10 @@ export default {
             voteActive: false,
             voteValue: 1,
             voteItem: {},
-            candidates: []
+            candidates: [],
+            currentPage: 1,
+            perPage: 10,
+            totalRows: 0
         }
     },
     computed: {
@@ -211,9 +225,10 @@ export default {
 
             let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
-            candidates.data.map(async (candidate) => {
+            candidates.data.map(async (candidate, idx) => {
                 let isMasternode = (((signers || {}).data || {}).signers || []).indexOf(candidate.candidate) >= 0
                 self.candidates.push({
+                    id: idx + 1,
                     address: candidate.candidate,
                     owner: candidate.owner,
                     status: candidate.status,
@@ -222,11 +237,8 @@ export default {
                     cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toString()
                 })
             })
-            self.candidates.sort((a, b) => {
-                return b.cap - a.cap
-            }).map((c, i) => {
-                c.id = i + 1
-            })
+
+            self.totalRows = self.candidates.length
 
             self.web3.eth.getBlockNumber(function (error, result) {
                 if (error) {

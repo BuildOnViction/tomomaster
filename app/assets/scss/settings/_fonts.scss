@@ -91,6 +91,18 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
+.tm-chevrons-right:before {
+    content: "\e916";
+}
+.tm-chevron-right:before {
+    content: "\e917";
+}
+.tm-chevrons-left:before {
+    content: "\e914";
+}
+.tm-chevron-left:before {
+    content: "\e915";
+}
 .tm-dot:before {
     content: "\e913";
 }
