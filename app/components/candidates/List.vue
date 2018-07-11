@@ -52,7 +52,7 @@
                 :fields="fields"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
-                class="tomo-table tomo-table--candidates"
+                :class="'tomo-table tomo-table--candidates ' + getTableCssClass"
                 stacked="md" >
 
                 <template
@@ -187,6 +187,16 @@ export default {
             return this.candidates.slice().sort(function (a, b) {
                 return b.cap - a.cap
             })
+        },
+        getTableCssClass: function () {
+            let cssClass = 'tomo-table--candidates-no-owner'
+            for (let candidate of this.candidates) {
+                if (candidate.owner === this.account) {
+                    cssClass = 'tomo-table--candidates-has-owner'
+                    break
+                }
+            }
+            return cssClass
         }
     },
     watch: {},

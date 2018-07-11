@@ -178,6 +178,15 @@
         border-top: none;
     }
 
+    &.tomo-table--candidates-no-owner {
+        th[aria-colindex="6"],
+        td[aria-colindex="6"] {
+            display: none;
+            padding: 0;
+            margin: 0;
+        }
+    }
+
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
@@ -320,12 +329,41 @@
                 margin: 0;
             }
         }
+
+        &.tomo-table--candidates-no-owner {
+
+            .text-truncate {
+                max-width: 14rem;
+            }
+
+            thead tr,
+            tbody tr {
+                grid-template-columns: 5% auto 15% 20% 190px 62px;
+            }
+        }
     }
 
     @include media-breakpoint-up(xl) {
 
         .text-truncate {
             max-width: 15rem;
+        }
+
+        &.tomo-table--candidates-no-owner {
+
+            .text-truncate {
+                max-width: 20rem;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(2xl) {
+
+        &.tomo-table--candidates-no-owner {
+
+            .text-truncate {
+                max-width: 100%;
+            }
         }
     }
 }
