@@ -88,7 +88,6 @@ contract('TomoValidator', (accounts) => {
         await tryCatch(validator.resign(accounts[0], { from: accounts[2] }), errTypes.revert)
         await validator.resign(accounts[0], { from : accounts[0] })
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), false)
-
     })
 
     it('A candidate withdraw', async () => {
