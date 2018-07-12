@@ -16,8 +16,7 @@ if (config.has('truffle')){
 
 module.exports = function(deployer) {
 
-    return deployer.deploy(TomoValidator, minCandidateCap, maxValidatorNumber, candidateWithdrawDelay, voterWithdrawDelay).then((tv) => {
-        //console.log('tv', tv.contract._eth.getTransactionCount("0x487d62d33467c4842c5e54eb370837e4e88bba0f"))
+    return deployer.deploy(TomoValidator, [], [], null, minCandidateCap, maxValidatorNumber, candidateWithdrawDelay, voterWithdrawDelay).then((tv) => {
         return  deployer.deploy(TomoRandomize, epochNumber, blockTimeSecret, blockTimeOpening)
     }). then(() => {
         return deployer.deploy(BlockSigner);
