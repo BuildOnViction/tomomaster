@@ -53,9 +53,8 @@
                     </b-form-group>
                     <div class="buttons text-right">
                         <b-button
-                            to="/"
                             type="reset"
-                            variant="secondary">Cancel</b-button>
+                            variant="secondary">Reset</b-button>
                         <b-button
                             type="submit"
                             variant="primary">Submit</b-button>
