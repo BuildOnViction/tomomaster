@@ -5,7 +5,7 @@
                 <div class="col-12">
                     <div class="section-title">
                         <i class="tm-flag color-yellow" />
-                        <span>Candidate</span>
+                        <span>{{ candidate.name }}</span>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
                             <li
@@ -122,7 +122,9 @@
                         </p>
                     </div>
                 </div>
-                <b-card-footer class="text-right">
+                <b-card-footer
+                    v-if="candidate.status !== 'RESIGNED'"
+                    class="text-right">
                     <b-button
                         v-if="candidate.voted > 0"
                         :to="`/unvoting/${candidate.address}`"
@@ -134,27 +136,6 @@
             </b-card>
         </div>
         <div class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-
-                    <md-card-actions>
-                        <md-card-expand-trigger>
-                            <md-button class="md-icon-button">
-                                <md-icon>keyboard_arrow_down</md-icon>
-                            </md-button>
-                        </md-card-expand-trigger>
-                        <md-button
-                            v-if="candidate.voted > 0"
-                            :to="'/unvoting/' + candidate.address"
-                            class="md-raised md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
-                        <md-button
-                            :to="'/voting/' + candidate.address"
-                            class="md-raised md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
             <div
                 v-if="voters.length > 0"
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
@@ -340,6 +321,7 @@ export default {
             if (c.data) {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                self.candidate.status = data.status
                 self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
                 self.candidate.rewarded = 1
                 self.candidate.latestBlock = '123,456'
