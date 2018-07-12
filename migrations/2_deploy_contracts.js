@@ -19,6 +19,6 @@ module.exports = function(deployer) {
     return deployer.deploy(TomoValidator, [], [], null, minCandidateCap, maxValidatorNumber, candidateWithdrawDelay, voterWithdrawDelay).then((tv) => {
         return  deployer.deploy(TomoRandomize, epochNumber, blockTimeSecret, blockTimeOpening)
     }). then(() => {
-        return deployer.deploy(BlockSigner);
+        return deployer.deploy(BlockSigner, epochNumber);
     })
 };
