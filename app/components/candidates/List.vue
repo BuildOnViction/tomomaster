@@ -55,7 +55,7 @@
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :class="'tomo-table tomo-table--candidates ' + getTableCssClass"
-                show-empty="true"
+                :show-empty="true"
                 empty-text="There are no candidates to show"
                 stacked="md" >
 
