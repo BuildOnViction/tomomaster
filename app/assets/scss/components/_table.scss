@@ -363,6 +363,24 @@
             }
         }
 
+        &.tomo-table--candidates-7-cols {
+
+            th[aria-colindex="7"] {
+                position: relative;
+    
+                &:after {
+                    content: '';
+                    display: block;
+                    height: 1000px;
+                    width: 100%;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: $color-body-bg;
+                }
+            }
+        }
+
         &.tomo-table--candidates-empty {
 
             th[aria-colindex="5"]:after {
