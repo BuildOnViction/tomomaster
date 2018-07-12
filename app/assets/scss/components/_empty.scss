@@ -1,0 +1,34 @@
+.tomo-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 131px - 120px);
+  
+    &__icon {
+        font-size: 60px;
+        margin-bottom: 10px;
+    }
+  
+    &__description {
+        text-align: center;
+        font-size: 15px;
+    }
+
+    .btn {
+        min-width: 120px;
+        margin-top: 20px;
+    }
+
+    @include media-breakpoint-up(sm) {
+        height: calc(100vh - 97px - 120px);
+    }
+  
+    @include media-breakpoint-up(md) {
+        height: calc(100vh - 61px - 120px);
+    
+        &__icon {
+            margin-bottom: 15px;
+        }
+    }
+  }

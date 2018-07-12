@@ -1,14 +1,18 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="!voted"
-            md-icon="account_circle"
-            md-label="Opps!!"
-            md-description="You have not voted for this candidate, so you can't unvote.">
-            <md-button
-                :to="'/voting/' + candidate"
-                class="md-primary md-raised">Vote</md-button>
-        </md-empty-state>
+        <div class="container">
+            <div class="row">
+                <div
+                    v-if="!voted"
+                    class="tomo-empty col-12">
+                    <i class="tm-notice tomo-empty__icon"/>
+                    <p class="tomo-empty__description">You have not voted for this candidate, so you can't unvote.</p>
+                    <b-button
+                        :to="`/voting/${candidate}`"
+                        variant="primary">Vote</b-button>
+                </div>
+            </div>
+        </div>
         <div
             v-if="voted"
             class="container md-layout md-gutter md-alignment-center">
