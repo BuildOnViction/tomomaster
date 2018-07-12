@@ -69,6 +69,10 @@
                 align-items: center;
                 grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
                 padding: 9px 30px;
+
+                &.b-table-empty-row {
+                    grid-template-columns: 100%;
+                }
             }
     
             @include media-breakpoint-up(xl) {
@@ -178,7 +182,8 @@
         border-top: none;
     }
 
-    &.tomo-table--candidates-no-owner {
+    &.tomo-table--candidates-6-cols,
+    &.tomo-table--candidates-6-cols-resigned {
         th[aria-colindex="6"],
         td[aria-colindex="6"] {
             display: none;
@@ -199,6 +204,10 @@
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
+        }
+
+        tbody tr.b-table-empty-row {
+            grid-template-columns: 100% !important;
         }
 
         th[aria-colindex="4"].sorting,
@@ -330,7 +339,7 @@
             }
         }
 
-        &.tomo-table--candidates-no-owner {
+        &.tomo-table--candidates-6-cols {
 
             .text-truncate {
                 max-width: 14rem;
@@ -341,6 +350,25 @@
                 grid-template-columns: 5% auto 15% 20% 190px 62px;
             }
         }
+
+        &.tomo-table--candidates-6-cols-resigned {
+
+            thead tr,
+            tbody tr {
+                grid-template-columns: 5% auto 15% 20% 190px 100px;
+            }
+
+            td[aria-colindex="7"] {
+                text-align: right;
+            }
+        }
+
+        &.tomo-table--candidates-empty {
+
+            th[aria-colindex="5"]:after {
+                display: none;
+            }
+        }
     }
 
     @include media-breakpoint-up(xl) {
@@ -349,7 +377,7 @@
             max-width: 15rem;
         }
 
-        &.tomo-table--candidates-no-owner {
+        &.tomo-table--candidates-6-cols {
 
             .text-truncate {
                 max-width: 20rem;
@@ -359,7 +387,7 @@
 
     @include media-breakpoint-up(2xl) {
 
-        &.tomo-table--candidates-no-owner {
+        &.tomo-table--candidates-6-cols {
 
             .text-truncate {
                 max-width: 100%;

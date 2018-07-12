@@ -96,7 +96,7 @@
                 </template>
 
                 <template
-                    v-if="data.item.owner === account"
+                    v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
                     slot="resign"
                     slot-scope="data">
                     <b-button
@@ -205,10 +205,21 @@ export default {
             })
         },
         getTableCssClass: function () {
-            let cssClass = 'tomo-table--candidates-no-owner'
+            let cssClass = 'tomo-table--candidates-6-cols'
+
+            if (!this.candidates.length) {
+                cssClass += ' tomo-table--candidates-empty'
+            }
+
             for (let candidate of this.candidates) {
                 if (candidate.owner === this.account) {
-                    cssClass = 'tomo-table--candidates-has-owner'
+                    if (candidate.status === 'PROPOSED') {
+                        cssClass = 'tomo-table--candidates-7-cols'
+                    }
+
+                    if (candidate.status === 'RESIGNED') {
+                        cssClass = 'tomo-table--candidates-6-cols-resigned'
+                    }
                     break
                 }
             }
