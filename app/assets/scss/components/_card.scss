@@ -27,6 +27,14 @@
         }
     }
 
+    .tomo-card__subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        display: block;
+        color: $color-text-muted;
+        margin-top: 10px;
+    }
+
     .tomo-card__text,
     .tomo-card__text a {
         font-size: 30px;

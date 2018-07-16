@@ -76,8 +76,8 @@ export default {
 
                 let toastMessage = rs.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
-
                 self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false

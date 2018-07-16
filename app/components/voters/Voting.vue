@@ -54,7 +54,8 @@
                     <div class="buttons text-right">
                         <b-button
                             type="reset"
-                            variant="secondary">Reset</b-button>
+                            variant="secondary"
+                            @click="$router.go(-1)">Cancel</b-button>
                         <b-button
                             type="submit"
                             variant="primary">Submit</b-button>
@@ -170,8 +171,8 @@ export default {
 
                 let toastMessage = rs.tx ? 'You have successfully voted!'
                     : 'An error occurred while voting, please try again'
-
                 self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
                     self.loading = false
                     if (rs.tx) {

@@ -96,6 +96,7 @@ export default {
                 let toastMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'
                 self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
                     self.loading = false
                     if (rs.tx) {

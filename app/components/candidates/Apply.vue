@@ -210,8 +210,8 @@ export default {
                 })
                 let toastMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
-
                 self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
                     self.loading = false
                     if (rs.tx) {
