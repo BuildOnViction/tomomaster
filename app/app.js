@@ -81,11 +81,17 @@ Vue.prototype.formatNumber = function (number) {
     return seps.join('.')
 }
 
-Vue.prototype.formatCurrenctySymbol = function (number, unit = null) {
+Vue.prototype.formatCurrenctySymbol = function (number) {
+    let unit = this.getCurrencySymbol()
+
     if (unit === null) {
         unit = '$TOMO'
     }
     return `${number} ${unit}`
+}
+
+Vue.prototype.getCurrencySymbol = function () {
+    return '$TOMO'
 }
 
 Vue.use(VueRouter)

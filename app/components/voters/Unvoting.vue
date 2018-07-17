@@ -153,7 +153,7 @@ export default {
 
             if (field) {
                 return {
-                    'md-invalid': field.$error
+                    'is-invalid': field.$error
                 }
             }
         },

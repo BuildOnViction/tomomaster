@@ -23,3 +23,19 @@
         background-color: $color-btn-hover-bg;
     }
 }
+
+#btn-setting {
+    font-size: 0;
+
+    i {
+        font-size: 18px;
+
+        @extend %transit;
+    }
+
+    &:hover i {
+        display: inline-block;
+        color: $color-link !important;
+        transform: rotate(180deg);
+    }
+}

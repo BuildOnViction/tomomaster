@@ -16,6 +16,10 @@
                         id="btn-become-candidate"
                         to="/apply"
                         variant="primary">Become a candidate</b-button>
+
+                    <router-link
+                        id="btn-setting"
+                        to="/setting"><i class="tm-cog color-purple"/>Setting</router-link>
                 </div>
             </b-navbar>
             <div class="main-content">
