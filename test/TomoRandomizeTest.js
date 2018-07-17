@@ -11,7 +11,7 @@ contract('TomoRandomize', (accounts) => {
 
         await randomize.setSecret([byte0, byte1], { from : accounts[0] })
         let secret = (await randomize.getSecret.call(accounts[0])).valueOf()
-        await randomize.setOpening([byte0, byte1], { from : accounts[0] })
+        await randomize.setOpening(byte0, { from : accounts[0] })
 
         await tryCatch(randomize.getOpening(accounts[0], { from : accounts[0] }), errTypes.revert)
 
@@ -28,10 +28,10 @@ contract('TomoRandomize', (accounts) => {
     })
     it('Set a opening news with epochNumber is not enough', async () => {
         const randomize = await TomoRandomize.new(5, 0, 1)
-        await tryCatch(randomize.setOpening([byte0, byte1], { from : accounts[0] }), errTypes.revert)
+        await tryCatch(randomize.setOpening(byte0, { from : accounts[0] }), errTypes.revert)
     })
     it('Set a opening new before epochNumber accept', async () => {
         const randomize = await TomoRandomize.new(2, 2, 2)
-        await tryCatch(randomize.setOpening([byte0, byte1], { from : accounts[0] }), errTypes.revert)
+        await tryCatch(randomize.setOpening(byte0, { from : accounts[0] }), errTypes.revert)
     })
 })

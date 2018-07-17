@@ -361,7 +361,7 @@ export default {
                 self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
                 self.candidate.rewarded = 1
                 self.candidate.latestBlock = '123,456'
-                self.candidate.totalSignedBlocks = 100
+                self.candidate.totalSignedBlocks = data.totalSignedBlocks
                 self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
                 self.candidate.dataCenterInfo = {
                     name: 'AWS',
@@ -412,7 +412,6 @@ export default {
                 let stx = bs.signers.filter(s => {
                     return (s.signer === address)
                 })
-                console.log(stx)
                 self.signs.push({
                     id: idx + 1,
                     tx: stx[0].tx,
