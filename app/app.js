@@ -81,7 +81,7 @@ Vue.prototype.formatNumber = function (number) {
     return seps.join('.')
 }
 
-Vue.prototype.formatCurrenctySymbol = function (number) {
+Vue.prototype.formatCurrencySymbol = function (number) {
     let unit = this.getCurrencySymbol()
 
     if (unit === null) {

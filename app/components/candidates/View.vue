@@ -39,7 +39,7 @@
                             <span class="tomo-info__text">Balance</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatCurrenctySymbol(formatNumber(candidate.balance)) }}
+                            {{ formatCurrencySymbol(formatNumber(candidate.balance)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -48,7 +48,7 @@
                             <span class="tomo-info__text">Capacity</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatCurrenctySymbol(formatNumber(candidate.cap)) }}
+                            {{ formatCurrencySymbol(formatNumber(candidate.cap)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
@@ -57,7 +57,7 @@
                             <span class="tomo-info__text">Total voted</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatCurrenctySymbol(formatNumber(candidate.totalVoted)) }}
+                            {{ formatCurrencySymbol(formatNumber(candidate.totalVoted)) }}
                         </p>
                     </div>
                     <div
@@ -68,7 +68,7 @@
                             <span class="tomo-info__text">You voted</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatCurrenctySymbol(formatNumber(candidate.voted)) }}
+                            {{ formatCurrencySymbol(formatNumber(candidate.voted)) }}
                         </p>
                     </div>
                     <div
@@ -79,7 +79,7 @@
                             <span class="tomo-info__text">Rewarded</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatCurrenctySymbol(formatNumber(candidate.rewarded)) }}
+                            {{ formatCurrencySymbol(formatNumber(candidate.rewarded)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">

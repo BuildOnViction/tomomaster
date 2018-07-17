@@ -19,7 +19,7 @@
                         <span class="tomo-info__text">Balance</span>
                     </p>
                     <p class="tomo-info__description">
-                        {{ formatCurrenctySymbol(formatNumber(balance)) }}
+                        {{ formatCurrencySymbol(formatNumber(balance)) }}
                     </p>
                 </div>
                 <div class="col-12 tomo-info">
@@ -28,7 +28,7 @@
                         <span class="tomo-info__text">Total voted</span>
                     </p>
                     <p class="tomo-info__description">
-                        {{ formatCurrenctySymbol(formatNumber(totalVoted)) }}
+                        {{ formatCurrencySymbol(formatNumber(totalVoted)) }}
                     </p>
                 </div>
             </div>
@@ -73,7 +73,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrenctySymbol(formatNumber(data.item.cap)) }}
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
 
             </b-table>

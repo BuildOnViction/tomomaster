@@ -42,7 +42,7 @@
                         <li class="tomo-list__item">
                             <i class="tm-tomo tomo-list__icon" />
                             <p class="tomo-list__text">
-                                <span> {{ formatCurrenctySymbol(formatNumber(voted)) }}</span>
+                                <span> {{ formatCurrencySymbol(formatNumber(voted)) }}</span>
                                 <span>You voted</span>
                             </p>
                         </li>

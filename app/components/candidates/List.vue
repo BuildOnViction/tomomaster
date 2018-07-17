@@ -76,7 +76,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrenctySymbol(formatNumber(data.item.cap)) }}
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
 
                 <template
