@@ -1,11 +1,11 @@
-.candidate-info {
+.tomo-info {
     margin-bottom: 30px;
 
-    .candidate-info__title {
+    .tomo-info__title {
         margin-bottom: 5px;
     }
 
-    .candidate-info__icon {
+    .tomo-info__icon {
         font-size: 6px;
         vertical-align: middle;
         color: #6e92f7;
@@ -13,14 +13,14 @@
         max-width: 6px;
     }
 
-    .candidate-info__text {
+    .tomo-info__text {
         font-size: 14px;
         display: inline-block;
         vertical-align: middle;
         text-transform: capitalize;
     }
 
-    .candidate-info__description {
+    .tomo-info__description {
         font-size: 16px;
         color: #938fb5;
         margin-left: 16px;
@@ -29,26 +29,26 @@
 
     &--big {
 
-        .candidate-info__icon {
+        .tomo-info__icon {
             font-size: 13px;
         }
 
-        .candidate-info__description {
+        .tomo-info__description {
             margin-left: 20px;
         }
     }
 }
 
-.candidate-info-status--active {
+.tomo-info-status--active {
 
-    .candidate-info__description {
+    .tomo-info__description {
         color: $color-success;
     }
 }
 
-.candidate-info-status--inactive {
+.tomo-info-status--inactive {
 
-    .candidate-info__description {
+    .tomo-info__description {
         color: $color-error;
     }
 }

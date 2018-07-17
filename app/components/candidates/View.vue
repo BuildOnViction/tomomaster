@@ -25,99 +25,99 @@
             <b-card class="tomo-card tomo-card--animated tomo-card--candidate">
                 <div class="row m-md-0">
                     <div
-                        :class="'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info candidate-info-status--'
+                        :class="'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info-status--'
                         + candidate.status">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Note Status</span>
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Note Status</span>
                         </p>
-                        <p class="candidate-info__description">Active</p>
+                        <p class="tomo-info__description">Active</p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Balance</span>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Balance</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatCurrenctySymbol(formatNumber(candidate.balance)) }}
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Capacity</span>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Capacity</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatCurrenctySymbol(formatNumber(candidate.cap)) }}
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info candidate-info--big">
-                        <p class="candidate-info__title">
-                            <i class="tm-arrow-up candidate-info__icon" />
-                            <span class="candidate-info__text">Total voted</span>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
+                        <p class="tomo-info__title">
+                            <i class="tm-arrow-up tomo-info__icon" />
+                            <span class="tomo-info__text">Total voted</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatCurrenctySymbol(formatNumber(candidate.totalVoted)) }}
                         </p>
                     </div>
                     <div
                         v-if="isReady"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">You voted</span>
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">You voted</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatCurrenctySymbol(formatNumber(candidate.voted)) }}
                         </p>
                     </div>
                     <div
                         v-if="isReady"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Rewarded</span>
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Rewarded</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatCurrenctySymbol(formatNumber(candidate.rewarded)) }}
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Latest Block</span>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Latest Block</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             #{{ formatNumber(candidate.latestBlock) }}
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Total Signed Blocks</span>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Total Signed Blocks</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ formatNumber(candidate.totalSignedBlocks) }}
                         </p>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">Hardware</span>
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Hardware</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ candidate.hardwareInfo }}
                         </p>
                     </div>
                     <div
                         v-for="(value, key) in candidate.dataCenterInfo"
                         :key="key"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 candidate-info">
-                        <p class="candidate-info__title">
-                            <i class="tm-dot candidate-info__icon" />
-                            <span class="candidate-info__text">{{ key }}</span>
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">{{ key }}</span>
                         </p>
-                        <p class="candidate-info__description">
+                        <p class="tomo-info__description">
                             {{ value }}
                         </p>
                     </div>

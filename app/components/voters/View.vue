@@ -1,5 +1,16 @@
 <template>
     <div>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="tm-arrow-up color-pink" />
+                        <span>Voter</span>
+                        <span class="text-truncate section-title__description">{{ voter }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container md-layout md-gutter md-alignment-top-center">
             <div
                 class="md-layout-item md-xlarge-size-50 md-large-size-50
