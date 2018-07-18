@@ -12,14 +12,16 @@
                             type="submit">Search</b-button>
                     </b-nav-form>
 
-                    <b-button
-                        id="btn-become-candidate"
-                        to="/apply"
-                        variant="primary">Become a candidate</b-button>
+                    <div class="navbar-buttons">
+                        <b-button
+                            id="btn-become-candidate"
+                            to="/apply"
+                            variant="primary">Become a candidate</b-button>
 
-                    <router-link
-                        id="btn-setting"
-                        to="/setting"><i class="tm-cog color-purple"/>Setting</router-link>
+                        <router-link
+                            id="btn-setting"
+                            to="/setting"><i class="tm-cog color-purple"/>Setting</router-link>
+                    </div>
                 </div>
             </b-navbar>
             <div class="main-content">
