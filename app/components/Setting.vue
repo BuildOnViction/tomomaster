@@ -5,7 +5,8 @@
             align-h="center"
             class="m-0">
             <b-card
-                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
+                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
+                + (loading ? ' tomo-loading' : '')">
                 <h4 class="color-white tomo-card__title tomo-card__title--big">Settings</h4>
                 <b-form
                     class="tomo-form tomo-form--setting"
@@ -52,14 +53,12 @@
                         label="MNEMONIC/PrivateKey"
                         label-for="mnemonic">
                         <b-form-input
+                            :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
                             type="text" />
-                    <!-- <span
+                        <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
                             class="text-danger">Required field</span>
-                        <span
-                            v-else-if="$v.mnemonic.$dirty && !$v.mnemonic.minValue"
-                            class="text-danger">Must be greater than 10<sup>-18 $TOMO</sup></span> -->
                     </b-form-group>
 
                     <div
@@ -128,7 +127,8 @@ export default {
                 // mainnet: 'https://core.tomochain.com',
                 testnet: 'https://testnet.tomochain.com',
                 custom: 'http://localhost:8545'
-            }
+            },
+            loading: false
         }
     },
     validations: {
@@ -137,6 +137,9 @@ export default {
                 required,
                 localhostUrl
             }
+        },
+        mnemonic: {
+            required
         }
     },
     computed: { },
@@ -178,31 +181,49 @@ export default {
             }
         },
         validate: function () {
+            if (this.provider === 'metamask') {
+                this.save()
+            }
+
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                console.log('test')
                 this.save()
             }
         },
         save: function () {
             const self = this
             var wjs = false
-            if (self.provider === 'metamask') {
-                if (window.web3) {
-                    var p = window.web3.currentProvider
-                    wjs = new Web3(p)
-                }
-            } else {
-                const walletProvider =
-                    (self.mnemonic.indexOf(' ') >= 0)
-                        ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
-                        : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
+            self.loading = true
+            try {
+                if (self.provider === 'metamask') {
+                    if (window.web3) {
+                        var p = window.web3.currentProvider
+                        wjs = new Web3(p)
+                    }
+                } else {
+                        const walletProvider =
+                            (self.mnemonic.indexOf(' ') >= 0)
+                                ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
+                                : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
 
-                wjs = new Web3(walletProvider)
+                        wjs = new Web3(walletProvider)
+                }
+
+                self.setupProvider(this.provider, wjs)
+
+                setTimeout(() => {
+                    self.loading = false
+                    self.$toasted.show('Network Provider was changed successfully')
+                    self.$router.push({ path: '/' })
+                }, 2000)
+            } catch (e) {
+                self.loading = false
+                self.$toasted.show('There are some errors when changing the network provider', {
+                    type : 'error'
+                })
+                console.log(e)
             }
-            self.setupProvider(this.provider, wjs)
-            self.$router.push({ path: '/' })
         }
     }
 }
