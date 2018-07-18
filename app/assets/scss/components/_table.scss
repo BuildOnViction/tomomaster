@@ -433,3 +433,41 @@
         }
     }
 }
+
+.tomo-table--transactions {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            padding-right: 0;
+            grid-template-columns: 5% auto 15% 20% 10%;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: right;
+        }
+
+        th[aria-colindex="5"],
+        td[aria-colindex="5"] {
+            text-align: center;
+
+            a > span {
+                font-size: 0;
+            }
+
+            i {
+                font-size: 15px;
+            }
+
+            a:hover {
+                color: $color-link !important;
+            }
+        }
+    }
+}

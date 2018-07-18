@@ -46,7 +46,7 @@
             </div>
             <b-table
                 :items="sortedCandidates"
-                :fields="fields"
+                :fields="candidateFields"
                 :current-page="currentPage"
                 :per-page="perPage"
                 :sort-by.sync="sortBy"
@@ -75,7 +75,6 @@
                     slot="cap"
                     slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
-
             </b-table>
 
             <b-pagination
@@ -96,7 +95,7 @@ export default {
     name: 'App',
     data () {
         return {
-            fields: [
+            candidateFields: [
                 {
                     key: 'index',
                     label: 'ID',
@@ -104,7 +103,7 @@ export default {
                 },
                 {
                     key: 'address',
-                    label: 'Candidate',
+                    label: 'Address',
                     sortable: true
                 },
                 {

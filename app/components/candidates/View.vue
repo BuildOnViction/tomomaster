@@ -135,141 +135,161 @@
                 </b-card-footer>
             </b-card>
         </div>
-        <div class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                v-if="voters.length > 0"
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="voters"
-                    md-card
-                    md-fixed-header
-                    md-sort="cap"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Voters
-                            <p class="md-subhead">People who voted for this candidate</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-label="ID"
-                            md-numeric>{{ item.id }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Address"
-                            md-sort-by="address">
-                            <router-link :to="'/voter/' + item.address">{{ item.address }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-numeric
-                            md-label="Capacity"
-                            md-sort-by="cap">{{ item.cap }} $TOMO
-                        </md-table-cell>
-                    </md-table-row>
-                </md-table>
+        <div class="container section section--hardware">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <h3 class="section-title">
+                        <i class="tm-cpu color-pink" />
+                        <span>CPUs</span>
+                    </h3>
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
+                        orgId=1&panelId=2"
+                        width="100%"
+                        frameborder="0" />
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
+                        orgId=1&panelId=6"
+                        width="100%"
+                        frameborder="0" />
+                </div>
+                <div class="col-12 col-lg-6">
+                    <h3 class="section-title">
+                        <i class="tm-memory color-orange" />
+                        <span>Memory</span>
+                    </h3>
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
+                        ?orgId=1&panelId=4"
+                        width="100%"
+                        frameborder="0" />
+                </div>
             </div>
-            <div
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                CPUs
-                            </div>
-                        </md-content>
-                    </md-card-header>
+        </div>
+        <div class="container section section-voters">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-arrow-up color-pink" />
+                        <span>Voters</span>
+                        <span class="text-truncate section-title__description">
+                            People who voted for this candidate</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="sortedVoters"
+                :fields="voterFields"
+                :current-page="voterCurrentPage"
+                :per-page="voterPerPage"
+                :sort-by.sync="voterSortBy"
+                :sort-desc.sync="voterSortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--voted"
+                empty-text="There are no voters to show"
+                stacked="md" >
 
-                    <md-card-content>
-                        <!-- <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=2&theme=light"
-                            width="1200"
-                            frameborder="0" />
-                        <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=6&theme=light"
-                            width="1200"
-                            frameborder="0" /> -->
-                    </md-card-content>
-                </md-card>
-            </div>
-            <div
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                Memory
-                            </div>
-                        </md-content>
-                    </md-card-header>
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
 
-                    <md-card-content>
-                        <!-- <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
-                            ?orgId=1&panelId=4&theme=light"
-                            width="1200"
-                            frameborder="0" /> -->
-                    </md-card-content>
-                </md-card>
+                <template
+                    slot="address"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/candidate/' + data.item.address"
+                        class="text-truncate">
+                        {{ data.item.address }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
+                :total-rows="voterTotalRows"
+                :per-page="voterPerPage"
+                v-model="voterCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-time color-purple" />
+                        <span>Transactions</span>
+                        <span class="text-truncate section-title__description">
+                            All transactions of this candidate</span>
+                    </h3>
+                </div>
             </div>
-            <div
-                v-if="transactions.length > 0"
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="transactions"
-                    md-card
-                    md-fixed-header
-                    md-sort="id"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Transactions
-                            <p class="md-subhead">All transactions of this candidate</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-numeric
-                            md-label="ID">{{ item.id }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Voter"
-                            md-sort-by="voter">
-                            <router-link :to="'/voter/' + item.voter">{{ item.voter }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Event"
-                            md-sort-by="event">
-                            <md-chip
-                                :class="getChipClass(item.event)">{{ item.event }}</md-chip>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-numeric
-                            md-label="Capacity"
-                            md-sort-by="cap">
-                            {{ isNaN(item.cap) ? '--' : item.cap + ' $TOMO' }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="">
-                            <md-button
-                                :href="'https://explorer-testnet.tomochain.com/txs/' + item.tx"
-                                target="_blank"
-                                class="md-icon-button">
-                                <md-icon>remove_red_eye</md-icon>
-                                <md-tooltip md-direction="right">View on TOMO Explorer</md-tooltip>
-                            </md-button>
-                        </md-table-cell>
-                    </md-table-row>
-                </md-table>
-            </div>
+            <b-table
+                :items="sortedTransactions"
+                :fields="txFields"
+                :current-page="txCurrentPage"
+                :per-page="txPerPage"
+                :sort-by.sync="txSortBy"
+                :sort-desc.sync="txSortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--transactions"
+                empty-text="There are no transactions to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
+                    slot="voter"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/voter/' + data.item.voter"
+                        class="text-truncate">
+                        {{ data.item.voter }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="event"
+                    slot-scope="data">
+                    <span :class="'fw-600 ' + getEventClass(data.item.event)">{{ data.item.event }}</span>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+
+                <template
+                    slot="tx"
+                    slot-scope="data">
+                    <a
+                        v-b-tooltip.hover
+                        v-b-tooltip.html.right
+                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        title="View on TomoScan"
+                        target="_blank"
+                        class="text-muted">
+                        <i class="tm-eye" />
+                        <span>View on TomoScan</span>
+                    </a>
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="txTotalRows > 0 && txTotalRows > txPerPage"
+                :total-rows="txTotalRows"
+                :per-page="txPerPage"
+                v-model="txCurrentPage"
+                align="center"
+                class="tomo-pagination" />
         </div>
     </div>
 </template>
@@ -305,10 +325,75 @@ export default {
                 },
                 voted: 0,
                 totalVoted: 0
-            }
+            },
+            voterFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'address',
+                    label: 'Address',
+                    sortable: true
+                },
+                {
+                    key: 'cap',
+                    label: 'Capacity',
+                    sortable: true
+                }
+            ],
+            voterSortBy: 'cap',
+            voterSortDesc: true,
+            voterCurrentPage: 1,
+            voterPerPage: 10,
+            voterTotalRows: 0,
+            txFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'voter',
+                    label: 'Voter',
+                    sortable: true
+                },
+                {
+                    key: 'event',
+                    label: 'Event',
+                    sortable: true
+                },
+                {
+                    key: 'cap',
+                    label: 'Capacity',
+                    sortable: true
+                },
+                {
+                    key: 'tx',
+                    label: '',
+                    sortable: false
+                }
+            ],
+            txSortBy: 'cap',
+            txSortDesc: true,
+            txCurrentPage: 1,
+            txPerPage: 10,
+            txTotalRows: 0
         }
     },
-    computed: {},
+    computed: {
+        sortedVoters: function () {
+            return this.voters.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        },
+        sortedTransactions: function () {
+            return this.transactions.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {
@@ -335,7 +420,7 @@ export default {
 
             if (self.web3) {
                 self.web3.eth.getBalance(self.candidate.address, function (a, b) {
-                    self.candidate.balance = b / 10 ** 18
+                    self.candidate.balance = new BigNumber(b).div(10 ** 18)
                     if (a) {
                         console.log('got an error', a)
                     }
@@ -347,13 +432,16 @@ export default {
                 self.voters.push({
                     id: idx + 1,
                     address: v.voter,
-                    cap: (v.capacity / 10 ** 18)
+                    cap: (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
                 })
-                self.candidate.totalVoted += (v.capacity / 10 ** 18)
+                self.candidate.totalVoted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+
                 if (v.voter === account) {
-                    self.candidate.voted += (parseFloat(v.capacity) / 10 ** 18)
+                    self.candidate.voted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
                 }
             })
+
+            self.voterTotalRows = self.voters.length
 
             let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
@@ -363,9 +451,11 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toString()
+                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toNumber()
                 })
             })
+
+            self.txTotalRows = self.transactions.length
         } catch (e) {
             console.log(e)
         }
@@ -373,12 +463,10 @@ export default {
     mounted () {
     },
     methods: {
-        getChipClass (event) {
+        getEventClass (event) {
             let clazz = ''
-            if (event === 'Vote') {
-                clazz = 'md-primary'
-            } else if (event === 'Unvote') {
-                clazz = 'md-accent'
+            if (event === 'Unvote') {
+                clazz = 'color-pink'
             }
 
             return clazz

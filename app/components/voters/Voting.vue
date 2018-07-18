@@ -7,7 +7,7 @@
             <b-card
                 :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                 + (loading ? ' tomo-loading' : '')">
-                <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Vote</h2>
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
                 <ul class="tomo-list list-unstyled">
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
@@ -70,7 +70,7 @@
             class="m-0">
 
             <b-card class="col-12 col-md-8 col-lg-6 tomo-card p-0">
-                <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Benefit</h2>
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">Benefit</h4>
                 <p class="tomo-form__text">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit,
                     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

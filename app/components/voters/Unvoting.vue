@@ -21,9 +21,9 @@
                 <b-card
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
-                    <h2 class="h4 color-white tomo-card__title tomo-card__title--big">Unvote
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
                         <span class="tomo-card__subtitle">You will receive $TOMO after unvoting</span>
-                    </h2>
+                    </h4>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
                             <i class="tm-wallet tomo-list__icon" />

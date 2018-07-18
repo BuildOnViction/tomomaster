@@ -18,6 +18,10 @@
     color: $color-purple !important;
 }
 
+.color-orange {
+    color: $color-orange !important;
+}
+
 .text-muted {
     color: $color-text-muted !important;
 }
@@ -58,4 +62,8 @@
 .row.row-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.fw-600 {
+    font-weight: 600;
 }

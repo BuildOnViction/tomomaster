@@ -4,7 +4,7 @@
             <b-navbar>
                 <div class="container">
                     <b-navbar-brand to="/">
-                        <img src="app/assets/img/logo.svg" >
+                        <img src="/app/assets/img/logo.svg" >
                     </b-navbar-brand>
 
                     <b-nav-form class="search-form">

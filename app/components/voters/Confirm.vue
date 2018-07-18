@@ -6,10 +6,10 @@
             class="m-0">
             <b-card
                 class="col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0">
-                <h2 class="h4 color-white tomo-card__title tomo-card__title--big">
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">
                     <i :class="`tm-${icon}`"/>
                     {{ title }}
-                </h2>
+                </h4>
                 <p
                     class="md-content"
                     v-html="description"/>

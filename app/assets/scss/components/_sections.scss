@@ -1,3 +1,7 @@
+.section {
+    margin-bottom: 60px;
+}
+
 .section-title {
     font-size: 20px;
     font-weight: 200;
@@ -19,7 +23,8 @@
     }
 }
 
-.section--status {
+.section--status,
+.section--voter {
     margin-bottom: 30px;
 }
 
@@ -47,5 +52,11 @@
             position: absolute;right: 0;
             bottom: 0;
         }
+    }
+}
+
+.section--hardware {
+    > .row > div:first-child {
+        margin-bottom: 60px;
     }
 }
