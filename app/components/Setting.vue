@@ -42,9 +42,9 @@
                         <span
                             v-if="$v.networks.custom.$dirty && !$v.networks.custom.required"
                             class="text-danger">Required field</span>
-                    <!-- <span
-                        v-else-if="$v.customNetwork.$dirty && !$v.customNetwork.url"
-                        class="text-danger">Must be in URL format</span> -->
+                        <span
+                            v-else-if="$v.networks.custom.$dirty && !$v.networks.custom.localhostUrl"
+                            class="text-danger">Wrong URL format</span>
                     </b-form-group>
                     <b-form-group
                         v-if="provider !== 'metamask'"
@@ -109,9 +109,9 @@
 import Web3 from 'web3'
 import { validationMixin } from 'vuelidate'
 import {
-    required,
-    url
+    required
 } from 'vuelidate/lib/validators'
+import localhostUrl from '../../validators/localhostUrl.js'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
@@ -135,7 +135,7 @@ export default {
         networks: {
             custom: {
                 required,
-                url
+                localhostUrl
             }
         }
     },
@@ -167,7 +167,7 @@ export default {
         getValidationClass: function (fieldName) {
             let field = this.$v[fieldName]
 
-            if (typeof this.$v.networks !== 'undefined') {
+            if (typeof this.$v.networks[fieldName] !== 'undefined') {
                 field = this.$v.networks[fieldName]
             }
 
@@ -181,6 +181,7 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
+                console.log('test')
                 this.save()
             }
         },
