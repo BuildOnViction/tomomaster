@@ -105,7 +105,9 @@ export default {
                 }, 2000)
             } catch (e) {
                 self.loading = false
-                self.$toasted.show('An error occurred while retiring, please try again')
+                self.$toasted.show('An error occurred while retiring, please try again', {
+                    type: 'error'
+                })
                 console.log(e)
             }
         }
