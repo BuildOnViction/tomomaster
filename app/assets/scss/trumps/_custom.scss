@@ -28,7 +28,21 @@
 }
 
 .toasted.bubble {
+    border-radius: 8px;
+}
+
+.toasted.bubble {
+    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+    background-size: 400% 400%;
+    animation: toasted 2s ease infinite;
+}
+
+.toasted.bubble.error {
     background-color: $color-pink;
+}
+
+.toasted.bubble .action {
+    color: $color-body-bg;
 }
 
 *::selection {

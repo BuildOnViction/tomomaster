@@ -24,7 +24,7 @@ import Toasted from 'vue-toasted'
 Vue.use(BootstrapVue)
 
 Vue.use(Toasted, {
-    position: 'bottom-left',
+    position: 'bottom-right',
     theme: 'bubble',
     duration: 4000,
     action : {
