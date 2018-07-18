@@ -84,8 +84,9 @@
                     </b-form-group>
                     <div class="buttons text-right">
                         <b-button
-                            type="reset"
-                            variant="secondary">Reset</b-button>
+                            type="button"
+                            variant="secondary"
+                            @click="$router.go(-1)">Cancel</b-button>
                         <b-button
                             type="submit"
                             variant="primary">Apply</b-button>

@@ -202,12 +202,12 @@ export default {
                         wjs = new Web3(p)
                     }
                 } else {
-                        const walletProvider =
-                            (self.mnemonic.indexOf(' ') >= 0)
-                                ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
-                                : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
+                    const walletProvider =
+                        (self.mnemonic.indexOf(' ') >= 0)
+                            ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
+                            : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
 
-                        wjs = new Web3(walletProvider)
+                    wjs = new Web3(walletProvider)
                 }
 
                 self.setupProvider(this.provider, wjs)
