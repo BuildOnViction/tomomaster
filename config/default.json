@@ -23,7 +23,6 @@
     "candidateWithdrawDelay": 100,
     "voterWithdrawDelay": 100,
     "epochNumber": 990,
-    "blockTimeSecret": 900,
-    "blockTimeOpening": 950
+    "randomNumber": 99
   }
 }

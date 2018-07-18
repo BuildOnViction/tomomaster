@@ -3,15 +3,14 @@ const TomoRandomize = artifacts.require('./TomoRandomize');
 const BlockSigner = artifacts.require('./BlockSigner');
 
 const config = require('config');
-minCandidateCap = maxValidatorNumber = candidateWithdrawDelay = voterWithdrawDelay = epochNumber = blockTimeSecret = blockTimeOpening = 0;
+minCandidateCap = maxValidatorNumber = candidateWithdrawDelay = voterWithdrawDelay = epochNumber = randomNumber = blockTimeSecret = blockTimeOpening = 0;
 if (config.has('truffle')){
     minCandidateCap = config.get('truffle.minCandidateCap');
     maxValidatorNumber = config.get('truffle.maxValidatorNumber');
     candidateWithdrawDelay = config.get('truffle.candidateWithdrawDelay');
     voterWithdrawDelay = config.get('truffle.voterWithdrawDelay');
     epochNumber = config.get('truffle.epochNumber');
-    blockTimeSecret = config.get('truffle.blockTimeSecret');
-    blockTimeOpening = config.get('truffle.blockTimeOpening');
+    randomNumber = config.get('truffle.randomNumber');
 }
 
 module.exports = function(deployer) {
@@ -28,7 +27,7 @@ module.exports = function(deployer) {
     ]
     let firstOwner = '0x487d62d33467c4842c5e54Eb370837E4E88BBA0F'
     return deployer.deploy(TomoValidator, candidates, caps, firstOwner, minCandidateCap, maxValidatorNumber, candidateWithdrawDelay, voterWithdrawDelay).then((tv) => {
-        return  deployer.deploy(TomoRandomize, epochNumber, blockTimeSecret, blockTimeOpening)
+        return  deployer.deploy(TomoRandomize, randomNumber)
     }). then(() => {
         return deployer.deploy(BlockSigner, epochNumber);
     })
