@@ -3,7 +3,9 @@
         <div class="page-layout">
             <b-navbar>
                 <div class="container">
-                    <b-navbar-brand to="/">TOMOMASTER</b-navbar-brand>
+                    <b-navbar-brand to="/">
+                        <img src="app/assets/img/logo.svg" >
+                    </b-navbar-brand>
 
                     <b-nav-form class="search-form">
                         <b-form-input placeholder="Search..." />
