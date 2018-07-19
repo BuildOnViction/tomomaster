@@ -1,0 +1,47 @@
+.tomo-modal {
+
+    .modal-content {
+        border: none;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .modal-header {
+        border: none;
+        padding: 0;
+        margin-bottom: 20px;
+
+        .close {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            margin: -5px;
+            font-size: 0;
+
+            &:before {
+                content: '\e910';
+                font-size: 20px;
+        
+                @extend %tm-icon;
+            }
+        }
+
+        @include media-breakpoint-up(lg) {
+            margin-bottom: 40px;
+        }
+    }
+
+    .modal-body {
+        padding: 0;
+    }
+
+    .modal-footer {
+        border: none;
+        padding: 0;
+        margin-top: 20px;
+    
+        .btn {
+          min-width: 120px;
+        }
+      }
+}

@@ -1,0 +1,62 @@
+.section {
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 200;
+    color: #cfcde1;
+    text-align: left;
+    line-height: 1.2;
+    margin-bottom: 40px;
+
+    i[class^="tm-"] {
+        font-size: 17px;
+        margin-right: 10px;
+    }
+
+    &__description {
+        font-size: 16px;
+        display: block;
+        color: $color-text;
+        margin-top: 10px;
+    }
+}
+
+.section--status,
+.section--voter {
+    margin-bottom: 30px;
+}
+
+.section--candidate {
+
+    .social-links {
+        margin-top: 15px;
+        margin-bottom: 0;
+    }
+
+    @include media-breakpoint-only(sm) {
+
+        .text-truncate {
+            max-width: 60%;
+        }
+    }
+
+    @include media-breakpoint-up(sm) {
+
+        .section-title {
+            position: relative;
+        }
+    
+        .social-links {
+            position: absolute;right: 0;
+            bottom: 0;
+        }
+    }
+}
+
+.section--hardware {
+    > .row > div:first-child {
+        margin-bottom: 60px;
+    }
+}

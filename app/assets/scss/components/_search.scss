@@ -1,0 +1,84 @@
+.search-form {
+    position: relative;
+    width: 100%;
+    margin-top: 5px;
+
+    input.form-control {
+        border-radius: 100px;
+        padding: 4px 70px 4px 20px;
+    }
+
+    .btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 0;
+        font-weight: 400;
+        width: 50px;
+        height: 100%;
+        border-radius: 100px;
+        color: #fff;
+        border-color: $color-btn-bg;
+        background-color: $color-btn-bg;
+
+        &:before {
+            content: '\e90a';
+            font-size: 12px;
+
+            @extend %tm-icon;
+        }
+    }
+
+    @include media-breakpoint-up(sm) {
+
+        width: auto;
+
+        input.form-control {
+            margin-right: 15px;
+            padding-right: 20px;
+        }
+
+        .btn {
+            position: relative;
+            width: auto;
+            height: auto;
+            font-size: 14px;
+            color: #aca9c4;
+            background-color: transparent;
+
+            &:before {
+                margin-right: 10px;
+            }
+
+            &:hover,
+            &:focus,
+            &:active {
+                color: #fff;
+                border-color: $color-btn-hover-bg;
+                background-color: $color-btn-hover-bg;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+
+        input.form-control {
+            width: 220px;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        input.form-control {
+            width: 350px;
+            margin-right: 25px;
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+
+        input.form-control {
+            width: 400px;
+        }
+    }
+}

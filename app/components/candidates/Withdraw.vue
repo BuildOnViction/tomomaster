@@ -1,52 +1,44 @@
 <template>
     <div>
-        <div
-            class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Withdraw</p>
-                    </md-card-header>
+        <div class="container">
+            <b-row
+                align-v="center"
+                align-h="center"
+                class="m-0">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0'
+                    + (loading ? ' tomo-loading' : '')">
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Withdraw</h4>
 
-                    <md-card-content>
-                        <md-list-item class="md-layout">
-                            <md-field>
-                                <label>Coinbase</label>
-                                <md-input
-                                    v-model="coinbase"
-                                    name="withdraw-coinbase"
-                                    type="string"/>
-                            </md-field>
-                        </md-list-item>
-                    </md-card-content>
-
-                    <md-card-actions>
-                        <md-button
-                            :disabled="this.$parent.showProgressBar"
-                            class="md-accent md-raised"
-                            @click="withdrawActive = true;"><md-icon>arrow_downward</md-icon> Withdraw</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
+                    <ul class="tomo-list list-unstyled">
+                        <li class="tomo-list__item">
+                            <i class="tm-wallet tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span>{{ coinbase }}</span>
+                                <span>Coinbase Address</span>
+                            </p>
+                        </li>
+                    </ul>
+                    <b-card-footer class="text-right">
+                        <b-button
+                            v-b-modal.resignModal
+                            :disabled="loading"
+                            variant="secondary"
+                            @click="resignActive = true;">Withdraw</b-button>
+                    </b-card-footer>
+                </b-card>
+            </b-row>
         </div>
-        <md-dialog-confirm
-            :md-active.sync="withdrawActive"
-            md-title="Do you want to withdraw?"
-            md-content="If you withdraw, you will receive all your deposit."
-            md-confirm-text="Yes"
-            md-cancel-text="No"
-            @md-confirm="withdraw()"/>
-        <md-snackbar
-            :md-active.sync="showSnackbar"
-            md-position="left"
-            md-persistent>
-            <span>{{ snackBarMessage }}</span>
-            <md-button
-                class="md-primary"
-                @click="showSnackbar = false">OK</md-button>
-        </md-snackbar>
+        <b-modal
+            id="resignModal"
+            class="tomo-modal"
+            centered
+            title="Do you want to withdraw?"
+            ok-title="Yes"
+            cancel-title="No"
+            @ok="withdraw()">
+            <p>If you withdraw, you will receive all your deposit.</p>
+        </b-modal>
     </div>
 </template>
 <script>
@@ -56,9 +48,8 @@ export default {
         return {
             isReady: !!this.web3,
             withdrawActive: false,
-            showSnackbar: false,
-            snackBarMessage: '',
-            coinbase: this.$route.params.address
+            coinbase: this.$route.params.address,
+            loading: false
         }
     },
     computed: { },
@@ -75,7 +66,7 @@ export default {
                     self.$router.push({ path: '/setting' })
                 }
 
-                self.$parent.showProgressBar = true
+                self.loading = true
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
@@ -83,9 +74,10 @@ export default {
 
                 let rs = await contract.withdraw(coinbase, { from: account })
 
-                self.showSnackbar = true
-                self.snackBarMessage = rs.tx ? 'You have successfully withdrawed!'
+                let toastMessage = rs.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
+                self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
@@ -94,9 +86,10 @@ export default {
                     }
                 }, 2000)
             } catch (e) {
-                self.$parent.showProgressBar = false
-                self.showSnackbar = true
-                self.snackBarMessage = 'An error occurred while withdrawing, please try again'
+                self.loading = false
+                self.$toasted.show('An error occurred while withdrawing, please try again', {
+                    type: 'error'
+                })
                 console.log(e)
             }
         }

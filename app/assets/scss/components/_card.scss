@@ -1,0 +1,67 @@
+.tomo-card {
+    margin-bottom: 30px;
+    border-radius: 8px;
+    background-image: linear-gradient(-135deg, #2d2d4a 0%, #333353 100%);
+
+    &--lighter {
+        background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
+    }
+
+    &--animated {
+        background-image: linear-gradient(-135deg, #2d2d4a, #40406A, #1d1e31);
+        background-size: 400% 400%;
+        animation: tomomaster 10s ease infinite;
+    }
+
+    @extend %transit;
+
+    .tomo-card__title {
+        font-size: 16px;
+        font-weight: 500;
+        color: $color-text-highlight;
+        margin-bottom: 25px;
+
+        &--big {
+            font-size: 24px;
+            font-weight: 400;
+        }
+    }
+
+    .tomo-card__subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        display: block;
+        color: $color-text-muted;
+        margin-top: 10px;
+    }
+
+    .tomo-card__text,
+    .tomo-card__text a {
+        font-size: 30px;
+        color: $color-text;
+        margin-bottom: 0;
+    }
+
+    .card-footer {
+        border-radius: 0;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+
+        p {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            min-width: 120px;
+        }
+    }
+}
+
+.tomo-card--candidate {
+
+    .card-footer {
+        margin-top: 20px;
+    }
+}

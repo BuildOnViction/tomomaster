@@ -1,311 +1,350 @@
 <template>
     <div>
-        <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.0.12/css/all.css"
-            integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9"
-            crossorigin="anonymous">
-        <div class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                <span :class="'candidate-status candidate-status--' + candidate.status">
-                                    <md-tooltip
-                                        class="candidate-status-tooltip"
-                                        md-direction="left">{{ candidate.status }}</md-tooltip>
-                                </span>
-                                {{ candidate.name }}
-                            </div>
-                            <div class="md-subhead">
-                                <a
-                                    class="candidate-address"
-                                    href="#"
-                                    target="__blank">{{ candidate.address }}</a>
-                            </div>
-                        </md-content>
-                    </md-card-header>
-
-                    <md-card-content>
-                        <md-content class="social-wrap">
-                            <a
+        <div class="container section section--candidate">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="tm-flag color-yellow" />
+                        <span>{{ candidate.name }}</span>
+                        <span class="text-truncate section-title__description">{{ candidate.address }}</span>
+                        <ul class="list-inline social-links">
+                            <li
                                 v-for="(value, key) in candidate.socialInfo"
                                 :key="key"
-                                :href="value">
-                                <md-icon :class="key == 'mail' ? 'fas fa-envelope' : 'fab ' + 'fa-' + key" />
-                                {{ key }}
-                            </a>
-                        </md-content>
-                        <md-list class="md-double-line md-list-2-col">
-                            <md-list-item :class="'md-list-item-status md-list-item-status--' + candidate.status">
-                                <md-icon>offline_bolt</md-icon>
-                                <div class="md-list-item-text">
-                                    <span>{{ candidate.status }}</span>
-                                    <span>Node Status</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon md-src="/app/assets/tomo.svg"/>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.balance }}</strong> $TOMO</span>
-                                    <span>Balance</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon md-src="/app/assets/tomo.svg" />
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.cap }}</strong> $TOMO</span>
-                                    <span>Capacity</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>arrow_upward</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.totalVoted }}</strong> $TOMO</span>
-                                    <span>Total voted</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item v-if="isReady">
-                                <md-icon>receipt</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.voted }}</strong> $TOMO</span>
-                                    <span>You voted</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>card_giftcard</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ candidate.rewarded }}</strong> $TOMO</span>
-                                    <span>Rewarded</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon class="fa fa-cube" />
-                                <div class="md-list-item-text">
-                                    <span>#{{ candidate.latestBlock }}</span>
-                                    <span>Latest Block</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon class="fa fa-cubes" />
-                                <div class="md-list-item-text">
-                                    <span>{{ candidate.totalSignedBlocks }}</span>
-                                    <span>Total Signed Blocks</span>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                        <md-card-expand-content class="candidate-expand-content">
-                            <md-list class="md-double-line">
-                                <md-list-item>
-                                    <md-icon class="fa fa-microchip" />
-                                    <div class="md-list-item-text">
-                                        <span>{{ candidate.hardwareInfo }}</span>
-                                        <span>Hardware</span>
-                                    </div>
-                                </md-list-item>
-                                <md-list-item
-                                    v-for="(value, key) in candidate.dataCenterInfo"
-                                    :key="key">
-                                    <md-icon :class="'fa ' + (key == 'name' ? 'fa-server' : 'fa-map-marker-alt')" />
-                                    <div class="md-list-item-text">
-                                        <span>{{ value }}</span>
-                                        <span>{{ key }}</span>
-                                    </div>
-                                </md-list-item>
-                            </md-list>
-                        </md-card-expand-content>
-                    </md-card-content>
+                                class="list-inline-item social-links__item">
+                                <a
+                                    :href="value"
+                                    class="social-links__link">
+                                    <i :class="'social-links__icon tm-' + key" />
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <b-card class="tomo-card tomo-card--animated tomo-card--candidate">
+                <div class="row m-md-0">
+                    <div
+                        :class="'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info-status--'
+                        + candidate.status">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Note Status</span>
+                        </p>
+                        <p class="tomo-info__description">Active</p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Balance</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatNumber(candidate.balance)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Capacity</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatNumber(candidate.cap)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
+                        <p class="tomo-info__title">
+                            <i class="tm-arrow-up tomo-info__icon" />
+                            <span class="tomo-info__text">Total voted</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatNumber(candidate.totalVoted)) }}
+                        </p>
+                    </div>
+                    <div
+                        v-if="isReady"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">You voted</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatNumber(candidate.voted)) }}
+                        </p>
+                    </div>
+                    <div
+                        v-if="isReady"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Rewarded</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatNumber(candidate.rewarded)) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Latest Block</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            #{{ formatNumber(candidate.latestBlock) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Total Signed Blocks</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ formatNumber(candidate.totalSignedBlocks) }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">Hardware</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ candidate.hardwareInfo }}
+                        </p>
+                    </div>
+                    <div
+                        v-for="(value, key) in candidate.dataCenterInfo"
+                        :key="key"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                        <p class="tomo-info__title">
+                            <i class="tm-dot tomo-info__icon" />
+                            <span class="tomo-info__text">{{ key }}</span>
+                        </p>
+                        <p class="tomo-info__description">
+                            {{ value }}
+                        </p>
+                    </div>
+                </div>
+                <b-card-footer
+                    v-if="candidate.status !== 'RESIGNED'"
+                    class="text-right">
+                    <b-button
+                        v-if="candidate.voted > 0"
+                        :to="`/unvoting/${candidate.address}`"
+                        variant="secondary">Unvote</b-button>
+                    <b-button
+                        :to="`/voting/${candidate.address}`"
+                        variant="primary">Vote</b-button>
+                </b-card-footer>
+            </b-card>
+        </div>
+        <div class="container section section--hardware">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <h3 class="section-title">
+                        <i class="tm-cpu color-pink" />
+                        <span>CPUs</span>
+                    </h3>
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
+                        orgId=1&panelId=2"
+                        width="100%"
+                        frameborder="0" />
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
+                        orgId=1&panelId=6"
+                        width="100%"
+                        frameborder="0" />
+                </div>
+                <div class="col-12 col-lg-6">
+                    <h3 class="section-title">
+                        <i class="tm-memory color-orange" />
+                        <span>Memory</span>
+                    </h3>
+                    <iframe
+                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
+                        ?orgId=1&panelId=4"
+                        width="100%"
+                        frameborder="0" />
+                </div>
+            </div>
+        </div>
+        <div class="container section section--signs">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-signer color-yellow" />
+                        <span>Signs</span>
+                        <span class="text-truncate section-title__description">
+                            All transactions that the candidate signed</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="signs"
+                :fields="signsFields"
+                :current-page="signsCurrentPage"
+                :per-page="signsPerPage"
+                :sort-by.sync="signsSortBy"
+                :sort-desc.sync="signsSortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--signed"
+                empty-text="There are no transactions to show"
+                stacked="md" >
 
-                    <md-card-actions>
-                        <md-card-expand-trigger>
-                            <md-button class="md-icon-button">
-                                <md-icon>keyboard_arrow_down</md-icon>
-                            </md-button>
-                        </md-card-expand-trigger>
-                        <md-button
-                            v-if="candidate.voted > 0"
-                            :to="'/unvoting/' + candidate.address"
-                            class="md-raised md-accent"><md-icon>arrow_downward</md-icon> Unvote</md-button>
-                        <md-button
-                            :to="'/voting/' + candidate.address"
-                            class="md-raised md-primary"><md-icon>arrow_upward</md-icon> Vote</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
-            <div
-                v-if="voters.length > 0"
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="voters"
-                    md-card
-                    md-fixed-header
-                    md-sort="cap"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Voters
-                            <p class="md-subhead">People who voted for this candidate</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-label="ID"
-                            md-numeric>{{ item.id }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Address"
-                            md-sort-by="address">
-                            <router-link :to="'/voter/' + item.address">{{ item.address }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-numeric
-                            md-label="Capacity"
-                            md-sort-by="cap">{{ item.cap }} $TOMO
-                        </md-table-cell>
-                    </md-table-row>
-                </md-table>
-            </div>
-            <div
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                CPUs
-                            </div>
-                        </md-content>
-                    </md-card-header>
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
 
-                    <md-card-content>
-                        <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=2&theme=light"
-                            width="1200"
-                            frameborder="0" />
-                        <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                            orgId=1&panelId=6&theme=light"
-                            width="1200"
-                            frameborder="0" />
-                    </md-card-content>
-                </md-card>
-            </div>
-            <div
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <md-content>
-                            <div class="md-headline">
-                                Memory
-                            </div>
-                        </md-content>
-                    </md-card-header>
+                <template
+                    slot="blockNumber"
+                    slot-scope="data">{{ data.item.blockNumber }}
+                </template>
 
-                    <md-card-content>
-                        <iframe
-                            src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
-                            ?orgId=1&panelId=4&theme=light"
-                            width="1200"
-                            frameborder="0" />
-                    </md-card-content>
-                </md-card>
+                <template
+                    slot="tx"
+                    slot-scope="data">
+                    <a
+                        v-b-tooltip.hover
+                        v-b-tooltip.html.right
+                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        title="View on TomoScan"
+                        target="_blank"
+                        class="text-truncate">
+                        {{ data.item.tx }}
+                    </a>
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="signsTotalRows > 0 && signsTotalRows > signsPerPage"
+                :total-rows="signsTotalRows"
+                :per-page="signsPerPage"
+                v-model="signsCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
+        <div class="container section section-voters">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-arrow-up color-pink" />
+                        <span>Voters</span>
+                        <span class="text-truncate section-title__description">
+                            People who voted for this candidate</span>
+                    </h3>
+                </div>
             </div>
-            <div
-                v-if="signs.length > 0"
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="signs"
-                    md-card
-                    md-fixed-header
-                    md-sort="id"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Signs
-                            <p class="md-subhead">All transactions that the candidate signed</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-numeric
-                            md-label="ID">{{ item.id }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Block Number">
-                            {{ item.blockNumber }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="">
-                            <a
-                                :href="'https://explorer-testnet.tomochain.com/txs/' + item.tx"
-                                target="_blank">
-                                {{ item.tx }}
-                            </a>
-                        </md-table-cell>
-                    </md-table-row>
-                </md-table>
+            <b-table
+                :items="sortedVoters"
+                :fields="voterFields"
+                :current-page="voterCurrentPage"
+                :per-page="voterPerPage"
+                :show-empty="true"
+                class="tomo-table tomo-table--voted"
+                empty-text="There are no voters to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
+                    slot="address"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/voter/' + data.item.address"
+                        class="text-truncate">
+                        {{ data.item.address }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
+                :total-rows="voterTotalRows"
+                :per-page="voterPerPage"
+                v-model="voterCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
+        <div class="container section section--txs">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-time color-purple" />
+                        <span>Transactions</span>
+                        <span class="text-truncate section-title__description">
+                            All transactions of this candidate</span>
+                    </h3>
+                </div>
             </div>
-            <div
-                v-if="transactions.length > 0"
-                class="md-layout-item md-xlarge-size-100 md-large-size-100
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="transactions"
-                    md-card
-                    md-fixed-header
-                    md-sort="id"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Transactions
-                            <p class="md-subhead">All transactions of this candidate</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-numeric
-                            md-label="ID">{{ item.id }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Voter"
-                            md-sort-by="voter">
-                            <router-link :to="'/voter/' + item.voter">{{ item.voter }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="Event"
-                            md-sort-by="event">
-                            <md-chip
-                                :class="getChipClass(item.event)">{{ item.event }}</md-chip>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-numeric
-                            md-label="Capacity"
-                            md-sort-by="cap">
-                            {{ isNaN(item.cap) ? '--' : item.cap + ' $TOMO' }}
-                        </md-table-cell>
-                        <md-table-cell
-                            md-label="">
-                            <md-button
-                                :href="'https://explorer-testnet.tomochain.com/txs/' + item.tx"
-                                target="_blank"
-                                class="md-icon-button">
-                                <md-icon>remove_red_eye</md-icon>
-                                <md-tooltip md-direction="right">View on TOMO Explorer</md-tooltip>
-                            </md-button>
-                        </md-table-cell>
-                    </md-table-row>
-                </md-table>
-            </div>
+            <b-table
+                :items="sortedTransactions"
+                :fields="txFields"
+                :current-page="txCurrentPage"
+                :per-page="txPerPage"
+                :sort-by.sync="txSortBy"
+                :sort-desc.sync="txSortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--transactions"
+                empty-text="There are no transactions to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
+                    slot="voter"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/voter/' + data.item.voter"
+                        class="text-truncate">
+                        {{ data.item.voter }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="event"
+                    slot-scope="data">
+                    <span :class="'fw-600 ' + getEventClass(data.item.event)">{{ data.item.event }}</span>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">
+                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+
+                <template
+                    slot="tx"
+                    slot-scope="data">
+                    <a
+                        v-b-tooltip.hover
+                        v-b-tooltip.html.right
+                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        title="View on TomoScan"
+                        target="_blank"
+                        class="text-muted">
+                        <i class="tm-eye" />
+                        <span>View on TomoScan</span>
+                    </a>
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="txTotalRows > 0 && txTotalRows > txPerPage"
+                :total-rows="txTotalRows"
+                :per-page="txPerPage"
+                v-model="txCurrentPage"
+                align="center"
+                class="tomo-pagination" />
         </div>
     </div>
 </template>
@@ -338,14 +377,101 @@ export default {
                 socialInfo: {
                     github: '#',
                     linkedin: '#',
-                    mail: '#'
+                    email: '#'
                 },
                 voted: 0,
                 totalVoted: 0
-            }
+            },
+            voterFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'address',
+                    label: 'Address',
+                    sortable: true
+                },
+                {
+                    key: 'cap',
+                    label: 'Capacity',
+                    sortable: true
+                }
+            ],
+            voterSortBy: 'cap',
+            voterSortDesc: true,
+            voterCurrentPage: 1,
+            voterPerPage: 10,
+            voterTotalRows: 0,
+            txFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'voter',
+                    label: 'Voter',
+                    sortable: true
+                },
+                {
+                    key: 'event',
+                    label: 'Event',
+                    sortable: true
+                },
+                {
+                    key: 'cap',
+                    label: 'Capacity',
+                    sortable: true
+                },
+                {
+                    key: 'tx',
+                    label: '',
+                    sortable: false
+                }
+            ],
+            txSortBy: 'cap',
+            txSortDesc: true,
+            txCurrentPage: 1,
+            txPerPage: 10,
+            txTotalRows: 0,
+            signsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'blockNumber',
+                    label: 'Block Number',
+                    sortable: false
+                },
+                {
+                    key: 'tx',
+                    label: 'Transaction Hash',
+                    sortable: false
+                }
+            ],
+            signsSortBy: 'blockNumber',
+            signsSortDesc: true,
+            signsCurrentPage: 1,
+            signsPerPage: 10,
+            signsTotalRows: 0
         }
     },
-    computed: {},
+    computed: {
+        sortedVoters: function () {
+            return this.voters.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        },
+        sortedTransactions: function () {
+            return this.transactions.slice().sort(function (a, b) {
+                return b.cap - a.cap
+            })
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {
@@ -358,6 +484,7 @@ export default {
             if (c.data) {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                self.candidate.status = data.status
                 self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
                 self.candidate.rewarded = 1
                 self.candidate.latestBlock = '123,456'
@@ -371,7 +498,7 @@ export default {
 
             if (self.web3) {
                 self.web3.eth.getBalance(self.candidate.address, function (a, b) {
-                    self.candidate.balance = b / 10 ** 18
+                    self.candidate.balance = new BigNumber(b).div(10 ** 18)
                     if (a) {
                         console.log('got an error', a)
                     }
@@ -379,21 +506,20 @@ export default {
             }
 
             let voters = await axios.get(`/api/candidates/${address}/voters`)
-            voters.data.map((v) => {
+            voters.data.map((v, idx) => {
                 self.voters.push({
+                    id: idx + 1,
                     address: v.voter,
-                    cap: (v.capacity / 10 ** 18)
+                    cap: (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
                 })
-                self.candidate.totalVoted += (v.capacity / 10 ** 18)
+                self.candidate.totalVoted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+
                 if (v.voter === account) {
-                    self.candidate.voted += (parseFloat(v.capacity) / 10 ** 18)
+                    self.candidate.voted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
                 }
             })
-            self.voters.sort((a, b) => {
-                return b.cap - a.cap
-            }).map((v, i) => {
-                v.id = i + 1
-            })
+
+            self.voterTotalRows = self.voters.length
 
             let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
@@ -403,9 +529,11 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toString()
+                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toNumber()
                 })
             })
+
+            self.txTotalRows = self.transactions.length
 
             let blockSigners = await axios.get(`/api/blocksigners/getByCandidate/${address}`)
             blockSigners.data.map((bs, idx) => {
@@ -418,6 +546,19 @@ export default {
                     blockNumber: bs.blockNumber
                 })
             })
+
+            blockSigners.map((bs, idx) => {
+                let stx = bs.signers.filter(s => {
+                    return (s.signer === address)
+                })
+                self.signs.push({
+                    id: idx + 1,
+                    tx: stx[0].tx,
+                    blockNumber: bs.blockNumber
+                })
+            })
+
+            self.signsTotalRows = self.signs.length
         } catch (e) {
             console.log(e)
         }
@@ -425,12 +566,10 @@ export default {
     mounted () {
     },
     methods: {
-        getChipClass (event) {
+        getEventClass (event) {
             let clazz = ''
-            if (event === 'Vote') {
-                clazz = 'md-primary'
-            } else if (event === 'Unvote') {
-                clazz = 'md-accent'
+            if (event === 'Unvote' || event === 'Resign') {
+                clazz = 'color-pink'
             }
 
             return clazz
@@ -438,59 +577,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-.candidate-status {
-    cursor: pointer;
-    font-size: 0;
-    display: inline-block;
-    vertical-align: 4px;
-    width: 8px;
-    height: 8px;
-    border-radius: 100%;
-    margin-right: 2px;
-}
-
-.candidate-status-tooltip {
-    text-transform: capitalize;
-}
-
-.candidate-status--active {
-    background-color: #60d156;
-}
-
-.candidate-status--inactive {
-    opacity: .5;
-    background-color: #aaaaaa;
-}
-
-a.candidate-address.candidate-address {
-    color: rgba(0, 0, 0, .87);
-}
-
-.social-wrap a {
-    font-size: 0;
-    margin-right: 5px;
-}
-
-.social-wrap a .md-icon {
-    font-size: 24px;
-}
-
-.md-list-item-status .md-list-item-text {
-    text-transform: capitalize;
-}
-
-.md-list-item-status.md-list-item-status--active .md-icon {
-    color: #60d156;
-}
-
-.md-card:not(.md-expand-active) .candidate-expand-content {
-    margin-top: -232px !important;
-}
-
-.md-list.md-theme-default.md-double-line .md-list-item-text :nth-child(2) {
-    text-transform: capitalize;
-}
-</style>

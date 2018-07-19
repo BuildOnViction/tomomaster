@@ -1,0 +1,59 @@
+button,
+.btn,
+.btn.btn-primary.btn-primary.active {
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    color: #fff;
+    border-color: $color-btn-bg;
+    background-color: $color-btn-bg;
+    padding: 4px 20px;
+
+    @extend %transit;
+
+    &:hover,
+    &:focus {
+        box-shadow: none;
+        border-color: $color-btn-hover-bg;
+        background-color: $color-btn-hover-bg;
+    }
+
+    &:active,
+    &:active:focus {
+        box-shadow: none !important;
+        border-color: $color-btn-hover-bg !important;
+        background-color: $color-btn-hover-bg !important;
+    }
+
+    &:disabled {
+        color: $color-text !important;
+        border-color: #373658 !important;
+        background-color: #373658 !important;
+    }
+}
+
+button.btn-secondary,
+.btn.btn-secondary,
+.btn.btn-secondary.btn-secondary.active {
+    color: #fff;
+    border-color: $color-pink ;
+    background-color: $color-pink;
+
+    &:hover,
+    &:focus {
+        border-color: #ec7ba3;
+        background-color: #ec7ba3;
+    }
+}
+
+.btn-outline-success {
+    color: #aca9c4;
+    border-color: $color-btn-bg;
+    background-color: transparent;
+
+    &:hover,
+    &:focus {
+        border-color: $color-btn-hover-bg;
+        background-color: $color-btn-hover-bg;
+    }
+}

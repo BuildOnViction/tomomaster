@@ -1,59 +1,48 @@
 <template>
     <div>
-        <div
-            class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Resign</p>
-                    </md-card-header>
-
-                    <md-card-content>
-                        <md-list
-                            class="md-double-line">
-                            <md-list-item
-                                class="md-layout">
-                                <md-icon>account_balance_wallet</md-icon>
-                                <div class="md-list-item-text">
-                                    <span>{{ coinbase }}</span>
-                                    <span>Coinbase Address</span>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                    </md-card-content>
-
-                    <md-card-actions>
+        <div class="container">
+            <b-row
+                align-v="center"
+                align-h="center"
+                class="m-0">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0'
+                    + (loading ? ' tomo-loading' : '')">
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Resign</h4>
+                    <ul class="tomo-list list-unstyled">
+                        <li class="tomo-list__item">
+                            <i class="tm-wallet tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span>{{ coinbase }}</span>
+                                <span>Coinbase Address</span>
+                            </p>
+                        </li>
+                    </ul>
+                    <b-card-footer class="text-right">
                         <p v-if="owner !== account">
-                        <md-icon>error_outline</md-icon> You are not a owner of this candidate</p>
-                        <md-button
+                            <i class="tm-notice"/>
+                            You are not an owner of this candidate
+                        </p>
+                        <b-button
+                            v-b-modal.resignModal
                             v-if="owner === account"
-                            :disabled="this.$parent.showProgressBar || owner !== account"
-                            class="md-accent md-raised"
-                            @click="resignActive = true;">
-                            <md-icon>arrow_downward</md-icon>
-                            &nbsp;Resign</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
+                            :disabled="loading || owner !== account"
+                            variant="secondary"
+                            @click="resignActive = true;">Resign</b-button>
+                    </b-card-footer>
+                </b-card>
+            </b-row>
         </div>
-        <md-dialog-confirm
-            :md-active.sync="resignActive"
-            md-title="Do you want to resign?"
-            md-content="If you resign, you will be able to withdraw all your deposit after 100 * 2 seconds."
-            md-confirm-text="Yes"
-            md-cancel-text="No"
-            @md-confirm="resign()"/>
-        <md-snackbar
-            :md-active.sync="showSnackbar"
-            md-position="left"
-            md-persistent>
-            <span>{{ snackBarMessage }}</span>
-            <md-button
-                class="md-primary"
-                @click="showSnackbar = false">OK</md-button>
-        </md-snackbar>
+        <b-modal
+            id="resignModal"
+            class="tomo-modal"
+            centered
+            title="Do you want to resign?"
+            ok-title="Yes"
+            cancel-title="No"
+            @ok="resign()">
+            <p>If you resign, you will be able to withdraw all your deposit after 100 * 2 seconds.</p>
+        </b-modal>
     </div>
 </template>
 <script>
@@ -66,8 +55,7 @@ export default {
             account: '',
             owner: '',
             resignActive: false,
-            showSnackbar: false,
-            snackBarMessage: '',
+            loading: false,
             coinbase: this.$route.params.address
         }
     },
@@ -98,26 +86,28 @@ export default {
                     self.$router.push({ path: '/setting' })
                 }
 
-                self.$parent.showProgressBar = true
+                self.loading = true
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, { from: account })
 
-                self.showSnackbar = true
-                self.snackBarMessage = rs.tx ? 'You have successfully resigned!'
+                let toastMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'
+                self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
-                    self.$parent.showProgressBar = false
+                    self.loading = false
                     if (rs.tx) {
                         self.$router.push({ path: '/' })
                     }
                 }, 2000)
             } catch (e) {
-                self.$parent.showProgressBar = false
-                self.showSnackbar = true
-                self.snackBarMessage = 'An error occurred while retiring, please try again'
+                self.loading = false
+                self.$toasted.show('An error occurred while retiring, please try again', {
+                    type: 'error'
+                })
                 console.log(e)
             }
         }

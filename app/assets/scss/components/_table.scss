@@ -1,0 +1,554 @@
+.tomo-table {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 50px;
+  
+    thead {
+        display: none;
+
+        th {
+            border: none;
+            font-weight: 400;
+            font-size: 16px;
+
+            &:focus {
+                outline: none;
+            }
+
+            &.sorting {
+                padding-right: 0 !important;
+                padding-left: 1.5em;
+            }
+
+            &.sorting:before {
+                display: block;
+                left: 0;
+                right: auto !important;
+                @extend %transit;
+            }
+
+            &.sorting:after {
+                left: .5em;
+                right: auto !important;
+            }
+        }
+
+        @include media-breakpoint-up(lg) {
+            display: block;
+            margin-bottom: 20px;
+  
+            tr {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                padding: 0 30px;
+            }
+
+            th {
+                padding: 0;
+            }
+        }
+    }
+  
+    tbody {
+  
+        tr {
+            display: block;
+            border-radius: 10px;
+            background-image: linear-gradient(-135deg, #2e2e4b 0%, #323252 100%);
+            box-shadow: 8px 8px 40px 0 rgba(0, 0, 0, .07);
+            padding: 17px 20px 16px;
+            margin-bottom: 20px;
+
+            @extend %transit;
+
+            &:hover {
+                background-image: linear-gradient(-135deg, #323252 0%, #2e2e4b 100%);
+            }
+    
+            @include media-breakpoint-up(lg) {
+                display: grid;
+                align-items: center;
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                padding: 9px 30px;
+
+                &.b-table-empty-row {
+                    grid-template-columns: 100%;
+                }
+            }
+    
+            @include media-breakpoint-up(xl) {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+            
+      }
+  
+      @include media-breakpoint-up(sm) {
+        display: grid !important;
+        grid-template-columns: 100%;
+        grid-column-gap: 15px;
+      }
+  
+      @include media-breakpoint-up(md) {
+        grid-template-columns: 50% 50%;
+      }
+  
+      @include media-breakpoint-up(lg) {
+        display: block !important;
+      }
+    }
+  
+    td {
+        align-items: center;
+        border-color: #505078;
+        grid-template-columns: 40% auto !important;
+        grid-column-gap: 15px !important;
+        word-break: break-word;
+        hyphens: auto;
+        margin-bottom: 5px;
+
+        &:first-child {
+            border-top: none;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+  
+      @include media-breakpoint-up(lg) {
+        display: inline-block;
+        border: none;
+        padding: 0;
+        margin-bottom: 0;
+      }
+    }
+  
+    td:before {
+        content: attr(data-label);
+        display: inline;
+        text-align: right;
+        font-weight: 600;
+  
+        @include media-breakpoint-up(lg) {
+            display: none;
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .text-truncate {
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 9rem;
+  
+        @include media-breakpoint-only(sm) {
+            max-width: 12rem;
+        }
+      
+        @include media-breakpoint-up(lg) {
+            max-width: 10rem;
+        }
+  
+        @include media-breakpoint-up(xl) {
+            max-width: 12rem;
+        }
+        @include media-breakpoint-up(2xl) {
+            max-width: 15rem;
+        }
+    }
+}
+
+.tomo-table--candidates {
+    margin-bottom: 0;
+
+    .btn {
+        padding: 9px 14px;
+    }
+
+    td[aria-colindex="7"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        .btn {
+            margin: 0 5px;
+        }
+
+        &:before {
+            display: none !important;
+        }
+    }
+
+    td[aria-colindex="6"] {
+        border-top: none;
+    }
+
+    &.tomo-table--candidates-6-cols,
+    &.tomo-table--candidates-6-cols-withdraw {
+        th[aria-colindex="6"],
+        td[aria-colindex="6"] {
+            display: none;
+            padding: 0;
+            margin: 0;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 9rem;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 5% auto 14% 20% 190px 110px 72px;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-right: 0;
+        }
+
+        tbody tr.b-table-empty-row {
+            grid-template-columns: 100% !important;
+        }
+
+        th[aria-colindex="4"].sorting,
+        td[aria-colindex="4"] {
+            text-align: right;
+            padding-right: 35px !important;
+        }
+
+        th[aria-colindex="5"] {
+            position: relative;
+
+            &:after {
+                content: '';
+                display: block;
+                height: 1000px;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: $color-body-bg;
+            }
+        }
+
+        td[aria-colindex="5"] {
+            position: relative;
+
+            .tomo-chip {
+                width: 100%;
+            }
+        }
+        
+        td[aria-colindex="5"] > div {
+            position: relative;
+            z-index: 1;
+
+            &:before,
+            &:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: calc(-35px - 10px);
+                height: 10px;
+                width: 10px;
+            }
+
+            &:before {
+                border-top-right-radius: 10px;
+                background-color: #31304d;
+                z-index: 1;
+            }
+
+            &:after {
+                background-color: $color-body-bg;
+                z-index: 0;
+            }
+        }
+
+        td[aria-colindex="5"] > div > div {
+
+            &:before,
+            &:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: calc(-35px - 10px);
+                height: 10px;
+                width: 10px;
+            }
+
+            &:before {
+                border-bottom-right-radius: 10px;
+                background-color: #31304d;
+                z-index: 1;
+            }
+
+            &:after {
+                background-color: $color-body-bg;
+                z-index: 0;
+            }
+        }
+
+        td[aria-colindex="5"],
+        td[aria-colindex="6"],
+        td[aria-colindex="7"] {
+            background-color: $color-body-bg;
+        }
+
+        td[aria-colindex="5"],
+        th[aria-colindex="5"] {
+            padding-left: 35px;
+            padding-right: 35px;
+        }
+
+        th[aria-colindex="6"] {
+
+            &:after {
+                content: '';
+                display: block;
+                height: 1000px;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                background-color: $color-body-bg;
+            }
+        }
+
+        td[aria-colindex="6"] {
+
+            .btn {
+                position: relative;
+                z-index: 1;
+            }
+        }
+
+        th[aria-colindex="7"] {
+            padding-left: 10px;
+        }
+
+        td[aria-colindex="7"] {
+            text-align: left;
+            position: relative;
+            z-index: 1;
+            padding-left: 10px;
+
+            .btn {
+                margin: 0;
+            }
+        }
+
+        &.tomo-table--candidates-6-cols {
+
+            .text-truncate {
+                max-width: 14rem;
+            }
+
+            th[aria-colindex="7"] {
+                position: relative;
+    
+                &:after {
+                    content: '';
+                    display: block;
+                    height: 1000px;
+                    width: 100%;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: $color-body-bg;
+                }
+            }
+
+            thead tr,
+            tbody tr {
+                grid-template-columns: 5% auto 14% 20% 190px 72px;
+            }
+        }
+
+        &.tomo-table--candidates-6-cols-withdraw {
+
+            thead tr,
+            tbody tr {
+                grid-template-columns: 5% auto 15% 20% 190px 110px;
+            }
+
+            td[aria-colindex="7"] {
+                text-align: right;
+            }
+        }
+
+        &.tomo-table--candidates-7-cols {
+
+            th[aria-colindex="7"] {
+                position: relative;
+    
+                &:after {
+                    content: '';
+                    display: block;
+                    height: 1000px;
+                    width: 100%;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: $color-body-bg;
+                }
+            }
+        }
+
+        &.tomo-table--candidates-empty {
+
+            th[aria-colindex="5"]:after {
+                display: none;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+
+        .text-truncate {
+            max-width: 15rem;
+        }
+
+        &.tomo-table--candidates-6-cols {
+
+            .text-truncate {
+                max-width: 20rem;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(2xl) {
+
+        &.tomo-table--candidates-6-cols {
+
+            .text-truncate {
+                max-width: 100%;
+            }
+        }
+    }
+}
+
+.tomo-table--voted {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 5% auto 20%;
+        }
+
+        th[aria-colindex="3"],
+        td[aria-colindex="3"] {
+            text-align: right;
+        }
+    }
+}
+
+.tomo-table--transactions {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            padding-right: 0;
+            grid-template-columns: 5% auto 15% 20% 10%;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: right;
+        }
+
+        th[aria-colindex="5"],
+        td[aria-colindex="5"] {
+            text-align: center;
+
+            a > span {
+                font-size: 0;
+            }
+
+            i {
+                font-size: 15px;
+            }
+
+            a:hover {
+                color: $color-link !important;
+            }
+        }
+    }
+}
+
+.tomo-table--signers {
+
+    td {
+        grid-template-columns: 30% auto !important;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        > li:before {
+            font-size: 5px;
+            vertical-align: middle;
+            margin-right: 8px;
+
+            @include tm-icon('\e913');
+        }
+    }
+
+    .text-truncate {
+        max-width: 8rem;
+    }
+
+    @include media-breakpoint-only(sm) {
+        .text-truncate {
+            max-width: 15rem;
+        }
+    }
+
+    @include media-breakpoint-only(md) {
+        .text-truncate {
+            max-width: 10rem;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 15% auto;
+        }
+    }
+}
+
+.tomo-table--signed {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 10% 25% auto;
+        }
+    }
+}
