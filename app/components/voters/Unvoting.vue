@@ -1,105 +1,95 @@
 <template>
     <div>
-        <md-empty-state
-            v-if="!voted"
-            md-icon="account_circle"
-            md-label="Opps!!"
-            md-description="You have not voted for this candidate, so you can't unvote.">
-            <md-button
-                :to="'/voting/' + candidate"
-                class="md-primary md-raised">Vote</md-button>
-        </md-empty-state>
-        <div
-            v-if="voted"
-            class="container md-layout md-gutter md-alignment-center">
-            <form
-                novalidate
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90"
-                @submit.prevent="validate()">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Unvoting</p>
-                        <div class="md-subhead">You will receive $TOMO after unvoting</div>
-                    </md-card-header>
+        <div class="container">
+            <div
+                v-if="!voted"
+                class="row">
+                <div
+                    class="tomo-empty col-12">
+                    <i class="tm-notice tomo-empty__icon"/>
+                    <p class="tomo-empty__description">You have not voted for this candidate, so you can't unvote.</p>
+                    <b-button
+                        :to="`/voting/${candidate}`"
+                        variant="primary">Vote</b-button>
+                </div>
+            </div>
+            <b-row
+                v-if="voted"
+                align-v="center"
+                align-h="center"
+                class="m-0">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                    + (loading ? ' tomo-loading' : '')">
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
+                        <span class="tomo-card__subtitle">You will receive $TOMO after unvoting</span>
+                    </h4>
+                    <ul class="tomo-list list-unstyled">
+                        <li class="tomo-list__item">
+                            <i class="tm-wallet tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
+                                <span>Voter</span>
+                            </p>
+                        </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-profile tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span><router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link></span>
+                                <span>Candidate</span>
+                            </p>
+                        </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-tomo tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span> {{ formatCurrencySymbol(formatNumber(voted)) }}</span>
+                                <span>You voted</span>
+                            </p>
+                        </li>
+                    </ul>
 
-                    <md-card-content>
-                        <md-list class="md-double-line">
-                            <md-list-item>
-                                <md-icon>how_to_vote</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><router-link :to="'/voter/' + voter">{{ voter }}</router-link></span>
-                                    <span>Voter</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>account_circle</md-icon>
-                                <div class="md-list-item-text">
-                                    <span>
-                                        <router-link
-                                            :to="'/candidate/' + candidate">{{ candidate }}</router-link>
-                                    </span>
-                                    <span>Candidate</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>receipt</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ voted }}</strong> $TOMO</span>
-                                    <span>You voted</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class="md-layout">
-                                <div
-                                    class="md-layout-item md-xlarge-size-70 md-large-size-70
-                                    md-medium-size-70 md-small-size-50 md-xsmall-size-50">
-                                    <md-field :class="getValidationClass('unvoteValue')">
-                                        <label>Amount</label>
-                                        <md-input
-                                            v-model="unvoteValue"
-                                            name="vote-value"
-                                            min="0.1"
-                                            step="0.1"
-                                            type="number"/>
-                                        <md-icon md-src="/app/assets/tomo.svg" />
-                                        <md-tooltip>
-                                            The amount of TOMO to unvote</md-tooltip>
-                                        <span
-                                            v-if="!$v.unvoteValue.required"
-                                            class="md-error">Required field</span>
-                                        <span
-                                            v-else-if="!$v.unvoteValue.minValue"
-                                            class="md-error">Must be greater than 10<sup>-18 $TOMO</sup></span>
-                                        <span
-                                            v-else-if="!$v.unvoteValue.maxValue"
-                                            class="md-error">Must be less than {{ voted }} $TOMO</span>
-                                    </md-field>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                    </md-card-content>
-                    <md-card-actions>
-                        <md-button
-                            :disabled="this.$parent.showProgressBar"
-                            class="md-raised md-accent"
-                            @click="$router.go(-1)">Cancel</md-button>
-                        <md-button
-                            :disabled="this.$parent.showProgressBar"
-                            class="md-raised md-primary"
-                            type="submit"><md-icon>check</md-icon> Submit</md-button>
-                    </md-card-actions>
-                </md-card>
-            </form>
+                    <b-form
+                        class="tomo-form tomo-form--unvote"
+                        novalidate
+                        @submit.prevent="validate()">
+                        <b-form-group
+                            label="Amount"
+                            label-for="unvote-value"
+                            description="The amount of $TOMO to unvote">
+                            <b-input-group>
+                                <number-input
+                                    :class="getValidationClass('unvoteValue')"
+                                    :min="0.1"
+                                    :step="0.1"
+                                    v-model="unvoteValue"
+                                    name="vote-value"/>
+                                <b-input-group-append>
+                                    <i class="tm-tomo" />
+                                </b-input-group-append>
+                                <span
+                                    v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
+                                    class="text-danger">Required field</span>
+                                <span
+                                    v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.minValue"
+                                    class="text-danger">Must be greater than 10<sup>-18 $TOMO</sup></span>
+                                <span
+                                    v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.maxValue"
+                                    class="text-danger">Must be less than {{ voted }} $TOMO</span>
+                            </b-input-group>
+                        </b-form-group>
+                        <div class="buttons text-right">
+                            <b-button
+                                type="button"
+                                variant="secondary"
+                                @click="$router.go(-1)">Cancel</b-button>
+                            <b-button
+                                type="submit"
+                                variant="primary">Submit</b-button>
+                        </div>
+                    </b-form>
+                </b-card>
+            </b-row>
         </div>
-        <md-snackbar
-            :md-active.sync="showSnackbar"
-            md-position="left"
-            md-persistent>
-            <span>{{ snackBarMessage }}</span>
-            <md-button
-                class="md-primary"
-                @click="showSnackbar = false">OK</md-button>
-        </md-snackbar>
     </div>
 </template>
 <script>
@@ -110,8 +100,12 @@ import {
     minValue,
     maxValue
 } from 'vuelidate/lib/validators'
+import NumberInput from '../NumberInput.vue'
 export default {
     name: 'App',
+    components: {
+        NumberInput
+    },
     mixins: [validationMixin],
     data () {
         return {
@@ -120,8 +114,7 @@ export default {
             candidate: this.$route.params.candidate,
             voted: 0,
             unvoteValue: 1,
-            showSnackbar: false,
-            snackBarMessage: ''
+            loading: false
         }
     },
     validations () {
@@ -160,7 +153,7 @@ export default {
 
             if (field) {
                 return {
-                    'md-invalid': field.$invalid
+                    'is-invalid': field.$error
                 }
             }
         },
@@ -181,26 +174,28 @@ export default {
                     self.$router.push({ path: '/setting' })
                 }
 
-                self.$parent.showProgressBar = true
+                self.loading = true
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), { from: account })
                 self.vote -= value
 
-                self.showSnackbar = true
-                self.snackBarMessage = rs.tx ? 'You have successfully unvoted!'
+                let toastMessage = rs.tx ? 'You have successfully unvoted!'
                     : 'An error occurred while unvoting, please try again'
+                self.$toasted.show(toastMessage)
+
                 setTimeout(() => {
-                    self.$parent.showProgressBar = false
+                    self.loading = false
                     if (rs.tx) {
                         self.$router.push({ path: `/confirm/${rs.tx}` })
                     }
                 }, 2000)
             } catch (e) {
-                self.$parent.showProgressBar = false
-                self.showSnackbar = true
-                self.snackBarMessage = 'An error occurred while unvoting, please try again'
+                self.loading = false
+                self.$toasted.show('An error occurred while unvoting, please try again', {
+                    type: 'error'
+                })
                 console.log(e)
             }
         }

@@ -1,0 +1,54 @@
+.tomo-info {
+    margin-bottom: 30px;
+
+    .tomo-info__title {
+        margin-bottom: 5px;
+    }
+
+    .tomo-info__icon {
+        font-size: 6px;
+        vertical-align: middle;
+        color: #6e92f7;
+        margin-right: 6px;
+        max-width: 6px;
+    }
+
+    .tomo-info__text {
+        font-size: 14px;
+        display: inline-block;
+        vertical-align: middle;
+        text-transform: capitalize;
+    }
+
+    .tomo-info__description {
+        font-size: 16px;
+        color: #938fb5;
+        margin-left: 16px;
+        margin-bottom: 0;
+    }
+
+    &--big {
+
+        .tomo-info__icon {
+            font-size: 13px;
+        }
+
+        .tomo-info__description {
+            margin-left: 20px;
+        }
+    }
+}
+
+.tomo-info-status--active {
+
+    .tomo-info__description {
+        color: $color-success;
+    }
+}
+
+.tomo-info-status--inactive {
+
+    .tomo-info__description {
+        color: $color-error;
+    }
+}

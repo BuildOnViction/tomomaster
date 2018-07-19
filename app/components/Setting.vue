@@ -1,41 +1,66 @@
 <template>
-    <div class="container md-layout md-gutter md-alignment-top-center">
-        <div
-            class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-            <md-card>
-                <md-card-header>
-                    <p class="md-title">Settings</p>
-                </md-card-header>
-
-                <md-card-content>
-                    <md-field>
-                        <label for="provider">Network Providers</label>
-                        <md-select
-                            id="provider"
-                            v-model="provider"
-                            name="provider">
-                            <md-option
-                                v-if="!isElectron"
-                                value="metamask">Metamask</md-option>
-                            <!--md-option value="mainnet">TomoChain Mainnet</md-option-->
-                            <md-option value="testnet">Tomochain Testnet</md-option>
-                            <md-option value="custom">Custom Network</md-option>
-                        </md-select>
+    <div class="container">
+        <b-row
+            align-v="center"
+            align-h="center"
+            class="m-0">
+            <b-card
+                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
+                + (loading ? ' tomo-loading' : '')">
+                <h4 class="color-white tomo-card__title tomo-card__title--big">Settings</h4>
+                <b-form
+                    class="tomo-form tomo-form--setting"
+                    novalidate
+                    @submit.prevent="validate()">
+                    <b-form-group
+                        class="mb-4"
+                        label="Network Provider"
+                        label-for="provider">
+                        <b-input-group>
+                            <b-form-select
+                                id="provider"
+                                v-model="provider">
+                                <option
+                                    v-if="!isElectron"
+                                    value="metamask">Metamask</option>
+                                <option value="testnet">Tomochain Testnet</option>
+                                <option value="custom">Custom Network</option>
+                            </b-form-select>
+                            <small
+                                v-if="provider === 'testnet'"
+                                class="form-text text-muted">Using node at https://testnet.tomochain.com.</small>
+                        </b-input-group>
+                    </b-form-group>
+                    <b-form-group
+                        v-if="provider === 'custom'"
+                        class="mb-4"
+                        label="Network URL"
+                        label-for="networks-custom">
+                        <b-form-input
+                            :class="getValidationClass('custom')"
+                            v-model="networks.custom"
+                            type="text" />
                         <span
-                            v-if="provider === 'testnet'"
-                            class="md-helper-text">
-                            Using node at https://testnet.tomochain.com.
-                        </span>
-                    </md-field>
-                    <md-field v-if="provider === 'custom'">
-                        <label>Network Url</label>
-                        <md-input v-model="networks.custom"/>
-                    </md-field>
-                    <md-field v-if="provider !== 'metamask'">
-                        <label>MNEMONIC/PrivateKey</label>
-                        <md-input v-model="mnemonic"/>
-                    </md-field>
+                            v-if="$v.networks.custom.$dirty && !$v.networks.custom.required"
+                            class="text-danger">Required field</span>
+                        <span
+                            v-else-if="$v.networks.custom.$dirty && !$v.networks.custom.localhostUrl"
+                            class="text-danger">Wrong URL format</span>
+                    </b-form-group>
+                    <b-form-group
+                        v-if="provider !== 'metamask'"
+                        class="mb-4"
+                        label="MNEMONIC/PrivateKey"
+                        label-for="mnemonic">
+                        <b-form-input
+                            :class="getValidationClass('mnemonic')"
+                            v-model="mnemonic"
+                            type="text" />
+                        <span
+                            v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
+                            class="text-danger">Required field</span>
+                    </b-form-group>
+
                     <div
                         v-if="!isReady && provider === 'metamask'">
                         <p>Please install &amp; login
@@ -44,31 +69,53 @@
                                 target="_blank">Metamask Extension</a>
                             then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
-                </md-card-content>
 
-                <md-card-actions>
-                    <md-button
-                        class="md-primary md-raised"
-                        @click="save()">Save</md-button>
-                </md-card-actions>
-                <md-card-header v-if="isReady">
-                    <p class="md-title">Account Information</p>
-                </md-card-header>
-
-                <md-card-content v-if="isReady">
-                    <p>Address: {{ address }}</p>
-                    <p>Balance: <strong>{{ balance }}</strong> $TOMO</p>
-                </md-card-content>
-            </md-card>
-        </div>
+                    <div class="buttons text-right">
+                        <b-button
+                            type="submit"
+                            variant="primary">Save</b-button>
+                    </div>
+                </b-form>
+            </b-card>
+            <b-card
+                v-if="isReady"
+                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
+                <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
+                    Account Information</h4>
+                <ul class="tomo-list list-unstyled">
+                    <li class="tomo-list__item">
+                        <i class="tm-wallet tomo-list__icon" />
+                        <p class="tomo-list__text">
+                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
+                                {{ address }}</a>
+                            <span>Address</span>
+                        </p>
+                    </li>
+                    <li class="tomo-list__item">
+                        <i class="tm-tomo tomo-list__icon" />
+                        <div class="tomo-list__text">
+                            <p class="color-white mb-0">{{ formatNumber(balance) }}
+                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                            <span>Balance</span>
+                        </div>
+                    </li>
+                </ul>
+            </b-card>
+        </b-row>
     </div>
 </template>
 <script>
 import Web3 from 'web3'
+import { validationMixin } from 'vuelidate'
+import {
+    required
+} from 'vuelidate/lib/validators'
+import localhostUrl from '../../validators/localhostUrl.js'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
     name: 'App',
+    mixins: [validationMixin],
     data () {
         return {
             isReady: !!this.web3,
@@ -80,10 +127,22 @@ export default {
                 // mainnet: 'https://core.tomochain.com',
                 testnet: 'https://testnet.tomochain.com',
                 custom: 'http://localhost:8545'
-            }
+            },
+            loading: false
         }
     },
-    computed: {},
+    validations: {
+        networks: {
+            custom: {
+                required,
+                localhostUrl
+            }
+        },
+        mnemonic: {
+            required
+        }
+    },
+    computed: { },
     watch: {},
     updated () {},
     created: async function () {
@@ -108,24 +167,63 @@ export default {
     },
     mounted () {},
     methods: {
+        getValidationClass: function (fieldName) {
+            let field = this.$v[fieldName]
+
+            if (typeof this.$v.networks[fieldName] !== 'undefined') {
+                field = this.$v.networks[fieldName]
+            }
+
+            if (field) {
+                return {
+                    'is-invalid': field.$error
+                }
+            }
+        },
+        validate: function () {
+            if (this.provider === 'metamask') {
+                this.save()
+            }
+
+            this.$v.$touch()
+
+            if (!this.$v.$invalid) {
+                this.save()
+            }
+        },
         save: function () {
             const self = this
             var wjs = false
-            if (self.provider === 'metamask') {
-                if (window.web3) {
-                    var p = window.web3.currentProvider
-                    wjs = new Web3(p)
-                }
-            } else {
-                const walletProvider =
-                    (self.mnemonic.indexOf(' ') >= 0)
-                        ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
-                        : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
+            self.loading = true
+            try {
+                if (self.provider === 'metamask') {
+                    if (window.web3) {
+                        var p = window.web3.currentProvider
+                        wjs = new Web3(p)
+                    }
+                } else {
+                    const walletProvider =
+                        (self.mnemonic.indexOf(' ') >= 0)
+                            ? new HDWalletProvider(self.mnemonic, self.networks[self.provider])
+                            : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
 
-                wjs = new Web3(walletProvider)
+                    wjs = new Web3(walletProvider)
+                }
+
+                self.setupProvider(this.provider, wjs)
+
+                setTimeout(() => {
+                    self.loading = false
+                    self.$toasted.show('Network Provider was changed successfully')
+                    self.$router.push({ path: '/' })
+                }, 2000)
+            } catch (e) {
+                self.loading = false
+                self.$toasted.show('There are some errors when changing the network provider', {
+                    type : 'error'
+                })
+                console.log(e)
             }
-            self.setupProvider(this.provider, wjs)
-            self.$router.push({ path: '/' })
         }
     }
 }

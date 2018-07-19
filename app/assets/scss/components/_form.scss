@@ -1,0 +1,45 @@
+.tomo-form {
+
+    .input-group-append {
+        background-color: $color-input-focus-bg;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .input-group-append .tm-tomo {
+        height: 35px;
+        width: 35px;
+        font-size: 20px;
+        border-left: 1px solid #5050785c;
+        padding-left: 8px;
+
+        &:before {
+            line-height: 35px;
+        }
+    }
+
+    .buttons {
+        margin-top: 20px;
+    }
+
+    .btn {
+        min-width: 120px;
+        margin-left: 10px;
+    }
+}
+
+.form-control.is-invalid {
+    border-color: $color-pink;
+
+    &:focus {
+        border-color: $color-pink;
+        box-shadow: none;
+    }
+}
+
+.tomo-form--setting {
+
+    select.custom-select {
+        width: 100%;
+    }
+}

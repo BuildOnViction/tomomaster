@@ -1,28 +1,27 @@
 <template>
-    <div class="container md-layout md-gutter md-alignment-center">
-        <div
-            class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-            <md-card>
-                <md-card-header>
-                    <p class="md-title">
-                        <md-icon>{{ icon }}</md-icon>
-                        {{ title }}</p>
-                </md-card-header>
+    <div class="container">
+        <b-row
+            align-v="center"
+            align-h="center"
+            class="m-0">
+            <b-card
+                class="col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0">
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">
+                    <i :class="`tm-${icon}`"/>
+                    {{ title }}
+                </h4>
+                <p
+                    class="md-content"
+                    v-html="description"/>
 
-                <md-card-content>
-                    <p
-                        class="md-content"
-                        v-html="description"/>
-                </md-card-content>
-
-                <md-card-actions>
-                    <md-button
-                        class="md-raised md-primary"
-                        to="/">{{ buttonText }}</md-button>
-                </md-card-actions>
-            </md-card>
-        </div>
+                <div class="buttons text-right">
+                    <b-button
+                        to="/"
+                        type="button"
+                        variant="primary">{{ buttonText }}</b-button>
+                </div>
+            </b-card>
+        </b-row>
     </div>
 </template>
 <script>
@@ -44,7 +43,6 @@ export default {
     updated () {},
     created: function () {
         let self = this
-        self.$parent.showProgressBar = true
 
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
             if (response.data == null) {
@@ -62,27 +60,24 @@ export default {
                     }
 
                     if (self.status === 'success') {
-                        self.icon = 'check'
+                        self.icon = 'checkmark'
                         self.title = 'Success'
                         self.description = `You have ${event} 
-                        <strong>${transaction.capacity / 10 ** 18} $TOMO</strong> for candidate 
+                        <span class="color-white">${transaction.capacity / 10 ** 18} $TOMO</span> for candidate 
                         <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
                         <br/><br/>
                         Transaction Hash: <a href="https://explorer-testnet.tomochain.com/txs/${self.tx}"
                         target="_blank">${self.tx}</a>`
                         self.buttonText = 'View all Candidates'
                     } else {
-                        self.icon = 'error_outline'
+                        self.icon = 'notice'
                         self.title = 'Transaction Failed'
                         self.description = 'You have voted unsuccessfully'
                         self.buttonText = 'Try Again'
                     }
                 })
-
-                self.$parent.showProgressBar = false
             }
         }).catch((e) => {
-            self.$parent.showProgressBar = false
             console.log(e)
         })
     },

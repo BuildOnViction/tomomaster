@@ -1,0 +1,69 @@
+.color-hightlight {
+    color: $color-text-highlight !important;
+}
+
+.color-white {
+    color: $color-white !important;
+}
+
+.color-pink {
+    color: $color-pink !important;
+}
+
+.color-yellow {
+    color: $color-yellow !important;
+}
+
+.color-purple {
+    color: $color-purple !important;
+}
+
+.color-orange {
+    color: $color-orange !important;
+}
+
+.text-muted {
+    color: $color-text-muted !important;
+}
+
+.text-danger {
+    font-size: 12px;
+    color: $color-pink !important;
+}
+
+.toasted.bubble {
+    border-radius: 8px;
+}
+
+.toasted.bubble {
+    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+    background-size: 400% 400%;
+    animation: toasted 2s ease infinite;
+}
+
+.toasted.bubble.error {
+    background-color: $color-pink;
+}
+
+.toasted.bubble .action {
+    color: $color-body-bg;
+}
+
+*::selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
+
+*::-moz-selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
+
+.row.row-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.fw-600 {
+    font-weight: 600;
+}

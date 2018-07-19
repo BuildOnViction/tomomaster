@@ -1,70 +1,89 @@
 <template>
     <div>
-        <div class="container md-layout md-gutter md-alignment-top-center">
-            <div
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-card>
-                    <md-card-header>
-                        <p class="md-title">Voter</p>
-                        <p class="md-subhead">{{ voter }}</p>
-                    </md-card-header>
-
-                    <md-card-content>
-                        <md-list class="md-double-line">
-                            <md-list-item v-if="isReady">
-                                <md-icon md-src="/app/assets/tomo.svg" />
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ balance }}</strong> $TOMO</span>
-                                    <span>Balance</span>
-                                </div>
-                            </md-list-item>
-                            <md-list-item>
-                                <md-icon>arrow_upward</md-icon>
-                                <div class="md-list-item-text">
-                                    <span><strong>{{ totalVoted.toString() }}</strong> $TOMO</span>
-                                    <span>Total voted</span>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                    </md-card-content>
-                </md-card>
+        <div class="container section section--voter">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="tm-arrow-up color-pink" />
+                        <span>Voter</span>
+                        <span class="text-truncate section-title__description">{{ voter }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-grid">
+                <div
+                    v-if="isReady"
+                    class="col-12 tomo-info">
+                    <p class="tomo-info__title">
+                        <i class="tm-dot tomo-info__icon" />
+                        <span class="tomo-info__text">Balance</span>
+                    </p>
+                    <p class="tomo-info__description">
+                        {{ formatCurrencySymbol(formatNumber(balance)) }}
+                    </p>
+                </div>
+                <div class="col-12 tomo-info">
+                    <p class="tomo-info__title">
+                        <i class="tm-dot tomo-info__icon" />
+                        <span class="tomo-info__text">Total voted</span>
+                    </p>
+                    <p class="tomo-info__description">
+                        {{ formatCurrencySymbol(formatNumber(totalVoted)) }}
+                    </p>
+                </div>
             </div>
         </div>
-        <div class="md-layout md-gutter md-alignment-center">
-            <div
-                v-if="candidates.length > 0"
-                class="md-layout-item md-xlarge-size-50 md-large-size-50
-                md-medium-size-70 md-small-size-90 md-xsmall-size-90">
-                <md-table
-                    v-model="candidates"
-                    md-card
-                    md-fixed-header
-                    md-sort="cap"
-                    md-sort-order="asc">
-                    <md-table-toolbar>
-                        <div class="md-title">Candidates
-                            <p class="md-subhead">All candidates are voted by this voter</p>
-                        </div>
-                    </md-table-toolbar>
-                    <md-table-row
-                        slot="md-table-row"
-                        slot-scope="{ item }">
-                        <md-table-cell
-                            md-label="ID"
-                            md-numeric>{{ item.id }}</md-table-cell>
-                        <md-table-cell
-                            md-label="Candidate"
-                            md-sort-by="address">
-                            <router-link :to="'/candidate/' + item.address">{{ item.address }}</router-link>
-                        </md-table-cell>
-                        <md-table-cell
-                            md-numeric
-                            md-label="Capacity"
-                            md-sort-by="cap">{{ item.cap }} $TOMO</md-table-cell>
-                    </md-table-row>
-                </md-table>
+        <div class="container section section--candiates mt-5">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="tm-flag color-yellow" />
+                        <span>Candidates</span>
+                        <span class="text-truncate section-title__description">
+                            All candidates are voted by this voter</span>
+                    </div>
+                </div>
             </div>
+            <b-table
+                :items="sortedCandidates"
+                :fields="candidateFields"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--voted"
+                empty-text="There are no candidates to show"
+                stacked="md" >
+
+                <template
+                    slot="index"
+                    slot-scope="data">{{ data.index + 1 }}
+                </template>
+
+                <template
+                    slot="address"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/candidate/' + data.item.address"
+                        class="text-truncate">
+                        {{ data.item.address }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="totalRows > 0 && totalRows > perPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                v-model="currentPage"
+                align="center"
+                class="tomo-pagination" />
         </div>
     </div>
 </template>
@@ -76,11 +95,33 @@ export default {
     name: 'App',
     data () {
         return {
+            candidateFields: [
+                {
+                    key: 'index',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'address',
+                    label: 'Address',
+                    sortable: true
+                },
+                {
+                    key: 'cap',
+                    label: 'Capacity',
+                    sortable: true
+                }
+            ],
+            sortBy: 'cap',
+            sortDesc: true,
             isReady: !!this.web3,
             voter: this.$route.params.address,
             candidates: [],
             balance: 0,
-            totalVoted: 0
+            totalVoted: 0,
+            currentPage: 1,
+            perPage: 10,
+            totalRows: 0
         }
     },
     computed: {
@@ -106,11 +147,7 @@ export default {
                 self.totalVoted += c.capacity / 10 ** 18
             })
 
-            self.candidates.sort((a, b) => {
-                return b.cap - a.cap
-            }).map((c, i) => {
-                c.id = i + 1
-            })
+            self.totalRows = self.candidates.length
 
             if (typeof self.web3 !== 'undefined') {
                 self.web3.eth.getBalance(voter, function (a, b) {

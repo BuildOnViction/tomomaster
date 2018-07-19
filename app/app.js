@@ -13,13 +13,27 @@ import UnvotingView from './components/voters/Unvoting'
 import ConfirmView from './components/voters/Confirm'
 import Setting from './components/Setting.vue'
 
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.css'
-import 'vue-material/dist/theme/default.css'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Web3 from 'web3'
 import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
-Vue.use(VueMaterial)
+import Toasted from 'vue-toasted'
+
+Vue.use(BootstrapVue)
+
+Vue.use(Toasted, {
+    position: 'bottom-right',
+    theme: 'bubble',
+    duration: 4000,
+    action : {
+        text : 'Dismiss',
+        onClick : (e, toastObject) => {
+            toastObject.goAway(0)
+        }
+    }
+})
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
@@ -59,6 +73,26 @@ Vue.prototype.setupProvider = function (provider, wjs) {
 
 let provider = (Vue.prototype.isElectron) ? 'testnet' : 'metamask'
 Vue.prototype.setupProvider(provider, web3js)
+
+Vue.prototype.formatNumber = function (number) {
+    let seps = number.toString().split('.')
+    seps[0] = seps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+    return seps.join('.')
+}
+
+Vue.prototype.formatCurrencySymbol = function (number) {
+    let unit = this.getCurrencySymbol()
+
+    if (unit === null) {
+        unit = '$TOMO'
+    }
+    return `${number} ${unit}`
+}
+
+Vue.prototype.getCurrencySymbol = function () {
+    return '$TOMO'
+}
 
 Vue.use(VueRouter)
 

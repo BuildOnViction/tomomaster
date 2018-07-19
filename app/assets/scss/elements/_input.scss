@@ -1,0 +1,33 @@
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="phone"],
+input[type="password"] {
+    border-color: $color-input-bg;
+    background-color: $color-input-bg;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: left;
+    color: $color-text-highlight;
+
+    @extend %transit;
+
+    &:focus {
+        color: $color-text-highlight;
+        box-shadow: none;
+        border-color: $color-input-focus-bg;
+        background-color: $color-input-focus-bg;
+    }
+
+    &::-webkit-input-placeholder {
+        color: #505078;
+    }
+
+    &:-moz-placeholder {
+        color: #505078;
+    }
+
+    &:-ms-input-placeholder {
+        color: #505078;
+    }
+}

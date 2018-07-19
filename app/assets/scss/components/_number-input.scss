@@ -1,0 +1,37 @@
+.number-input {
+    display: flex;
+    width: calc(100% - 35px);
+    flex: 0 1 auto;
+
+    input {
+        display: inline-block;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        -moz-appearance: textfield;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+    }
+
+    button {
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        border-radius: 0;
+        width: 30px;
+        border-color: $color-input-focus-bg;
+        border-left-color: #5050785c;
+        background-color: $color-input-focus-bg;
+        padding: 6px 10px;
+
+        &:hover,
+        &:focus,
+        &:active {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}

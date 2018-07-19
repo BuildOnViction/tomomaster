@@ -1,0 +1,29 @@
+.tomo-chip {
+    text-align: center;
+    color: #ffffff;
+    text-transform: capitalize;
+    border-radius: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: 500;
+    padding: 10px 20px;
+
+    &--primary {
+        background-color: $color-text;
+    }
+
+    &--accent {
+        background-color: $color-pink;
+    }
+
+    &--yellow {
+        background-color: $color-purple;
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        &--primary {
+            background-color: #323258;
+        }
+    }
+}

@@ -1,0 +1,74 @@
+.tomo-pagination {
+    margin: 30px 0;
+  
+    .page-item {
+        margin-right: 15px;
+  
+        &.active .page-link {
+            color: $color-white;
+            background-color: $color-primary;
+        }
+    
+        &.disabled:not([role="separator"]) .page-link {
+            background-color: #373658;
+        }
+    
+        &:first-child,
+        &:nth-child(2),
+        &:nth-last-child(2),
+        &:last-child {
+            font-size: 0;
+
+            span:before {
+                font-size: 16px;
+                line-height: 30px;
+                display: inline-block;
+                vertical-align: middle;
+        
+                @extend %tm-icon;
+            }
+        }
+  
+        &:first-child span:before {
+            content: '\e914';
+        }
+    
+        &:nth-child(2) span:before {
+            content: '\e915';
+        }
+    
+        &:nth-last-child(2) span:before {
+            content: '\e917';
+        }
+    
+        &:last-child span:before {
+            content: '\e916';
+        }
+      
+        .page-link {
+            color: $color-text;
+            background-color: #323258;
+            height: 30px;
+            min-width: 30px;
+            line-height: 30px;
+            border-radius: 30px;
+            text-align: center;
+            border: 0px;
+            padding: 0 5px;
+    
+            &:hover {
+                color: $color-white;
+                background-color: $color-primary;
+            }
+        }
+    }
+  
+    @include media-breakpoint-up(md) {
+        margin-bottom: 50px;
+    }
+  
+    @include media-breakpoint-up(lg) {
+        margin-bottom: 100px;
+    }
+  }
+  
