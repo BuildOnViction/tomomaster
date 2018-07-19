@@ -63,25 +63,6 @@
                 </b-form>
             </b-card>
         </b-row>
-
-        <b-row
-            align-v="center"
-            align-h="center"
-            class="m-0">
-
-            <b-card class="col-12 col-md-8 col-lg-6 tomo-card p-0">
-                <h4 class=" color-white tomo-card__title tomo-card__title--big">Benefit</h4>
-                <p class="tomo-form__text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                    nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                    dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
-            </b-card>
-        </b-row>
     </div>
 </template>
 
