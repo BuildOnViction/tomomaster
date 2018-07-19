@@ -78,7 +78,9 @@ export default {
             console.log(e)
         }
     },
-    mounted () { },
+    mounted () {
+        console.log('aaaaa')
+    },
     methods: {
     }
 }

@@ -218,7 +218,7 @@ export default {
                     }
 
                     if (candidate.status === 'RESIGNED') {
-                        cssClass = 'tomo-table--candidates-6-cols-resigned'
+                        cssClass = 'tomo-table--candidates-6-cols-withdraw'
                     }
                     break
                 }

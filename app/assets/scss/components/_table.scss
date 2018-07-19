@@ -1,5 +1,6 @@
 .tomo-table {
     width: 100%;
+    overflow: hidden;
     margin-bottom: 50px;
   
     thead {
@@ -160,6 +161,7 @@
 }
 
 .tomo-table--candidates {
+    margin-bottom: 0;
 
     .btn {
         padding: 9px 14px;
@@ -183,7 +185,7 @@
     }
 
     &.tomo-table--candidates-6-cols,
-    &.tomo-table--candidates-6-cols-resigned {
+    &.tomo-table--candidates-6-cols-withdraw {
         th[aria-colindex="6"],
         td[aria-colindex="6"] {
             display: none;
@@ -200,7 +202,7 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 5% auto 15% 20% 190px 110px 62px;
+            grid-template-columns: 5% auto 14% 20% 190px 110px 72px;
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
@@ -345,17 +347,32 @@
                 max-width: 14rem;
             }
 
+            th[aria-colindex="7"] {
+                position: relative;
+    
+                &:after {
+                    content: '';
+                    display: block;
+                    height: 1000px;
+                    width: 100%;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: $color-body-bg;
+                }
+            }
+
             thead tr,
             tbody tr {
-                grid-template-columns: 5% auto 15% 20% 190px 62px;
+                grid-template-columns: 5% auto 14% 20% 190px 72px;
             }
         }
 
-        &.tomo-table--candidates-6-cols-resigned {
+        &.tomo-table--candidates-6-cols-withdraw {
 
             thead tr,
             tbody tr {
-                grid-template-columns: 5% auto 15% 20% 190px 100px;
+                grid-template-columns: 5% auto 15% 20% 190px 110px;
             }
 
             td[aria-colindex="7"] {
