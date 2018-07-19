@@ -18,7 +18,7 @@
         &:nth-last-child(2),
         &:last-child {
             font-size: 0;
-            
+
             span:before {
                 font-size: 16px;
                 line-height: 30px;
@@ -53,7 +53,6 @@
             line-height: 30px;
             border-radius: 30px;
             text-align: center;
-            box-shadow: 8px 8px 40px 0 rgba(0, 0, 0, .07);
             border: 0px;
             padding: 0 5px;
     

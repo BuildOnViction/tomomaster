@@ -264,7 +264,8 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    slot-scope="data">
+                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
 
                 <template
@@ -465,7 +466,7 @@ export default {
     methods: {
         getEventClass (event) {
             let clazz = ''
-            if (event === 'Unvote') {
+            if (event === 'Unvote' || event === 'Resign') {
                 clazz = 'color-pink'
             }
 
