@@ -537,3 +537,18 @@
         }
     }
 }
+
+.tomo-table--signed {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 10% 25% auto;
+        }
+    }
+}

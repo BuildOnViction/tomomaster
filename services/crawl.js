@@ -32,8 +32,10 @@ async function watchBlockSigner () {
             })
         }
         let signer = res.args._signer
+        let tx = res.transactionHash
         let bN = String(res.args._blockNumber)
         cs.save()
+
         return db.BlockSigner.update({
             smartContractAddress: bs.address,
             blockNumber: bN
@@ -42,7 +44,12 @@ async function watchBlockSigner () {
                 smartContractAddress: bs.address,
                 blockNumber: bN
             },
-            $addToSet: { signers: signer }
+            $addToSet: {
+                signers: {
+                    signer: signer,
+                    tx: tx
+                }
+            }
         }, { upsert: true })
     })
 }

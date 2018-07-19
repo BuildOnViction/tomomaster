@@ -1,13 +1,36 @@
-dist: trusty
-language: node_js
-node_js:
-- '8'
 sudo: required
-before_install:
-- if [[ `npm -v` != 6* ]]; then npm i -g npm@6; fi
-install:
-- npm install
-- echo $COVERALLS_TOKEN >> .coveralls.yml
-script:
-- npm run lint
-- npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+language: node_js
+node_js: "8"
+
+jobs:
+  include:
+    - stage: Lint
+      script: npm run lint
+    - stage: Test
+    - stage: Coverage
+      script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+    - stage: Build and push Docker images
+      install: skip
+      script: skip
+      services:
+        - docker
+      before_install:
+        - docker build -t tomochain/tomomaster .
+      deploy:
+        provider: script
+        script: bash docker_push.sh
+        on:
+          branch: master
+    - stage: Trigger rebuild of infrastructure images
+      sudo: false
+      install: skip
+      script: bash docker_rebuild.sh
+
+stages:
+  - name: Lint
+  - name: Test
+  - name: Coverage
+  - name: Build and push Docker images
+    if: type != pull_request AND branch = master
+  - name: Trigger rebuild of infrastructure images
+    if: type != pull_request AND branch = master

@@ -166,6 +166,62 @@
                 </div>
             </div>
         </div>
+        <div class="container section section--signs">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-signer color-yellow" />
+                        <span>Signs</span>
+                        <span class="text-truncate section-title__description">
+                            All transactions that the candidate signed</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="signs"
+                :fields="signsFields"
+                :current-page="signsCurrentPage"
+                :per-page="signsPerPage"
+                :sort-by.sync="signsSortBy"
+                :sort-desc.sync="signsSortDesc"
+                :show-empty="true"
+                class="tomo-table tomo-table--signed"
+                empty-text="There are no transactions to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
+                    slot="blockNumber"
+                    slot-scope="data">{{ data.item.blockNumber }}
+                </template>
+
+                <template
+                    slot="tx"
+                    slot-scope="data">
+                    <a
+                        v-b-tooltip.hover
+                        v-b-tooltip.html.right
+                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        title="View on TomoScan"
+                        target="_blank"
+                        class="text-truncate">
+                        {{ data.item.tx }}
+                    </a>
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="signsTotalRows > 0 && signsTotalRows > signsPerPage"
+                :total-rows="signsTotalRows"
+                :per-page="signsPerPage"
+                v-model="signsCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
         <div class="container section section-voters">
             <div class="row">
                 <div class="col-12">
@@ -182,8 +238,6 @@
                 :fields="voterFields"
                 :current-page="voterCurrentPage"
                 :per-page="voterPerPage"
-                :sort-by.sync="voterSortBy"
-                :sort-desc.sync="voterSortDesc"
                 :show-empty="true"
                 class="tomo-table tomo-table--voted"
                 empty-text="There are no voters to show"
@@ -218,7 +272,7 @@
                 align="center"
                 class="tomo-pagination" />
         </div>
-        <div class="container">
+        <div class="container section section--txs">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -308,6 +362,7 @@ export default {
             unvoteValue: 1,
             voters: [],
             transactions: [],
+            signs: [],
             candidate: {
                 address: this.$route.params.address,
                 name: '',
@@ -380,7 +435,29 @@ export default {
             txSortDesc: true,
             txCurrentPage: 1,
             txPerPage: 10,
-            txTotalRows: 0
+            txTotalRows: 0,
+            signsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'blockNumber',
+                    label: 'Block Number',
+                    sortable: false
+                },
+                {
+                    key: 'tx',
+                    label: 'Transaction Hash',
+                    sortable: false
+                }
+            ],
+            signsSortBy: 'blockNumber',
+            signsSortDesc: true,
+            signsCurrentPage: 1,
+            signsPerPage: 10,
+            signsTotalRows: 0
         }
     },
     computed: {
@@ -411,7 +488,7 @@ export default {
                 self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
                 self.candidate.rewarded = 1
                 self.candidate.latestBlock = '123,456'
-                self.candidate.totalSignedBlocks = 100
+                self.candidate.totalSignedBlocks = data.totalSignedBlocks
                 self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
                 self.candidate.dataCenterInfo = {
                     name: 'AWS',
@@ -457,6 +534,31 @@ export default {
             })
 
             self.txTotalRows = self.transactions.length
+
+            let blockSigners = await axios.get(`/api/blocksigners/getByCandidate/${address}`)
+            blockSigners.data.map((bs, idx) => {
+                let stx = bs.signers.filter(s => {
+                    return (s.signer === address)
+                })
+                self.signs.push({
+                    id: idx + 1,
+                    tx: stx[0].tx,
+                    blockNumber: bs.blockNumber
+                })
+            })
+
+            blockSigners.map((bs, idx) => {
+                let stx = bs.signers.filter(s => {
+                    return (s.signer === address)
+                })
+                self.signs.push({
+                    id: idx + 1,
+                    tx: stx[0].tx,
+                    blockNumber: bs.blockNumber
+                })
+            })
+
+            self.signsTotalRows = self.signs.length
         } catch (e) {
             console.log(e)
         }

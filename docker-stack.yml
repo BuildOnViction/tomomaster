@@ -15,7 +15,9 @@ services:
       - "443:443"
 
   tomomaster:
-    build: ./
+    build:
+      context: ./
+      dockerfile: Dockerfile.old
     image: tomochain/tomomaster
     restart: "on-failure:10"
     depends_on:
