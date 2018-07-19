@@ -91,6 +91,9 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
+.tm-signer:before {
+content: "\e918";
+}
 .tm-chevrons-right:before {
     content: "\e916";
 }

@@ -2,34 +2,54 @@
     <div class="container">
         <b-row
             align-v="center"
-            align-h="center"
-            class="m-0">
+            align-h="center">
+            <div class="col-12">
+                <h3 class="section-title">
+                    <i class="tm-signer color-yellow" />
+                    <span>Block Signers</span>
+                </h3>
+            </div>
             <b-table
                 :items="blockSigners"
                 :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :show-empty="true"
                 empty-text="There are no signers to show"
-                class="tomo-table tomo-table--signers"
+                class="col-12 tomo-table tomo-table--signers"
                 stacked="md" >
 
                 <template
                     slot="index"
-                    slot-scope="data">{{ data.blockNumber }}
+                    slot-scope="data">{{ data.item.blockNumber }}
                 </template>
 
                 <template
                     slot="signers"
                     slot-scope="data">
-                    <router-link
-                        v-for="it in data.signers"
-                        :key="it"
-                        :to="'/candidate/' + it">
-                        {{ it }}
-                    </router-link>
+                    <ul>
+                        <li
+                            v-for="it in data.item.signers"
+                            :key="it._id">
+                            <router-link
+                                :to="'/candidate/' + it.signer"
+                                class="text-truncate">
+                                {{ it.signer }}
+                            </router-link>
+                        </li>
+                    </ul>
                 </template>
             </b-table>
+
+            <b-pagination
+                v-if="totalRows > 0 && totalRows > perPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                v-model="currentPage"
+                align="center"
+                class="tomo-pagination" />
         </b-row>
     </div>
 </template>
@@ -43,13 +63,13 @@ export default {
         return {
             fields: [
                 {
-                    key: 'index',
-                    label: 'ID',
+                    key: 'blockNumber',
+                    label: 'Block Number',
                     sortable: false
                 },
                 {
                     key: 'signers',
-                    label: 'Signer',
+                    label: 'Signers',
                     sortable: false
                 }
             ],
@@ -57,7 +77,10 @@ export default {
             sortDesc: true,
             isReady: !!this.web3,
             account: '',
-            blockSigners: []
+            blockSigners: [],
+            currentPage: 1,
+            perPage: 5,
+            totalRows: 0
         }
     },
     computed: {
@@ -74,12 +97,12 @@ export default {
 
             let signers = await axios.get('/api/blocksigners/list')
             self.blockSigners = signers.data
+            self.totalRows = self.blockSigners.length
         } catch (e) {
             console.log(e)
         }
     },
     mounted () {
-        console.log('aaaaa')
     },
     methods: {
     }

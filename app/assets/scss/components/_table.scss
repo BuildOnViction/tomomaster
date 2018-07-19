@@ -488,3 +488,52 @@
         }
     }
 }
+
+.tomo-table--signers {
+
+    td {
+        grid-template-columns: 30% auto !important;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        > li:before {
+            font-size: 5px;
+            vertical-align: middle;
+            margin-right: 8px;
+
+            @include tm-icon('\e913');
+        }
+    }
+
+    .text-truncate {
+        max-width: 8rem;
+    }
+
+    @include media-breakpoint-only(sm) {
+        .text-truncate {
+            max-width: 15rem;
+        }
+    }
+
+    @include media-breakpoint-only(md) {
+        .text-truncate {
+            max-width: 10rem;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 15% auto;
+        }
+    }
+}
