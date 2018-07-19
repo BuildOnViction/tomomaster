@@ -198,7 +198,7 @@
                     slot="address"
                     slot-scope="data">
                     <router-link
-                        :to="'/candidate/' + data.item.address"
+                        :to="'/voter/' + data.item.address"
                         class="text-truncate">
                         {{ data.item.address }}
                     </router-link>
