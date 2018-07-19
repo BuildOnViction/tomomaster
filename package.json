@@ -64,6 +64,7 @@
         "node-sass": "^4.9.0",
         "nodemon": "^1.17.3",
         "sass-loader": "^7.0.3",
+        "serviceworker-webpack-plugin": "^1.0.0-alpha02",
         "style-loader": "^0.20.3",
         "truffle": "^4.1.13",
         "truffle-hdwallet-provider": "0.0.5",
