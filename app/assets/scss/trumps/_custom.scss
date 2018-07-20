@@ -67,3 +67,11 @@
 .fw-600 {
     font-weight: 600;
 }
+
+.tooltip-inner {
+    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+}
+
+.bs-tooltip-right .arrow:before {
+    border-right-color: #4ad0c5;
+}

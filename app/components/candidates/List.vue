@@ -91,7 +91,7 @@
                         </span>
                         <span
                             v-if="data.item.isMasternode"
-                            class="tomo-chip tomo-chip--yellow">MASTERNODE</span>
+                            class="tomo-chip tomo-chip--purple">MASTERNODE</span>
                     </div>
                 </template>
 

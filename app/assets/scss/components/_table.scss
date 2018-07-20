@@ -202,7 +202,7 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 5% auto 14% 20% 190px 110px 72px;
+            grid-template-columns: 5% auto 14% 20% 210px 110px 72px;
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
@@ -364,7 +364,7 @@
 
             thead tr,
             tbody tr {
-                grid-template-columns: 5% auto 14% 20% 190px 72px;
+                grid-template-columns: 5% auto 14% 20% 210px 72px;
             }
         }
 
@@ -372,7 +372,7 @@
 
             thead tr,
             tbody tr {
-                grid-template-columns: 5% auto 15% 20% 190px 110px;
+                grid-template-columns: 5% auto 15% 20% 210px 110px;
             }
 
             td[aria-colindex="7"] {
