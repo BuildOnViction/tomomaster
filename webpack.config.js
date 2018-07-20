@@ -1,6 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
-var appName = 'app.js'
+var appName = '[name].js'
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
