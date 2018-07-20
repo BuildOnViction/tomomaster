@@ -551,17 +551,6 @@ export default {
                 })
             })
 
-            blockSigners.map((bs, idx) => {
-                let stx = bs.signers.filter(s => {
-                    return (s.signer === address)
-                })
-                self.signs.push({
-                    id: idx + 1,
-                    tx: stx[0].tx,
-                    blockNumber: bs.blockNumber
-                })
-            })
-
             self.signsTotalRows = self.signs.length
 
             self.loading = false
