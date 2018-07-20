@@ -52,7 +52,7 @@
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :show-empty="true"
-                class="tomo-table tomo-table--voted"
+                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
                 empty-text="There are no candidates to show"
                 stacked="md" >
 
@@ -121,7 +121,8 @@ export default {
             totalVoted: 0,
             currentPage: 1,
             perPage: 10,
-            totalRows: 0
+            totalRows: 0,
+            loading: false
         }
     },
     computed: {
@@ -137,6 +138,8 @@ export default {
         let self = this
         try {
             let voter = self.$route.params.address
+
+            self.loading = true
             let candidates = await axios.get(`/api/voters/${voter}/candidates`)
 
             candidates.data.map(async (c) => {
@@ -157,6 +160,8 @@ export default {
                     }
                 })
             }
+
+            self.loading = false
         } catch (e) {
             console.log(e)
         }

@@ -185,7 +185,7 @@
                 :sort-by.sync="signsSortBy"
                 :sort-desc.sync="signsSortDesc"
                 :show-empty="true"
-                class="tomo-table tomo-table--signed"
+                :class="`tomo-table tomo-table--signed${loading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
@@ -239,7 +239,7 @@
                 :current-page="voterCurrentPage"
                 :per-page="voterPerPage"
                 :show-empty="true"
-                class="tomo-table tomo-table--voted"
+                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
                 empty-text="There are no voters to show"
                 stacked="md" >
 
@@ -291,7 +291,7 @@
                 :sort-by.sync="txSortBy"
                 :sort-desc.sync="txSortDesc"
                 :show-empty="true"
-                class="tomo-table tomo-table--transactions"
+                :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
@@ -457,7 +457,8 @@ export default {
             signsSortDesc: true,
             signsCurrentPage: 1,
             signsPerPage: 10,
-            signsTotalRows: 0
+            signsTotalRows: 0,
+            loading: false
         }
     },
     computed: {
@@ -479,6 +480,9 @@ export default {
         try {
             let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
+
+            self.loading = true
+
             let c = await axios.get(`/api/candidates/${address}`)
 
             if (c.data) {
@@ -559,6 +563,8 @@ export default {
             })
 
             self.signsTotalRows = self.signs.length
+
+            self.loading = false
         } catch (e) {
             console.log(e)
         }

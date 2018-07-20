@@ -195,7 +195,8 @@ export default {
             candidates: [],
             currentPage: 1,
             perPage: 10,
-            totalRows: 0
+            totalRows: 0,
+            loading: false
         }
     },
     computed: {
@@ -223,6 +224,9 @@ export default {
                     break
                 }
             }
+
+            cssClass += this.loading ? ' tomo-table--loading' : ''
+
             return cssClass
         }
     },
@@ -235,6 +239,8 @@ export default {
                 let account = await self.getAccount()
                 self.account = account
             }
+
+            self.loading = true
 
             let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
@@ -261,6 +267,8 @@ export default {
                     self.nextCheckpoint = 990 * (Math.floor(self.blockNumber / 990) + 1)
                 }
             })
+
+            self.loading = false
         } catch (e) {
             console.log(e)
         }

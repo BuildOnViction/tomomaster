@@ -160,6 +160,17 @@
     }
 }
 
+.tomo-table--loading {
+
+    tr.b-table-empty-row > td div.text-center {
+        font-size: 0;
+    }
+
+    tr.b-table-empty-row > td div.text-center:before {
+        content: url(~/app/assets/img/loading.svg);
+    }
+}
+
 .tomo-table--candidates {
     margin-bottom: 0;
 
@@ -210,6 +221,7 @@
 
         tbody tr.b-table-empty-row {
             grid-template-columns: 100% !important;
+            padding: 0;
         }
 
         th[aria-colindex="4"].sorting,
@@ -400,7 +412,8 @@
 
         &.tomo-table--candidates-empty {
 
-            th[aria-colindex="5"]:after {
+            th[aria-colindex="5"]:after,
+            th[aria-colindex="7"]:after {
                 display: none;
             }
         }
