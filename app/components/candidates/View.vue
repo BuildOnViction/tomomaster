@@ -142,7 +142,7 @@
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
                     </h3>
-                    <iframe
+                    <!-- <iframe
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                         orgId=1&panelId=2"
                         width="100%"
@@ -151,18 +151,18 @@
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                         orgId=1&panelId=6"
                         width="100%"
-                        frameborder="0" />
+                        frameborder="0" /> -->
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-memory color-orange" />
                         <span>Memory</span>
                     </h3>
-                    <iframe
+                    <!-- <iframe
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
                         ?orgId=1&panelId=4"
                         width="100%"
-                        frameborder="0" />
+                        frameborder="0" /> -->
                 </div>
             </div>
         </div>
@@ -559,6 +559,7 @@ export default {
         }
     },
     mounted () {
+        this.fetchData()
     },
     methods: {
         getEventClass (event) {
@@ -568,6 +569,25 @@ export default {
             }
 
             return clazz
+        },
+        fetchData: async function () {
+            try {
+                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
+                let host = 'Moon'
+                let db = 'telegraf'
+                // eslint-disable-next-line max-len
+                let q = `SELECT mean("usage_user") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+                // eslint-disable-next-line max-len
+                let epoch = 'ms'
+                // eslint-disable-next-line max-len
+                let data = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
+                    headers: { Authorization: `Bearer ${apiKey}` }
+                })
+
+                console.log(data)
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }
