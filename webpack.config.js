@@ -1,12 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
-var appName = 'app.js'
-
-if (process.env.NODE_ENV === 'production') {
-    appName = '[name].min.js'
-} else {
-    appName = '[name].js'
-}
+var appName = '[name].js'
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
     mode: 'development',
@@ -22,6 +17,7 @@ module.exports = {
         // jsonpFunction: 'pluginWebpack'
     },
     optimization: {
+        minimize: true,
         splitChunks: {
             name: 'app'
         }
@@ -94,7 +90,6 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json']
     },
     devServer: {
-        historyApiFallback: true,
         noInfo: true,
         overlay: true,
         proxy: {
@@ -118,7 +113,15 @@ if (process.env.NODE_ENV === 'production') {
             }
         }),
         new webpack.LoaderOptionsPlugin({
-            minimize: true
+            minimize: true,
+            minimizer: new UglifyJsPlugin({
+                uglifyOptions: {
+                    sourceMap: true,
+                    compress: {
+                        warnings: false
+                    }
+                }
+            })
         })
     ])
 }
