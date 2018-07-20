@@ -20,6 +20,7 @@ import Web3 from 'web3'
 import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
+import axios from 'axios'
 
 Vue.use(BootstrapVue)
 
@@ -92,6 +93,11 @@ Vue.prototype.formatCurrencySymbol = function (number) {
 
 Vue.prototype.getCurrencySymbol = function () {
     return '$TOMO'
+}
+
+Vue.prototype.appConfig = async function () {
+    let config = await axios.get('/api/config')
+    return config.data
 }
 
 Vue.use(VueRouter)

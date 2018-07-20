@@ -27,7 +27,7 @@ module.exports = {
             {
                 enforce: 'pre',
                 test: [/\.js$/, /\.vue$/],
-                exclude: /node_modules/,
+                exclude: [/node_modules/],
                 loader: 'eslint-loader'
             },
             {
@@ -39,6 +39,7 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
+                exclude: [/node_modules/],
                 use: [
                     'vue-style-loader',
                     'css-loader',
@@ -48,6 +49,7 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
+                exclude: /node_modules/,
                 options: {
                     loaders: {
                         'scss': [
@@ -62,10 +64,6 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                include: [
-                    path.resolve(__dirname, 'src'),
-                    require.resolve('bootstrap-vue')
-                ],
                 exclude: /node_modules/
             },
             {
@@ -73,11 +71,13 @@ module.exports = {
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]?[hash]'
-                }
+                },
+                exclude: /node_modules/
             },
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                loader: 'url-loader'
+                loader: 'url-loader',
+                exclude: /node_modules/
             }
         ]
     },
@@ -90,7 +90,7 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json']
     },
     devServer: {
-        noInfo: true,
+        noInfo: false,
         overlay: true,
         proxy: {
             '/api/*': 'http://localhost:3001',
