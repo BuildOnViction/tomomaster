@@ -205,7 +205,7 @@
                     <a
                         v-b-tooltip.hover
                         v-b-tooltip.html.right
-                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
                         target="_blank"
                         class="text-truncate">
@@ -328,7 +328,7 @@
                     <a
                         v-b-tooltip.hover
                         v-b-tooltip.html.right
-                        :href="`https://explorer-testnet.tomochain.com/txs/${data.item.tx}`"
+                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
                         target="_blank"
                         class="text-muted">
@@ -360,6 +360,7 @@ export default {
             voteActive: false,
             voteValue: 1,
             unvoteValue: 1,
+            config: {},
             voters: [],
             transactions: [],
             signs: [],
@@ -476,6 +477,7 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        self.config = await self.appConfig()
         try {
             let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
@@ -486,8 +488,8 @@ export default {
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                 self.candidate.status = data.status
                 self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
-                self.candidate.rewarded = 1
-                self.candidate.latestBlock = '123,456'
+                self.candidate.rewarded = 0
+                self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
                 self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
                 self.candidate.dataCenterInfo = {

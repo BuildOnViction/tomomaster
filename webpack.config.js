@@ -90,7 +90,8 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json']
     },
     devServer: {
-        noInfo: false,
+        historyApiFallback: true,
+        noInfo: true,
         overlay: true,
         proxy: {
             '/api/*': 'http://localhost:3001',
