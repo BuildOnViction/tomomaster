@@ -34,7 +34,6 @@
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
         "mongoose": "^5.0.17",
-        "solidity-coverage": "^0.5.4",
         "truffle-contract": "^3.0.5",
         "vue-toasted": "^1.1.24"
     },
@@ -64,6 +63,7 @@
         "node-sass": "^4.9.0",
         "nodemon": "^1.17.3",
         "sass-loader": "^7.0.3",
+        "solidity-coverage": "^0.5.5",
         "style-loader": "^0.20.3",
         "truffle": "^4.1.13",
         "truffle-hdwallet-provider": "0.0.5",
