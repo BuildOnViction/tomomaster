@@ -1,7 +1,6 @@
 <template>
     <div>
         <div
-            v-if="isReady"
             class="container section section--status">
             <div class="row">
                 <div class="col-12">
@@ -14,26 +13,27 @@
                     <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">Current Block</h6>
                         <p class="tomo-card__text">
-                            <router-link :to="'/blocksigners'">#{{ blockNumber }}</router-link>
+                            <router-link :to="'/blocksigners'">#{{ chainConfig.blockNumber }}</router-link>
                         </p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card--animated">
-                        <h6 class="tomo-card__title">AVG Block Time</h6>
-                        <p class="tomo-card__text">2.00 s</p>
+                        <h6 class="tomo-card__title">Block Time</h6>
+                        <p class="tomo-card__text">{{ chainConfig.blockTime }}.00 s</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">epoch</h6>
-                        <p class="tomo-card__text">990 blocks</p>
+                        <p class="tomo-card__text">{{ chainConfig.epoch }} blocks</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">Next Checkpoint</h6>
-                        <p class="tomo-card__text">#{{ nextCheckpoint }}</p>
+                        <p class="tomo-card__text">#{{ parseInt(chainConfig.epoch)
+                        + parseInt(chainConfig.blockNumber) }}</p>
                     </b-card>
                 </div>
             </div>
@@ -146,6 +146,7 @@ export default {
     name: 'App',
     data () {
         return {
+            chainConfig: {},
             fields: [
                 {
                     key: 'index',
@@ -187,8 +188,6 @@ export default {
             sortDesc: true,
             isReady: !!this.web3,
             account: '',
-            blockNumber: 0,
-            nextCheckpoint: 0,
             voteActive: false,
             voteValue: 1,
             voteItem: {},
@@ -230,6 +229,8 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        let config = await self.appConfig()
+        self.chainConfig = config.blockchain
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
@@ -251,16 +252,6 @@ export default {
             })
 
             self.totalRows = self.candidates.length
-
-            self.web3.eth.getBlockNumber(function (error, result) {
-                if (error) {
-                    console.log(error)
-                    throw Error('Can not read current block number')
-                } else {
-                    self.blockNumber = result
-                    self.nextCheckpoint = 990 * (Math.floor(self.blockNumber / 990) + 1)
-                }
-            })
         } catch (e) {
             console.log(e)
         }

@@ -5,11 +5,14 @@
   },
   "blockchain": {
       "rpc": "https://testnet.tomochain.com",
-      "networkId": 89
+      "networkId": 89,
+      "epoch": 990,
+      "blockTime": 2
   },
   "db": {
     "uri": "mongodb://mongodb:27017/governance"
   },
+  "explorerUrl": "http://localhost:3003",
   "redis": {
       "host": "redis",
       "port": "6379",
