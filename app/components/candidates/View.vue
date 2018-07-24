@@ -365,7 +365,7 @@ export default {
             transactions: [],
             signs: [],
             candidate: {
-                address: this.$route.params.address,
+                address: this.$route.params.address.toLowerCase(),
                 name: '',
                 balance: '',
                 status: 'active',
