@@ -575,10 +575,12 @@ export default {
                 let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
                 let host = 'Moon'
                 let db = 'telegraf'
+                let epoch = 'ms'
+
                 // eslint-disable-next-line max-len
                 let q = `SELECT mean("usage_user") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
-                // eslint-disable-next-line max-len
-                let epoch = 'ms'
+                q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
+
                 // eslint-disable-next-line max-len
                 let data = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
                     headers: { Authorization: `Bearer ${apiKey}` }
