@@ -20,6 +20,7 @@
                     </p>
                     <p
                         v-b-tooltip.hover
+                        v-b-tooltip.html.bottom
                         :title="`${formatCurrencySymbol(formatBigNumber(balance, 6))}`"
                         class="tomo-info__description">
                         {{ formatCurrencySymbol(formatBigNumber(balance, 3)) }}
