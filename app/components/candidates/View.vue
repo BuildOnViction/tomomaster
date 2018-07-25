@@ -38,8 +38,12 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Balance</span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.balance)) }}
+                        <p
+                            v-b-tooltip.hover
+                            v-b-tooltip.html.bottom
+                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.balance, 6))}`"
+                            class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -47,8 +51,12 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Capacity</span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.cap)) }}
+                        <p
+                            v-b-tooltip.hover
+                            v-b-tooltip.html.bottom
+                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.cap, 6))}`"
+                            class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 3)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
@@ -319,7 +327,7 @@
                 <template
                     slot="cap"
                     slot-scope="data">
-                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
                 </template>
 
                 <template
@@ -491,14 +499,14 @@ export default {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                 self.candidate.status = data.status
-                self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
+                self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
                 self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
                 self.candidate.dataCenterInfo = {
                     name: 'AWS',
-                    location: 'Singapre'
+                    location: 'Singapore'
                 }
             }
 
@@ -516,12 +524,12 @@ export default {
                 self.voters.push({
                     id: idx + 1,
                     address: v.voter,
-                    cap: (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                    cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
-                self.candidate.totalVoted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                self.candidate.totalVoted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
 
                 if (v.voter === account) {
-                    self.candidate.voted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                    self.candidate.voted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 }
             })
 
@@ -535,7 +543,7 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toNumber()
+                    cap: new BigNumber(tx.capacity).div(10 ** 18).toFormat()
                 })
             })
 

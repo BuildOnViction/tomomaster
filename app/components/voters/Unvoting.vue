@@ -94,6 +94,7 @@
 </template>
 <script>
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -139,7 +140,7 @@ export default {
             let voters = await axios.get(`/api/candidates/${candidate}/voters`)
             voters.data.map((v) => {
                 if (v.voter === account) {
-                    self.voted += (parseFloat(v.capacity) / 10 ** 18)
+                    self.voted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 }
             })
         } catch (e) {

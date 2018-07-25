@@ -21,6 +21,7 @@ import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 
 Vue.use(BootstrapVue)
 
@@ -93,6 +94,10 @@ Vue.prototype.formatCurrencySymbol = function (number) {
 
 Vue.prototype.getCurrencySymbol = function () {
     return '$TOMO'
+}
+
+Vue.prototype.formatBigNumber = function (num, dp) {
+    return new BigNumber(num).toFormat(dp)
 }
 
 Vue.prototype.appConfig = async function () {
