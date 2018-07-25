@@ -22,7 +22,7 @@
 
                         <router-link
                             id="btn-setting"
-                            to="/setting"><i class="tm-cog color-purple"/>Setting</router-link>
+                            to="/setting"><i class="tm-dots color-btn-bg"/>Setting</router-link>
                     </div>
                 </div>
             </b-navbar>

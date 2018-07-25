@@ -33,7 +33,6 @@
     font-weight: 500;
     border-radius: 100px;
     background-color: $color-btn-bg;
-    margin-right: 10px;
 
     &.btn:hover,
     &.btn:focus {
@@ -46,9 +45,10 @@
 
 #btn-setting {
     font-size: 0;
+    width: 20px;
 
     i {
-        font-size: 18px;
+        font-size: 20px;
 
         @extend %transit;
     }
@@ -56,6 +56,5 @@
     &:hover i {
         display: inline-block;
         color: $color-link !important;
-        transform: rotate(180deg);
     }
 }
