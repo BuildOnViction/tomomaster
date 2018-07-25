@@ -195,13 +195,39 @@
         border-top: none;
     }
 
-    &.tomo-table--candidates-6-cols,
-    &.tomo-table--candidates-6-cols-withdraw {
+    &.tomo-table--candidates-2-btns,
+    &.tomo-table--candidates-2-btns-withdraw {
         th[aria-colindex="6"],
         td[aria-colindex="6"] {
             display: none;
             padding: 0;
             margin: 0;
+        }
+    }
+
+    &.tomo-table--candidates-3-btns {
+        th[aria-colindex="6"],
+        td[aria-colindex="6"],
+        th[aria-colindex="7"],
+        td[aria-colindex="7"] {
+            display: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        th[aria-colindex="8"],
+        td[aria-colindex="8"] {
+            text-align: center;
+            grid-template-columns: 100% !important;
+            border-top: none;
+
+            .btn {
+                margin: 0 5px;
+            }
+
+            &:before {
+                display: none !important;
+            }
         }
     }
 
@@ -340,20 +366,31 @@
 
         th[aria-colindex="7"] {
             padding-left: 10px;
+
+            &:after {
+                content: '';
+                display: block;
+                height: 1000px;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                background-color: $color-body-bg;
+            }
         }
 
         td[aria-colindex="7"] {
-            text-align: left;
+            text-align: right;
             position: relative;
             z-index: 1;
-            padding-left: 10px;
 
             .btn {
                 margin: 0;
             }
         }
 
-        &.tomo-table--candidates-6-cols {
+        &.tomo-table--candidates-2-btns {
 
             .text-truncate {
                 max-width: 14rem;
@@ -380,7 +417,17 @@
             }
         }
 
-        &.tomo-table--candidates-6-cols-withdraw {
+        &.tomo-table--candidates-2-btns-withdraw {
+
+            th[aria-colindex="6"],
+            td[aria-colindex="6"] {
+                display: block;
+            }
+
+            th[aria-colindex="7"],
+            td[aria-colindex="7"] {
+                display: none;
+            }
 
             thead tr,
             tbody tr {
@@ -392,21 +439,48 @@
             }
         }
 
-        &.tomo-table--candidates-7-cols {
+        &.tomo-table--candidates-3-btns {
 
-            th[aria-colindex="7"] {
-                position: relative;
-    
+            thead tr,
+            tbody tr {
+                grid-template-columns: 5% auto 14% 20% 170px 110px 61px;
+            }
+
+            td[aria-colindex="5"],
+            th[aria-colindex="5"] {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            td[aria-colindex="5"] > div {
+                &:before,
                 &:after {
-                    content: '';
-                    display: block;
-                    height: 1000px;
-                    width: 100%;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    background-color: $color-body-bg;
+                    left: calc(-10px - 10px);
                 }
+            }
+
+            td[aria-colindex="5"] > div > div {
+                &:before,
+                &:after {
+                    left: calc(-10px - 10px);
+                }
+            }
+
+            th[aria-colindex="6"],
+            td[aria-colindex="6"],
+            th[aria-colindex="7"],
+            td[aria-colindex="7"] {
+                display: block;
+            }
+
+            th[aria-colindex="6"],
+            td[aria-colindex="6"] {
+                padding-right: 10px;
+            }
+
+            th[aria-colindex="7"],
+            td[aria-colindex="7"] {
+                text-align: right;
             }
         }
 
@@ -425,7 +499,7 @@
             max-width: 15rem;
         }
 
-        &.tomo-table--candidates-6-cols {
+        &.tomo-table--candidates-2-btns {
 
             .text-truncate {
                 max-width: 20rem;
@@ -435,7 +509,7 @@
 
     @include media-breakpoint-up(2xl) {
 
-        &.tomo-table--candidates-6-cols {
+        &.tomo-table--candidates-2-btns {
 
             .text-truncate {
                 max-width: 100%;

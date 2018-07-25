@@ -9,6 +9,7 @@
     padding: 10px 20px;
 
     &--primary {
+        color: $color-white;
         background-color: $color-text;
     }
 
@@ -20,9 +21,14 @@
         background-color: $color-purple;
     }
 
+    &--masternode {
+        padding: 10px 9px;
+    }
+
     @include media-breakpoint-up(lg) {
 
         &--primary {
+            color: #7473a6;
             background-color: #323258;
         }
     }
