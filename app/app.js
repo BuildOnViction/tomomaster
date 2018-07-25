@@ -97,7 +97,11 @@ Vue.prototype.getCurrencySymbol = function () {
 }
 
 Vue.prototype.formatBigNumber = function (num, dp) {
-    return new BigNumber(num).toFormat(dp)
+    if (num.toString().length > 6) {
+        return new BigNumber(num).toFormat(dp)
+    }
+
+    return num
 }
 
 Vue.prototype.appConfig = async function () {
