@@ -130,18 +130,18 @@
                         </p>
                     </div>
                 </div>
-                <b-card-footer
-                    v-if="candidate.status !== 'RESIGNED'"
-                    class="text-right">
-                    <b-button
-                        v-if="candidate.voted > 0"
-                        :to="`/unvoting/${candidate.address}`"
-                        variant="secondary">Unvote</b-button>
-                    <b-button
-                        :to="`/voting/${candidate.address}`"
-                        variant="primary">Vote</b-button>
-                </b-card-footer>
             </b-card>
+            <div
+                v-if="candidate.status !== 'RESIGNED'"
+                class="buttons text-right">
+                <b-button
+                    v-if="candidate.voted > 0"
+                    :to="`/unvoting/${candidate.address}`"
+                    variant="secondary">Unvote</b-button>
+                <b-button
+                    :to="`/voting/${candidate.address}`"
+                    variant="primary">Vote</b-button>
+            </div>
         </div>
         <div class="container section section--hardware">
             <div class="row">

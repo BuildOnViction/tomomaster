@@ -35,6 +35,10 @@
         margin-bottom: 0;
     }
 
+    .buttons .btn {
+        min-width: 120px;
+    }
+
     @include media-breakpoint-only(sm) {
 
         .text-truncate {
