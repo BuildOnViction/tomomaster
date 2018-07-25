@@ -540,6 +540,23 @@
 
 .tomo-table--transactions {
 
+    td[aria-colindex="5"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        &:before {
+            display: none !important;
+        }
+
+        a {
+            color: $color-text;
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    }
+
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
@@ -627,6 +644,23 @@
 
 .tomo-table--signed {
 
+    td[aria-colindex="4"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        &:before {
+            display: none !important;
+        }
+
+        a {
+            color: $color-text;
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    }
+
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
@@ -635,7 +669,24 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 10% 25% auto;
+            grid-template-columns: 10% 20% 60% 10%;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: right;
+
+            a > span {
+                font-size: 0;
+            }
+
+            i {
+                font-size: 15px;
+            }
+
+            a:hover {
+                color: $color-link !important;
+            }
         }
     }
 }

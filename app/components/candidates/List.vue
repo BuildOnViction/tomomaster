@@ -275,7 +275,6 @@ export default {
 
             for (let candidate of this.candidates) {
                 if (candidate.owner === this.account) {
-                    console.log(candidate.status)
                     if (candidate.status === 'PROPOSED') {
                         this.hasProposed = true
                     }

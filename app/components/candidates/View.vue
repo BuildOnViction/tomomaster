@@ -199,7 +199,7 @@
 
                 <template
                     slot="id"
-                    slot-scope="data">{{ data.item.id }}
+                    slot-scope="data">{{ data.index + 1 }}
                 </template>
 
                 <template
@@ -211,13 +211,23 @@
                     slot="tx"
                     slot-scope="data">
                     <a
+                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
+                        class="text-truncate">
+                        {{ data.item.tx }}
+                    </a>
+                </template>
+
+                <template
+                    slot="action"
+                    slot-scope="data">
+                    <a
                         v-b-tooltip.hover
                         v-b-tooltip.html.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
-                        target="_blank"
-                        class="text-truncate">
-                        {{ data.item.tx }}
+                        target="_blank">
+                        <i class="tm-eye" />
+                        <span>View on TomoScan</span>
                     </a>
                 </template>
             </b-table>
@@ -338,8 +348,7 @@
                         v-b-tooltip.html.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
-                        target="_blank"
-                        class="text-muted">
+                        target="_blank">
                         <i class="tm-eye" />
                         <span>View on TomoScan</span>
                     </a>
@@ -391,6 +400,33 @@ export default {
                 voted: 0,
                 totalVoted: 0
             },
+            signsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'blockNumber',
+                    label: 'Block No.',
+                    sortable: false
+                },
+                {
+                    key: 'tx',
+                    label: 'Tx Hash',
+                    sortable: false
+                },
+                {
+                    key: 'action',
+                    label: '',
+                    sortable: false
+                }
+            ],
+            signsSortBy: 'blockNumber',
+            signsSortDesc: true,
+            signsCurrentPage: 1,
+            signsPerPage: 10,
+            signsTotalRows: 0,
             voterFields: [
                 {
                     key: 'id',
@@ -445,28 +481,6 @@ export default {
             txCurrentPage: 1,
             txPerPage: 10,
             txTotalRows: 0,
-            signsFields: [
-                {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
-                    key: 'blockNumber',
-                    label: 'Block Number',
-                    sortable: false
-                },
-                {
-                    key: 'tx',
-                    label: 'Transaction Hash',
-                    sortable: false
-                }
-            ],
-            signsSortBy: 'blockNumber',
-            signsSortDesc: true,
-            signsCurrentPage: 1,
-            signsPerPage: 10,
-            signsTotalRows: 0,
             loading: false
         }
     },
@@ -555,7 +569,6 @@ export default {
                     return (s.signer === address)
                 })
                 self.signs.push({
-                    id: idx + 1,
                     tx: stx[0].tx,
                     blockNumber: bs.blockNumber
                 })
