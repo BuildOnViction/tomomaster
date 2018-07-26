@@ -79,6 +79,7 @@ export default {
                 self.$toasted.show(toastMessage)
 
                 setTimeout(() => {
+                    self.loading = false
                     self.$parent.isCandidate = rs.tx === 'undefined'
                     self.$parent.showProgressBar = false
                     if (rs.tx) {

@@ -578,6 +578,7 @@ export default {
 
             self.loading = false
         } catch (e) {
+            self.loading = false
             console.log(e)
         }
     },
@@ -605,13 +606,18 @@ export default {
                 q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
 
                 // eslint-disable-next-line max-len
-                let data = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
+                let { data } = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
                     headers: { Authorization: `Bearer ${apiKey}` }
                 })
 
-                console.log(data)
+                if (data) {
+                }
             } catch (e) {
-                console.log(e)
+                if (e.response.data.error) {
+                    console.log(e.response.data.error)
+                } else {
+                    console.log(e)
+                }
             }
         }
     }

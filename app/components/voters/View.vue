@@ -167,6 +167,7 @@ export default {
 
             self.loading = false
         } catch (e) {
+            self.loading = false
             console.log(e)
         }
     }
