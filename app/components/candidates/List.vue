@@ -54,7 +54,7 @@
                 :per-page="perPage"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
-                :class="'tomo-table tomo-table--candidates ' + getTableCssClass"
+                :class="'tomo-table tomo-table--candidates ' + tableCssClass"
                 :show-empty="true"
                 empty-text="There are no candidates to show"
                 stacked="md" >
@@ -76,7 +76,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    slot-scope="data">{{ formatCurrencySymbol(data.item.cap) }}
                 </template>
 
                 <template
@@ -91,19 +91,24 @@
                         </span>
                         <span
                             v-if="data.item.isMasternode"
-                            class="tomo-chip tomo-chip--purple">MASTERNODE</span>
+                            class="tomo-chip tomo-chip--primary tomo-chip--masternode">MASTERNODE</span>
                     </div>
                 </template>
 
                 <template
-                    v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
-                    slot="resign"
+                    v-if="data.item.owner === account"
+                    slot="action-alt"
                     slot-scope="data">
                     <b-button
-                        v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
+                        v-if="data.item.status === 'PROPOSED'"
                         :to="`/resign/${data.item.address}`"
                         variant="secondary"
                         class="d-none d-lg-block">Resign</b-button>
+                    <b-button
+                        v-if="data.item.status === 'RESIGNED'"
+                        :to="`/withdraw/${data.item.address}`"
+                        variant="secondary"
+                        class="d-none d-lg-block">Withdraw</b-button>
                 </template>
 
                 <template
@@ -123,7 +128,7 @@
                         v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
                         :to="`/withdraw/${data.item.address}`"
                         variant="secondary"
-                        class="mt-3 mt-lg-0">Withdraw</b-button>
+                        class="d-inline-block d-lg-none mt-3 mt-lg-0">Withdraw</b-button>
                 </template>
             </b-table>
 
@@ -174,7 +179,7 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'resign',
+                    key: 'action-alt',
                     label: '',
                     sortable: false
                 },
@@ -194,7 +199,11 @@ export default {
             candidates: [],
             currentPage: 1,
             perPage: 10,
-            totalRows: 0
+            totalRows: 0,
+            tableCssClass: '',
+            loading: false,
+            hasProposed: false,
+            hasResigned: false
         }
     },
     computed: {
@@ -202,27 +211,6 @@ export default {
             return this.candidates.slice().sort(function (a, b) {
                 return b.cap - a.cap
             })
-        },
-        getTableCssClass: function () {
-            let cssClass = 'tomo-table--candidates-6-cols'
-
-            if (!this.candidates.length) {
-                cssClass += ' tomo-table--candidates-empty'
-            }
-
-            for (let candidate of this.candidates) {
-                if (candidate.owner === this.account) {
-                    if (candidate.status === 'PROPOSED') {
-                        cssClass = 'tomo-table--candidates-7-cols'
-                    }
-
-                    if (candidate.status === 'RESIGNED') {
-                        cssClass = 'tomo-table--candidates-6-cols-withdraw'
-                    }
-                    break
-                }
-            }
-            return cssClass
         }
     },
     watch: {},
@@ -234,8 +222,10 @@ export default {
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
-                self.account = account
+                self.account = account.toLowerCase()
             }
+
+            self.loading = true
 
             let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
@@ -243,15 +233,18 @@ export default {
                 let isMasternode = (((signers || {}).data || {}).signers || []).indexOf(candidate.candidate) >= 0
                 self.candidates.push({
                     address: candidate.candidate,
-                    owner: candidate.owner,
+                    owner: candidate.owner.toLowerCase(),
                     status: candidate.status,
                     isMasternode: isMasternode,
                     name: candidate.name || 'Anonymous',
-                    cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toString()
+                    cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toFormat()
                 })
             })
 
             self.totalRows = self.candidates.length
+
+            self.loading = false
+            self.getTableCssClass()
         } catch (e) {
             console.log(e)
         }
@@ -272,6 +265,37 @@ export default {
                     console.log(res)
                 }
             })
+        },
+        getTableCssClass: function () {
+            let cssClass = 'tomo-table--candidates-2-btns'
+
+            if (!this.candidates.length) {
+                cssClass += ' tomo-table--candidates-empty'
+            }
+
+            for (let candidate of this.candidates) {
+                if (candidate.owner === this.account) {
+                    if (candidate.status === 'PROPOSED') {
+                        this.hasProposed = true
+                    }
+
+                    if (candidate.status === 'RESIGNED') {
+                        this.hasResigned = true
+                    }
+                }
+            }
+
+            if (this.hasProposed && this.hasResigned) {
+                cssClass = 'tomo-table--candidates-3-btns'
+            }
+
+            if (!this.hasProposed && this.hasResigned) {
+                cssClass = 'tomo-table--candidates-2-btns-withdraw'
+            }
+
+            cssClass += this.loading ? ' tomo-table--loading' : ''
+
+            this.tableCssClass = cssClass
         }
     }
 }

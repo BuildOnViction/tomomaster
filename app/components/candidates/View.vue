@@ -38,8 +38,12 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Balance</span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.balance)) }}
+                        <p
+                            v-b-tooltip.hover
+                            v-b-tooltip.html.bottom
+                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.balance, 6))}`"
+                            class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -47,8 +51,12 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Capacity</span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.cap)) }}
+                        <p
+                            v-b-tooltip.hover
+                            v-b-tooltip.html.bottom
+                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.cap, 6))}`"
+                            class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 3)) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
@@ -122,18 +130,18 @@
                         </p>
                     </div>
                 </div>
-                <b-card-footer
-                    v-if="candidate.status !== 'RESIGNED'"
-                    class="text-right">
-                    <b-button
-                        v-if="candidate.voted > 0"
-                        :to="`/unvoting/${candidate.address}`"
-                        variant="secondary">Unvote</b-button>
-                    <b-button
-                        :to="`/voting/${candidate.address}`"
-                        variant="primary">Vote</b-button>
-                </b-card-footer>
             </b-card>
+            <div
+                v-if="candidate.status !== 'RESIGNED'"
+                class="buttons text-right">
+                <b-button
+                    v-if="candidate.voted > 0"
+                    :to="`/unvoting/${candidate.address}`"
+                    variant="secondary">Unvote</b-button>
+                <b-button
+                    :to="`/voting/${candidate.address}`"
+                    variant="primary">Vote</b-button>
+            </div>
         </div>
         <div class="container section section--hardware">
             <div class="row">
@@ -142,7 +150,7 @@
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
                     </h3>
-                    <iframe
+                    <!-- <iframe
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                         orgId=1&panelId=2"
                         width="100%"
@@ -151,18 +159,18 @@
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                         orgId=1&panelId=6"
                         width="100%"
-                        frameborder="0" />
+                        frameborder="0" /> -->
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-memory color-orange" />
                         <span>Memory</span>
                     </h3>
-                    <iframe
+                    <!-- <iframe
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
                         ?orgId=1&panelId=4"
                         width="100%"
-                        frameborder="0" />
+                        frameborder="0" /> -->
                 </div>
             </div>
         </div>
@@ -185,13 +193,13 @@
                 :sort-by.sync="signsSortBy"
                 :sort-desc.sync="signsSortDesc"
                 :show-empty="true"
-                class="tomo-table tomo-table--signed"
+                :class="`tomo-table tomo-table--signed${loading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
                 <template
                     slot="id"
-                    slot-scope="data">{{ data.item.id }}
+                    slot-scope="data">{{ data.index + 1 }}
                 </template>
 
                 <template
@@ -203,13 +211,23 @@
                     slot="tx"
                     slot-scope="data">
                     <a
+                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
+                        class="text-truncate">
+                        {{ data.item.tx }}
+                    </a>
+                </template>
+
+                <template
+                    slot="action"
+                    slot-scope="data">
+                    <a
                         v-b-tooltip.hover
                         v-b-tooltip.html.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
-                        target="_blank"
-                        class="text-truncate">
-                        {{ data.item.tx }}
+                        target="_blank">
+                        <i class="tm-eye" />
+                        <span>View on TomoScan</span>
                     </a>
                 </template>
             </b-table>
@@ -239,7 +257,7 @@
                 :current-page="voterCurrentPage"
                 :per-page="voterPerPage"
                 :show-empty="true"
-                class="tomo-table tomo-table--voted"
+                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
                 empty-text="There are no voters to show"
                 stacked="md" >
 
@@ -291,7 +309,7 @@
                 :sort-by.sync="txSortBy"
                 :sort-desc.sync="txSortDesc"
                 :show-empty="true"
-                class="tomo-table tomo-table--transactions"
+                :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
@@ -319,7 +337,7 @@
                 <template
                     slot="cap"
                     slot-scope="data">
-                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
                 </template>
 
                 <template
@@ -330,8 +348,7 @@
                         v-b-tooltip.html.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
-                        target="_blank"
-                        class="text-muted">
+                        target="_blank">
                         <i class="tm-eye" />
                         <span>View on TomoScan</span>
                     </a>
@@ -365,7 +382,7 @@ export default {
             transactions: [],
             signs: [],
             candidate: {
-                address: this.$route.params.address,
+                address: this.$route.params.address.toLowerCase(),
                 name: '',
                 balance: '',
                 status: 'active',
@@ -383,6 +400,33 @@ export default {
                 voted: 0,
                 totalVoted: 0
             },
+            signsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'blockNumber',
+                    label: 'Block No.',
+                    sortable: false
+                },
+                {
+                    key: 'tx',
+                    label: 'Tx Hash',
+                    sortable: false
+                },
+                {
+                    key: 'action',
+                    label: '',
+                    sortable: false
+                }
+            ],
+            signsSortBy: 'blockNumber',
+            signsSortDesc: true,
+            signsCurrentPage: 1,
+            signsPerPage: 10,
+            signsTotalRows: 0,
             voterFields: [
                 {
                     key: 'id',
@@ -437,28 +481,7 @@ export default {
             txCurrentPage: 1,
             txPerPage: 10,
             txTotalRows: 0,
-            signsFields: [
-                {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
-                    key: 'blockNumber',
-                    label: 'Block Number',
-                    sortable: false
-                },
-                {
-                    key: 'tx',
-                    label: 'Transaction Hash',
-                    sortable: false
-                }
-            ],
-            signsSortBy: 'blockNumber',
-            signsSortDesc: true,
-            signsCurrentPage: 1,
-            signsPerPage: 10,
-            signsTotalRows: 0
+            loading: false
         }
     },
     computed: {
@@ -481,20 +504,23 @@ export default {
         try {
             let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
+
+            self.loading = true
+
             let c = await axios.get(`/api/candidates/${address}`)
 
             if (c.data) {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                 self.candidate.status = data.status
-                self.candidate.cap = (new BigNumber(data.capacity)).div(10 ** 18).toString()
+                self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
                 self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
                 self.candidate.dataCenterInfo = {
                     name: 'AWS',
-                    location: 'Singapre'
+                    location: 'Singapore'
                 }
             }
 
@@ -512,12 +538,12 @@ export default {
                 self.voters.push({
                     id: idx + 1,
                     address: v.voter,
-                    cap: (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                    cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
-                self.candidate.totalVoted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                self.candidate.totalVoted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
 
                 if (v.voter === account) {
-                    self.candidate.voted += (new BigNumber(v.capacity).div(10 ** 18)).toNumber()
+                    self.candidate.voted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 }
             })
 
@@ -531,7 +557,7 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: (new BigNumber(tx.capacity)).div(10 ** 18).toNumber()
+                    cap: new BigNumber(tx.capacity).div(10 ** 18).toFormat()
                 })
             })
 
@@ -543,29 +569,20 @@ export default {
                     return (s.signer === address)
                 })
                 self.signs.push({
-                    id: idx + 1,
-                    tx: stx[0].tx,
-                    blockNumber: bs.blockNumber
-                })
-            })
-
-            blockSigners.map((bs, idx) => {
-                let stx = bs.signers.filter(s => {
-                    return (s.signer === address)
-                })
-                self.signs.push({
-                    id: idx + 1,
                     tx: stx[0].tx,
                     blockNumber: bs.blockNumber
                 })
             })
 
             self.signsTotalRows = self.signs.length
+
+            self.loading = false
         } catch (e) {
             console.log(e)
         }
     },
     mounted () {
+        this.fetchData()
     },
     methods: {
         getEventClass (event) {
@@ -575,6 +592,27 @@ export default {
             }
 
             return clazz
+        },
+        fetchData: async function () {
+            try {
+                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
+                let host = 'Moon'
+                let db = 'telegraf'
+                let epoch = 'ms'
+
+                // eslint-disable-next-line max-len
+                let q = `SELECT mean("usage_user") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+                q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
+
+                // eslint-disable-next-line max-len
+                let data = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
+                    headers: { Authorization: `Bearer ${apiKey}` }
+                })
+
+                console.log(data)
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }

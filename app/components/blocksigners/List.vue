@@ -17,8 +17,8 @@
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :show-empty="true"
+                :class="`col-12 tomo-table tomo-table--signers${loading ? ' loading' : ''}`"
                 empty-text="There are no signers to show"
-                class="col-12 tomo-table tomo-table--signers"
                 stacked="md" >
 
                 <template
@@ -80,7 +80,8 @@ export default {
             blockSigners: [],
             currentPage: 1,
             perPage: 5,
-            totalRows: 0
+            totalRows: 0,
+            loading: false
         }
     },
     computed: {
@@ -95,9 +96,12 @@ export default {
                 self.account = account
             }
 
+            self.loading = true
+
             let signers = await axios.get('/api/blocksigners/list')
             self.blockSigners = signers.data
             self.totalRows = self.blockSigners.length
+            self.loading = false
         } catch (e) {
             console.log(e)
         }

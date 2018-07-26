@@ -12,7 +12,10 @@ router.get('/', async function (req, res, next) {
     let blockSigner = await db.BlockSigner.findOne({
         smartContractAddress: bS.address
     }).sort({ createdAt: 'desc' })
-    appConfig.blockchain.blockNumber = blockSigner.blockNumber
+
+    if (blockSigner) {
+        appConfig.blockchain.blockNumber = blockSigner.blockNumber
+    }
     appConfig.explorerUrl = config.get('explorerUrl')
     return res.json(appConfig)
 })

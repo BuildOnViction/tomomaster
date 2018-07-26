@@ -22,6 +22,10 @@
     color: $color-orange !important;
 }
 
+.color-btn-bg {
+    color: $color-btn-bg !important;
+}
+
 .text-muted {
     color: $color-text-muted !important;
 }
@@ -69,9 +73,14 @@
 }
 
 .tooltip-inner {
-    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+    color: $color-body-bg;
+    background-color: #aca9C4;
 }
 
 .bs-tooltip-right .arrow:before {
-    border-right-color: #4ad0c5;
+    border-right-color: #aca9C4;
+}
+
+.bs-tooltip-bottom .arrow:before {
+    border-bottom-color: #aca9C4;
 }

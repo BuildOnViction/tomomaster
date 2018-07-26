@@ -94,7 +94,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ formatNumber(balance) }}
+                            <p class="color-white mb-0">{{ balance }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Balance</span>
                         </div>
@@ -106,6 +106,7 @@
 </template>
 <script>
 import Web3 from 'web3'
+import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
 import {
     required
@@ -156,7 +157,7 @@ export default {
             let account = await self.getAccount()
             self.address = account
             self.web3.eth.getBalance(self.address, function (a, b) {
-                self.balance = b / 10 ** 18
+                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
                 if (a) {
                     console.log('got an error', a)
                 }

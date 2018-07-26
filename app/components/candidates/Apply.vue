@@ -173,7 +173,7 @@ export default {
         apply: async function () {
             let self = this
             let value = this.applyValue
-            let coinbase = this.coinbase
+            let coinbase = this.coinbase.toLowerCase()
             let nodeUrl = this.nodeUrl
 
             try {

@@ -17,7 +17,7 @@ module.exports = {
         // jsonpFunction: 'pluginWebpack'
     },
     optimization: {
-        minimize: true,
+        minimize: process.env.NODE_ENV === 'production',
         splitChunks: {
             name: 'app'
         }
