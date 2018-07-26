@@ -150,6 +150,7 @@
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
                     </h3>
+                    <chart />
                     <!-- <iframe
                         src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
                         orgId=1&panelId=2"
@@ -368,9 +369,13 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import Chart from '../Chart.vue'
 
 export default {
     name: 'App',
+    components: {
+        chart: Chart
+    },
     data () {
         return {
             isReady: !!this.web3,
@@ -481,7 +486,8 @@ export default {
             txCurrentPage: 1,
             txPerPage: 10,
             txTotalRows: 0,
-            loading: false
+            loading: false,
+            chartLoading: false
         }
     },
     computed: {
@@ -583,7 +589,7 @@ export default {
         }
     },
     mounted () {
-        this.fetchData()
+        this.renderChart()
     },
     methods: {
         getEventClass (event) {
@@ -595,14 +601,18 @@ export default {
             return clazz
         },
         fetchData: async function () {
+            let chartData = []
             try {
                 let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
                 let host = 'Moon'
+                let alias = [ 'moon_cpu0_user', 'moon_cpu0_idle' ]
                 let db = 'telegraf'
                 let epoch = 'ms'
 
+                this.chartLoading = true
+
                 // eslint-disable-next-line max-len
-                let q = `SELECT mean("usage_user") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+                let q = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
                 q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
 
                 // eslint-disable-next-line max-len
@@ -610,15 +620,36 @@ export default {
                     headers: { Authorization: `Bearer ${apiKey}` }
                 })
 
-                if (data) {
-                }
+                // let times = []
+
+                data.results.map(r => {
+                    let series = r.series
+
+                    if (series.length) {
+                        let columns = series[0].columns
+                        let values = series[0].values
+
+                        console.log(columns)
+                        console.log(values)
+                    }
+                })
+
+                this.chartLoading = false
             } catch (e) {
+                this.chartLoading = false
                 if (e.response.data.error) {
                     console.log(e.response.data.error)
                 } else {
                     console.log(e)
                 }
             }
+
+            return chartData
+        },
+        renderChart: async function () {
+            // let data = await this.fetchData()
+            this.fetchData()
+            // console.log(data)
         }
     }
 }
