@@ -150,17 +150,9 @@
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
                     </h3>
-                    <chart />
-                    <!-- <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                        orgId=1&panelId=2"
-                        width="100%"
-                        frameborder="0" />
-                    <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                        orgId=1&panelId=6"
-                        width="100%"
-                        frameborder="0" /> -->
+                    <chart
+                        host="Moon"
+                        data-type="cpu0" />
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
@@ -487,7 +479,8 @@ export default {
             txPerPage: 10,
             txTotalRows: 0,
             loading: false,
-            chartLoading: false
+            chartLoading: false,
+            cpu0Series: []
         }
     },
     computed: {
@@ -588,9 +581,7 @@ export default {
             console.log(e)
         }
     },
-    mounted () {
-        this.renderChart()
-    },
+    mounted () {},
     methods: {
         getEventClass (event) {
             let clazz = ''
@@ -599,57 +590,6 @@ export default {
             }
 
             return clazz
-        },
-        fetchData: async function () {
-            let chartData = []
-            try {
-                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
-                let host = 'Moon'
-                let alias = [ 'moon_cpu0_user', 'moon_cpu0_idle' ]
-                let db = 'telegraf'
-                let epoch = 'ms'
-
-                this.chartLoading = true
-
-                // eslint-disable-next-line max-len
-                let q = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
-                q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
-
-                // eslint-disable-next-line max-len
-                let { data } = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
-                    headers: { Authorization: `Bearer ${apiKey}` }
-                })
-
-                // let times = []
-
-                data.results.map(r => {
-                    let series = r.series
-
-                    if (series.length) {
-                        let columns = series[0].columns
-                        let values = series[0].values
-
-                        console.log(columns)
-                        console.log(values)
-                    }
-                })
-
-                this.chartLoading = false
-            } catch (e) {
-                this.chartLoading = false
-                if (e.response.data.error) {
-                    console.log(e.response.data.error)
-                } else {
-                    console.log(e)
-                }
-            }
-
-            return chartData
-        },
-        renderChart: async function () {
-            // let data = await this.fetchData()
-            this.fetchData()
-            // console.log(data)
         }
     }
 }

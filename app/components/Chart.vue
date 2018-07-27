@@ -1,11 +1,20 @@
 <template>
-    <highcharts
-        :options="chartOptions"
-        class="chart" />
+    <highcharts :options="chartOptions" />
 </template>
 <script>
-// import Highcharts from 'highcharts'
+import axios from 'axios'
+
 export default {
+    props: {
+        host: {
+            type: String,
+            default: ''
+        },
+        dataType: {
+            type: String,
+            default: ''
+        }
+    },
     data () {
         return {
             chartOptions: {
@@ -24,7 +33,7 @@ export default {
                         ]
                     },
                     borderRadius: 8,
-                    spacing: [40, 35, 25, 35]
+                    spacing: [40, 35, 25, 30]
                 },
                 credits: {
                     enabled: false
@@ -49,13 +58,16 @@ export default {
                     type: 'datetime'
                 },
                 yAxis: {
-                    gridLineWidth: 0,
+                    gridLineColor: '#4b497a',
+                    gridLineWidth: 1,
+                    gridZIndex: 3,
                     labels: {
                         style: {
                             color: '#7371a2'
                         }
                     },
                     max: 100,
+                    tickInterval: 20,
                     title: ''
                 },
                 plotOptions: {
@@ -81,67 +93,126 @@ export default {
                         color: 'red'
                     }
                 },
-                series: [
-                    {
-                        data: [91, 95, 97, 92, 90, 79, 56, 64, 98, 70, 68, 56, 75, 88, 83],
-                        pointStart: Date.UTC(2018, 1, 1),
-                        pointInterval: 1000 * 3600 * 24,
-                        color: {
-                            linearGradient: {
-                                x1: '50%',
-                                y1: '50%',
-                                x2: '100%',
-                                y2: '0%'
-                            },
-                            stops: [
-                                [0, '#6362db'],
-                                [0.5, '#9e4bdd'],
-                                [1, '#9e4bdd']
-                            ]
-                        },
-                        fillColor: {
-                            linearGradient: {
-                                x1: '50%',
-                                y1: '100%',
-                                x2: '50%'
-                            },
-                            stops: [
-                                [0, '#323256'],
-                                [0.63, '#3b3658']
-                            ]
-                        }
-                    }// ,
-                    // {
-                    //     data: [9, 5, 3, 8, 10, 21, 44, 36, 2, 30, 32, 44, 25, 12, 47],
-                    //     pointStart: Date.UTC(2018, 1, 1),
-                    //     pointInterval: 1000 * 3600 * 24,
-                    //     color: {
-                    //         linearGradient: {
-                    //             x1: '50%',
-                    //             y1: '50%',
-                    //             x2: '100%',
-                    //             y2: '0%'
-                    //         },
-                    //         stops: [
-                    //             [0, '#6362db'],
-                    //             [0.5, '#9e4bdd'],
-                    //             [1, '#9e4bdd']
-                    //         ]
-                    //     },
-                    //     fillColor: {
-                    //         linearGradient: {
-                    //             x1: '50%',
-                    //             y1: '100%',
-                    //             x2: '50%'
-                    //         },
-                    //         stops: [
-                    //             [0, '#323256'],
-                    //             [0.63, '#3b3658']
-                    //         ]
-                    //     }
-                    // }
+                series: []
+            },
+            series: []
+        }
+    },
+    watch: {
+        series (newValue) {
+            this.chartOptions.series = newValue
+        }
+    },
+    mounted: async function () {
+        let colors = [
+            {
+                linearGradient: {
+                    x1: '50%',
+                    y1: '50%',
+                    x2: '100%',
+                    y2: '0%'
+                },
+                stops: [
+                    [0, '#6362db'],
+                    [0.5, '#9e4bdd'],
+                    [1, '#9e4bdd']
+                ]
+            },
+            {
+                linearGradient: {
+                    x1: '50%',
+                    y1: '50%',
+                    x2: '100%',
+                    y2: '0%'
+                },
+                stops: [
+                    [0, '#EA7587'],
+                    [0.5, '#E6B888'],
+                    [1, '#E6B888']
                 ]
             }
+        ]
+
+        let fillColor = {
+            linearGradient: {
+                x1: '50%',
+                y1: '100%',
+                x2: '50%'
+            },
+            stops: [
+                [0, 'rgba(50, 50, 86, 0)'],
+                [0.63, 'rgba(59, 54, 88, 0)']
+            ]
+        }
+
+        // CPU0
+        let host = this.host
+        let alias = []
+        let query = ''
+
+        if (this.dataType === 'cpu0') {
+            alias = [ 'moon_cpu0_user', 'moon_cpu0_idle' ]
+            // eslint-disable-next-line max-len
+            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
+        }
+
+        let data = await this.fetchData('telegraf', query, 'ms')
+        this.series = this.bindDataToChart(data, colors, fillColor)
+    },
+    methods: {
+        fetchData: async function (db, query, epoch) {
+            let chartData = []
+            try {
+                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
+
+                this.chartLoading = true
+
+                // eslint-disable-next-line max-len
+                let { data } = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`, {
+                    headers: { Authorization: `Bearer ${apiKey}` }
+                })
+
+                this.chartLoading = false
+                chartData = data
+            } catch (e) {
+                this.chartLoading = false
+                if (typeof e.response !== 'undefined' && e.response.data.error) {
+                    console.log(e.response.data.error)
+                } else {
+                    console.log(e)
+                }
+            }
+
+            return chartData
+        },
+        bindDataToChart: function (data, colors, fillColor) {
+            let chartSeries = []
+            if (typeof data.results !== 'undefined') {
+                data.results.map((r, idx) => {
+                    let series = {}
+
+                    if (r.series.length) {
+                        let columns = r.series[0].columns
+                        let data = r.series[0].values
+
+                        series.name = typeof columns[1] !== 'undefined' ? columns[1] : ''
+                        series.data = data
+
+                        if (typeof colors[idx] !== 'undefined') {
+                            series.color = colors[idx]
+                        }
+
+                        series.fillColor = fillColor
+                        series.zIndex = idx
+                    }
+
+                    chartSeries.push(series)
+                    console.log(chartSeries)
+                })
+            }
+
+            return chartSeries
         }
     }
 }
