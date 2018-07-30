@@ -103,6 +103,7 @@ export default {
             self.totalRows = self.blockSigners.length
             self.loading = false
         } catch (e) {
+            self.loading = false
             console.log(e)
         }
     },

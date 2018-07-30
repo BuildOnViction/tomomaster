@@ -150,27 +150,22 @@
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
                     </h3>
-                    <!-- <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                        orgId=1&panelId=2"
-                        width="100%"
-                        frameborder="0" />
-                    <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain?
-                        orgId=1&panelId=6"
-                        width="100%"
-                        frameborder="0" /> -->
+                    <chart
+                        host="Moon"
+                        data-type="cpu0"
+                        class="mb-5" />
+                    <chart
+                        host="Moon"
+                        data-type="cpu1" />
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-memory color-orange" />
                         <span>Memory</span>
                     </h3>
-                    <!-- <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
-                        ?orgId=1&panelId=4"
-                        width="100%"
-                        frameborder="0" /> -->
+                    <chart
+                        host="Moon"
+                        data-type="memory" />
                 </div>
             </div>
         </div>
@@ -368,9 +363,13 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import Chart from '../Chart.vue'
 
 export default {
     name: 'App',
+    components: {
+        chart: Chart
+    },
     data () {
         return {
             isReady: !!this.web3,
@@ -481,7 +480,9 @@ export default {
             txCurrentPage: 1,
             txPerPage: 10,
             txTotalRows: 0,
-            loading: false
+            loading: false,
+            chartLoading: false,
+            cpu0Series: []
         }
     },
     computed: {
@@ -578,12 +579,11 @@ export default {
 
             self.loading = false
         } catch (e) {
+            self.loading = false
             console.log(e)
         }
     },
-    mounted () {
-        this.fetchData()
-    },
+    mounted () {},
     methods: {
         getEventClass (event) {
             let clazz = ''
@@ -592,27 +592,6 @@ export default {
             }
 
             return clazz
-        },
-        fetchData: async function () {
-            try {
-                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
-                let host = 'Moon'
-                let db = 'telegraf'
-                let epoch = 'ms'
-
-                // eslint-disable-next-line max-len
-                let q = `SELECT mean("usage_user") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
-                q = encodeURI(q).replace('=', '%3D').replace(';', '%3B')
-
-                // eslint-disable-next-line max-len
-                let data = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${q}&epoch=${epoch}`, {
-                    headers: { Authorization: `Bearer ${apiKey}` }
-                })
-
-                console.log(data)
-            } catch (e) {
-                console.log(e)
-            }
         }
     }
 }

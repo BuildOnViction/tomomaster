@@ -246,6 +246,7 @@ export default {
             self.loading = false
             self.getTableCssClass()
         } catch (e) {
+            self.loading = false
             console.log(e)
         }
     },

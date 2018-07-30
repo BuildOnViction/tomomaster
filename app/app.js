@@ -22,6 +22,9 @@ import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import HighchartsVue from 'highcharts-vue'
+import Highcharts from 'highcharts'
+import stockInit from 'highcharts/modules/stock'
 
 Vue.use(BootstrapVue)
 
@@ -36,6 +39,9 @@ Vue.use(Toasted, {
         }
     }
 })
+
+stockInit(Highcharts)
+Vue.use(HighchartsVue)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
