@@ -152,18 +152,20 @@
                     </h3>
                     <chart
                         host="Moon"
-                        data-type="cpu0" />
+                        data-type="cpu0"
+                        class="mb-5" />
+                    <chart
+                        host="Moon"
+                        data-type="cpu1" />
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-memory color-orange" />
                         <span>Memory</span>
                     </h3>
-                    <!-- <iframe
-                        src="https://grafana-testnet.tomochain.com/d-solo/GaPA-Y4mk/tomochain
-                        ?orgId=1&panelId=4"
-                        width="100%"
-                        frameborder="0" /> -->
+                    <chart
+                        host="Moon"
+                        data-type="memory" />
                 </div>
             </div>
         </div>

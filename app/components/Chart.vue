@@ -19,8 +19,6 @@ export default {
         return {
             chartOptions: {
                 chart: {
-                    type: 'areaspline',
-                    zoomType: 'x',
                     backgroundColor: {
                         linearGradient: {
                             x1: '100%',
@@ -33,13 +31,33 @@ export default {
                         ]
                     },
                     borderRadius: 8,
-                    spacing: [40, 35, 25, 30]
+                    resetZoomButton: {
+                        theme: {
+                            fill: '#678be0',
+                            stroke: '#678be0',
+                            style: {
+                                color: '#fff'
+                            },
+                            states: {
+                                hover: {
+                                    fill: '#739dff'
+                                }
+                            }
+                        },
+                        relativeTo: 'chart'
+                    },
+                    spacing: [40, 35, 25, 30],
+                    type: 'areaspline',
+                    zoomType: 'x'
                 },
                 credits: {
                     enabled: false
                 },
                 title: {
-                    text: ''
+                    text: '',
+                    style: {
+                        color: '#7573a6'
+                    }
                 },
                 xAxis: {
                     crosshair: {
@@ -47,7 +65,6 @@ export default {
                     },
                     gridLineColor: '#4b497a',
                     gridLineWidth: 1,
-                    gridZIndex: 3,
                     labels: {
                         style: {
                             color: '#7371a2'
@@ -60,7 +77,6 @@ export default {
                 yAxis: {
                     gridLineColor: '#4b497a',
                     gridLineWidth: 1,
-                    gridZIndex: 3,
                     labels: {
                         style: {
                             color: '#7371a2'
@@ -88,17 +104,16 @@ export default {
                     crosshairs: true,
                     shared: true
                 },
-                legend: {
-                    style: {
-                        color: 'red'
-                    }
-                },
                 series: []
             },
+            title: '',
             series: []
         }
     },
     watch: {
+        title (newValue) {
+            this.chartOptions.title.text = newValue
+        },
         series (newValue) {
             this.chartOptions.series = newValue
         }
@@ -113,9 +128,9 @@ export default {
                     y2: '0%'
                 },
                 stops: [
-                    [0, '#6362db'],
-                    [0.5, '#9e4bdd'],
-                    [1, '#9e4bdd']
+                    [0, '#ea7587'],
+                    [0.5, '#e6b888'],
+                    [1, '#e6b888']
                 ]
             },
             {
@@ -126,9 +141,9 @@ export default {
                     y2: '0%'
                 },
                 stops: [
-                    [0, '#ea7587'],
-                    [0.5, '#e6b888'],
-                    [1, '#e6b888']
+                    [0, '#6362db'],
+                    [0.5, '#9e4bdd'],
+                    [1, '#9e4bdd']
                 ]
             }
         ]
@@ -140,8 +155,8 @@ export default {
                 x2: '50%'
             },
             stops: [
-                [0, 'rgba(50, 50, 86, 1)'],
-                [0.63, 'rgba(59, 54, 88, 1)']
+                [0, 'rgba(50, 50, 86, .7)'],
+                [0.63, 'rgba(59, 54, 88, .7)']
             ]
         }
 
@@ -151,9 +166,25 @@ export default {
         let query = ''
 
         if (this.dataType === 'cpu0') {
+            this.title = 'CPU0'
             alias = [ 'moon_cpu0_user', 'moon_cpu0_idle' ]
             // eslint-disable-next-line max-len
             query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
+        }
+
+        if (this.dataType === 'cpu1') {
+            this.title = 'CPU1'
+            alias = [ 'moon_cpu1_user', 'moon_cpu1_idle' ]
+            // eslint-disable-next-line max-len
+            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu1' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu1' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
+        }
+
+        if (this.dataType === 'memory') {
+            alias = 'moon_memory_usage'
+            // eslint-disable-next-line max-len
+            query = `SELECT mean("used_percent") AS "${alias}" FROM "mem" WHERE ("host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
             query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
         }
 
