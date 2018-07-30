@@ -126,9 +126,9 @@ export default {
                     y2: '0%'
                 },
                 stops: [
-                    [0, '#EA7587'],
-                    [0.5, '#E6B888'],
-                    [1, '#E6B888']
+                    [0, '#ea7587'],
+                    [0.5, '#e6b888'],
+                    [1, '#e6b888']
                 ]
             }
         ]
@@ -140,8 +140,8 @@ export default {
                 x2: '50%'
             },
             stops: [
-                [0, 'rgba(50, 50, 86, 0)'],
-                [0.63, 'rgba(59, 54, 88, 0)']
+                [0, 'rgba(50, 50, 86, 1)'],
+                [0.63, 'rgba(59, 54, 88, 1)']
             ]
         }
 
@@ -189,9 +189,9 @@ export default {
         bindDataToChart: function (data, colors, fillColor) {
             let chartSeries = []
             if (typeof data.results !== 'undefined') {
+                let zIndex = 5
                 data.results.map((r, idx) => {
                     let series = {}
-
                     if (r.series.length) {
                         let columns = r.series[0].columns
                         let data = r.series[0].values
@@ -204,11 +204,10 @@ export default {
                         }
 
                         series.fillColor = fillColor
-                        series.zIndex = idx
+                        series.zIndex = --zIndex
                     }
 
                     chartSeries.push(series)
-                    console.log(chartSeries)
                 })
             }
 
