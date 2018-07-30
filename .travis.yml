@@ -42,6 +42,6 @@ stages:
   - name: Test
   - name: Coverage
   - name: Build and push Docker images
-    if: type != pull_request AND branch = master
+    if: type != pull_request AND branch = master AND repo = tomochain/tomomaster
   - name: Trigger rebuild of infrastructure images
-    if: type != pull_request AND branch = master
+    if: type != pull_request AND branch = master AND repo = tomochain/tomomaster
