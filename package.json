@@ -37,6 +37,8 @@
         "highcharts-vue": "^1.0.4",
         "mongoose": "^5.0.17",
         "truffle-contract": "^3.0.5",
+        "truffle-hdwallet-provider": "0.0.6",
+        "truffle-privatekey-provider": "^0.1.0",
         "vue-toasted": "^1.1.24"
     },
     "devDependencies": {
@@ -68,8 +70,6 @@
         "solidity-coverage": "^0.5.5",
         "style-loader": "^0.20.3",
         "truffle": "^4.1.13",
-        "truffle-hdwallet-provider": "0.0.5",
-        "truffle-privatekey-provider": "^0.1.0",
         "uglifyjs-webpack-plugin": "^1.2.7",
         "url-loader": "^1.0.1",
         "vue": "^2.5.16",
