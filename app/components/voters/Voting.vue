@@ -73,6 +73,7 @@ import {
     minValue
 } from 'vuelidate/lib/validators'
 import NumberInput from '../NumberInput.vue'
+import BigNumber from 'bignumber.js'
 
 export default {
     name: 'App',
@@ -133,7 +134,6 @@ export default {
         },
         vote: async function () {
             let self = this
-            let value = this.voteValue
 
             try {
                 if (!self.isReady) {
@@ -147,7 +147,7 @@ export default {
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.vote(self.candidate, {
                     from: account,
-                    value: parseFloat(value) * 10 ** 18
+                    value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber()
                 })
 
                 let toastMessage = rs.tx ? 'You have successfully voted!'

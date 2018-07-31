@@ -39,11 +39,15 @@
                             <span class="tomo-info__text">Balance</span>
                         </p>
                         <p
-                            v-b-tooltip.hover
-                            v-b-tooltip.html.bottom
-                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.balance, 6))}`"
+                            id="tomo-info__description--balance"
                             class="tomo-info__description">
                             {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.balance)"
+                                ref="tooltip"
+                                target="tomo-info__description--balance">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -52,11 +56,15 @@
                             <span class="tomo-info__text">Capacity</span>
                         </p>
                         <p
-                            v-b-tooltip.hover
-                            v-b-tooltip.html.bottom
-                            :title="`${formatCurrencySymbol(formatBigNumber(candidate.cap, 6))}`"
+                            id="tomo-info__description--cap"
                             class="tomo-info__description">
                             {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 3)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.cap)"
+                                ref="tooltip"
+                                target="tomo-info__description--cap">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
@@ -64,8 +72,16 @@
                             <i class="tm-arrow-up tomo-info__icon" />
                             <span class="tomo-info__text">Total voted</span>
                         </p>
-                        <p class="tomo-info__description">
+                        <p
+                            id="tomo-info__description--total-voted"
+                            class="tomo-info__description">
                             {{ formatCurrencySymbol(formatNumber(candidate.totalVoted)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.totalVoted)"
+                                ref="tooltip"
+                                target="tomo-info__description--total-voted">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.totalVoted, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div
@@ -75,8 +91,16 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">You voted</span>
                         </p>
-                        <p class="tomo-info__description">
+                        <p
+                            id="tomo-info__description--you-voted"
+                            class="tomo-info__description">
                             {{ formatCurrencySymbol(formatNumber(candidate.voted)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.voted)"
+                                ref="tooltip"
+                                target="tomo-info__description--you-voted">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.voted, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div
@@ -86,8 +110,16 @@
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Rewarded</span>
                         </p>
-                        <p class="tomo-info__description">
+                        <p
+                            id="tomo-info__description--you-rewarded"
+                            class="tomo-info__description">
                             {{ formatCurrencySymbol(formatNumber(candidate.rewarded)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.rewarded)"
+                                ref="tooltip"
+                                target="tomo-info__description--you-rewarded">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.rewarded, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
@@ -216,8 +248,7 @@
                     slot="action"
                     slot-scope="data">
                     <a
-                        v-b-tooltip.hover
-                        v-b-tooltip.html.right
+                        v-b-tooltip.hover.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
                         target="_blank">
@@ -339,8 +370,7 @@
                     slot="tx"
                     slot-scope="data">
                     <a
-                        v-b-tooltip.hover
-                        v-b-tooltip.html.right
+                        v-b-tooltip.hover.right
                         :href="`${config.explorerUrl}/txs/${data.item.tx}`"
                         title="View on TomoScan"
                         target="_blank">
@@ -535,18 +565,23 @@ export default {
             }
 
             let voters = await axios.get(`/api/candidates/${address}/voters`)
+            let totalVoted = new BigNumber(0)
+            let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
                     id: idx + 1,
                     address: v.voter,
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
-                self.candidate.totalVoted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                totalVoted = totalVoted.plus(v.capacity)
 
                 if (v.voter === account) {
-                    self.candidate.voted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                    youVoted = youVoted.plus(v.capacity)
                 }
             })
+
+            self.candidate.totalVoted = totalVoted.div(10 ** 18).toNumber()
+            self.candidate.voted = youVoted.div(10 ** 18).toNumber()
 
             self.voterTotalRows = self.voters.length
 
@@ -558,7 +593,7 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: new BigNumber(tx.capacity).div(10 ** 18).toFormat()
+                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber()
                 })
             })
 

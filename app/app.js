@@ -102,12 +102,18 @@ Vue.prototype.getCurrencySymbol = function () {
     return '$TOMO'
 }
 
+Vue.prototype.checkLongNumber = function (num) {
+    let str = num.toString().split('.')
+
+    return (typeof str[1] !== 'undefined' && str[1].length > 3)
+}
+
 Vue.prototype.formatBigNumber = function (num, dp) {
-    if (num.toString().length > 6) {
+    if (this.checkLongNumber(num)) {
         return new BigNumber(num).toFormat(dp)
     }
 
-    return num
+    return this.formatNumber(num)
 }
 
 Vue.prototype.appConfig = async function () {

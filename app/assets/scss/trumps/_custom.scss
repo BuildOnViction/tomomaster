@@ -81,6 +81,14 @@
     border-right-color: #aca9C4;
 }
 
+.bs-tooltip-left .arrow:before {
+    border-left-color: #aca9C4;
+}
+
 .bs-tooltip-bottom .arrow:before {
     border-bottom-color: #aca9C4;
+}
+
+.bs-tooltip-top .arrow:before {
+    border-top-color: #aca9C4;
 }

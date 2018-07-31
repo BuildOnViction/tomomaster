@@ -76,7 +76,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(data.item.cap) }}
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
 
                 <template
@@ -237,7 +237,7 @@ export default {
                     status: candidate.status,
                     isMasternode: isMasternode,
                     name: candidate.name || 'Anonymous',
-                    cap: (new BigNumber(candidate.capacity)).div(10 ** 18).toFormat()
+                    cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber()
                 })
             })
 
