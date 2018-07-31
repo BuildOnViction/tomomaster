@@ -19,11 +19,15 @@
                         <span class="tomo-info__text">Balance</span>
                     </p>
                     <p
-                        v-b-tooltip.hover
-                        v-b-tooltip.html.bottom
-                        :title="`${formatCurrencySymbol(formatBigNumber(balance, 6))}`"
+                        id="tomo-info__description--balance"
                         class="tomo-info__description">
                         {{ formatCurrencySymbol(formatBigNumber(balance, 3)) }}
+                        <b-tooltip
+                            v-if="checkLongNumber(balance)"
+                            ref="tooltip"
+                            target="tomo-info__description--balance">
+                            {{ formatCurrencySymbol(formatBigNumber(balance, 6)) }}
+                        </b-tooltip>
                     </p>
                 </div>
                 <div class="col-12 tomo-info">
@@ -31,8 +35,16 @@
                         <i class="tm-dot tomo-info__icon" />
                         <span class="tomo-info__text">Total voted</span>
                     </p>
-                    <p class="tomo-info__description">
+                    <p
+                        id="tomo-info__description--voted"
+                        class="tomo-info__description">
                         {{ formatCurrencySymbol(formatNumber(totalVoted)) }}
+                        <b-tooltip
+                            v-if="checkLongNumber(totalVoted)"
+                            ref="tooltip"
+                            target="tomo-info__description--voted">
+                            {{ formatCurrencySymbol(formatBigNumber(totalVoted, 6)) }}
+                        </b-tooltip>
                     </p>
                 </div>
             </div>
@@ -77,7 +89,7 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(data.item.cap) }}
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
             </b-table>
 
@@ -149,7 +161,7 @@ export default {
             candidates.data.map(async (c) => {
                 self.candidates.push({
                     address: c.candidate,
-                    cap: new BigNumber(c.capacity).div(10 ** 18).toFormat()
+                    cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
                 })
                 self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
             })
