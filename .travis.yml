@@ -16,7 +16,6 @@ jobs:
       install: skip
       before_script:
         - docker build -t tomochain/tomomaster .
-        - docker run tomochain/tomomaster
       script:
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
         - docker tag tomochain/tomomaster tomochain/tomomaster:latest
@@ -32,7 +31,6 @@ jobs:
       install: skip
       before_script:
         - docker build -t tomochain/tomomaster .
-        - docker run tomochain/tomomaster
       script:
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
         - docker tag tomochain/tomomaster tomochain/tomomaster:latest
