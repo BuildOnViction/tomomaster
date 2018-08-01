@@ -8,9 +8,9 @@
             v-model.number="currentValue"
             type="number"
             class="form-control"
-            @blur="currentValue = value"
-            @keydown.esc="currentValue = value"
-            @keydown.enter="currentValue = value"
+            @blur="blur"
+            @keydown.esc="blur"
+            @keydown.enter="blur"
             @keydown.up.prevent="increment"
             @keydown.down.prevent="decrement">
         <button
@@ -94,6 +94,9 @@ export default {
             this.incrementDisabled = false
 
             this._updateValue(newVal.toNumber())
+        },
+        blur () {
+            this.$emit('input', this.currentValue)
         },
         _updateValue (newVal) {
             const oldVal = this.currentValue
