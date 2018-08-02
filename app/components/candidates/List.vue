@@ -32,8 +32,9 @@
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card--animated">
                         <h6 class="tomo-card__title">Next Checkpoint</h6>
-                        <p class="tomo-card__text">#{{ parseInt(chainConfig.epoch)
-                        + parseInt(chainConfig.blockNumber) }}</p>
+                        <p class="tomo-card__text">
+                            <!-- eslint-disable-next-line max-len -->
+                            #{{ parseInt(chainConfig.epoch) * (Math.floor(parseInt(chainConfig.blockNumber) / parseInt(chainConfig.epoch) + 1)) }}</p>
                     </b-card>
                 </div>
             </div>
@@ -219,6 +220,7 @@ export default {
         let self = this
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
+        self.chainConfig.blockNumber = 312
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
