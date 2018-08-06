@@ -155,7 +155,8 @@ export default {
         },
         */
         nodeId: {
-            required
+            required,
+            nodeId: true
         }
     },
     computed: { },
