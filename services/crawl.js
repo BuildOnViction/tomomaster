@@ -135,7 +135,7 @@ async function updateCandidateInfo (candidate) {
     try {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
-        let nodeUrl = await validator.getCandidateNodeUrl.call(candidate)
+        let nodeId = await validator.getCandidateNodeId.call(candidate)
         let owner = await validator.getCandidateOwner.call(candidate)
         let status = await validator.isCandidate.call(candidate)
         let result
@@ -149,7 +149,7 @@ async function updateCandidateInfo (candidate) {
                     smartContractAddress: validator.address,
                     candidate: candidate,
                     capacity: String(capacity),
-                    nodeUrl: nodeUrl,
+                    nodeId: nodeId,
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
                     owner: String(owner)
                 }

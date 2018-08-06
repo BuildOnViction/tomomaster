@@ -12,7 +12,7 @@ var Candidate = new Schema({
         type: String,
         index: true
     },
-    nodeUrl: String,
+    nodeId: String,
     candidate: {
         type: String,
         index: true
