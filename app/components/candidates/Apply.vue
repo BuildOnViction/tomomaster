@@ -20,7 +20,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-arrow-up tomo-list__icon" />
                         <span class="tomo-list__text">
-                            Coin holder is able to vote for you to become a validator</span>
+                            Coin holders are able to vote for you to become a masternode</span>
                     </li>
                 </ul>
 
