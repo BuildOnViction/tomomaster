@@ -32,7 +32,8 @@ COPY . .
 
 RUN mkdir -p build/contracts \
     && mv abis/* build/contracts/ \
-    && npm run build
+    && npm run build \
+    && apk del deps
 
 ENTRYPOINT ["npm"]
 
