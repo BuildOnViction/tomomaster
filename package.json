@@ -9,11 +9,13 @@
     "scripts": {
         "lint": "eslint --cache ./ --ext .vue --ext .js",
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
+        "nodemon": "./node_modules/.bin/nodemon index.js",
+        "crawl_dev": "./node_modules/.bin/nodemon ./services/crawl.js",
         "start": "node index.js",
         "crawl": "node ./services/crawl.js",
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
-        "dev": "npm run crawl & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
+        "dev": "npm run crawl_dev & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
         "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
         "abis": "node ./abis.js",
         "coverage": "./node_modules/.bin/solidity-coverage"
