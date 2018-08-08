@@ -1,4 +1,16 @@
 {
-  "mnemonic": "MNEMONIC",
-  "explorerUrl": "EXPLORER_URL"
+  "server": {
+    "host": "SERVER_HOST",
+    "port": "SERVER_PORT"
+  },
+  "blockchain": {
+      "rpc": "BC_RPC",
+      "networkId": "BC_NETWORK_ID",
+      "epoch": "BC_EPOCH",
+      "blockTime": "BC_BLOCK_TIME"
+  },
+  "explorerUrl": "EXPLORER_URL",
+  "db": {
+    "uri": "DB_URI"
+  }
 }

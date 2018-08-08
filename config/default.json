@@ -13,12 +13,6 @@
     "uri": "mongodb://mongodb:27017/governance"
   },
   "explorerUrl": "http://localhost:3003",
-  "redis": {
-      "host": "redis",
-      "port": "6379",
-      "password": null,
-      "prefix": "ToMoMaster"
-  },
   "truffle": {
     "mnemonic": "",
     "minCandidateCap": "50000000000000000000000",

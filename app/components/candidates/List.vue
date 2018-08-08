@@ -220,7 +220,6 @@ export default {
         let self = this
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
-        self.chainConfig.blockNumber = 312
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
