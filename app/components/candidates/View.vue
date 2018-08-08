@@ -548,10 +548,10 @@ export default {
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
-                self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
+                self.candidate.hardwareInfo = 'N/A'
                 self.candidate.dataCenterInfo = {
-                    name: 'AWS',
-                    location: 'Singapore'
+                    name: 'N/A',
+                    location: 'N/A'
                 }
             }
 
