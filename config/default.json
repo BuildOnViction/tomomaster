@@ -6,7 +6,7 @@
   "blockchain": {
       "rpc": "https://testnet.tomochain.com",
       "networkId": 89,
-      "epoch": 990,
+      "epoch": 900,
       "blockTime": 2,
       "reward": 200
   },
