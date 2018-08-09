@@ -86,7 +86,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-wallet tomo-list__icon" />
                         <p class="tomo-list__text">
-                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
+                            <a :href="`${config.explorerUrl}/address/${address}`">
                                 {{ address }}</a>
                             <span>Address</span>
                         </p>
@@ -102,7 +102,7 @@
                 </ul>
             </b-card>
             <b-card
-                v-if="isReady"
+                v-if="isReady && aw"
                 class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Available Withdraws</h4>
@@ -114,7 +114,7 @@
                         v-if="w.blockNumber !== '0'"
                         class="tomo-list__item">
                         <p class="tomo-list__text">
-                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
+                            <a :href="`${config.explorerUrl}/blocks/${w.blockNumber}`">
                                 {{ w.blockNumber }}</a>
                             <span>Block Number</span>
                         </p>
@@ -130,30 +130,26 @@
                 </ul>
             </b-card>
             <b-card
-                v-if="isReady"
+                v-if="isReady && (wh.length > 0)"
                 class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Withdraw History</h4>
                 <ul
-                    v-for="(w, index) in withdraws"
+                    v-for="(w, index) in wh"
                     :key="index"
                     class="tomo-list list-unstyled">
                     <li
-                        v-if="w.blockNumber !== '0'"
                         class="tomo-list__item">
                         <p class="tomo-list__text">
-                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
-                                {{ w.blockNumber }}</a>
-                            <span>Block Number</span>
+                            <a :href="`${config.explorerUrl}/txs/${w.tx}`">
+                                {{ (w.tx || '').substring(0,8) }}</a>
+                            <span>Transaction</span>
                         </p>
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
                         </div>
-                        <b-button
-                            variant="primary"
-                            @click="withdraw(w.blockNumber, index)">Withdraw</b-button>
                     </li>
                 </ul>
             </b-card>
@@ -164,6 +160,7 @@
 import Web3 from 'web3'
 import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
+import axios from 'axios'
 import {
     required
 } from 'vuelidate/lib/validators'
@@ -181,6 +178,8 @@ export default {
             provider: 'metamask',
             address: '',
             withdraws: [],
+            wh: [],
+            aw: false,
             balance: 0,
             networks: {
                 // mainnet: 'https://core.tomochain.com',
@@ -225,6 +224,9 @@ export default {
             let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
             blks.forEach(async it => {
                 let blk = new BigNumber(it).toString()
+                if (blk !== '0') {
+                    self.aw = true
+                }
                 let wd = {
                     blockNumber: blk
                 }
@@ -232,6 +234,15 @@ export default {
                     await contract.getWithdrawCap.call(blk, { from: account })
                 ).div(10 ** 18).toFormat()
                 self.withdraws.push(wd)
+            })
+            let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
+            self.wh = []
+            wh.data.forEach(w => {
+                let it = {
+                    cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
+                    tx: w.tx
+                }
+                self.wh.push(it)
             })
         } catch (e) {
             console.log(e)

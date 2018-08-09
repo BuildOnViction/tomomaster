@@ -82,13 +82,27 @@ async function watchValidator () {
             })
         }
         let event = res.event
+        if (event === 'Withdraw') {
+            let owner = res.args._owner
+            let blockNumber = res.args._blockNumber
+            let capacity = res.args._cap
+            let wd = new db.Withdraw({
+                smartContractAddress: v.address,
+                blockNumber: blockNumber,
+                tx: res.transactionHash,
+                owner: owner,
+                capacity: capacity
+            })
+            wd.save()
+            cs.save()
+            return true
+        }
         let candidate = res.args._candidate
         let voter = res.args._voter
         let owner = res.args._owner
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
-            blockNumber: res.blockNumber,
             tx: res.transactionHash,
             event: event,
             voter: voter,
@@ -98,9 +112,6 @@ async function watchValidator () {
         })
         tx.save()
         cs.save()
-        if (event === 'Withdraw') {
-            return true
-        }
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
