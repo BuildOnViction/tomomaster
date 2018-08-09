@@ -101,6 +101,33 @@
                     </li>
                 </ul>
             </b-card>
+            <b-card
+                v-if="isReady"
+                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
+                <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
+                    Withdraw List</h4>
+                <ul
+                    v-for="w in withdraws"
+                    :key="w.blockNumber"
+                    class="tomo-list list-unstyled">
+                    <li class="tomo-list__item">
+                        <i class="tm-wallet tomo-list__icon" />
+                        <p class="tomo-list__text">
+                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
+                                {{ w.blockNumber }}</a>
+                            <span>Block Number</span>
+                        </p>
+                    </li>
+                    <li class="tomo-list__item">
+                        <i class="tm-tomo tomo-list__icon" />
+                        <div class="tomo-list__text">
+                            <p class="color-white mb-0">{{ w.cap }}
+                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                            <span>Capacity</span>
+                        </div>
+                    </li>
+                </ul>
+            </b-card>
         </b-row>
     </div>
 </template>
@@ -123,6 +150,7 @@ export default {
             mnemonic: '',
             provider: 'metamask',
             address: '',
+            withdraws: [],
             balance: 0,
             networks: {
                 // mainnet: 'https://core.tomochain.com',
@@ -162,6 +190,17 @@ export default {
                     console.log('got an error', a)
                 }
             })
+            let contract = await self.TomoValidator.deployed()
+            let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+            blks.forEach(async it => {
+                let blk = new BigNumber(it).toString()
+                let wd = {
+                    blockNumber: blk
+                }
+                wd.cap = new BigNumber(await contract.getWithdrawCap.call(blk, { from: account })).toString()
+                self.withdraws.push(wd)
+            })
+            console.log(self.withdraws)
         } catch (e) {
             console.log(e)
         }
