@@ -132,7 +132,7 @@
                                 :href="`${config.explorerUrl}/address/${candidate.owner}`"
                                 target="_blank"
                                 class="text-truncate">
-                                {{ candidate.owner.substring(0, 8) }}...
+                                {{ (candidate.owner || '').substring(0, 8) }}...
                             </a>
                         </p>
                     </div>

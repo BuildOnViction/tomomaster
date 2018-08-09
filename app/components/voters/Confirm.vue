@@ -30,6 +30,7 @@ export default {
     name: 'App',
     data () {
         return {
+            config: {},
             tx: this.$route.params.transaction,
             status: 'fail',
             icon: '',
@@ -41,8 +42,9 @@ export default {
     computed: {},
     watch: {},
     updated () {},
-    created: function () {
+    created: async function () {
         let self = this
+        self.config = await self.appConfig()
 
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
             if (response.data == null) {
@@ -66,7 +68,7 @@ export default {
                         <span class="color-white">${transaction.capacity / 10 ** 18} $TOMO</span> for candidate 
                         <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
                         <br/><br/>
-                        Transaction Hash: <a href="https://explorer-testnet.tomochain.com/txs/${self.tx}"
+                        Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
                         target="_blank">${self.tx}</a>`
                         self.buttonText = 'View all Candidates'
                     } else {
