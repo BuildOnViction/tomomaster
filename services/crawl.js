@@ -72,7 +72,7 @@ async function watchValidator () {
             console.error(err, res)
             return false
         }
-        console.info('New event %s from block %s', res.event, res.blockNumber)
+        console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
         if (cs) {
             cs.blockNumber = res.blockNumber
         } else {
@@ -82,13 +82,27 @@ async function watchValidator () {
             })
         }
         let event = res.event
+        if (event === 'Withdraw') {
+            let owner = res.args._owner
+            let blockNumber = res.args._blockNumber
+            let capacity = res.args._cap
+            let wd = new db.Withdraw({
+                smartContractAddress: v.address,
+                blockNumber: blockNumber,
+                tx: res.transactionHash,
+                owner: owner,
+                capacity: capacity
+            })
+            wd.save()
+            cs.save()
+            return true
+        }
         let candidate = res.args._candidate
         let voter = res.args._voter
         let owner = res.args._owner
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
-            blockNumber: res.blockNumber,
             tx: res.transactionHash,
             event: event,
             voter: voter,

@@ -29,9 +29,9 @@
                         + candidate.status">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Note Status</span>
+                            <span class="tomo-info__text">Node Status</span>
                         </p>
-                        <p class="tomo-info__description">Active</p>
+                        <p class="tomo-info__description">{{ candidate.nodeStatus }}</p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                         <p class="tomo-info__title">
@@ -125,10 +125,15 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Latest Block</span>
+                            <span class="tomo-info__text">Owner</span>
                         </p>
                         <p class="tomo-info__description">
-                            #{{ formatNumber(candidate.latestBlock) }}
+                            <a
+                                :href="`${config.explorerUrl}/address/${candidate.owner}`"
+                                target="_blank"
+                                class="text-truncate">
+                                {{ (candidate.owner || '').substring(0, 8) }}...
+                            </a>
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
@@ -544,14 +549,16 @@ export default {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                 self.candidate.status = data.status
+                self.candidate.nodeStatus = data.nodeStatus || 'OFF'
+                self.candidate.owner = data.owner
                 self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
-                self.candidate.hardwareInfo = '2.9 GHz Intel Core i5/32 TB 1867 MHz DDR3'
+                self.candidate.hardwareInfo = 'N/A'
                 self.candidate.dataCenterInfo = {
-                    name: 'AWS',
-                    location: 'Singapore'
+                    name: 'N/A',
+                    location: 'N/A'
                 }
             }
 
