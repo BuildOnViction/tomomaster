@@ -10,4 +10,9 @@ if (!provider.isConnected()) {
     process.exit()
 }
 
+process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ' + err)
+    process.exit()
+})
+
 module.exports = chain
