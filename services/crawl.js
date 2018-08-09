@@ -72,7 +72,7 @@ async function watchValidator () {
             console.error(err, res)
             return false
         }
-        console.info('New event %s from block %s', res.event, res.blockNumber)
+        console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
         if (cs) {
             cs.blockNumber = res.blockNumber
         } else {
@@ -98,6 +98,9 @@ async function watchValidator () {
         })
         tx.save()
         cs.save()
+        if (event === 'Withdraw') {
+            return true
+        }
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }

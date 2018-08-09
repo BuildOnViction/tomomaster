@@ -105,26 +105,55 @@
                 v-if="isReady"
                 class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Withdraw List</h4>
+                    Available Withdraws</h4>
                 <ul
-                    v-for="w in withdraws"
-                    :key="w.blockNumber"
+                    v-for="(w, index) in withdraws"
+                    :key="index"
                     class="tomo-list list-unstyled">
-                    <li class="tomo-list__item">
-                        <i class="tm-wallet tomo-list__icon" />
+                    <li
+                        v-if="w.blockNumber !== '0'"
+                        class="tomo-list__item">
                         <p class="tomo-list__text">
                             <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
                                 {{ w.blockNumber }}</a>
                             <span>Block Number</span>
                         </p>
-                    </li>
-                    <li class="tomo-list__item">
-                        <i class="tm-tomo tomo-list__icon" />
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
                         </div>
+                        <b-button
+                            variant="primary"
+                            @click="withdraw(w.blockNumber, index)">Withdraw</b-button>
+                    </li>
+                </ul>
+            </b-card>
+            <b-card
+                v-if="isReady"
+                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
+                <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
+                    Withdraw History</h4>
+                <ul
+                    v-for="(w, index) in withdraws"
+                    :key="index"
+                    class="tomo-list list-unstyled">
+                    <li
+                        v-if="w.blockNumber !== '0'"
+                        class="tomo-list__item">
+                        <p class="tomo-list__text">
+                            <a :href="`https://explorer-testnet.tomochain.com/address/${address}`">
+                                {{ w.blockNumber }}</a>
+                            <span>Block Number</span>
+                        </p>
+                        <div class="tomo-list__text">
+                            <p class="color-white mb-0">{{ w.cap }}
+                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                            <span>Capacity</span>
+                        </div>
+                        <b-button
+                            variant="primary"
+                            @click="withdraw(w.blockNumber, index)">Withdraw</b-button>
                     </li>
                 </ul>
             </b-card>
@@ -148,6 +177,7 @@ export default {
         return {
             isReady: !!this.web3,
             mnemonic: '',
+            config: {},
             provider: 'metamask',
             address: '',
             withdraws: [],
@@ -177,6 +207,7 @@ export default {
     created: async function () {
         this.provider = this.NetworkProvider
         let self = this
+        self.config = await self.appConfig()
 
         try {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
@@ -197,10 +228,11 @@ export default {
                 let wd = {
                     blockNumber: blk
                 }
-                wd.cap = new BigNumber(await contract.getWithdrawCap.call(blk, { from: account })).toString()
+                wd.cap = new BigNumber(
+                    await contract.getWithdrawCap.call(blk, { from: account })
+                ).div(10 ** 18).toFormat()
                 self.withdraws.push(wd)
             })
-            console.log(self.withdraws)
         } catch (e) {
             console.log(e)
         }
@@ -264,6 +296,12 @@ export default {
                 })
                 console.log(e)
             }
+        },
+        withdraw: async function (blockNumber, index) {
+            let self = this
+            let contract = await self.TomoValidator.deployed()
+            let account = await self.getAccount()
+            await contract.withdraw(String(blockNumber), String(index), { from: account })
         }
     }
 }
