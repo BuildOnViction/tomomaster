@@ -13,6 +13,11 @@ const q = kue.createQueue({
     }
 })
 
+q.on('error', function (err) {
+    console.error('Redis Connection Error !!!', err)
+    process.exit()
+})
+
 fs.readdirSync(__dirname)
     .filter(function (file) {
         return (file.indexOf('.') !== 0) && (file !== 'index.js')
