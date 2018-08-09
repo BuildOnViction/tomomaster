@@ -7,12 +7,19 @@
       "rpc": "https://testnet.tomochain.com",
       "networkId": 89,
       "epoch": 990,
-      "blockTime": 2
+      "blockTime": 2,
+      "reward": 200
   },
   "db": {
     "uri": "mongodb://mongodb:27017/governance"
   },
   "explorerUrl": "http://localhost:3003",
+  "redis": {
+    "host": "redis",
+    "port": 6379,
+    "password": null,
+    "prefix": "tomomaster"
+  },
   "truffle": {
     "mnemonic": "",
     "minCandidateCap": "50000000000000000000000",
