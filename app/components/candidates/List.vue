@@ -105,11 +105,6 @@
                         :to="`/resign/${data.item.address}`"
                         variant="secondary"
                         class="d-none d-lg-block">Resign</b-button>
-                    <b-button
-                        v-if="data.item.status === 'RESIGNED'"
-                        :to="`/withdraw/${data.item.address}`"
-                        variant="secondary"
-                        class="d-none d-lg-block">Withdraw</b-button>
                 </template>
 
                 <template
@@ -125,11 +120,6 @@
                         :to="`/resign/${data.item.address}`"
                         variant="secondary"
                         class="d-inline-block d-lg-none mt-3 mt-lg-0">Resign</b-button>
-                    <b-button
-                        v-if="data.item.status === 'RESIGNED' && data.item.owner === account"
-                        :to="`/withdraw/${data.item.address}`"
-                        variant="secondary"
-                        class="d-inline-block d-lg-none mt-3 mt-lg-0">Withdraw</b-button>
                 </template>
             </b-table>
 

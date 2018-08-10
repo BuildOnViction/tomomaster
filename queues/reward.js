@@ -51,10 +51,12 @@ consumer.task = async function (job, done) {
     })
 
     await Promise.all(map)
+
     reward.forEach(r => {
         r.reward = (new BigNumber(r.reward || 0)).plus(r.signNumber * mnReward).div(totalSign)
             .multipliedBy(10e+18).toString()
     })
+
     console.log(reward)
 
     done()

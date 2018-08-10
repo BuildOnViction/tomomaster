@@ -102,10 +102,10 @@
                 </ul>
             </b-card>
             <b-card
-                v-if="isReady && aw"
+                v-if="isReady && (aw || (wh.length > 0))"
                 class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Available Withdraws</h4>
+                    Withdraws</h4>
                 <ul
                     v-for="(w, index) in withdraws"
                     :key="index"
@@ -128,12 +128,6 @@
                             @click="withdraw(w.blockNumber, index)">Withdraw</b-button>
                     </li>
                 </ul>
-            </b-card>
-            <b-card
-                v-if="isReady && (wh.length > 0)"
-                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
-                <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Withdraw History</h4>
                 <ul
                     v-for="(w, index) in wh"
                     :key="index"
