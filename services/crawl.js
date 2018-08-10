@@ -5,6 +5,7 @@ const { BlockSigner } = require('../models/blockchain/blockSigner')
 const chain = require('../models/blockchain/chain')
 const db = require('../models/mongodb')
 const config = require('config')
+const q = require('../queues')
 
 async function watchBlockSigner () {
     let bs = await BlockSigner.deployed()
@@ -34,15 +35,17 @@ async function watchBlockSigner () {
         let signer = res.args._signer
         let tx = res.transactionHash
         let bN = String(res.args._blockNumber)
+        let bH = String(res.args._blockHash)
         cs.save()
 
         return db.BlockSigner.update({
             smartContractAddress: bs.address,
-            blockNumber: bN
+            blockHash: bH
         }, {
             $set: {
                 smartContractAddress: bs.address,
-                blockNumber: bN
+                blockNumber: bN,
+                blockHash: bH
             },
             $addToSet: {
                 signers: {
@@ -139,6 +142,8 @@ async function watch () {
                 signers: signers
             })
         }
+        q.create('reward', { block: blk })
+            .priority('low').removeOnComplete(true).save()
     })
 
     watchBlockSigner()

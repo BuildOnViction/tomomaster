@@ -7,10 +7,14 @@
       "rpc": "BC_RPC",
       "networkId": "BC_NETWORK_ID",
       "epoch": "BC_EPOCH",
-      "blockTime": "BC_BLOCK_TIME"
+      "blockTime": "BC_BLOCK_TIME",
+      "reward": "BC_REWARD"
   },
   "explorerUrl": "EXPLORER_URL",
   "db": {
     "uri": "DB_URI"
+  },
+  "redis": {
+    "host": "REDIS_HOST"
   }
 }

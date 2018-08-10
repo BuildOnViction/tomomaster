@@ -12,6 +12,10 @@ var BlockSigner = new Schema({
         type: String,
         index: true
     },
+    blockHash: {
+        type: String,
+        index: true
+    },
     signers: [{
         signer: {
             type: String,
