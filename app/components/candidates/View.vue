@@ -169,18 +169,24 @@
                 </div>
             </b-card>
             <div
-                v-if="candidate.status !== 'RESIGNED'"
                 class="buttons text-right">
+                <b-button
+                    v-if="candidate.owner === account && candidate.status !== 'RESIGNED'"
+                    :to="`/resign/${candidate.address}`"
+                    variant="secondary">Resign</b-button>
                 <b-button
                     v-if="candidate.voted > 0"
                     :to="`/unvoting/${candidate.address}`"
                     variant="secondary">Unvote</b-button>
                 <b-button
+                    v-if="candidate.status !== 'RESIGNED'"
                     :to="`/voting/${candidate.address}`"
                     variant="primary">Vote</b-button>
             </div>
         </div>
-        <div class="container section section--hardware">
+        <div
+            v-if="candidate.status !== 'RESIGNED'"
+            class="container section section--hardware">
             <div class="row">
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
@@ -408,6 +414,7 @@ export default {
     data () {
         return {
             isReady: !!this.web3,
+            account: '',
             voteActive: false,
             voteValue: 1,
             unvoteValue: 1,
@@ -540,6 +547,7 @@ export default {
         try {
             let address = self.candidate.address
             let account = self.isReady ? await self.getAccount() : ''
+            self.account = account
 
             self.loading = true
 
