@@ -118,6 +118,9 @@ async function watchValidator () {
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
+        if (event === 'Resign') {
+            updateVoterCap(candidate, owner)
+        }
         updateCandidateInfo(candidate)
     })
 }

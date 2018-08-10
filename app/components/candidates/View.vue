@@ -594,6 +594,7 @@ export default {
                     youVoted = youVoted.plus(v.capacity)
                 }
             })
+            console.log(youVoted)
 
             self.candidate.totalVoted = totalVoted.div(10 ** 18).toNumber()
             self.candidate.voted = youVoted.div(10 ** 18).toNumber()
