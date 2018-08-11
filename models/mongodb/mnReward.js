@@ -3,8 +3,12 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var Reward = new Schema({
+var MnReward = new Schema({
     address: {
+        type: String,
+        index: true
+    },
+    owner: {
         type: String,
         index: true
     },
@@ -12,10 +16,8 @@ var Reward = new Schema({
         type: String,
         index: true
     },
-    reward: {
-        type: String
-    },
+    reward: String,
     signNumber: Number
 }, { timestamps: true })
 
-module.exports = mongoose.model('Reward', Reward)
+module.exports = mongoose.model('MnReward', MnReward)

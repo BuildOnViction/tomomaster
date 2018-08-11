@@ -1,8 +1,6 @@
 'use strict'
 
-/*
-const web3 = require('../models/blockchain/chain')
-*/
+const { Validator } = require('../models/blockchain/validator')
 const db = require('../models/mongodb')
 const BigNumber = require('bignumber.js')
 const config = require('config')
@@ -18,23 +16,22 @@ consumer.task = async function (job, done) {
         return done()
     }
 
-    /*
-    let rewardEpochNumber = (blockNumber / epoch) - 1
-    let rewardBlockNumber = blockNumber - epoch
-    */
+    let validator = await Validator.deployed()
+
     let startBlockNumber = blockNumber - (2 * epoch)
-    // let endBlockNumber = blockNumber - epoch - 1
+    let endBlockNumber = blockNumber - epoch - 1
     let sn = await db.Signer.findOne({
         blockNumber: startBlockNumber
     })
 
     let signers = (sn || {}).signers || []
 
-    console.log('checkpoint !!!', signers)
+    console.log('Rewarding', signers)
 
-    let mnReward = 40
-    // let vReward = 50
-    // let fReward = 10
+    let totalReward = 10 // TOMO
+    let mnRewardRate = 40
+    let vRewardRate = 50
+    // let fRewardRate = 10
     let reward = []
     let totalSign = 0
     let map = signers.map(async s => {
@@ -52,12 +49,49 @@ consumer.task = async function (job, done) {
 
     await Promise.all(map)
 
-    reward.forEach(r => {
-        r.reward = (new BigNumber(r.reward || 0)).plus(r.signNumber * mnReward).div(totalSign)
-            .multipliedBy(10e+18).toString()
+    map = reward.map(async r => {
+        let mn = (new BigNumber(r.reward || 0)).plus(r.signNumber * totalReward).div(totalSign)
+            .multipliedBy(10e+18)
+
+        let mnRewardState = {
+            address: r.address,
+            reward:  mn.multipliedBy(mnRewardRate / 100).toString()
+        }
+
+        let vh = await db.VoteHistory.findOne({
+            candidate: r.address,
+            blockNumber: {
+                $lt: endBlockNumber
+            }
+        }).sort({ blockNumber: -1 })
+
+        let voters = vh.voters
+        let candidateCap = await validator.getCandidateCap.call(r.address)
+        let owner = await validator.getCandidateOwner.call(r.address)
+
+        let votersReward = mn.multipliedBy(vRewardRate / 100)
+        let vmap = voters.map(v => {
+            let voterReward = mn.multipliedBy(v.capacity).div(candidateCap).multipliedBy(votersReward)
+            return db.VoterReward.create({
+                address: v.address,
+                candidate: r.address,
+                reward: voterReward.toString(),
+                checkpoint: blockNumber,
+                voted: v.capacity.toString(),
+                signNumber: r.signNumber
+            })
+        })
+        await Promise.all(vmap)
+        return db.MnReward.create({
+            address: mnRewardState.address,
+            owner: owner,
+            signNumber: r.signNumber,
+            reward: mnRewardState.reward,
+            checkpoint: blockNumber
+        })
     })
 
-    console.log(reward)
+    await Promise.all(map)
 
     done()
 }

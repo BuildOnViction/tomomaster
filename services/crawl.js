@@ -121,6 +121,8 @@ async function watchValidator () {
         if (event === 'Resign') {
             updateVoterCap(candidate, owner)
         }
+        q.create('voteHistory', { candidate, blockNumber })
+            .priority('low').removeOnComplete(true).save()
         updateCandidateInfo(candidate)
     })
 }
@@ -222,6 +224,11 @@ async function getCurrentCandidates () {
             let m = voters.map(v => {
                 return updateVoterCap(candidate, v)
             })
+
+            // init vote history
+            q.create('voteHistory', { candidate, blockNumber: 0 })
+                .priority('low').removeOnComplete(true).save()
+
             await Promise.all(m)
             return updateCandidateInfo(candidate)
         })
