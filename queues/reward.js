@@ -26,7 +26,7 @@ consumer.task = async function (job, done) {
 
     let signers = (sn || {}).signers || []
 
-    console.log('Rewarding', signers)
+    console.log('Reward masternodes', signers)
 
     let totalReward = 10 // TOMO
     let mnRewardRate = 40

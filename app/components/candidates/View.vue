@@ -32,12 +32,11 @@
                             <span class="tomo-info__text">Owner</span>
                         </p>
                         <p class="tomo-info__description">
-                            <a
-                                :href="`${config.explorerUrl}/address/${candidate.owner}`"
-                                target="_blank"
+                            <router-link
+                                :to="'/voter/' + candidate.owner"
                                 class="text-truncate">
                                 {{ (candidate.owner || '').substring(0, 8) }}...
-                            </a>
+                            </router-link>
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -214,7 +213,106 @@
                 </div>
             </div>
         </div>
-        <div class="container section section--signs">
+        <div class="container section section--mnrewards">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-signer color-yellow" />
+                        <span>Masternode Rewards</span>
+                        <span class="text-truncate section-title__description">
+                            Calculate Reward for Masternode</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="mnRewards"
+                :fields="mnRewardsFields"
+                :current-page="mnRewardsCurrentPage"
+                :sort-by.sync="mnRewardsSortBy"
+                :sort-desc.sync="mnRewardsSortDesc"
+                :per-page="mnRewardsPerPage"
+                :show-empty="true"
+                :class="`tomo-table tomo-table--mnrewards${loading ? ' loading' : ''}`"
+                empty-text="There are no rewards to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.index + 1 }}
+                </template>
+
+                <template
+                    slot="checkpoint"
+                    slot-scope="data">{{ data.item.checkpoint }}
+                </template>
+
+                <template
+                    slot="reward"
+                    slot-scope="data">
+                    {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
+                </template>
+
+            </b-table>
+
+            <b-pagination
+                v-if="mnRewardsTotalRows > 0 && mnRewardsTotalRows > mnRewardsPerPage"
+                :total-rows="mnRewardsTotalRows"
+                :per-page="mnRewardsPerPage"
+                v-model="mnRewardsCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
+        <div class="container section section-voters">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-arrow-up color-pink" />
+                        <span>Voters</span>
+                        <span class="text-truncate section-title__description">
+                            People who voted for this candidate</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="sortedVoters"
+                :fields="voterFields"
+                :current-page="voterCurrentPage"
+                :per-page="voterPerPage"
+                :show-empty="true"
+                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
+                empty-text="There are no voters to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
+                    slot="address"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/voter/' + data.item.address"
+                        class="text-truncate">
+                        {{ data.item.address }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                </template>
+            </b-table>
+
+            <b-pagination
+                v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
+                :total-rows="voterTotalRows"
+                :per-page="voterPerPage"
+                v-model="voterCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
+        <div class="container section section-signs">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -276,56 +374,6 @@
                 :total-rows="signsTotalRows"
                 :per-page="signsPerPage"
                 v-model="signsCurrentPage"
-                align="center"
-                class="tomo-pagination" />
-        </div>
-        <div class="container section section-voters">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-arrow-up color-pink" />
-                        <span>Voters</span>
-                        <span class="text-truncate section-title__description">
-                            People who voted for this candidate</span>
-                    </h3>
-                </div>
-            </div>
-            <b-table
-                :items="sortedVoters"
-                :fields="voterFields"
-                :current-page="voterCurrentPage"
-                :per-page="voterPerPage"
-                :show-empty="true"
-                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
-                empty-text="There are no voters to show"
-                stacked="md" >
-
-                <template
-                    slot="id"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
-                    slot="address"
-                    slot-scope="data">
-                    <router-link
-                        :to="'/voter/' + data.item.address"
-                        class="text-truncate">
-                        {{ data.item.address }}
-                    </router-link>
-                </template>
-
-                <template
-                    slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
-                </template>
-            </b-table>
-
-            <b-pagination
-                v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
-                :total-rows="voterTotalRows"
-                :per-page="voterPerPage"
-                v-model="voterCurrentPage"
                 align="center"
                 class="tomo-pagination" />
         </div>
@@ -424,6 +472,7 @@ export default {
             voters: [],
             transactions: [],
             signs: [],
+            mnRewards: [],
             candidate: {
                 address: this.$route.params.address.toLowerCase(),
                 name: '',
@@ -443,6 +492,28 @@ export default {
                 voted: 0,
                 totalVoted: 0
             },
+            mnRewardsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'checkpoint',
+                    label: 'Block No.',
+                    sortable: false
+                },
+                {
+                    key: 'reward',
+                    label: 'Reward',
+                    sortable: false
+                }
+            ],
+            mnRewardsCurrentPage: 1,
+            mnRewardsSortBy: 'checkpoint',
+            mnRewardsPerPage: 10,
+            mnRewardsSortDesc: true,
+            mnRewardsTotalRows: 0,
             signsFields: [
                 {
                     key: 'id',
@@ -629,6 +700,16 @@ export default {
             })
 
             self.signsTotalRows = self.signs.length
+
+            let mnRewards = await axios.get(`/api/candidates/${address}/rewards`)
+            mnRewards.data.map((r) => {
+                self.mnRewards.push({
+                    checkpoint: r.checkpoint,
+                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
+                })
+            })
+
+            self.mnRewardsTotalRows = self.mnRewards.length
 
             self.loading = false
         } catch (e) {
