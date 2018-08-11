@@ -14,6 +14,7 @@
     "uri": "mongodb://mongodb:27017/governance"
   },
   "explorerUrl": "http://localhost:3003",
+  "grafanaUrl": "http://localhost:8000",
   "redis": {
     "host": "redis",
     "port": 6379,

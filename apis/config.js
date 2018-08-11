@@ -17,6 +17,7 @@ router.get('/', async function (req, res, next) {
         appConfig.blockchain.blockNumber = blockSigner.blockNumber
     }
     appConfig.explorerUrl = config.get('explorerUrl')
+    appConfig.grafanaUrl = config.get('grafanaUrl')
     return res.json(appConfig)
 })
 

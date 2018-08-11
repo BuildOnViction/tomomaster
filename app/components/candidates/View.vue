@@ -29,25 +29,24 @@
                         + candidate.status">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Node Status</span>
+                            <span class="tomo-info__text">Owner</span>
                         </p>
-                        <p class="tomo-info__description">{{ candidate.nodeStatus }}</p>
+                        <p class="tomo-info__description">
+                            <a
+                                :href="`${config.explorerUrl}/address/${candidate.owner}`"
+                                target="_blank"
+                                class="text-truncate">
+                                {{ (candidate.owner || '').substring(0, 8) }}...
+                            </a>
+                        </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Balance</span>
+                            <span class="tomo-info__text">Total Signed Blocks</span>
                         </p>
-                        <p
-                            id="tomo-info__description--balance"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.balance)"
-                                ref="tooltip"
-                                target="tomo-info__description--balance">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
-                            </b-tooltip>
+                        <p class="tomo-info__description">
+                            {{ formatNumber(candidate.totalSignedBlocks) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -125,24 +124,27 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Owner</span>
+                            <span class="tomo-info__text">Monitor</span>
                         </p>
                         <p class="tomo-info__description">
-                            <a
-                                :href="`${config.explorerUrl}/address/${candidate.owner}`"
-                                target="_blank"
-                                class="text-truncate">
-                                {{ (candidate.owner || '').substring(0, 8) }}...
-                            </a>
+                            {{ candidate.monitor }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Total Signed Blocks</span>
+                            <span class="tomo-info__text">Balance</span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ formatNumber(candidate.totalSignedBlocks) }}
+                        <p
+                            id="tomo-info__description--balance"
+                            class="tomo-info__description">
+                            {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
+                            <b-tooltip
+                                v-if="checkLongNumber(candidate.balance)"
+                                ref="tooltip"
+                                target="tomo-info__description--balance">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
+                            </b-tooltip>
                         </p>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
@@ -185,7 +187,7 @@
             </div>
         </div>
         <div
-            v-if="candidate.status !== 'RESIGNED'"
+            v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
             class="container section section--hardware">
             <div class="row">
                 <div class="col-12 col-lg-6">
@@ -194,11 +196,11 @@
                         <span>CPUs</span>
                     </h3>
                     <chart
-                        host="Moon"
+                        :host="candidate.nodeId"
                         data-type="cpu0"
                         class="mb-5" />
                     <chart
-                        host="Moon"
+                        :host="candidate.nodeId"
                         data-type="cpu1" />
                 </div>
                 <div class="col-12 col-lg-6">
@@ -207,7 +209,7 @@
                         <span>Memory</span>
                     </h3>
                     <chart
-                        host="Moon"
+                        :host="candidate.nodeId"
                         data-type="memory" />
                 </div>
             </div>
@@ -557,7 +559,8 @@ export default {
                 let data = c.data
                 self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                 self.candidate.status = data.status
-                self.candidate.nodeStatus = data.nodeStatus || 'OFF'
+                self.candidate.nodeId = data.nodeId
+                self.candidate.monitor = (data.nodeId) ? 'ON' : 'OFF'
                 self.candidate.owner = data.owner
                 self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                 self.candidate.rewarded = 0
@@ -594,7 +597,6 @@ export default {
                     youVoted = youVoted.plus(v.capacity)
                 }
             })
-            console.log(youVoted)
 
             self.candidate.totalVoted = totalVoted.div(10 ** 18).toNumber()
             self.candidate.voted = youVoted.div(10 ** 18).toNumber()
