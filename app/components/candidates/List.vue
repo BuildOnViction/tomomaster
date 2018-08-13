@@ -88,7 +88,7 @@
                             v-if="!data.item.isMasternode"
                             :class="'tomo-chip '
                             + (data.item.status === 'PROPOSED' ? 'tomo-chip--primary' : 'tomo-chip--accent') ">
-                            {{ data.item.status.toLowerCase() }}
+                            {{ data.item.status.toUpperCase() }}
                         </span>
                         <span
                             v-if="data.item.isMasternode"

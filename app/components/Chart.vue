@@ -17,6 +17,7 @@ export default {
     },
     data () {
         return {
+            config: {},
             chartOptions: {
                 chart: {
                     backgroundColor: {
@@ -119,6 +120,7 @@ export default {
         }
     },
     mounted: async function () {
+        this.config = await this.appConfig()
         let colors = [
             {
                 linearGradient: {
@@ -200,7 +202,7 @@ export default {
                 this.chartLoading = true
 
                 // eslint-disable-next-line max-len
-                let { data } = await axios.get(`https://grafana-testnet.tomochain.com/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`, {
+                let { data } = await axios.get(`${this.config.grafanaUrl}/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`, {
                     headers: { Authorization: `Bearer ${apiKey}` }
                 })
 

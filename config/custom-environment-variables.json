@@ -11,6 +11,7 @@
       "reward": "BC_REWARD"
   },
   "explorerUrl": "EXPLORER_URL",
+  "grafanaUrl": "GRAFANA_URL",
   "db": {
     "uri": "DB_URI"
   },

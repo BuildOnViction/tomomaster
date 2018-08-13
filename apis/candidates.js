@@ -41,6 +41,15 @@ router.get('/:candidate/voters', async function (req, res, next) {
     return res.json(voters)
 })
 
+router.get('/:candidate/rewards', async function (req, res, next) {
+    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let rewards = await db.MnReward.find({
+        address: req.params.candidate
+    }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+    return res.json(rewards)
+})
+
 router.post('/apply', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
