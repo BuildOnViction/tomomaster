@@ -519,6 +519,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'totalSigners',
+                    label: 'Total Signers',
+                    sortable: false
+                },
+                {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
@@ -723,6 +728,7 @@ export default {
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
+                    totalSigners: r.totalSigners,
                     reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
                 })
             })

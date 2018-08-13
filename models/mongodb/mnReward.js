@@ -19,7 +19,8 @@ var MnReward = new Schema({
     startBlockNumber: String,
     endBlockNumber: String,
     reward: String,
-    signNumber: Number
+    signNumber: Number,
+    totalSigners: Number
 }, { timestamps: true })
 
 module.exports = mongoose.model('MnReward', MnReward)
