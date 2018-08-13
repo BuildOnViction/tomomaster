@@ -16,6 +16,8 @@ var MnReward = new Schema({
         type: String,
         index: true
     },
+    startBlockNumber: String,
+    endBlockNumber: String,
     reward: String,
     signNumber: Number
 }, { timestamps: true })

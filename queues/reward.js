@@ -77,6 +77,8 @@ consumer.task = async function (job, done) {
                 candidate: r.address,
                 reward: voterReward.toString(),
                 checkpoint: blockNumber,
+                startBlockNumber: startBlockNumber,
+                endBlockNumber: endBlockNumber,
                 voted: v.capacity.toString(),
                 signNumber: r.signNumber
             })
@@ -87,7 +89,9 @@ consumer.task = async function (job, done) {
             owner: owner,
             signNumber: r.signNumber,
             reward: mnRewardState.reward,
-            checkpoint: blockNumber
+            checkpoint: blockNumber,
+            startBlockNumber: startBlockNumber,
+            endBlockNumber: endBlockNumber
         })
     })
 

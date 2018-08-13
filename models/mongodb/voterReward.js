@@ -16,6 +16,8 @@ var VoterReward = new Schema({
         type: String,
         index: true
     },
+    startBlockNumber: String,
+    endBlockNumber: String,
     voted: String,
     reward: String,
     signNumber: Number

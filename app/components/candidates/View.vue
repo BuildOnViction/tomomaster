@@ -500,7 +500,22 @@ export default {
                 },
                 {
                     key: 'checkpoint',
-                    label: 'Block No.',
+                    label: 'Check Point',
+                    sortable: false
+                },
+                {
+                    key: 'startBlockNumber',
+                    label: 'Start Blk No.',
+                    sortable: false
+                },
+                {
+                    key: 'endBlockNumber',
+                    label: 'End Blk No.',
+                    sortable: false
+                },
+                {
+                    key: 'signNumber',
+                    label: 'Sign No.',
                     sortable: false
                 },
                 {
@@ -705,6 +720,9 @@ export default {
             mnRewards.data.map((r) => {
                 self.mnRewards.push({
                     checkpoint: r.checkpoint,
+                    startBlockNumber: r.startBlockNumber,
+                    endBlockNumber: r.endBlockNumber,
+                    signNumber: r.signNumber,
                     reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
                 })
             })
