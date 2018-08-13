@@ -101,6 +101,65 @@
                 align="center"
                 class="tomo-pagination" />
         </div>
+        <div class="container section section--voterrewards">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">
+                        <i class="tm-signer color-yellow" />
+                        <span>Voter Rewards</span>
+                        <span class="text-truncate section-title__description">
+                            Calculate Reward for Voter</span>
+                    </h3>
+                </div>
+            </div>
+            <b-table
+                :items="voterRewards"
+                :fields="voterRewardsFields"
+                :current-page="voterRewardsCurrentPage"
+                :sort-by.sync="voterRewardsSortBy"
+                :sort-desc.sync="voterRewardsSortDesc"
+                :per-page="voterRewardsPerPage"
+                :show-empty="true"
+                :class="`tomo-table tomo-table--voterrewards${loading ? ' loading' : ''}`"
+                empty-text="There are no rewards to show"
+                stacked="md" >
+
+                <template
+                    slot="id"
+                    slot-scope="data">{{ data.index + 1 }}
+                </template>
+
+                <template
+                    slot="checkpoint"
+                    slot-scope="data">{{ data.item.checkpoint }}
+                </template>
+
+                <template
+                    slot="reward"
+                    slot-scope="data">
+                    {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
+                </template>
+
+                <template
+                    slot="candidate"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/candidate/' + data.item.candidate"
+                        class="text-truncate">
+                        {{ (data.item.candidate || '').substring(0, 8) + '...' }}
+                    </router-link>
+                </template>
+
+            </b-table>
+
+            <b-pagination
+                v-if="voterRewardsTotalRows > 0 && voterRewardsTotalRows > voterRewardsPerPage"
+                :total-rows="voterRewardsTotalRows"
+                :per-page="voterRewardsPerPage"
+                v-model="voterRewardsCurrentPage"
+                align="center"
+                class="tomo-pagination" />
+        </div>
     </div>
 </template>
 <script>
@@ -138,6 +197,39 @@ export default {
             currentPage: 1,
             perPage: 10,
             totalRows: 0,
+            voterRewards: [],
+            voterRewardsFields: [
+                {
+                    key: 'id',
+                    label: 'ID',
+                    sortable: false
+                },
+                {
+                    key: 'checkpoint',
+                    label: 'Check Point',
+                    sortable: false
+                },
+                {
+                    key: 'candidate',
+                    label: 'Masternode',
+                    sortable: false
+                },
+                {
+                    key: 'signNumber',
+                    label: 'Sign No.',
+                    sortable: false
+                },
+                {
+                    key: 'reward',
+                    label: 'Reward',
+                    sortable: false
+                }
+            ],
+            voterRewardsCurrentPage: 1,
+            voterRewardsSortBy: 'checkpoint',
+            voterRewardsPerPage: 10,
+            voterRewardsSortDesc: true,
+            voterRewardsTotalRows: 0,
             loading: false
         }
     },
@@ -176,6 +268,20 @@ export default {
                     }
                 })
             }
+
+            let voterRewards = await axios.get(`/api/voters/${voter}/rewards`)
+            voterRewards.data.map((r) => {
+                self.voterRewards.push({
+                    checkpoint: r.checkpoint,
+                    candidate: r.candidate,
+                    startBlockNumber: r.startBlockNumber,
+                    endBlockNumber: r.endBlockNumber,
+                    signNumber: r.signNumber,
+                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
+                })
+            })
+
+            self.voterRewardsTotalRows = self.voterRewards.length
 
             self.loading = false
         } catch (e) {

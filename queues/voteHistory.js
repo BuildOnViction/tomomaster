@@ -11,8 +11,8 @@ consumer.task = async function (job, done) {
     let blockNumber = job.data.blockNumber
     let validator = await Validator.deployed()
     let aVoters = await validator.getVoters.call(candidate)
-    let map = aVoters.map(v => {
-        let cap = validator.getVoterCap(candidate, v)
+    let map = aVoters.map(async v => {
+        let cap = await validator.getVoterCap(candidate, v)
         return {
             address: v,
             capacity: new BigNumber(cap).toString()

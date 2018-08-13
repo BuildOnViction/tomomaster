@@ -69,9 +69,9 @@ consumer.task = async function (job, done) {
         let candidateCap = await validator.getCandidateCap.call(r.address)
         let owner = await validator.getCandidateOwner.call(r.address)
 
-        let votersReward = mn.multipliedBy(vRewardRate / 100)
         let vmap = voters.map(v => {
-            let voterReward = mn.multipliedBy(v.capacity).div(candidateCap).multipliedBy(votersReward)
+            let voterReward = mn.multipliedBy(new BigNumber(v.capacity))
+                .div(candidateCap).multipliedBy(vRewardRate / 100)
             return db.VoterReward.create({
                 address: v.address,
                 candidate: r.address,
@@ -91,7 +91,8 @@ consumer.task = async function (job, done) {
             reward: mnRewardState.reward,
             checkpoint: blockNumber,
             startBlockNumber: startBlockNumber,
-            endBlockNumber: endBlockNumber
+            endBlockNumber: endBlockNumber,
+            totalSigners: signers.length
         })
     })
 

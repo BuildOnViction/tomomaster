@@ -15,4 +15,13 @@ router.get('/:voter/candidates', async function (req, res, next) {
     return res.json(voters)
 })
 
+router.get('/:voter/rewards', async function (req, res, next) {
+    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let rewards = await db.VoterReward.find({
+        address: req.params.voter
+    }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+    return res.json(rewards)
+})
+
 module.exports = router
