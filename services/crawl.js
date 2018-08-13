@@ -118,7 +118,7 @@ async function watchValidator () {
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
-        if (event === 'Resign') {
+        if (event === 'Resign' || event === 'Propose') {
             updateVoterCap(candidate, owner)
         }
         q.create('voteHistory', { candidate, blockNumber })
