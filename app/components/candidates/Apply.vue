@@ -82,22 +82,6 @@
                             v-else-if="$v.nodeUrl.$dirty && !$v.nodeUrl.nodeUrl"
                             class="text-danger">Wrong node URL format</span>
                     </b-form-group-->
-                    <b-form-group
-                        label="Node ID"
-                        label-for="nodeid"
-                        description="What is your node id?">
-                        <b-form-input
-                            :class="getValidationClass('nodeId')"
-                            v-model="nodeId"
-                            name="nodeId"
-                            type="text"/>
-                        <span
-                            v-if="$v.nodeId.$dirty && !$v.nodeId.required"
-                            class="text-danger">Required field</span>
-                        <span
-                            v-else-if="$v.nodeId.$dirty && !$v.nodeId.nodeId"
-                            class="text-danger">Wrong node Id format</span>
-                    </b-form-group>
                     <div class="buttons text-right">
                         <b-button
                             type="button"
@@ -135,7 +119,6 @@ export default {
             applyValue: 50000,
             coinbase: '',
             // nodeUrl: '',
-            nodeId: '',
             loading: false
         }
     },
@@ -147,17 +130,13 @@ export default {
         coinbase: {
             required,
             coinbaseAddress
-        },
+        }
         /*
         nodeUrl: {
             required,
             nodeUrl
         },
         */
-        nodeId: {
-            required,
-            nodeId: true
-        }
     },
     computed: { },
     watch: {},
@@ -198,7 +177,6 @@ export default {
             let value = this.applyValue
             let coinbase = this.coinbase.toLowerCase()
             // let nodeUrl = this.nodeUrl
-            let nodeId = this.nodeId
 
             try {
                 if (!self.isReady) {
@@ -210,7 +188,7 @@ export default {
 
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
-                let rs = await contract.propose(coinbase, nodeId, {
+                let rs = await contract.propose(coinbase, {
                     from : account,
                     value: parseFloat(value) * 10 ** 18
                 })
