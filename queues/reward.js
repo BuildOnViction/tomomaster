@@ -28,10 +28,11 @@ consumer.task = async function (job, done) {
 
     console.log('Reward masternodes', signers)
 
-    let totalReward = 100 // TOMO
-    let mnRewardRate = 40
-    let vRewardRate = 50
-    // let fRewardRate = 10
+    let totalReward = config.get('blockchain.reward') // TOMO
+    let mnRewardRate = config.get('blockchain.masternodeRewardRate')
+    let vRewardRate = config.get('blockchain.voterRewardRate')
+    let fdRewardRate = config.get('blockchain.foundationRewardRate')
+    let fdAddress = config.get('blockchain.foundationAddress')
     let reward = []
     let totalSign = 0
     let map = signers.map(async s => {
@@ -94,6 +95,14 @@ consumer.task = async function (job, done) {
             endBlockNumber: endBlockNumber,
             totalSigners: signers.length
         })
+    })
+
+    await db.FdReward.create({
+        address: fdAddress,
+        reward: new BigNumber(totalReward).multipliedBy(fdRewardRate).div(100).multipliedBy(1e+18).toString(),
+        checkpoint: blockNumber,
+        startBlockNumber: startBlockNumber,
+        endBlockNumber: endBlockNumber
     })
 
     await Promise.all(map)
