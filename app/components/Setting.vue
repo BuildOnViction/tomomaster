@@ -103,12 +103,13 @@
             </b-card>
             <b-card
                 v-if="isReady && (aw || (wh.length > 0))"
-                class="col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0">
+                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
+                + (loading ? ' tomo-loading' : '')">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Withdraws</h4>
                 <ul
-                    v-for="(w, index) in withdraws"
-                    :key="index"
+                    v-for="(w, k, id) in withdraws"
+                    :key="id"
                     class="tomo-list list-unstyled">
                     <li
                         v-if="w.blockNumber !== '0'"
@@ -129,8 +130,8 @@
                     </li>
                 </ul>
                 <ul
-                    v-for="(w, index) in wh"
-                    :key="index"
+                    v-for="(w, k, id) in wh"
+                    :key="id"
                     class="tomo-list list-unstyled">
                     <li
                         class="tomo-list__item">
@@ -306,7 +307,22 @@ export default {
             let self = this
             let contract = await self.TomoValidator.deployed()
             let account = await self.getAccount()
-            await contract.withdraw(String(blockNumber), String(index), { from: account })
+            self.loading = true
+            try {
+                let wd = await contract.withdraw(String(blockNumber), String(index), { from: account })
+                let toastMessage = wd.tx ? 'You have successfully withdrawed!'
+                    : 'An error occurred while withdrawing, please try again'
+                self.$toasted.show(toastMessage)
+
+                setTimeout(() => {
+                    self.loading = false
+                    if (wd.tx) {
+                        self.$router.push({ path: `/setting` })
+                    }
+                }, 2000)
+            } catch (e) {
+                self.loading = false
+            }
         }
     }
 }
