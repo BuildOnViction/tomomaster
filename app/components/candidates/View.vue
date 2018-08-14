@@ -729,7 +729,7 @@ export default {
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
                     totalSigners: r.totalSigners,
-                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
+                    reward: new BigNumber(r.reward).div(1e+18).toFixed(2)
                 })
             })
 

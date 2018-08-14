@@ -28,7 +28,7 @@ consumer.task = async function (job, done) {
 
     console.log('Reward masternodes', signers)
 
-    let totalReward = 10 // TOMO
+    let totalReward = 100 // TOMO
     let mnRewardRate = 40
     let vRewardRate = 50
     // let fRewardRate = 10
@@ -50,12 +50,12 @@ consumer.task = async function (job, done) {
     await Promise.all(map)
 
     map = reward.map(async r => {
-        let mn = (new BigNumber(r.reward || 0)).plus(r.signNumber * totalReward).div(totalSign)
-            .multipliedBy(10e+18)
+        let mn = new BigNumber(r.signNumber * totalReward).div(totalSign)
+            .multipliedBy(1e+18)
 
         let mnRewardState = {
             address: r.address,
-            reward:  mn.multipliedBy(mnRewardRate / 100).toString()
+            reward:  mn.multipliedBy(mnRewardRate).div(100).toString()
         }
 
         let vh = await db.VoteHistory.findOne({
@@ -71,7 +71,7 @@ consumer.task = async function (job, done) {
 
         let vmap = voters.map(v => {
             let voterReward = mn.multipliedBy(new BigNumber(v.capacity))
-                .div(candidateCap).multipliedBy(vRewardRate / 100)
+                .div(candidateCap).multipliedBy(vRewardRate).div(100)
             return db.VoterReward.create({
                 address: v.address,
                 candidate: r.address,
