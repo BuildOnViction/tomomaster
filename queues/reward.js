@@ -18,8 +18,8 @@ consumer.task = async function (job, done) {
 
     let validator = await Validator.deployed()
 
-    let startBlockNumber = blockNumber - (2 * epoch)
-    let endBlockNumber = blockNumber - epoch - 1
+    let startBlockNumber = blockNumber - (2 * epoch) + 1
+    let endBlockNumber = blockNumber - epoch
     let sn = await db.Signer.findOne({
         blockNumber: startBlockNumber
     })
@@ -37,7 +37,7 @@ consumer.task = async function (job, done) {
     let totalSign = 0
     let map = signers.map(async s => {
         let ns = await db.BlockSigner.count({
-            blockNumber: { $in: Array.from(new Array(epoch), (val, index) => startBlockNumber + index + 1) },
+            blockNumber: { $in: Array.from(new Array(epoch), (val, index) => startBlockNumber + index) },
             'signers.signer': s
         })
         reward.push({
@@ -62,7 +62,7 @@ consumer.task = async function (job, done) {
         let vh = await db.VoteHistory.findOne({
             candidate: r.address,
             blockNumber: {
-                $lt: endBlockNumber
+                $lt: blockNumber
             }
         }).sort({ blockNumber: -1 })
 
