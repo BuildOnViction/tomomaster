@@ -11,6 +11,7 @@
       "reward": 200,
       "voterRewardRate": 50,
       "masternodeRewardRate": 40,
+      "foundationRewardRate": 10,
       "foundationAddress": "0x0000000000000000000000000000000000000068"
   },
   "db": {

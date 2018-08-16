@@ -62,7 +62,7 @@ consumer.task = async function (job, done) {
         let vh = await db.VoteHistory.findOne({
             candidate: r.address,
             blockNumber: {
-                $lt: endBlockNumber
+                $lt: blockNumber
             }
         }).sort({ blockNumber: -1 })
 
