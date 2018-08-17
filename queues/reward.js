@@ -21,7 +21,7 @@ consumer.task = async function (job, done) {
     let startBlockNumber = blockNumber - (2 * epoch) + 1
     let endBlockNumber = blockNumber - epoch
     let sn = await db.Signer.findOne({
-        blockNumber: startBlockNumber
+        blockNumber: (startBlockNumber - 1)
     })
 
     let signers = (sn || {}).signers || []
