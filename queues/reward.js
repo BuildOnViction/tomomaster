@@ -21,7 +21,7 @@ consumer.task = async function (job, done) {
     let startBlockNumber = blockNumber - (2 * epoch) + 1
     let endBlockNumber = blockNumber - epoch
     let sn = await db.Signer.findOne({
-        blockNumber: startBlockNumber
+        blockNumber: (startBlockNumber - 1)
     })
 
     let signers = (sn || {}).signers || []
@@ -50,9 +50,13 @@ consumer.task = async function (job, done) {
 
     await Promise.all(map)
 
+    let fdReward = new BigNumber(0)
+
     map = reward.map(async r => {
         let mn = new BigNumber(r.signNumber * totalReward).div(totalSign)
             .multipliedBy(1e+18)
+
+        fdReward = fdReward.plus(mn.multipliedBy(fdRewardRate).div(100))
 
         let mnRewardState = {
             address: r.address,
@@ -99,7 +103,7 @@ consumer.task = async function (job, done) {
 
     await db.FdReward.create({
         address: fdAddress,
-        reward: new BigNumber(totalReward).multipliedBy(fdRewardRate).div(100).multipliedBy(1e+18).toString(),
+        reward: fdReward.toString(),
         checkpoint: blockNumber,
         startBlockNumber: startBlockNumber,
         endBlockNumber: endBlockNumber
