@@ -31,7 +31,7 @@
     "maxValidatorNumber": 150,
     "candidateWithdrawDelay": 100,
     "voterWithdrawDelay": 100,
-    "epochNumber": 990,
-    "randomNumber": 99
+    "epochNumber": 900,
+    "randomNumber": 90
   }
 }
