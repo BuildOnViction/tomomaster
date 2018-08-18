@@ -36,8 +36,8 @@
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('voteValue')"
-                                :min="0.1"
-                                :step="0.1"
+                                :min="10"
+                                :step="1"
                                 v-model="voteValue"
                                 name="vote-value"/>
                             <b-input-group-append>
@@ -48,7 +48,7 @@
                                 class="text-danger">Required field</span>
                             <span
                                 v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                class="text-danger">Must be greater than 10<sup>-18 $TOMO</sup></span>
+                                class="text-danger">Must be greater than 10 $TOMO</span>
                         </b-input-group>
                     </b-form-group>
                     <div class="buttons text-right">
@@ -86,14 +86,14 @@ export default {
             isReady: !!this.web3,
             voter: '',
             candidate: this.$route.params.candidate,
-            voteValue: 1,
+            voteValue: 10,
             loading: false
         }
     },
     validations: {
         voteValue: {
             required,
-            minValue: minValue(10 ** -18)
+            minValue: minValue(10)
         }
     },
     computed: {
