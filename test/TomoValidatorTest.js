@@ -3,9 +3,12 @@ const tryCatch = require('./helpers/exceptions.js').tryCatch
 const errTypes = require('./helpers/exceptions.js').errTypes
 const BigNumber = require('bignumber.js')
 
+const minVoterCap = (new BigNumber(2 * 10 ** 18)).toString()
+const minCandidateCap = (new BigNumber(5 * 10 ** 18)).toString()
+
 contract('TomoValidator', (accounts) => {
     it('Become a candidate', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
 
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -16,14 +19,14 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Can not become an candidate when the deposit is less than the minimum ', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
 
         await tryCatch(validator.propose(accounts[0], { from : accounts[0], value: 1.0 * 10 ** 18 }), errTypes.revert)
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[0]) < 0, true)
     })
 
     it('A candidate cannot become a candidate again', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
 
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
@@ -33,7 +36,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('Vote a candidate', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
 
         await validator.propose(accounts[1], { from : accounts[0], value: 5.0 * 10 ** 18 })
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[1]) >= 0, true)
@@ -47,7 +50,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('UnVote a candidate', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
 
         await validator.propose(accounts[1], { from : accounts[0], value: 5.0 * 10 ** 18 })
         assert.equal((await validator.getCandidates.call()).valueOf().indexOf(accounts[1]) >= 0, true)
@@ -65,7 +68,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A candidate resign ', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 100, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 100, 100)
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
@@ -76,7 +79,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A candidate withdraw', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 0, 0)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 0, 0)
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
@@ -102,7 +105,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A voter withdraw', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 0, 0)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 0, 0)
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
@@ -117,7 +120,7 @@ contract('TomoValidator', (accounts) => {
     })
 
     it('A voter withdraw before block number', async () => {
-        let validator = await TomoValidator.new([], [], null, (new BigNumber(5 * 10 ** 18)).toString(), 99, 0, 100)
+        let validator = await TomoValidator.new([], [], null, minCandidateCap, minVoterCap, 99, 0, 100)
         await validator.propose(accounts[0], { from : accounts[0], value: 5.0 * 10 ** 18 })
 
         assert.equal((await validator.isCandidate.call(accounts[0])).valueOf(), true)
