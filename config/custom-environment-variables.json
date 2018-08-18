@@ -5,10 +5,7 @@
   },
   "blockchain": {
       "rpc": "BC_RPC",
-      "networkId": "BC_NETWORK_ID",
-      "epoch": "BC_EPOCH",
-      "blockTime": "BC_BLOCK_TIME",
-      "reward": "BC_REWARD"
+      "networkId": "BC_NETWORK_ID"
   },
   "explorerUrl": "EXPLORER_URL",
   "grafanaUrl": "GRAFANA_URL",
