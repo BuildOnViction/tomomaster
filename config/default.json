@@ -28,6 +28,7 @@
   "truffle": {
     "mnemonic": "",
     "minCandidateCap": "50000000000000000000000",
+    "minVoterCap": "10000000000000000000",
     "maxValidatorNumber": 150,
     "candidateWithdrawDelay": 100,
     "voterWithdrawDelay": 100,
