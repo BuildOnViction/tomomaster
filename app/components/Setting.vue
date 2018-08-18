@@ -108,8 +108,8 @@
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Withdraws</h4>
                 <ul
-                    v-for="(w, k, id) in withdraws"
-                    :key="id"
+                    v-for="(w, k, index) in withdraws"
+                    :key="index"
                     class="tomo-list list-unstyled">
                     <li
                         v-if="w.blockNumber !== '0'"
@@ -126,12 +126,12 @@
                         </div>
                         <b-button
                             variant="primary"
-                            @click="withdraw(w.blockNumber, index)">Withdraw</b-button>
+                            @click="withdraw(w.blockNumber, k)">Withdraw</b-button>
                     </li>
                 </ul>
                 <ul
-                    v-for="(w, k, id) in wh"
-                    :key="id"
+                    v-for="(w, k, index) in wh"
+                    :key="index"
                     class="tomo-list list-unstyled">
                     <li
                         class="tomo-list__item">
@@ -309,6 +309,7 @@ export default {
             let account = await self.getAccount()
             self.loading = true
             try {
+                console.log('==>', blockNumber, index)
                 let wd = await contract.withdraw(String(blockNumber), String(index), { from: account })
                 let toastMessage = wd.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
