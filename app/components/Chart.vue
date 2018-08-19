@@ -189,7 +189,7 @@ export default {
         fetchData: async function (db, query, epoch) {
             let chartData = []
             try {
-                let apiKey = 'eyJrIjoiemJGQzlsY2M5c25VWUk0UWttVTlFQkRrUmR0bUZhN0ciLCJuIjoiZGFwcDIiLCJpZCI6MX0='
+                let apiKey = 'eyJrIjoibVhOUExNSnZTNjhuZjZrZmN3RXZHMXN2bHVjcDZDaGwiLCJuIjoidG9tb21hc3RlciIsImlkIjoxfQ=='
 
                 this.chartLoading = true
 
