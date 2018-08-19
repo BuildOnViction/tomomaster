@@ -162,13 +162,13 @@ export default {
             ]
         }
 
-        // CPU0
+        // CPUs
         let host = this.host
         let alias = []
         let query = ''
 
         if (this.dataType === 'cpu') {
-            this.title = 'CPU'
+            this.title = 'CPUs'
             alias = [ `${host}_cpu_user`, `${host}_cpu_idle` ]
             // eslint-disable-next-line max-len
             query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
@@ -189,7 +189,7 @@ export default {
         fetchData: async function (db, query, epoch) {
             let chartData = []
             try {
-                let apiKey = 'eyJrIjoibVhOUExNSnZTNjhuZjZrZmN3RXZHMXN2bHVjcDZDaGwiLCJuIjoidG9tb21hc3RlciIsImlkIjoxfQ=='
+                let apiKey = 'eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ=='
 
                 this.chartLoading = true
 
