@@ -22,7 +22,7 @@ Update `local.json` file to support your environment
 npm install
 truffle deploy --reset --network tomo
 ```
-Note: before deploying to tomochain testnet, make sure you have $TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.tomochain.com)
+Note: before deploying to tomochain testnet, make sure you have $TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.testnet.tomochain.com)
 
 ## Run
 ```
