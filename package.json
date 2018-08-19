@@ -40,6 +40,7 @@
         "highcharts": "^6.1.1",
         "highcharts-vue": "^1.0.4",
         "kue": "^0.11.6",
+        "lodash": "^4.17.10",
         "mongoose": "^5.0.17",
         "truffle-contract": "^3.0.5",
         "truffle-hdwallet-provider": "0.0.6",
