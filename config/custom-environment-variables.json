@@ -9,6 +9,7 @@
   },
   "explorerUrl": "EXPLORER_URL",
   "grafanaUrl": "GRAFANA_URL",
+  "grafanaApiKey": "GRAFANA_API_KEY",
   "db": {
     "uri": "DB_URI"
   },

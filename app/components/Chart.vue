@@ -188,14 +188,10 @@ export default {
         fetchData: async function (db, query, epoch) {
             let chartData = []
             try {
-                let apiKey = 'eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ=='
-
                 this.chartLoading = true
 
                 // eslint-disable-next-line max-len
-                let { data } = await axios.get(`${this.config.grafanaUrl}/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`, {
-                    headers: { Authorization: `Bearer ${apiKey}` }
-                })
+                let { data } = await axios.get(`/api/monitor?db=${db}&q=${query}&epoch=${epoch}`)
 
                 this.chartLoading = false
                 chartData = data

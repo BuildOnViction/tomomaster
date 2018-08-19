@@ -19,6 +19,7 @@
   },
   "explorerUrl": "http://localhost:3003",
   "grafanaUrl": "http://localhost:8000",
+  "grafanaApiKey": "xxx",
   "redis": {
     "host": "redis",
     "port": 6379,
