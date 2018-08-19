@@ -168,7 +168,6 @@ export default {
         let query = ''
 
         if (this.dataType === 'cpu') {
-            this.title = 'CPUs'
             alias = [ `${host}_cpu_user`, `${host}_cpu_idle` ]
             // eslint-disable-next-line max-len
             query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`

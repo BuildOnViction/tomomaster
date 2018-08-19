@@ -39,7 +39,10 @@ commander
     .option('-dcl, --dc-location <dcLocation>', 'Location of Datacenter')
     .option('-hw, --hardware <hardware>', 'Harware Information')
     .action(async (id, options) => {
-        let set = _.pick(options, ['name', 'nodeId', 'hardware'])
+        let set = _.pick(options, ['nodeId', 'hardware'])
+        if (typeof options.name === 'string') {
+            set['name'] = options.name
+        }
         if (options.dcName) {
             set['dataCenter.name'] = options.dcName
         }
