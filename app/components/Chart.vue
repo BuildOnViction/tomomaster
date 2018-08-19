@@ -167,24 +167,16 @@ export default {
         let alias = []
         let query = ''
 
-        if (this.dataType === 'cpu0') {
-            this.title = 'CPU0'
-            alias = [ 'moon_cpu0_user', 'moon_cpu0_idle' ]
+        if (this.dataType === 'cpu') {
+            this.title = 'CPU'
+            alias = [ `${host}_cpu_user`, `${host}_cpu_idle` ]
             // eslint-disable-next-line max-len
-            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu0' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
-            query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
-        }
-
-        if (this.dataType === 'cpu1') {
-            this.title = 'CPU1'
-            alias = [ 'moon_cpu1_user', 'moon_cpu1_idle' ]
-            // eslint-disable-next-line max-len
-            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu1' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu1' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
             query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
         }
 
         if (this.dataType === 'memory') {
-            alias = 'moon_memory_usage'
+            alias = `${host}_memory_usage`
             // eslint-disable-next-line max-len
             query = `SELECT mean("used_percent") AS "${alias}" FROM "mem" WHERE ("host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
             query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')

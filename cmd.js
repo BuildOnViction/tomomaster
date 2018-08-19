@@ -13,12 +13,17 @@ commander
     .alias('l')
     .description('List candidates')
     .action(() => {
-        return db.Candidate.find().select(['candidate', 'name', 'nodeId'])
+        return db.Candidate.find()
             .then(candidates => {
                 candidates.forEach(c => {
-                    console.log('id:', c.candidate,
-                        'name:', c.name || 'null',
-                        'nodeId:', c.nodeId || 'null')
+                    console.log('ID:', c.candidate, '\n',
+                        'name:', c.name || 'null', '\n',
+                        'nodeId:', c.nodeId || 'null', '\n',
+                        'hardwhere:', c.hardware || 'null', '\n',
+                        'dc-name:', (c.dataCenter || {}).name || 'null', '\n',
+                        'dc-location:', (c.dataCenter || {}).location || 'null'
+                    )
+                    console.log('===')
                 })
                 process.exit()
             })
@@ -30,8 +35,17 @@ commander
     .description('Update candidate information')
     .option('-n, --name <name>', 'Name of Candidate')
     .option('-i, --nodeId <nodeId>', 'nodeId of Candidate')
+    .option('-dcn, --dc-name <dcName>', 'Name of Datacenter')
+    .option('-dcl, --dc-location <dcLocation>', 'Location of Datacenter')
+    .option('-hw, --hardware <hardware>', 'Harware Information')
     .action(async (id, options) => {
-        let set = _.pick(options, ['name', 'nodeId'])
+        let set = _.pick(options, ['name', 'nodeId', 'hardware'])
+        if (options.dcName) {
+            set['dataCenter.name'] = options.dcName
+        }
+        if (options.dcLocation) {
+            set['dataCenter.location'] = options.dcLocation
+        }
         let u = await db.Candidate.update({
             candidate: id
         }, {
