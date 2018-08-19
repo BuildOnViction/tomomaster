@@ -172,7 +172,6 @@ async function updateCandidateInfo (candidate) {
                     smartContractAddress: validator.address,
                     candidate: candidate,
                     capacity: String(capacity),
-                    nodeId: '',
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
                     owner: String(owner)
                 }

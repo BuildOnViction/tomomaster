@@ -22,9 +22,16 @@ var Candidate = new Schema({
     latestBlock: String,
     totalSignedBlocks: String,
     rewarded: String,
-    hardwareInfo: String,
-    dataCenterInfo: Object,
-    socialInfo: Object,
+    hardware: String,
+    dataCenter: {
+        name: String,
+        location: String
+    },
+    socials: {
+        github: String,
+        linkedin: String,
+        email: String
+    },
     status: {
         type: String,
         enum: ['PROPOSED', 'RESIGNED'],

@@ -196,11 +196,8 @@
                     </h3>
                     <chart
                         :host="candidate.nodeId"
-                        data-type="cpu0"
+                        data-type="cpu"
                         class="mb-5" />
-                    <chart
-                        :host="candidate.nodeId"
-                        data-type="cpu1" />
                 </div>
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
@@ -658,10 +655,10 @@ export default {
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
                 self.candidate.totalSignedBlocks = data.totalSignedBlocks
-                self.candidate.hardwareInfo = 'N/A'
+                self.candidate.hardwareInfo = data.hardware || 'N/A'
                 self.candidate.dataCenterInfo = {
-                    name: 'N/A',
-                    location: 'N/A'
+                    name: (data.dataCenter || {}).name || 'N/A',
+                    location: (data.dataCenter || {}).location || 'N/A'
                 }
             }
 
