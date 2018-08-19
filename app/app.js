@@ -93,13 +93,13 @@ Vue.prototype.formatCurrencySymbol = function (number) {
     let unit = this.getCurrencySymbol()
 
     if (unit === null) {
-        unit = '$TOMO'
+        unit = 'TOMO'
     }
     return `${number} ${unit}`
 }
 
 Vue.prototype.getCurrencySymbol = function () {
-    return '$TOMO'
+    return 'TOMO'
 }
 
 Vue.prototype.checkLongNumber = function (num) {
