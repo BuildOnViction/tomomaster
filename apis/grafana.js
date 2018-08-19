@@ -11,7 +11,6 @@ router.get('/', async function (req, res, next) {
     let epoch = req.query.epoch
     let apiKey = config.get('grafanaApiKey')
     let url = `${config.get('grafanaUrl')}/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`
-    console.log(query)
     request({
         url: url,
         json: true,
