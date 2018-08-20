@@ -72,7 +72,10 @@ export default {
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = this.coinbase
 
-                let rs = await contract.withdraw(coinbase, { from: account })
+                let rs = await contract.withdraw(coinbase, {
+                    from: account,
+                    gasPrice: 1
+                })
 
                 let toastMessage = rs.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
