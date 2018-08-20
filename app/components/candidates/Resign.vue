@@ -91,7 +91,10 @@ export default {
                 let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = self.coinbase
-                let rs = await contract.resign(coinbase, { from: account })
+                let rs = await contract.resign(coinbase, {
+                    from: account,
+                    gasPrice: 1
+                })
 
                 let toastMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'

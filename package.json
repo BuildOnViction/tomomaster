@@ -42,6 +42,7 @@
         "kue": "^0.11.6",
         "lodash": "^4.17.10",
         "mongoose": "^5.0.17",
+        "request": "^2.88.0",
         "truffle-contract": "^3.0.5",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",

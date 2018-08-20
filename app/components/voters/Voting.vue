@@ -147,7 +147,8 @@ export default {
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.vote(self.candidate, {
                     from: account,
-                    value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber()
+                    value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber(),
+                    gasPrice: 1
                 })
 
                 let toastMessage = rs.tx ? 'You have successfully voted!'
@@ -162,7 +163,7 @@ export default {
                 }, 2000)
             } catch (e) {
                 self.loading = false
-                self.$toasted.show('An error occurred while voting, please try again', {
+                self.$toasted.show(`An error occurred while voting. ${String(e)}`, {
                     type : 'error'
                 })
                 console.log(e)

@@ -190,7 +190,8 @@ export default {
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.propose(coinbase, {
                     from : account,
-                    value: parseFloat(value) * 10 ** 18
+                    value: parseFloat(value) * 10 ** 18,
+                    gasPrice: 1
                 })
                 let toastMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
