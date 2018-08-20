@@ -41,7 +41,7 @@
             ok-title="Yes"
             cancel-title="No"
             @ok="resign()">
-            <p>If you resign, you will be able to withdraw all your deposit after 100 * 2 seconds.</p>
+            <p>If you resign, you will be able to withdraw all your deposit after 30 days.</p>
         </b-modal>
     </div>
 </template>
