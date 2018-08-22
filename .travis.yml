@@ -10,7 +10,7 @@ jobs:
     - stage: Coverage
       script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
 
-    - stage: Build and push untagged commit into image tomomaster
+    - stage: Build and push tomomaster image (untagged)
       services:
         - docker
       install: skip
@@ -25,7 +25,7 @@ jobs:
       after_success:
         - curl -X POST $INFRA_IMAGE_REBUILD_HOOK
 
-    - stage: Build and push tagged commit into image tomomaster
+    - stage: Build and push tomomaster image (tagged)
       services:
         - docker
       install: skip
@@ -44,7 +44,7 @@ stages:
   - name: Lint
   - name: Test
   - name: Coverage
-  - name: Build and push untagged commit into image tomomaster
-    if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
-  - name: Build and push tagged commit into image tomomaster
-    if: type != pull_request AND branch = master AND tag = true AND repo = tomochain/tomomaster
+  - name: Build and push tomomaster image (untagged)
+    if: type != pull_request AND branch = AND tag IS blank AND repo = tomochain/tomomaster
+  - name: Build and push tomomaster image (tagged)
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
