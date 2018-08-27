@@ -45,6 +45,6 @@ stages:
   - name: Test
   - name: Coverage
   - name: Build and push tomomaster image (untagged)
-    if: type != pull_request AND branch = AND tag IS blank AND repo = tomochain/tomomaster
+    if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
   - name: Build and push tomomaster image (tagged)
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
