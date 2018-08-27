@@ -8,10 +8,16 @@
                     </b-navbar-brand>
 
                     <b-nav-form class="search-form">
-                        <b-form-input placeholder="Search..." />
+                        <b-form-input
+                            v-model="search"
+                            type="text"
+                            placeholder="Search..."
+                            @keyup.enter="searchCandidate"
+                        />
                         <b-button
                             variant="outline-success"
-                            type="submit">Search</b-button>
+                            type="submit"
+                            @click="searchCandidate">Search</b-button>
                     </b-nav-form>
 
                     <div class="navbar-buttons">
@@ -41,7 +47,8 @@ export default {
         return {
             showProgressBar: false,
             selectedCandidate: null,
-            candidates: []
+            candidates: [],
+            search: null
         }
     },
     created: async function () {
@@ -60,6 +67,28 @@ export default {
         }
     },
     methods: {
+        searchCandidate (e) {
+            e.preventDefault()
+
+            let regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
+            let to = null
+            let search = this.search.trim()
+
+            if (regexpAddr.test(search)) {
+                return axios.get(`/api/search/${search}`).then((response) => {
+                    if (Object.keys(response.data.candidate).length > 0) {
+                        to = { path: `/candidate/${search}` }
+                    } else {
+                        to = { path: `/voter/${search}` }
+                    }
+                    if (!to) {
+                        return false
+                    }
+
+                    return this.$router.push(to)
+                })
+            }
+        },
         goPage: function (s) {
             console.log(s)
             this.$router.push({ path: `/candidate/${s}` })
