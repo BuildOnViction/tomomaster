@@ -452,6 +452,7 @@
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import Chart from '../Chart.vue'
+import moment from 'moment'
 
 export default {
     name: 'App',
@@ -524,6 +525,11 @@ export default {
                 {
                     key: 'reward',
                     label: 'Reward',
+                    sortable: false
+                },
+                {
+                    key: 'createdAt',
+                    label: 'Age',
                     sortable: false
                 }
             ],
@@ -605,6 +611,11 @@ export default {
                 {
                     key: 'tx',
                     label: '',
+                    sortable: false
+                },
+                {
+                    key: 'createdAt',
+                    label: 'Age',
                     sortable: false
                 }
             ],
@@ -700,7 +711,8 @@ export default {
                     voter: tx.voter,
                     candidate: tx.candidate,
                     event: tx.event,
-                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber()
+                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                    createdAt: moment(tx.createdAt).fromNow()
                 })
             })
 
@@ -727,7 +739,8 @@ export default {
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
                     totalSigners: r.totalSigners,
-                    reward: new BigNumber(r.reward).div(1e+18).toFixed(2)
+                    reward: new BigNumber(r.reward).div(1e+18).toFixed(2),
+                    createdAt: moment(r.createdAt).fromNow()
                 })
             })
 

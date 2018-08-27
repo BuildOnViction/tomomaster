@@ -41,6 +41,7 @@
         "highcharts-vue": "^1.0.4",
         "kue": "^0.11.6",
         "lodash": "^4.17.10",
+        "moment": "^2.22.2",
         "mongoose": "^5.0.17",
         "request": "^2.88.0",
         "truffle-contract": "^3.0.5",
