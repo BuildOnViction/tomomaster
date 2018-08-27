@@ -35,5 +35,6 @@
     "voterWithdrawDelay": 100,
     "epochNumber": 900,
     "randomNumber": 90
-  }
+  },
+  "GA": "google analytic key"
 }

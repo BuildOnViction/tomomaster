@@ -18,6 +18,7 @@ router.get('/', async function (req, res, next) {
     }
     appConfig.explorerUrl = config.get('explorerUrl')
     appConfig.grafanaUrl = config.get('grafanaUrl')
+    appConfig.GA = config.get('GA')
     return res.json(appConfig)
 })
 
