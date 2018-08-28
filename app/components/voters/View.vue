@@ -165,6 +165,7 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import moment from 'moment'
 
 export default {
     name: 'App',
@@ -223,6 +224,11 @@ export default {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
+                },
+                {
+                    key: 'createdAt',
+                    label: 'Age',
+                    sortable: false
                 }
             ],
             voterRewardsCurrentPage: 1,
@@ -277,7 +283,8 @@ export default {
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2)
+                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2),
+                    createdAt: moment(r.createdAt).fromNow()
                 })
             })
 
