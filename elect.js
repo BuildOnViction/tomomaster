@@ -6,7 +6,8 @@ function createWindow () {
     // Initialize the window to our specified dimensions
     win = new BrowserWindow(
         {
-            maximizable: true
+            maximizable: true,
+            icon: './app/assets/img/icon.icns' // for AppImage
         }
     )
 
