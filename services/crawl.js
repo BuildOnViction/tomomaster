@@ -23,11 +23,10 @@ async function watchBlockSigner () {
             console.error(err, res)
             return false
         }
-        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
+        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber, bs.address)
 
-        db.CrawlState.update({
-            smartContractAddress: bs.address,
-            blockNumber: res.blockNumber
+        await db.CrawlState.update({
+            smartContractAddress: bs.address
         }, { $set:{
             smartContractAddress: bs.address,
             blockNumber: res.blockNumber
