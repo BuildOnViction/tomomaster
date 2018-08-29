@@ -24,19 +24,18 @@ async function watchBlockSigner () {
             return false
         }
         console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
-        if (cs) {
-            cs.blockNumber = res.blockNumber
-        } else {
-            cs = new db.CrawlState({
-                smartContractAddress: bs.address,
-                blockNumber: res.blockNumber
-            })
-        }
+
+        await db.CrawlState.update({
+            smartContractAddress: bs.address
+        }, { $set:{
+            smartContractAddress: bs.address,
+            blockNumber: res.blockNumber
+        } }, { upsert: true })
+
         let signer = res.args._signer
         let tx = res.transactionHash
         let bN = String(res.args._blockNumber)
         let bH = String(res.args._blockHash)
-        cs.save()
 
         return db.BlockSigner.update({
             smartContractAddress: bs.address,

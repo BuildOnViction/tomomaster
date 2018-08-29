@@ -25,7 +25,7 @@ app.use(require('./apis'))
 app.use(require('./middlewares/error'))
 
 app.get('*', function (req, res) {
-    return res.sendFile(path.join(__dirname, '/index.html'))
+    return res.sendFile(path.join(__dirname, 'index.html'))
 })
 
 // start server

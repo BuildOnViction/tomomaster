@@ -86,8 +86,11 @@
                     <li class="tomo-list__item">
                         <i class="tm-wallet tomo-list__icon" />
                         <p class="tomo-list__text">
-                            <a :href="`${config.explorerUrl}/address/${address}`">
-                                {{ address }}</a>
+                            <router-link
+                                :to="`/voter/${address}`"
+                                class="text-truncate">
+                                {{ address }}
+                            </router-link>
                             <span>Address</span>
                         </p>
                     </li>
@@ -203,45 +206,48 @@ export default {
         let self = this
         self.config = await self.appConfig()
 
-        try {
-            if (!self.web3 && self.NetworkProvider === 'metamask') {
-                throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
+        self.setupAccount = async () => {
+            try {
+                if (!self.web3 && self.NetworkProvider === 'metamask') {
+                    throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
+                }
+                let account = await self.getAccount()
+                self.address = account
+                self.web3.eth.getBalance(self.address, function (a, b) {
+                    self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                    if (a) {
+                        console.log('got an error', a)
+                    }
+                })
+                let contract = await self.TomoValidator.deployed()
+                let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+                blks.forEach(async it => {
+                    let blk = new BigNumber(it).toString()
+                    if (blk !== '0') {
+                        self.aw = true
+                    }
+                    let wd = {
+                        blockNumber: blk
+                    }
+                    wd.cap = new BigNumber(
+                        await contract.getWithdrawCap.call(blk, { from: account })
+                    ).div(10 ** 18).toFormat()
+                    self.withdraws.push(wd)
+                })
+                let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
+                self.wh = []
+                wh.data.forEach(w => {
+                    let it = {
+                        cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
+                        tx: w.tx
+                    }
+                    self.wh.push(it)
+                })
+            } catch (e) {
+                console.log(e)
             }
-            let account = await self.getAccount()
-            self.address = account
-            self.web3.eth.getBalance(self.address, function (a, b) {
-                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
-                if (a) {
-                    console.log('got an error', a)
-                }
-            })
-            let contract = await self.TomoValidator.deployed()
-            let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
-            blks.forEach(async it => {
-                let blk = new BigNumber(it).toString()
-                if (blk !== '0') {
-                    self.aw = true
-                }
-                let wd = {
-                    blockNumber: blk
-                }
-                wd.cap = new BigNumber(
-                    await contract.getWithdrawCap.call(blk, { from: account })
-                ).div(10 ** 18).toFormat()
-                self.withdraws.push(wd)
-            })
-            let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
-            self.wh = []
-            wh.data.forEach(w => {
-                let it = {
-                    cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
-                    tx: w.tx
-                }
-                self.wh.push(it)
-            })
-        } catch (e) {
-            console.log(e)
         }
+        await self.setupAccount()
     },
     mounted () {},
     methods: {
@@ -290,10 +296,10 @@ export default {
 
                 self.setupProvider(this.provider, wjs)
 
-                setTimeout(() => {
+                setTimeout(async () => {
                     self.loading = false
                     self.$toasted.show('Network Provider was changed successfully')
-                    self.$router.push({ path: '/' })
+                    await self.setupAccount()
                 }, 2000)
             } catch (e) {
                 self.loading = false
