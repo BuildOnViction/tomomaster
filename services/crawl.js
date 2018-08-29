@@ -23,7 +23,7 @@ async function watchBlockSigner () {
             console.error(err, res)
             return false
         }
-        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber, bs.address)
+        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
 
         await db.CrawlState.update({
             smartContractAddress: bs.address
