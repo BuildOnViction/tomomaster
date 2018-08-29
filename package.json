@@ -48,7 +48,8 @@
         "truffle-contract": "^3.0.5",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",
-        "vue-toasted": "^1.1.24"
+        "vue-toasted": "^1.1.24",
+        "websocket": "^1.0.26"
     },
     "devDependencies": {
         "axios": "^0.18.0",
