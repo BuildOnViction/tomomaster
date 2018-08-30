@@ -21,7 +21,10 @@ commander
                         'nodeId:', c.nodeId || 'null', '\n',
                         'hardwhere:', c.hardware || 'null', '\n',
                         'dc-name:', (c.dataCenter || {}).name || 'null', '\n',
-                        'dc-location:', (c.dataCenter || {}).location || 'null'
+                        'dc-location:', (c.dataCenter || {}).location || 'null', '\n',
+                        'github:', (c.socialInfo || {}).github || 'null', '\n',
+                        'linkedin:', (c.socialInfo || {}).linkedin || 'null', '\n',
+                        'email:', (c.socialInfo || {}).email || 'null', '\n'
                     )
                     console.log('===')
                 })
@@ -38,6 +41,9 @@ commander
     .option('-dcn, --dc-name <dcName>', 'Name of Datacenter')
     .option('-dcl, --dc-location <dcLocation>', 'Location of Datacenter')
     .option('-hw, --hardware <hardware>', 'Harware Information')
+    .option('-gh, --scGithub <github>', 'Github Information')
+    .option('-lkn, --scLinkedin <linkedin>', 'Linkedin Information')
+    .option('-em, --scEmail <email>', 'Email Information')
     .action(async (id, options) => {
         let set = _.pick(options, ['nodeId', 'hardware'])
         if (typeof options.name === 'string') {
@@ -48,6 +54,15 @@ commander
         }
         if (options.dcLocation) {
             set['dataCenter.location'] = options.dcLocation
+        }
+        if (options.scGithub) {
+            set['socialInfo.github'] = options.scGithub
+        }
+        if (options.scLinkedin) {
+            set['socialInfo.linkedin'] = options.scLinkedin
+        }
+        if (options.scEmail) {
+            set['socialInfo.email'] = options.scEmail
         }
         let u = await db.Candidate.update({
             candidate: id
