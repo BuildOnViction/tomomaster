@@ -483,11 +483,7 @@ export default {
                 rewarded: 0,
                 hardwareInfo: '',
                 dataCenterInfo: {},
-                socialInfo: {
-                    github: '#',
-                    linkedin: '#',
-                    email: '#'
-                },
+                socialInfo: {},
                 voted: 0,
                 totalVoted: 0
             },
@@ -671,6 +667,7 @@ export default {
                     name: (data.dataCenter || {}).name || 'N/A',
                     location: (data.dataCenter || {}).location || 'N/A'
                 }
+                self.candidate.socialInfo = data.socialInfo
             }
 
             if (self.web3) {
