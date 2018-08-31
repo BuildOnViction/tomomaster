@@ -122,6 +122,25 @@ const getConfig = Vue.prototype.appConfig = async function () {
     return config.data
 }
 
+Vue.prototype.getSecondsToHms = function (number) {
+    number = parseInt(number, 10)
+    if (number < 0) {
+        return 'Available to withdraw'
+    }
+
+    number = number / 2
+
+    let h = Math.floor(number / 3600)
+    let m = Math.floor(number % 3600 / 60)
+    let s = Math.floor(number % 3600 % 60)
+
+    if (h < 10) { h = '0' + h }
+    if (m < 10) { m = '0' + m }
+    if (s < 10) { s = '0' + s }
+
+    return `${h}:${m}:${s}`
+}
+
 Vue.use(VueRouter)
 
 const router = new VueRouter({

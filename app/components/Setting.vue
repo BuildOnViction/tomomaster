@@ -123,6 +123,11 @@
                             <span>Block Number</span>
                         </p>
                         <div class="tomo-list__text">
+                            <p class="color-white mb-0">
+                                {{ w.estimatedTime }}</p>
+                            <span>Estimated Time</span>
+                        </div>
+                        <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
@@ -205,6 +210,7 @@ export default {
         this.provider = this.NetworkProvider
         let self = this
         self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain
 
         self.setupAccount = async () => {
             try {
@@ -232,6 +238,9 @@ export default {
                     wd.cap = new BigNumber(
                         await contract.getWithdrawCap.call(blk, { from: account })
                     ).div(10 ** 18).toFormat()
+                    wd.estimatedTime = await self.getSecondsToHms(
+                        (wd.blockNumber - self.chainConfig.blockNumber)
+                    )
                     self.withdraws.push(wd)
                 })
                 let wh = await axios.get(`/api/owners/${self.address}/withdraws`)

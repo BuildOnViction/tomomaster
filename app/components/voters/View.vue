@@ -193,7 +193,7 @@
                     slot="candidate"
                     slot-scope="data">
                     <router-link
-                        :to="'/v/' + data.item.candidate"
+                        :to="'/candidate/' + data.item.candidate"
                         class="text-truncate">
                         {{ data.item.candidate }}
                     </router-link>
