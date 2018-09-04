@@ -111,7 +111,7 @@
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Withdraws</h4>
                 <ul
-                    v-for="(w, k, index) in withdraws"
+                    v-for="(w, k, index) in sortedWithdraw"
                     :key="index"
                     class="tomo-list list-unstyled">
                     <li
@@ -203,7 +203,13 @@ export default {
             required
         }
     },
-    computed: { },
+    computed: {
+        sortedWithdraw: function () {
+            return this.withdraws.slice().sort(function (a, b) {
+                return b.blockNumber - a.blockNumber
+            })
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {
