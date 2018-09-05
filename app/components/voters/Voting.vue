@@ -32,7 +32,7 @@
                     <b-form-group
                         label="Vote"
                         label-for="vote-value"
-                        description="How much $TOMO would you like to vote for this candidate?">
+                        description="How much TOMO would you like to vote for this candidate?">
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('voteValue')"
@@ -48,7 +48,7 @@
                                 class="text-danger">Required field</span>
                             <span
                                 v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                class="text-danger">Must be greater than 10 $TOMO</span>
+                                class="text-danger">Must be greater than 10 TOMO</span>
                         </b-input-group>
                     </b-form-group>
                     <div class="buttons text-right">
