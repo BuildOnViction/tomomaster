@@ -22,7 +22,7 @@
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
                     <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
-                        <span class="tomo-card__subtitle">You will receive $TOMO after unvoting</span>
+                        <span class="tomo-card__subtitle">You will receive TOMO after unvoting</span>
                     </h4>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
@@ -55,7 +55,7 @@
                         <b-form-group
                             label="Amount"
                             label-for="unvote-value"
-                            description="The amount of $TOMO to unvote">
+                            description="The amount of TOMO to unvote">
                             <b-input-group>
                                 <number-input
                                     :class="getValidationClass('unvoteValue')"
@@ -71,10 +71,10 @@
                                     class="text-danger">Required field</span>
                                 <span
                                     v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.minValue"
-                                    class="text-danger">Must be greater than 10<sup>-18 $TOMO</sup></span>
+                                    class="text-danger">Must be greater than 10<sup>-18 TOMO</sup></span>
                                 <span
                                     v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.maxValue"
-                                    class="text-danger">Must be less than {{ voted }} $TOMO</span>
+                                    class="text-danger">Must be less than {{ voted }} TOMO</span>
                             </b-input-group>
                         </b-form-group>
                         <div class="buttons text-right">

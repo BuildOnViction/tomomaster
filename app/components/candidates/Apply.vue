@@ -11,7 +11,7 @@
                 <ul class="tomo-list list-unstyled">
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
-                        <span class="tomo-list__text">You have to deposit at least 50,000 $TOMO</span>
+                        <span class="tomo-list__text">You have to deposit at least 50,000 TOMO</span>
                     </li>
                     <li class="tomo-list__item">
                         <i class="tm-lock tomo-list__icon" />
@@ -31,7 +31,7 @@
                     <b-form-group
                         label="Vote"
                         label-for="apply-value"
-                        description="How much $TOMO do you want to deposit?">
+                        description="How much TOMO do you want to deposit?">
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('applyValue')"
@@ -47,7 +47,7 @@
                                 class="text-danger">Required field</span>
                             <span
                                 v-else-if="$v.applyValue.$dirty && !$v.applyValue.minValue"
-                                class="text-danger">Must be greater than 50,000 $TOMO</span>
+                                class="text-danger">Must be greater than 50,000 TOMO</span>
                         </b-input-group>
                     </b-form-group>
                     <b-form-group

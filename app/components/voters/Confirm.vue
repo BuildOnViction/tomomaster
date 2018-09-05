@@ -65,7 +65,7 @@ export default {
                         self.icon = 'checkmark'
                         self.title = 'Success'
                         self.description = `You have ${event} 
-                        <span class="color-white">${transaction.capacity / 10 ** 18} $TOMO</span> for candidate 
+                        <span class="color-white">${transaction.capacity / 10 ** 18} TOMO</span> for candidate 
                         <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
                         <br/><br/>
                         Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
