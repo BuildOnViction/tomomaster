@@ -128,7 +128,7 @@ Vue.prototype.getSecondsToHms = function (number) {
         return 'Available to withdraw'
     }
 
-    number = number / 2
+    number = number * 2
 
     let h = Math.floor(number / 3600)
     let m = Math.floor(number % 3600 / 60)
