@@ -111,7 +111,7 @@
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
                     Withdraws</h4>
                 <ul
-                    v-for="(w, k, index) in sortedWithdraw"
+                    v-for="(w, k, index) in withdraws"
                     :key="index"
                     class="tomo-list list-unstyled">
                     <li
@@ -203,13 +203,7 @@ export default {
             required
         }
     },
-    computed: {
-        sortedWithdraw: function () {
-            return this.withdraws.slice().sort(function (a, b) {
-                return b.blockNumber - a.blockNumber
-            })
-        }
-    },
+    computed: {},
     watch: {},
     updated () {},
     created: async function () {
@@ -233,7 +227,8 @@ export default {
                 })
                 let contract = await self.TomoValidator.deployed()
                 let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
-                blks.forEach(async it => {
+
+                await Promise.all(blks.map(async (it, index) => {
                     let blk = new BigNumber(it).toString()
                     if (blk !== '0') {
                         self.aw = true
@@ -247,8 +242,9 @@ export default {
                     wd.estimatedTime = await self.getSecondsToHms(
                         (wd.blockNumber - self.chainConfig.blockNumber)
                     )
-                    self.withdraws.push(wd)
-                })
+                    self.withdraws[index] = wd
+                }))
+
                 let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
                 self.wh = []
                 wh.data.forEach(w => {
