@@ -14,7 +14,7 @@ function createWindow () {
     win.maximize()
 
     // Specify entry point to default entry point of vue.js
-    win.loadURL('http://localhost:3000')
+    win.loadURL('https://master.testnet.tomochain.com')
 
     // Remove window once app is closed
     win.on('closed', function () {
