@@ -127,31 +127,36 @@ async function watchValidator () {
 }
 
 async function watch () {
-    chain.eth.filter('latest').watch(async (err, block) => {
-        if (err) {
-            return false
-        }
-        let blk = chain.eth.getBlock('latest')
-        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
-        let sbuff = buff.slice(32, buff.length - 65)
-        let signers = []
-        if (sbuff.length > 0) {
-            for (let i = 1; i <= sbuff.length / 20; i++) {
-                let address = sbuff.slice((i - 1) * 20, i * 20)
-                signers.push('0x' + address.toString('hex'))
+    try {
+        chain.eth.filter('latest').watch(async (err, block) => {
+            if (err) {
+                return false
             }
-            db.Signer.create({
-                networkId: config.get('blockchain.networkId'),
-                blockNumber: blk.number,
-                signers: signers
-            })
-        }
-        q.create('reward', { block: blk })
-            .priority('low').removeOnComplete(true).save()
-    })
-
-    watchBlockSigner()
-    return watchValidator()
+            let blk = chain.eth.getBlock('latest')
+            let buff = Buffer.from(blk.extraData.substring(2), 'hex')
+            let sbuff = buff.slice(32, buff.length - 65)
+            let signers = []
+            if (sbuff.length > 0) {
+                for (let i = 1; i <= sbuff.length / 20; i++) {
+                    let address = sbuff.slice((i - 1) * 20, i * 20)
+                    signers.push('0x' + address.toString('hex'))
+                }
+                db.Signer.create({
+                    networkId: config.get('blockchain.networkId'),
+                    blockNumber: blk.number,
+                    signers: signers
+                })
+            }
+            q.create('reward', { block: blk })
+                .priority('low').removeOnComplete(true).save()
+        })
+        watchBlockSigner()
+        return watchValidator()
+    } catch (e) {
+        console.log(String(e))
+        console.log('Stop process ...')
+        process.exit(1)
+    }
 }
 
 async function updateCandidateInfo (candidate) {
