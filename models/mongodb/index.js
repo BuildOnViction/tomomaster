@@ -6,7 +6,12 @@ const db = {}
 const config = require('config')
 
 mongoose.Promise = global.Promise
-mongoose.connect(config.get('db.uri'), (err) => {
+mongoose.set('useCreateIndex', true)
+mongoose.connect(config.get('db.uri'), {
+    useCreateIndex: true,
+    useNewUrlParser: true
+},
+(err) => {
     if (err) {
         console.error('Mongodb Connection error!!!')
         process.exit()
