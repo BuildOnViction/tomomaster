@@ -1,11 +1,13 @@
 'use strict'
 
-const { Validator } = require('../models/blockchain/validator')
-const { BlockSigner } = require('../models/blockchain/blockSigner')
-const chain = require('../models/blockchain/chain')
-const db = require('../models/mongodb')
+const { Validator } = require('./models/blockchain/validator')
+const { BlockSigner } = require('./models/blockchain/blockSigner')
+const chain = require('./models/blockchain/chain')
+const db = require('./models/mongodb')
 const config = require('config')
-const q = require('../queues')
+const q = require('./queues')
+
+process.setMaxListeners(1000)
 
 async function watchBlockSigner () {
     let bs = await BlockSigner.deployed()
@@ -25,7 +27,7 @@ async function watchBlockSigner () {
         }
         console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
 
-        await db.CrawlState.update({
+        await db.CrawlState.updateOne({
             smartContractAddress: bs.address
         }, { $set:{
             smartContractAddress: bs.address,
@@ -37,7 +39,7 @@ async function watchBlockSigner () {
         let bN = String(res.args._blockNumber)
         let bH = String(res.args._blockHash)
 
-        return db.BlockSigner.update({
+        return db.BlockSigner.updateOne({
             smartContractAddress: bs.address,
             blockHash: bH
         }, {
@@ -182,7 +184,7 @@ async function updateCandidateInfo (candidate) {
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
         if (candidate !== '0x0000000000000000000000000000000000000000') {
-            result = db.Candidate.update({
+            result = db.Candidate.updateOne({
                 smartContractAddress: validator.address,
                 candidate: candidate
             }, {
@@ -212,7 +214,7 @@ async function updateVoterCap (candidate, voter) {
         let validator = await Validator.deployed()
         let capacity = await validator.getVoterCap.call(candidate, voter)
         console.log('Update voter %s for candidate %s capacity %s', voter, candidate, String(capacity))
-        return db.Voter.update({
+        return db.Voter.updateOne({
             smartContractAddress: validator.address,
             candidate: candidate,
             voter: voter
