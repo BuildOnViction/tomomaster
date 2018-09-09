@@ -77,15 +77,13 @@ async function watchValidator () {
             return false
         }
         console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
-        if (cs) {
-            cs.blockNumber = res.blockNumber
-        } else {
-            cs = new db.CrawlState({
-                smartContractAddress: v.address,
-                blockNumber: res.blockNumber
-            })
-        }
         let event = res.event
+        await db.CrawlState.updateOne({
+            smartContractAddress: v.address
+        }, { $set:{
+            smartContractAddress: v.address,
+            blockNumber: res.blockNumber
+        } }, { upsert: true })
         if (event === 'Withdraw') {
             let owner = res.args._owner
             let blockNumber = res.args._blockNumber
@@ -98,7 +96,6 @@ async function watchValidator () {
                 capacity: capacity
             })
             wd.save()
-            cs.save()
             return true
         }
         let candidate = res.args._candidate
@@ -115,7 +112,6 @@ async function watchValidator () {
             capacity: capacity
         })
         tx.save()
-        cs.save()
         if (event === 'Vote' || event === 'Unvote') {
             updateVoterCap(candidate, voter)
         }
