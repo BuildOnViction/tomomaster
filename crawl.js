@@ -7,7 +7,7 @@ const db = require('./models/mongodb')
 const config = require('config')
 const q = require('./queues')
 
-process.setMaxListeners(1000)
+process.setMaxListeners(200)
 
 async function watchBlockSigner () {
     let bs = await BlockSigner.deployed()
