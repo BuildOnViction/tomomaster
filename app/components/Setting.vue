@@ -327,7 +327,7 @@ export default {
             self.loading = true
             try {
                 console.log('==>', blockNumber, index)
-                let wd = await contract.withdraw(String(blockNumber), String(index), { from: account })
+                let wd = await contract.withdraw(String(blockNumber), String(index), { from: account, gasPrice: 1 })
                 let toastMessage = wd.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
                 self.$toasted.show(toastMessage)
