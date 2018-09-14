@@ -6,6 +6,9 @@ const chain = require('./models/blockchain/chain')
 const db = require('./models/mongodb')
 const config = require('config')
 const q = require('./queues')
+const moment = require('moment')
+const EventEmitter = require('events').EventEmitter
+const emitter = new EventEmitter()
 
 process.setMaxListeners(200)
 
@@ -15,50 +18,59 @@ async function watchBlockSigner () {
         let cs = await db.CrawlState.findOne({
             smartContractAddress: bs.address
         })
-        const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        let blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        let epoch = parseInt(config.get('blockchain.epoch'))
+        let latestBlockNumber = await chain.eth.blockNumber
+        if (blockNumber < (latestBlockNumber - 3 * epoch)) {
+            blockNumber = latestBlockNumber - 3 * epoch
+        }
         console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
         const allEvents = bs.allEvents({
             fromBlock: blockNumber,
             toBlock: 'latest'
         })
-        return allEvents.watch(async (err, res) => {
+        allEvents.watch(async (err, res) => {
             if (err || !(res || {}).args) {
                 console.error(err, res)
                 return false
             }
             console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
 
-            await db.CrawlState.updateOne({
-                smartContractAddress: bs.address
-            }, { $set:{
-                smartContractAddress: bs.address,
-                blockNumber: res.blockNumber
-            } }, { upsert: true })
-
-            let signer = res.args._signer
-            let tx = res.transactionHash
-            let bN = String(res.args._blockNumber)
-            let bH = String(res.args._blockHash)
-
-            return db.BlockSigner.updateOne({
-                smartContractAddress: bs.address,
-                blockHash: bH
-            }, {
-                $set: {
+            try {
+                await db.CrawlState.updateOne({
+                    smartContractAddress: bs.address
+                }, { $set:{
                     smartContractAddress: bs.address,
-                    blockNumber: bN,
+                    blockNumber: res.blockNumber
+                } }, { upsert: true })
+
+                let signer = res.args._signer
+                let tx = res.transactionHash
+                let bN = String(res.args._blockNumber)
+                let bH = String(res.args._blockHash)
+
+                return db.BlockSigner.updateOne({
+                    smartContractAddress: bs.address,
                     blockHash: bH
-                },
-                $addToSet: {
-                    signers: {
-                        signer: signer,
-                        tx: tx
+                }, {
+                    $set: {
+                        smartContractAddress: bs.address,
+                        blockNumber: bN,
+                        blockHash: bH
+                    },
+                    $addToSet: {
+                        signers: {
+                            signer: signer,
+                            tx: tx
+                        }
                     }
-                }
-            }, { upsert: true })
+                }, { upsert: true })
+            } catch (e) {
+                emitter.emit('error', e)
+            }
         })
     } catch (e) {
-        console.error(e)
+        emitter.emit('error', e)
     }
 }
 
@@ -76,79 +88,87 @@ async function watchValidator () {
             toBlock: 'latest'
         })
 
-        return allEvents.watch(async (err, res) => {
+        allEvents.watch(async (err, res) => {
             if (err || !(res || {}).args) {
                 console.error(err, res)
                 return false
             }
             console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
-            let event = res.event
-            await db.CrawlState.updateOne({
-                smartContractAddress: v.address
-            }, { $set:{
-                smartContractAddress: v.address,
-                blockNumber: res.blockNumber
-            } }, { upsert: true })
-            if (event === 'Withdraw') {
-                let owner = (res.args._owner || '').toLowerCase()
-                let blockNumber = res.args._blockNumber
-                let capacity = res.args._cap
-                let wd = new db.Withdraw({
+            try {
+                let event = res.event
+                await db.CrawlState.updateOne({
+                    smartContractAddress: v.address
+                }, { $set:{
                     smartContractAddress: v.address,
-                    blockNumber: blockNumber,
+                    blockNumber: res.blockNumber
+                } }, { upsert: true })
+                if (event === 'Withdraw') {
+                    let owner = (res.args._owner || '').toLowerCase()
+                    let blockNumber = res.args._blockNumber
+                    let capacity = res.args._cap
+                    let wd = new db.Withdraw({
+                        smartContractAddress: v.address,
+                        blockNumber: blockNumber,
+                        tx: res.transactionHash,
+                        owner: owner,
+                        capacity: capacity
+                    })
+                    wd.save()
+                    return true
+                }
+                let candidate = (res.args._candidate || '').toLowerCase()
+                let voter = (res.args._voter || '').toLowerCase()
+                let owner = (res.args._owner || '').toLowerCase()
+                let capacity = res.args._cap
+                let blk = await chain.eth.getBlock(res.blockNumber)
+                let createdAt = moment.unix(blk.timestamp).utc()
+                let tx = new db.Transaction({
+                    smartContractAddress: v.address,
                     tx: res.transactionHash,
+                    event: event,
+                    voter: voter,
                     owner: owner,
-                    capacity: capacity
+                    candidate: candidate,
+                    capacity: capacity,
+                    createdAt: createdAt
                 })
-                wd.save()
-                return true
+                tx.save()
+                if (event === 'Vote' || event === 'Unvote') {
+                    updateVoterCap(candidate, voter)
+                }
+                if (event === 'Resign' || event === 'Propose') {
+                    updateVoterCap(candidate, owner)
+                }
+                q.create('voteHistory', { candidate, blockNumber })
+                    .priority('low').removeOnComplete(true).save()
+                updateCandidateInfo(candidate)
+            } catch (e) {
+                emitter.emit('error', e)
             }
-            let candidate = (res.args._candidate || '').toLowerCase()
-            let voter = (res.args._voter || '').toLowerCase()
-            let owner = (res.args._owner || '').toLowerCase()
-            let capacity = res.args._cap
-            let tx = new db.Transaction({
-                smartContractAddress: v.address,
-                tx: res.transactionHash,
-                event: event,
-                voter: voter,
-                owner: owner,
-                candidate: candidate,
-                capacity: capacity
-            })
-            tx.save()
-            if (event === 'Vote' || event === 'Unvote') {
-                updateVoterCap(candidate, voter)
-            }
-            if (event === 'Resign' || event === 'Propose') {
-                updateVoterCap(candidate, owner)
-            }
-            q.create('voteHistory', { candidate, blockNumber })
-                .priority('low').removeOnComplete(true).save()
-            updateCandidateInfo(candidate)
         })
     } catch (e) {
-        console.error(e)
+        emitter.emit('error', e)
     }
+    return emitter
 }
 
-async function watch () {
+function watchNewBlock () {
     try {
         chain.eth.filter('latest').watch(async (err, block) => {
             if (err) {
-                return false
+                emitter.emit('error', err)
             }
-            let blk = await chain.eth.getBlock('latest')
-            await updateSigners(blk)
-            q.create('reward', { block: blk })
-                .priority('low').removeOnComplete(true).save()
+            try {
+                let blk = await chain.eth.getBlock('latest')
+                await updateSigners(blk)
+                q.create('reward', { block: blk })
+                    .priority('low').removeOnComplete(true).save()
+            } catch (e) {
+                emitter.emit('error', e)
+            }
         })
-        watchBlockSigner()
-        return watchValidator()
     } catch (e) {
-        console.log(String(e))
-        console.log('Stop process ...')
-        process.exit(1)
+        emitter.emit('error', e)
     }
 }
 
@@ -266,10 +286,12 @@ async function getCurrentCandidates () {
     }
 }
 
-try {
-    getCurrentCandidates()
-    watch()
-    updateSigners(false)
-} catch (e) {
-    console.error(e)
-}
+getCurrentCandidates()
+updateSigners(false)
+watchNewBlock()
+watchBlockSigner()
+watchValidator()
+emitter.on('error', e => {
+    console.error('ERROR!!!', e)
+    process.exit(1)
+})
