@@ -19,13 +19,14 @@ router.get('/', async function (req, res, next) {
 
 router.get('/:candidate', async function (req, res, next) {
     let validator = await Validator.deployed()
+    let address = (req.params.candidate || '').toLowerCase()
     let candidate = (await db.Candidate.findOne({
         smartContractAddress: validator.address,
-        candidate: req.params.candidate
+        candidate: address
     }) || {})
 
     candidate.totalSignedBlocks = await db.BlockSigner.count({
-        'signers.signer': req.params.candidate
+        'signers.signer': address
     })
     return res.json(candidate)
 })
@@ -36,7 +37,7 @@ router.get('/:candidate/voters', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let voters = await db.Voter.find({
         smartContractAddress: validator.address,
-        candidate: req.params.candidate
+        candidate: (req.params.candidate || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(voters)
 })
@@ -45,7 +46,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.MnReward.find({
-        address: req.params.candidate
+        address: (req.params.candidate || '').toLowerCase()
     }).sort({ createdAt: -1 }).limit(limit).skip(skip)
     return res.json(rewards)
 })
