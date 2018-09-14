@@ -10,118 +10,126 @@ const q = require('./queues')
 process.setMaxListeners(200)
 
 async function watchBlockSigner () {
-    let bs = await BlockSigner.deployed()
-    let cs = await db.CrawlState.findOne({
-        smartContractAddress: bs.address
-    })
-    const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-    console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
-    const allEvents = bs.allEvents({
-        fromBlock: blockNumber,
-        toBlock: 'latest'
-    })
-    return allEvents.watch(async (err, res) => {
-        if (err || !(res || {}).args) {
-            console.error(err, res)
-            return false
-        }
-        console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
-
-        await db.CrawlState.updateOne({
+    try {
+        let bs = await BlockSigner.deployed()
+        let cs = await db.CrawlState.findOne({
             smartContractAddress: bs.address
-        }, { $set:{
-            smartContractAddress: bs.address,
-            blockNumber: res.blockNumber
-        } }, { upsert: true })
-
-        let signer = res.args._signer
-        let tx = res.transactionHash
-        let bN = String(res.args._blockNumber)
-        let bH = String(res.args._blockHash)
-
-        return db.BlockSigner.updateOne({
-            smartContractAddress: bs.address,
-            blockHash: bH
-        }, {
-            $set: {
-                smartContractAddress: bs.address,
-                blockNumber: bN,
-                blockHash: bH
-            },
-            $addToSet: {
-                signers: {
-                    signer: signer,
-                    tx: tx
-                }
+        })
+        const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
+        const allEvents = bs.allEvents({
+            fromBlock: blockNumber,
+            toBlock: 'latest'
+        })
+        return allEvents.watch(async (err, res) => {
+            if (err || !(res || {}).args) {
+                console.error(err, res)
+                return false
             }
-        }, { upsert: true })
-    })
+            console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
+
+            await db.CrawlState.updateOne({
+                smartContractAddress: bs.address
+            }, { $set:{
+                smartContractAddress: bs.address,
+                blockNumber: res.blockNumber
+            } }, { upsert: true })
+
+            let signer = res.args._signer
+            let tx = res.transactionHash
+            let bN = String(res.args._blockNumber)
+            let bH = String(res.args._blockHash)
+
+            return db.BlockSigner.updateOne({
+                smartContractAddress: bs.address,
+                blockHash: bH
+            }, {
+                $set: {
+                    smartContractAddress: bs.address,
+                    blockNumber: bN,
+                    blockHash: bH
+                },
+                $addToSet: {
+                    signers: {
+                        signer: signer,
+                        tx: tx
+                    }
+                }
+            }, { upsert: true })
+        })
+    } catch (e) {
+        console.error(e)
+    }
 }
 
 async function watchValidator () {
-    let v = await Validator.deployed()
-    let cs = await db.CrawlState.findOne({
-        smartContractAddress: v.address
-    })
-
-    const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-    console.info('TomoValidator %s - Listen events from block number %s ...', v.address, blockNumber)
-    const allEvents = v.allEvents({
-        fromBlock: blockNumber,
-        toBlock: 'latest'
-    })
-
-    return allEvents.watch(async (err, res) => {
-        if (err || !(res || {}).args) {
-            console.error(err, res)
-            return false
-        }
-        console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
-        let event = res.event
-        await db.CrawlState.updateOne({
+    try {
+        let v = await Validator.deployed()
+        let cs = await db.CrawlState.findOne({
             smartContractAddress: v.address
-        }, { $set:{
-            smartContractAddress: v.address,
-            blockNumber: res.blockNumber
-        } }, { upsert: true })
-        if (event === 'Withdraw') {
-            let owner = (res.args._owner || '').toLowerCase()
-            let blockNumber = res.args._blockNumber
-            let capacity = res.args._cap
-            let wd = new db.Withdraw({
+        })
+
+        const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        console.info('TomoValidator %s - Listen events from block number %s ...', v.address, blockNumber)
+        const allEvents = v.allEvents({
+            fromBlock: blockNumber,
+            toBlock: 'latest'
+        })
+
+        return allEvents.watch(async (err, res) => {
+            if (err || !(res || {}).args) {
+                console.error(err, res)
+                return false
+            }
+            console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
+            let event = res.event
+            await db.CrawlState.updateOne({
+                smartContractAddress: v.address
+            }, { $set:{
                 smartContractAddress: v.address,
-                blockNumber: blockNumber,
+                blockNumber: res.blockNumber
+            } }, { upsert: true })
+            if (event === 'Withdraw') {
+                let owner = (res.args._owner || '').toLowerCase()
+                let blockNumber = res.args._blockNumber
+                let capacity = res.args._cap
+                let wd = new db.Withdraw({
+                    smartContractAddress: v.address,
+                    blockNumber: blockNumber,
+                    tx: res.transactionHash,
+                    owner: owner,
+                    capacity: capacity
+                })
+                wd.save()
+                return true
+            }
+            let candidate = (res.args._candidate || '').toLowerCase()
+            let voter = (res.args._voter || '').toLowerCase()
+            let owner = (res.args._owner || '').toLowerCase()
+            let capacity = res.args._cap
+            let tx = new db.Transaction({
+                smartContractAddress: v.address,
                 tx: res.transactionHash,
+                event: event,
+                voter: voter,
                 owner: owner,
+                candidate: candidate,
                 capacity: capacity
             })
-            wd.save()
-            return true
-        }
-        let candidate = (res.args._candidate || '').toLowerCase()
-        let voter = (res.args._voter || '').toLowerCase()
-        let owner = (res.args._owner || '').toLowerCase()
-        let capacity = res.args._cap
-        let tx = new db.Transaction({
-            smartContractAddress: v.address,
-            tx: res.transactionHash,
-            event: event,
-            voter: voter,
-            owner: owner,
-            candidate: candidate,
-            capacity: capacity
+            tx.save()
+            if (event === 'Vote' || event === 'Unvote') {
+                updateVoterCap(candidate, voter)
+            }
+            if (event === 'Resign' || event === 'Propose') {
+                updateVoterCap(candidate, owner)
+            }
+            q.create('voteHistory', { candidate, blockNumber })
+                .priority('low').removeOnComplete(true).save()
+            updateCandidateInfo(candidate)
         })
-        tx.save()
-        if (event === 'Vote' || event === 'Unvote') {
-            updateVoterCap(candidate, voter)
-        }
-        if (event === 'Resign' || event === 'Propose') {
-            updateVoterCap(candidate, owner)
-        }
-        q.create('voteHistory', { candidate, blockNumber })
-            .priority('low').removeOnComplete(true).save()
-        updateCandidateInfo(candidate)
-    })
+    } catch (e) {
+        console.error(e)
+    }
 }
 
 async function watch () {
@@ -145,30 +153,34 @@ async function watch () {
 }
 
 async function updateSigners (blk) {
-    if (!blk) {
-        let latestBlockNumber = await chain.eth.blockNumber
-        let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        if (lastCheckpoint > 0) {
-            blk = await chain.eth.getBlock(lastCheckpoint)
-        } else {
-            return false
+    try {
+        if (!blk) {
+            let latestBlockNumber = await chain.eth.blockNumber
+            let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+            if (lastCheckpoint > 0) {
+                blk = await chain.eth.getBlock(lastCheckpoint)
+            } else {
+                return false
+            }
         }
-    }
-    let buff = Buffer.from(blk.extraData.substring(2), 'hex')
-    let sbuff = buff.slice(32, buff.length - 65)
-    let signers = []
-    if (sbuff.length > 0) {
-        for (let i = 1; i <= sbuff.length / 20; i++) {
-            let address = sbuff.slice((i - 1) * 20, i * 20)
-            signers.push('0x' + address.toString('hex'))
+        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
+        let sbuff = buff.slice(32, buff.length - 65)
+        let signers = []
+        if (sbuff.length > 0) {
+            for (let i = 1; i <= sbuff.length / 20; i++) {
+                let address = sbuff.slice((i - 1) * 20, i * 20)
+                signers.push('0x' + address.toString('hex'))
+            }
+            await db.Signer.create({
+                networkId: config.get('blockchain.networkId'),
+                blockNumber: blk.number,
+                signers: signers
+            })
         }
-        await db.Signer.create({
-            networkId: config.get('blockchain.networkId'),
-            blockNumber: blk.number,
-            signers: signers
-        })
+        return signers
+    } catch (e) {
+        console.error(e)
     }
-    return signers
 }
 
 async function updateCandidateInfo (candidate) {
