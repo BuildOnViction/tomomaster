@@ -85,7 +85,7 @@ async function watchValidator () {
             blockNumber: res.blockNumber
         } }, { upsert: true })
         if (event === 'Withdraw') {
-            let owner = res.args._owner
+            let owner = (res.args._owner || '').toLowerCase()
             let blockNumber = res.args._blockNumber
             let capacity = res.args._cap
             let wd = new db.Withdraw({
@@ -98,9 +98,9 @@ async function watchValidator () {
             wd.save()
             return true
         }
-        let candidate = res.args._candidate
-        let voter = res.args._voter
-        let owner = res.args._owner
+        let candidate = (res.args._candidate || '').toLowerCase()
+        let voter = (res.args._voter || '').toLowerCase()
+        let owner = (res.args._owner || '').toLowerCase()
         let capacity = res.args._cap
         let tx = new db.Transaction({
             smartContractAddress: v.address,
@@ -175,7 +175,7 @@ async function updateCandidateInfo (candidate) {
     try {
         let validator = await Validator.deployed()
         let capacity = await validator.getCandidateCap.call(candidate)
-        let owner = await validator.getCandidateOwner.call(candidate)
+        let owner = (await validator.getCandidateOwner.call(candidate) || '').toLowerCase()
         let status = await validator.isCandidate.call(candidate)
         let result
         console.info('Update candidate %s capacity %s', candidate, String(capacity))
@@ -189,7 +189,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
-                    owner: String(owner)
+                    owner: owner
                 }
             }, { upsert: true })
         } else {
@@ -234,8 +234,10 @@ async function getCurrentCandidates () {
         let candidates = await validator.getCandidates.call()
 
         let map = candidates.map(async (candidate) => {
+            candidate = (candidate || '').toLowerCase()
             let voters = await validator.getVoters.call(candidate)
             let m = voters.map(v => {
+                v = (v || '').toLowerCase()
                 return updateVoterCap(candidate, v)
             })
 
