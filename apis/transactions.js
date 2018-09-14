@@ -18,7 +18,7 @@ router.get('/voter/:voter', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let txs = await db.Transaction.find({
         smartContractAddress: validator.address,
-        voter: req.params.voter
+        voter: (req.params.voter || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(txs)
 })
@@ -29,7 +29,7 @@ router.get('/candidate/:candidate', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let txs = await db.Transaction.find({
         smartContractAddress: validator.address,
-        candidate: req.params.candidate
+        candidate: (req.params.candidate || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(txs)
 })
