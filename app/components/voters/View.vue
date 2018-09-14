@@ -408,7 +408,6 @@ export default {
             self.voterRewardsTotalRows = self.voterRewards.length
 
             let txs = await axios.get(`/api/transactions/voter/${voter}`)
-            console.log(JSON.stringify(txs.data))
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     id: idx + 1,
