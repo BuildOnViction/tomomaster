@@ -170,14 +170,14 @@ export default {
         if (this.dataType === 'cpu') {
             alias = [ `${host}_cpu_user`, `${host}_cpu_idle` ]
             // eslint-disable-next-line max-len
-            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = `SELECT mean("usage_user") AS "${alias[0]}" FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(60s) fill(null);SELECT mean("usage_idle") AS "${alias[1]}"  FROM "cpu" WHERE ("cpu" = 'cpu-total' AND "host" = '${host}') AND time >= now() - 6h GROUP BY time(60s) fill(null)`
             query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
         }
 
         if (this.dataType === 'memory') {
             alias = `${host}_memory_usage`
             // eslint-disable-next-line max-len
-            query = `SELECT mean("used_percent") AS "${alias}" FROM "mem" WHERE ("host" = '${host}') AND time >= now() - 6h GROUP BY time(10s) fill(null)`
+            query = `SELECT mean("used_percent") AS "${alias}" FROM "mem" WHERE ("host" = '${host}') AND time >= now() - 6h GROUP BY time(60s) fill(null)`
             query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
         }
 
