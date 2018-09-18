@@ -9,7 +9,7 @@
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
                             <li
-                                v-for="(value, key) in candidate.socialInfo"
+                                v-for="(value, key) in candidate.socials"
                                 :key="key"
                                 class="list-inline-item social-links__item">
                                 <a
@@ -483,7 +483,7 @@ export default {
                 rewarded: 0,
                 hardwareInfo: '',
                 dataCenterInfo: {},
-                socialInfo: {},
+                socials: {},
                 voted: 0,
                 totalVoted: 0
             },
@@ -667,7 +667,7 @@ export default {
                     name: (data.dataCenter || {}).name || 'N/A',
                     location: (data.dataCenter || {}).location || 'N/A'
                 }
-                self.candidate.socialInfo = data.socialInfo
+                self.candidate.socials = data.socials
             }
 
             if (self.web3) {
