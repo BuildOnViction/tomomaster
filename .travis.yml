@@ -46,7 +46,7 @@ jobs:
         on:
           tags: true
 
-    - stage: Build and push tomomaster image (untagged)
+    - stage: Build and push image
       services:
         - docker
       install: skip
@@ -61,7 +61,7 @@ jobs:
       after_success:
         - curl -X POST $INFRA_IMAGE_REBUILD_HOOK
 
-    - stage: Build and push tomomaster image (tagged)
+    - stage: Build and push image (tagged)
       services:
         - docker
       install: skip
@@ -71,6 +71,8 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
         - docker tag tomochain/tomomaster tomochain/tomomaster:latest
         - docker push tomochain/tomomaster:latest
+        - docker tag tomochain/tomomaster tomochain/tomomaster:testnet
+        - docker push tomochain/tomomaster:testnet
         - docker tag tomochain/tomomaster tomochain/tomomaster:$TRAVIS_TAG
         - docker push tomochain/tomomaster:$TRAVIS_TAG
       after_success:
@@ -80,9 +82,9 @@ stages:
   - name: Lint
   - name: Test
   - name: Coverage
-  - name: Build and push tomomaster image (untagged)
+  - name: Build and push image
     if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
-  - name: Build and push tomomaster image (tagged)
-    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
+  - name: Build and push image (tagged)
+    if: type != pull_request AND branch = master AND tag = true AND repo = tomochain/tomomaster
   - name: Release desktop application
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
