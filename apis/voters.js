@@ -20,7 +20,7 @@ router.get('/:voter/rewards', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.VoterReward.find({
         address: (req.params.voter || '').toLowerCase()
-    }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+    }).sort({ _id: -1 }).limit(limit).skip(skip)
     return res.json(rewards)
 })
 
