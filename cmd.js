@@ -22,9 +22,9 @@ commander
                         'hardwhere:', c.hardware || 'null', '\n',
                         'dc-name:', (c.dataCenter || {}).name || 'null', '\n',
                         'dc-location:', (c.dataCenter || {}).location || 'null', '\n',
-                        'github:', (c.socialInfo || {}).github || 'null', '\n',
-                        'linkedin:', (c.socialInfo || {}).linkedin || 'null', '\n',
-                        'email:', (c.socialInfo || {}).email || 'null', '\n'
+                        'github:', (c.socials || {}).github || 'null', '\n',
+                        'linkedin:', (c.socials || {}).linkedin || 'null', '\n',
+                        'email:', (c.socials || {}).email || 'null', '\n'
                     )
                     console.log('===')
                 })
@@ -56,13 +56,13 @@ commander
             set['dataCenter.location'] = options.dcLocation
         }
         if (options.scGithub) {
-            set['socialInfo.github'] = options.scGithub
+            set['socials.github'] = options.scGithub
         }
         if (options.scLinkedin) {
-            set['socialInfo.linkedin'] = options.scLinkedin
+            set['socials.linkedin'] = options.scLinkedin
         }
         if (options.scEmail) {
-            set['socialInfo.email'] = options.scEmail
+            set['socials.email'] = options.scEmail
         }
         let u = await db.Candidate.update({
             candidate: id
