@@ -11,7 +11,7 @@ router.get('/', async function (req, res, next) {
     let bS = await BlockSigner.deployed()
     let blockSigner = await db.BlockSigner.findOne({
         smartContractAddress: bS.address
-    }).sort({ createdAt: 'desc' })
+    }).sort({ _id: 'desc' })
 
     if (blockSigner) {
         appConfig.blockchain.blockNumber = blockSigner.blockNumber
