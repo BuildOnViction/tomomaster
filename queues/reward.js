@@ -37,7 +37,7 @@ consumer.task = async function (job, done) {
         let reward = []
         let totalSign = 0
         let map = signers.map(async s => {
-            let ns = await db.BlockSigner.count({
+            let ns = await db.BlockSigner.estimatedDocumentCount({
                 blockNumber: { $in: Array.from(new Array(epoch), (val, index) => startBlockNumber + index) },
                 'signers.signer': s
             })
