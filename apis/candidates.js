@@ -25,7 +25,7 @@ router.get('/:candidate', async function (req, res, next) {
         candidate: address
     }) || {})
 
-    candidate.totalSignedBlocks = await db.BlockSigner.count({
+    candidate.totalSignedBlocks = await db.BlockSigner.estimatedDocumentCount({
         'signers.signer': address
     })
     return res.json(candidate)
