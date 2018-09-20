@@ -16,6 +16,11 @@ var BlockSigner = new Schema({
         type: String,
         index: true
     },
+    status: {
+        type: Boolean,
+        default: false,
+        index: true
+    },
     signers: [{
         signer: {
             type: String,

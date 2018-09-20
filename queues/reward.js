@@ -3,6 +3,7 @@
 const { Validator } = require('../models/blockchain/validator')
 const db = require('../models/mongodb')
 const BigNumber = require('bignumber.js')
+const chain = require('../models/blockchain/chain')
 const config = require('config')
 const consumer = {}
 
@@ -25,6 +26,18 @@ consumer.task = async function (job, done) {
             blockNumber: (startBlockNumber - 1)
         })
 
+        // verify block was on chain
+        for (let i = startBlockNumber; i <= endBlockNumber; i++) {
+            let blockHash = await chain.eth.getBlock(i).hash
+            db.BlockSigner.update({
+                blockHash: blockHash
+            }, {
+                status: true
+            }, {
+                upsert: false
+            })
+        }
+
         let signers = (sn || {}).signers || []
 
         console.log('Reward masternodes', signers)
@@ -37,9 +50,10 @@ consumer.task = async function (job, done) {
         let reward = []
         let totalSign = 0
         let map = signers.map(async s => {
-            let ns = await db.BlockSigner.estimatedDocumentCount({
+            let ns = await db.BlockSigner.countDocuments({
                 blockNumber: { $in: Array.from(new Array(epoch), (val, index) => startBlockNumber + index) },
-                'signers.signer': s
+                'signers.signer': s,
+                status: true
             })
             reward.push({
                 address: s,
