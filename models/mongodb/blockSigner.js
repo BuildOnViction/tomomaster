@@ -16,11 +16,10 @@ var BlockSigner = new Schema({
         type: String,
         index: true
     },
-    status: {
-        type: Boolean,
-        default: false,
+    snapSigners: [{
+        type: String,
         index: true
-    },
+    }],
     signers: [{
         signer: {
             type: String,
