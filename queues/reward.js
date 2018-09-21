@@ -1,8 +1,10 @@
 'use strict'
 
 const { Validator } = require('../models/blockchain/validator')
+const { BlockSigner } = require('../models/blockchain/blockSigner')
 const db = require('../models/mongodb')
 const BigNumber = require('bignumber.js')
+const chain = require('../models/blockchain/chain')
 const config = require('config')
 const consumer = {}
 
@@ -18,12 +20,31 @@ consumer.task = async function (job, done) {
 
     try {
         let validator = await Validator.deployed()
+        let bs = await BlockSigner.deployed()
 
         let startBlockNumber = blockNumber - (2 * epoch) + 1
         let endBlockNumber = blockNumber - epoch
         let sn = await db.Signer.findOne({
             blockNumber: (startBlockNumber - 1)
         })
+
+        // verify block was on chain
+        for (let i = startBlockNumber; i <= endBlockNumber; i++) {
+            let blockHash = await chain.eth.getBlock(i).hash
+            let ss = await bs.getSigners.call(blockHash)
+            await db.BlockSigner.updateOne({
+                blockHash: blockHash,
+                blockNumber: i
+            }, {
+                $set: {
+                    blockHash: blockHash,
+                    blockNumber: i,
+                    snapSigners: ss
+                }
+            }, {
+                upsert: true
+            })
+        }
 
         let signers = (sn || {}).signers || []
 
@@ -37,9 +58,9 @@ consumer.task = async function (job, done) {
         let reward = []
         let totalSign = 0
         let map = signers.map(async s => {
-            let ns = await db.BlockSigner.count({
+            let ns = await db.BlockSigner.countDocuments({
                 blockNumber: { $in: Array.from(new Array(epoch), (val, index) => startBlockNumber + index) },
-                'signers.signer': s
+                'snapSigners': s
             })
             reward.push({
                 address: s,
