@@ -56,7 +56,6 @@
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :class="'tomo-table tomo-table--candidates ' + tableCssClass"
-                :show-empty="true"
                 empty-text="There are no candidates to show"
                 stacked="md" >
 
@@ -122,6 +121,9 @@
                         class="d-inline-block d-lg-none mt-3 mt-lg-0">Resign</b-button>
                 </template>
             </b-table>
+            <div
+                v-if="candidates.length <= 0"
+                class="tomo-loading"/>
 
             <b-pagination
                 v-if="totalRows > 0 && totalRows > perPage"
