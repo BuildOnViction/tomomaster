@@ -217,7 +217,7 @@
                         <i class="tm-signer color-yellow" />
                         <span>Masternode Rewards</span>
                         <span class="text-truncate section-title__description">
-                            Calculate Reward for Masternode</span>
+                            Estimated Reward for Masternode</span>
                     </h3>
                 </div>
             </div>
