@@ -39,7 +39,14 @@
                 </div>
             </div>
         </div>
-        <div class="container">
+
+        <div
+            v-if="candidates.length <= 0"
+            class="tomo-loading"/>
+
+        <div
+            v-else
+            class="container">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
