@@ -8,13 +8,27 @@ const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 
 router.get('/', async function (req, res, next) {
-    let validator = await Validator.deployed()
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    const limit = (req.query.limit) ? parseInt(req.query.limit) : 150
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-    let candidates = await db.Candidate.find({
-        smartContractAddress: validator.address
-    }).limit(limit).skip(skip)
-    return res.json(candidates)
+    try {
+        let validator = await Validator.deployed()
+        let candidates = await db.Candidate.find({
+            smartContractAddress: validator.address
+        }).limit(limit).skip(skip).lean().exec()
+
+        let map = candidates.map(async c => {
+            let bs = await db.BlockSigner.findOne({
+                'signers.signer': c.candidate
+            }).sort({ _id: 'desc' })
+            c.latestSignedBlock = bs.blockNumber
+            return c
+        })
+        let ret = await Promise.all(map)
+
+        return res.json(ret)
+    } catch (e) {
+        return next(e)
+    }
 })
 
 router.get('/:candidate', async function (req, res, next) {
