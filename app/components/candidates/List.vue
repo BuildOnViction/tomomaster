@@ -128,9 +128,6 @@
                         class="d-inline-block d-lg-none mt-3 mt-lg-0">Resign</b-button>
                 </template>
             </b-table>
-            <div
-                v-if="candidates.length <= 0"
-                class="tomo-loading"/>
 
             <b-pagination
                 v-if="totalRows > 0 && totalRows > perPage"
