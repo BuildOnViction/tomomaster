@@ -148,7 +148,8 @@ export default {
                 let rs = await contract.vote(self.candidate, {
                     from: account,
                     value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber(),
-                    gasPrice: 1
+                    gasPrice: 1,
+                    gas: 1000000
                 })
 
                 let toastMessage = rs.tx ? 'You have successfully voted!'
