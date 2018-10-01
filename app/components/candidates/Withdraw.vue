@@ -74,7 +74,8 @@ export default {
 
                 let rs = await contract.withdraw(coinbase, {
                     from: account,
-                    gasPrice: 1
+                    gasPrice: 1,
+                    gas: 2000000
                 })
 
                 let toastMessage = rs.tx ? 'You have successfully withdrawed!'

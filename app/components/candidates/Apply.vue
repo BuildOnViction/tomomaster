@@ -191,7 +191,8 @@ export default {
                 let rs = await contract.propose(coinbase, {
                     from : account,
                     value: parseFloat(value) * 10 ** 18,
-                    gasPrice: 1
+                    gasPrice: 1,
+                    gas: 2000000
                 })
                 let toastMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
