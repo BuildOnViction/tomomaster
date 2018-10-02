@@ -20,7 +20,7 @@ router.get('/', async function (req, res, next) {
             let bs = await db.BlockSigner.findOne({
                 'signers.signer': c.candidate
             }).sort({ _id: 'desc' })
-            c.latestSignedBlock = bs.blockNumber
+            c.latestSignedBlock = (bs || {}).blockNumber || 0
             return c
         })
         let ret = await Promise.all(map)
