@@ -224,15 +224,13 @@ export default {
 
             self.loading = true
 
-            let signers = await axios.get('/api/signers/get/latest')
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate) => {
-                let isMasternode = (((signers || {}).data || {}).signers || []).indexOf(candidate.candidate) >= 0
                 self.candidates.push({
                     address: candidate.candidate,
                     owner: candidate.owner.toLowerCase(),
                     status: candidate.status,
-                    isMasternode: isMasternode,
+                    isMasternode: candidate.isMasternode,
                     name: candidate.name || 'Anonymous',
                     cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber()
                 })
