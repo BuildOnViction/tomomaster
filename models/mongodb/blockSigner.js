@@ -25,7 +25,8 @@ var BlockSigner = new Schema({
             type: String,
             index: true
         },
-        tx: String
+        tx: String,
+        createdAt: Date
     }]
 }, { timestamps: true })
 
