@@ -146,7 +146,7 @@
                     <router-link
                         :to="'/candidate/' + data.item.candidate"
                         class="text-truncate">
-                        {{ (data.item.candidate || '').substring(0, 8) + '...' }}
+                        {{ data.item.candidate }}
                     </router-link>
                 </template>
 
