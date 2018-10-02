@@ -21,6 +21,7 @@ router.get('/', async function (req, res, next) {
                 'signers.signer': c.candidate
             }).sort({ _id: 'desc' })
             c.latestSignedBlock = (bs || {}).blockNumber || 0
+
             return c
         })
         let ret = await Promise.all(map)
