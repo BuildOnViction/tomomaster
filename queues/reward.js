@@ -5,6 +5,7 @@ const { BlockSigner } = require('../models/blockchain/blockSigner')
 const db = require('../models/mongodb')
 const BigNumber = require('bignumber.js')
 const chain = require('../models/blockchain/chain')
+const moment = require('moment')
 const config = require('config')
 const consumer = {}
 
@@ -74,6 +75,9 @@ consumer.task = async function (job, done) {
 
         let fdReward = new BigNumber(0)
 
+        let blk = await chain.eth.getBlock(blockNumber)
+        let createdAt = moment.unix(blk.timestamp).utc()
+
         map = reward.map(async r => {
             try {
                 let mn = new BigNumber(r.signNumber * totalReward).div(totalSign)
@@ -108,7 +112,8 @@ consumer.task = async function (job, done) {
                         startBlockNumber: startBlockNumber,
                         endBlockNumber: endBlockNumber,
                         voted: v.capacity.toString(),
-                        signNumber: r.signNumber
+                        signNumber: r.signNumber,
+                        createdAt: createdAt
                     })
                 })
                 await Promise.all(vmap)
@@ -120,7 +125,8 @@ consumer.task = async function (job, done) {
                     checkpoint: blockNumber,
                     startBlockNumber: startBlockNumber,
                     endBlockNumber: endBlockNumber,
-                    totalSigners: signers.length
+                    totalSigners: signers.length,
+                    createdAt: createdAt
                 })
             } catch (e) {
                 console.error('ERROR Reward', e)
@@ -133,7 +139,8 @@ consumer.task = async function (job, done) {
             reward: fdReward.toString(),
             checkpoint: blockNumber,
             startBlockNumber: startBlockNumber,
-            endBlockNumber: endBlockNumber
+            endBlockNumber: endBlockNumber,
+            createdAt: createdAt
         })
 
         await Promise.all(map)
