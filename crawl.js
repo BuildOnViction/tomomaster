@@ -49,6 +49,9 @@ async function watchBlockSigner () {
                 let bN = String(res.args._blockNumber)
                 let bH = String(res.args._blockHash)
 
+                let blk = await chain.eth.getBlock(res.blockNumber)
+                let createdAt = moment.unix(blk.timestamp).utc()
+
                 return db.BlockSigner.updateOne({
                     smartContractAddress: bs.address,
                     blockHash: bH
@@ -61,7 +64,8 @@ async function watchBlockSigner () {
                     $addToSet: {
                         signers: {
                             signer: signer,
-                            tx: tx
+                            tx: tx,
+                            createdAt: createdAt
                         }
                     }
                 }, { upsert: true })
