@@ -47,7 +47,6 @@ export default {
         return {
             showProgressBar: false,
             selectedCandidate: null,
-            candidates: [],
             search: null
         }
     },
@@ -58,10 +57,6 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            let candidates = await axios.get('/api/candidates')
-            candidates.data.map(async (candidate) => {
-                self.candidates.push(candidate.candidate)
-            })
         } catch (e) {
             console.log(e)
         }

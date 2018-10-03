@@ -16,11 +16,23 @@ router.get('/', async function (req, res, next) {
             smartContractAddress: validator.address
         }).limit(limit).skip(skip).lean().exec()
 
+        let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
+
+        const signers = latestSigners.signers
+        const set = new Set()
+        for (let i = 0; i < signers.length; i++) {
+            set.add(signers[i])
+        }
+
         let map = candidates.map(async c => {
+            // latest Signed Block
             let bs = await db.BlockSigner.findOne({
                 'signers.signer': c.candidate
             }).sort({ _id: 'desc' })
             c.latestSignedBlock = (bs || {}).blockNumber || 0
+
+            // is masternode
+            c.isMasternode = set.has(c.candidate)
 
             return c
         })
