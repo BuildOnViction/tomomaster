@@ -1,3 +1,4 @@
+*.pem
 .*.sw*
 node_modules
 .vscode/
