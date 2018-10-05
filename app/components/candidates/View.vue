@@ -214,7 +214,7 @@
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
-                        <i class="tm-signer color-yellow" />
+                        <i class="tm-gift color-purple" />
                         <span>Masternode Rewards</span>
                         <span class="text-truncate section-title__description">
                             Estimated Reward for Masternode</span>
