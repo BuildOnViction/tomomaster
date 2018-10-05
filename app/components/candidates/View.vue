@@ -234,11 +234,6 @@
                 stacked="md" >
 
                 <template
-                    slot="id"
-                    slot-scope="data">{{ data.index + 1 }}
-                </template>
-
-                <template
                     slot="checkpoint"
                     slot-scope="data">{{ data.item.checkpoint }}
                 </template>
@@ -247,6 +242,15 @@
                     slot="reward"
                     slot-scope="data">
                     {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
+                </template>
+
+                <template
+                    slot="createdAt"
+                    slot-scope="data">
+                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                    <b-tooltip :target="`timestamp__${data.index}`">
+                        {{ data.item.dateTooltip }}
+                    </b-tooltip>
                 </template>
 
             </b-table>
@@ -489,23 +493,8 @@ export default {
             },
             mnRewardsFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
-                    key: 'checkpoint',
-                    label: 'Check Point',
-                    sortable: false
-                },
-                {
-                    key: 'startBlockNumber',
-                    label: 'Start Blk No.',
-                    sortable: false
-                },
-                {
-                    key: 'endBlockNumber',
-                    label: 'End Blk No.',
+                    key: 'epoch',
+                    label: 'Epoch',
                     sortable: false
                 },
                 {
@@ -731,13 +720,12 @@ export default {
             let mnRewards = await axios.get(`/api/candidates/${address}/rewards`)
             mnRewards.data.map((r) => {
                 self.mnRewards.push({
-                    checkpoint: r.checkpoint,
-                    startBlockNumber: r.startBlockNumber,
-                    endBlockNumber: r.endBlockNumber,
+                    epoch: (r.startBlockNumber - 1) / 900,
                     signNumber: r.signNumber,
                     totalSigners: r.totalSigners,
                     reward: new BigNumber(r.reward).div(1e+18).toFixed(2),
-                    createdAt: moment(r.createdAt).fromNow()
+                    createdAt: moment(r.createdAt).fromNow(),
+                    dateTooltip: moment(r.createdAt).format('lll')
                 })
             })
 
@@ -760,6 +748,9 @@ export default {
             }
 
             return clazz
+        },
+        getDate (date) {
+            return date
         }
     }
 }
