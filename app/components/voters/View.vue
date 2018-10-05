@@ -105,7 +105,7 @@
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
-                        <i class="tm-signer color-yellow" />
+                        <i class="tm-gift color-purple" />
                         <span>Voter Rewards</span>
                         <span class="text-truncate section-title__description">
                             Calculate Reward for Voter</span>
@@ -148,6 +148,15 @@
                         class="text-truncate">
                         {{ data.item.candidate }}
                     </router-link>
+                </template>
+
+                <template
+                    slot="createdAt"
+                    slot-scope="data">
+                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                    <b-tooltip :target="`timestamp__${data.index}`">
+                        {{ data.item.dateTooltip }}
+                    </b-tooltip>
                 </template>
 
             </b-table>
@@ -274,13 +283,8 @@ export default {
             voterRewards: [],
             voterRewardsFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
-                    key: 'checkpoint',
-                    label: 'Check Point',
+                    key: 'epoch',
+                    label: 'Epoch',
                     sortable: false
                 },
                 {
@@ -395,13 +399,14 @@ export default {
             let voterRewards = await axios.get(`/api/voters/${voter}/rewards`)
             voterRewards.data.map((r) => {
                 self.voterRewards.push({
-                    checkpoint: r.checkpoint,
+                    epoch: r.checkpoint / 900 - 2,
                     candidate: r.candidate,
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
                     reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2),
-                    createdAt: moment(r.createdAt).fromNow()
+                    createdAt: moment(r.createdAt).fromNow(),
+                    dateTooltip: moment(r.createdAt).format('lll')
                 })
             })
 
