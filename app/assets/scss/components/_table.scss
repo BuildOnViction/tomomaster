@@ -540,7 +540,7 @@
 
 .tomo-table--transactions {
 
-    td[aria-colindex="5"] {
+    td[aria-colindex="6"] {
         text-align: center;
         grid-template-columns: 100% !important;
 
@@ -566,7 +566,7 @@
         thead tr,
         tbody tr {
             padding-right: 0;
-            grid-template-columns: 5% auto 15% 15% 10% 15%;
+            grid-template-columns: 5% auto 15% 15% 15% 10%;
         }
 
         th[aria-colindex="4"],
@@ -576,6 +576,11 @@
 
         th[aria-colindex="5"],
         td[aria-colindex="5"] {
+            text-align: right;
+        }
+
+        th[aria-colindex="6"],
+        td[aria-colindex="6"] {
             text-align: center;
 
             a > span {

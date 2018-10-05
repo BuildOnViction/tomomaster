@@ -429,6 +429,15 @@
                 </template>
 
                 <template
+                    slot="createdAt"
+                    slot-scope="data">
+                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                    <b-tooltip :target="`timestamp__${data.index}`">
+                        {{ data.item.dateTooltip }}
+                    </b-tooltip>
+                </template>
+
+                <template
                     slot="tx"
                     slot-scope="data">
                     <a
@@ -594,13 +603,13 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'tx',
-                    label: '',
+                    key: 'createdAt',
+                    label: 'Age',
                     sortable: false
                 },
                 {
-                    key: 'createdAt',
-                    label: 'Age',
+                    key: 'tx',
+                    label: '',
                     sortable: false
                 }
             ],
@@ -698,7 +707,8 @@ export default {
                     candidate: tx.candidate,
                     event: tx.event,
                     cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                    createdAt: moment(tx.createdAt).fromNow()
+                    createdAt: moment(tx.createdAt).fromNow(),
+                    dateTooltip: moment(tx.createdAt).format('lll')
                 })
             })
 
