@@ -649,7 +649,7 @@
 
 .tomo-table--signed {
 
-    td[aria-colindex="4"] {
+    td[aria-colindex="5"] {
         text-align: center;
         grid-template-columns: 100% !important;
 
@@ -674,11 +674,16 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 10% 20% 60% 10%;
+            grid-template-columns: 10% 15% 55% 10% 10%;
         }
 
         th[aria-colindex="4"],
         td[aria-colindex="4"] {
+            text-align: right
+        }
+
+        th[aria-colindex="5"],
+        td[aria-colindex="5"] {
             text-align: right;
 
             a > span {
