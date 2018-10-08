@@ -368,6 +368,15 @@
                         <span>View on TomoScan</span>
                     </a>
                 </template>
+
+                <template
+                    slot="createdAt"
+                    slot-scope="data">
+                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                    <b-tooltip :target="`timestamp__${data.index}`">
+                        {{ data.item.dateTooltip }}
+                    </b-tooltip>
+                </template>
             </b-table>
 
             <b-pagination
@@ -549,6 +558,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'createdAt',
+                    label: 'Age',
+                    sortable: false
+                },
+                {
                     key: 'action',
                     label: '',
                     sortable: false
@@ -608,7 +622,7 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'tx',
+                    key: 'action',
                     label: '',
                     sortable: false
                 }
@@ -721,7 +735,9 @@ export default {
                 })
                 self.signs.push({
                     tx: stx[0].tx,
-                    blockNumber: bs.blockNumber
+                    blockNumber: bs.blockNumber,
+                    createdAt: moment(bs.createdAt).fromNow(),
+                    dateTooltip: moment(bs.createdAt).format('lll')
                 })
             })
 
