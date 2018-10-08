@@ -12,11 +12,16 @@ router.get('/', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         let validator = await Validator.deployed()
-        let candidates = await db.Candidate.find({
-            smartContractAddress: validator.address
-        }).limit(limit).skip(skip).lean().exec()
 
-        let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
+        let data = await Promise.all([
+            db.Candidate.find({
+                smartContractAddress: validator.address
+            }).limit(limit).skip(skip).lean().exec(),
+            db.Signer.findOne({}).sort({ _id: 'desc' })
+        ])
+
+        let candidates = data[0]
+        let latestSigners = data[1]
 
         const signers = latestSigners.signers
         const set = new Set()
@@ -25,15 +30,15 @@ router.get('/', async function (req, res, next) {
         }
 
         let map = candidates.map(async c => {
-            // latest Signed Block
             let bs = await db.BlockSigner.findOne({
-                'signers.signer': c.candidate
+                'signers.signer': {
+                    $in: signers
+                }
             }).sort({ _id: 'desc' })
             c.latestSignedBlock = (bs || {}).blockNumber || 0
 
             // is masternode
             c.isMasternode = set.has(c.candidate)
-
             return c
         })
         let ret = await Promise.all(map)
