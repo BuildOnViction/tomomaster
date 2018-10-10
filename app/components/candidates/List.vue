@@ -10,7 +10,7 @@
                     </h3>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card tomo-card--animated">
+                    <b-card class="tomo-card">
                         <h6 class="tomo-card__title">Current Block</h6>
                         <p class="tomo-card__text">
                             <router-link :to="'/blocksigners'">#{{ chainConfig.blockNumber }}</router-link>
@@ -18,19 +18,19 @@
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card tomo-card--animated">
+                    <b-card class="tomo-card tomo-card">
                         <h6 class="tomo-card__title">Block Time</h6>
                         <p class="tomo-card__text">{{ chainConfig.blockTime }}.00 s</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card tomo-card--animated">
+                    <b-card class="tomo-card tomo-card">
                         <h6 class="tomo-card__title">epoch</h6>
                         <p class="tomo-card__text">{{ chainConfig.epoch }} blocks</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <b-card class="tomo-card tomo-card--animated">
+                    <b-card class="tomo-card tomo-card">
                         <h6 class="tomo-card__title">Next Checkpoint</h6>
                         <p class="tomo-card__text">
                             <!-- eslint-disable-next-line max-len -->
@@ -87,6 +87,11 @@
                 </template>
 
                 <template
+                    slot="latestSignedBlock"
+                    slot-scope="data">#{{ data.item.latestSignedBlock }}
+                </template>
+
+                <template
                     slot="status"
                     slot-scope="data">
                     <div class="mt-2 mt-lg-0">
@@ -97,20 +102,9 @@
                             {{ data.item.status.toUpperCase() }}
                         </span>
                         <span
-                            v-if="data.item.isMasternode"
+                            v-else
                             class="tomo-chip tomo-chip--primary tomo-chip--masternode">MASTERNODE</span>
                     </div>
-                </template>
-
-                <template
-                    v-if="data.item.owner === account"
-                    slot="action-alt"
-                    slot-scope="data">
-                    <b-button
-                        v-if="data.item.status === 'PROPOSED'"
-                        :to="`/resign/${data.item.address}`"
-                        variant="secondary"
-                        class="d-none d-lg-block">Resign</b-button>
                 </template>
 
                 <template
@@ -121,11 +115,6 @@
                         :to="`/voting/${data.item.address}`"
                         variant="primary"
                         class="mt-3 mt-lg-0">Vote</b-button>
-                    <b-button
-                        v-if="data.item.status === 'PROPOSED' && data.item.owner === account"
-                        :to="`/resign/${data.item.address}`"
-                        variant="secondary"
-                        class="d-inline-block d-lg-none mt-3 mt-lg-0">Resign</b-button>
                 </template>
             </b-table>
 
@@ -171,13 +160,13 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'status',
-                    label: 'Status',
+                    key: 'latestSignedBlock',
+                    label: 'Latest Signed Block',
                     sortable: false
                 },
                 {
-                    key: 'action-alt',
-                    label: '',
+                    key: 'status',
+                    label: 'Status',
                     sortable: false
                 },
                 {
@@ -232,7 +221,8 @@ export default {
                     status: candidate.status,
                     isMasternode: candidate.isMasternode,
                     name: candidate.name || 'Anonymous',
-                    cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber()
+                    cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                    latestSignedBlock: candidate.latestSignedBlock
                 })
             })
 
@@ -263,30 +253,10 @@ export default {
             })
         },
         getTableCssClass: function () {
-            let cssClass = 'tomo-table--candidates-2-btns'
+            let cssClass = ''
 
             if (!this.candidates.length) {
                 cssClass += ' tomo-table--candidates-empty'
-            }
-
-            for (let candidate of this.candidates) {
-                if (candidate.owner === this.account) {
-                    if (candidate.status === 'PROPOSED') {
-                        this.hasProposed = true
-                    }
-
-                    if (candidate.status === 'RESIGNED') {
-                        this.hasResigned = true
-                    }
-                }
-            }
-
-            if (this.hasProposed && this.hasResigned) {
-                cssClass = 'tomo-table--candidates-3-btns'
-            }
-
-            if (!this.hasProposed && this.hasResigned) {
-                cssClass = 'tomo-table--candidates-2-btns-withdraw'
             }
 
             cssClass += this.loading ? ' tomo-table--loading' : ''
