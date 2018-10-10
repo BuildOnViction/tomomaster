@@ -175,7 +175,7 @@
     margin-bottom: 0;
 
     .btn {
-        padding: 9px 14px;
+        padding: 7px 14px;
     }
 
     td[aria-colindex="7"] {
@@ -195,42 +195,6 @@
         border-top: none;
     }
 
-    &.tomo-table--candidates-2-btns,
-    &.tomo-table--candidates-2-btns-withdraw {
-        th[aria-colindex="6"],
-        td[aria-colindex="6"] {
-            display: none;
-            padding: 0;
-            margin: 0;
-        }
-    }
-
-    &.tomo-table--candidates-3-btns {
-        th[aria-colindex="6"],
-        td[aria-colindex="6"],
-        th[aria-colindex="7"],
-        td[aria-colindex="7"] {
-            display: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        th[aria-colindex="8"],
-        td[aria-colindex="8"] {
-            text-align: center;
-            grid-template-columns: 100% !important;
-            border-top: none;
-
-            .btn {
-                margin: 0 5px;
-            }
-
-            &:before {
-                display: none !important;
-            }
-        }
-    }
-
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
@@ -239,7 +203,8 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 5% auto 14% 20% 210px 110px 72px;
+            grid-template-columns: 5% 20% 10% 20% 15% 20% 10%;
+            align-items: center;
             padding-top: 0;
             padding-bottom: 0;
             padding-right: 0;
@@ -257,6 +222,10 @@
         }
 
         th[aria-colindex="5"] {
+            font-size: 14px;
+        }
+
+        th[aria-colindex="6"] {
             position: relative;
 
             &:after {
@@ -271,15 +240,16 @@
             }
         }
 
-        td[aria-colindex="5"] {
+        td[aria-colindex="6"] {
             position: relative;
+            font-size: 12px;
 
             .tomo-chip {
                 width: 100%;
             }
         }
         
-        td[aria-colindex="5"] > div {
+        td[aria-colindex="6"] > div {
             position: relative;
             z-index: 1;
 
@@ -288,7 +258,7 @@
                 content: '';
                 position: absolute;
                 top: 0;
-                left: calc(-35px - 10px);
+                left: calc(-20px - 10px);
                 height: 10px;
                 width: 10px;
             }
@@ -305,14 +275,14 @@
             }
         }
 
-        td[aria-colindex="5"] > div > div {
+        td[aria-colindex="6"] > div > div {
 
             &:before,
             &:after {
                 content: '';
                 position: absolute;
                 bottom: 0;
-                left: calc(-35px - 10px);
+                left: calc(-20px - 10px);
                 height: 10px;
                 width: 10px;
             }
@@ -329,19 +299,13 @@
             }
         }
 
-        td[aria-colindex="5"],
         td[aria-colindex="6"],
-        td[aria-colindex="7"] {
-            background-color: $color-body-bg;
-        }
-
-        td[aria-colindex="5"],
-        th[aria-colindex="5"] {
-            padding-left: 35px;
-            padding-right: 35px;
-        }
-
         th[aria-colindex="6"] {
+            padding-left: 20px;
+            padding-right: 10px;
+        }
+
+        th[aria-colindex="7"] {
 
             &:after {
                 content: '';
@@ -356,7 +320,7 @@
             }
         }
 
-        td[aria-colindex="6"] {
+        td[aria-colindex="7"] {
 
             .btn {
                 position: relative;
@@ -364,7 +328,7 @@
             }
         }
 
-        th[aria-colindex="7"] {
+        th[aria-colindex="8"] {
             padding-left: 10px;
 
             &:after {
@@ -380,7 +344,7 @@
             }
         }
 
-        td[aria-colindex="7"] {
+        td[aria-colindex="8"] {
             text-align: right;
             position: relative;
             z-index: 1;
@@ -390,98 +354,10 @@
             }
         }
 
-        &.tomo-table--candidates-2-btns {
-
-            .text-truncate {
-                max-width: 14rem;
-            }
-
-            th[aria-colindex="7"] {
-                position: relative;
-    
-                &:after {
-                    content: '';
-                    display: block;
-                    height: 1000px;
-                    width: 100%;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    background-color: $color-body-bg;
-                }
-            }
-
-            thead tr,
-            tbody tr {
-                grid-template-columns: 5% auto 14% 20% 210px 72px;
-            }
-        }
-
-        &.tomo-table--candidates-2-btns-withdraw {
-
-            th[aria-colindex="6"],
-            td[aria-colindex="6"] {
-                display: block;
-            }
-
-            th[aria-colindex="7"],
-            td[aria-colindex="7"] {
-                display: none;
-            }
-
-            thead tr,
-            tbody tr {
-                grid-template-columns: 5% auto 15% 20% 210px 110px;
-            }
-
-            td[aria-colindex="7"] {
-                text-align: right;
-            }
-        }
-
-        &.tomo-table--candidates-3-btns {
-
-            thead tr,
-            tbody tr {
-                grid-template-columns: 5% auto 14% 20% 170px 110px 61px;
-            }
-
-            td[aria-colindex="5"],
-            th[aria-colindex="5"] {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-
-            td[aria-colindex="5"] > div {
-                &:before,
-                &:after {
-                    left: calc(-10px - 10px);
-                }
-            }
-
-            td[aria-colindex="5"] > div > div {
-                &:before,
-                &:after {
-                    left: calc(-10px - 10px);
-                }
-            }
-
-            th[aria-colindex="6"],
-            td[aria-colindex="6"],
-            th[aria-colindex="7"],
-            td[aria-colindex="7"] {
-                display: block;
-            }
-
-            th[aria-colindex="6"],
-            td[aria-colindex="6"] {
-                padding-right: 10px;
-            }
-
-            th[aria-colindex="7"],
-            td[aria-colindex="7"] {
-                text-align: right;
-            }
+        td[aria-colindex="6"],
+        td[aria-colindex="7"],
+        td[aria-colindex="8"] {
+            background-color: $color-body-bg;
         }
 
         &.tomo-table--candidates-empty {
@@ -495,24 +371,37 @@
 
     @include media-breakpoint-up(xl) {
 
+        thead tr,
+        tbody tr {
+            grid-template-columns: 5% 28% 10% 15% 15% 17% 10%;
+        }
+
         .text-truncate {
             max-width: 15rem;
         }
 
-        &.tomo-table--candidates-2-btns {
+        td[aria-colindex="6"] {
+            font-size: 14px;
+        }
 
-            .text-truncate {
-                max-width: 20rem;
+        td[aria-colindex="6"],
+        th[aria-colindex="6"] {
+            padding-left: 35px;
+        }
+
+        td[aria-colindex="6"] > div {
+
+            &:before,
+            &:after {
+                left: calc(-35px - 10px);
             }
         }
-    }
 
-    @include media-breakpoint-up(2xl) {
+        td[aria-colindex="6"] > div > div {
 
-        &.tomo-table--candidates-2-btns {
-
-            .text-truncate {
-                max-width: 100%;
+            &:before,
+            &:after {
+                left: calc(-35px - 10px);
             }
         }
     }
