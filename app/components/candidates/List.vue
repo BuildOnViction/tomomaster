@@ -88,7 +88,7 @@
 
                 <template
                     slot="latestSignedBlock"
-                    slot-scope="data">#{{ formatNumber(data.item.latestSignedBlock) }}
+                    slot-scope="data">#{{ data.item.latestSignedBlock }}
                 </template>
 
                 <template
