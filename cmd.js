@@ -19,7 +19,7 @@ commander
                     console.log('ID:', c.candidate, '\n',
                         'name:', c.name || 'null', '\n',
                         'nodeId:', c.nodeId || 'null', '\n',
-                        'hardwhere:', c.hardware || 'null', '\n',
+                        'hardware:', c.hardware || 'null', '\n',
                         'dc-name:', (c.dataCenter || {}).name || 'null', '\n',
                         'dc-location:', (c.dataCenter || {}).location || 'null', '\n',
                         'github:', (c.socials || {}).github || 'null', '\n',
@@ -64,7 +64,7 @@ commander
         if (options.scEmail) {
             set['socials.email'] = options.scEmail
         }
-        let u = await db.Candidate.update({
+        let u = await db.Candidate.updateOne({
             candidate: id
         }, {
             $set: set
