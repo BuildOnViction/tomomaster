@@ -55,7 +55,7 @@
                         <b-form-group
                             label="Amount"
                             label-for="unvote-value"
-                            description="The amount of TOMO to unvote">
+                            description="The amount of TOMO to unvote. TX fee: 0.0000000000525 TOMO">
                             <b-input-group>
                                 <number-input
                                     :class="getValidationClass('unvoteValue')"
