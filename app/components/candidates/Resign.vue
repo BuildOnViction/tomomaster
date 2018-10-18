@@ -93,7 +93,7 @@ export default {
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
                     from: account,
-                    gasPrice: 1,
+                    gasPrice: 2500,
                     gas: 2000000
                 })
 

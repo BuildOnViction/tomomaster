@@ -329,7 +329,7 @@ export default {
                 console.log('==>', blockNumber, index)
                 let wd = await contract.withdraw(String(blockNumber), String(index), {
                     from: account,
-                    gasPrice: 1,
+                    gasPrice: 2500,
                     gas: 2000000
                 })
                 let toastMessage = wd.tx ? 'You have successfully withdrawed!'

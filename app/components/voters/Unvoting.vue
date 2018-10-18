@@ -181,7 +181,7 @@ export default {
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), {
                     from: account,
-                    gasPrice: 1,
+                    gasPrice: 2500,
                     gas: 1000000
                 })
                 self.vote -= value
