@@ -7,15 +7,12 @@ const byte1 = '0x000000000000000000000000000000000000000000000000000000000000000
 
 contract('TomoRandomize', (accounts) => {
     it('Set a news', async () => {
-        const randomize = await TomoRandomize.new(2)
+        const randomize = await TomoRandomize.new()
 
-        await randomize.setSecret([byte0, byte1], { from : accounts[0] })
-        let secret = (await randomize.getSecret.call(accounts[0])).valueOf()
-        await randomize.setOpening(byte0, { from : accounts[0] })
+        await tryCatch(randomize.setSecret([byte0, byte1], { from : accounts[0] }), errTypes.revert)
+        await tryCatch(randomize.getSecret.call(accounts[0]), errTypes.revert)
+        await tryCatch(randomize.setOpening(byte0, { from : accounts[0] }), errTypes.revert)
 
         await tryCatch(randomize.getOpening(accounts[0], { from : accounts[0] }), errTypes.revert)
-
-        assert.equal(secret[0], byte0)
-        assert.equal(secret[1], byte1)
     })
 })

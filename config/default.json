@@ -33,8 +33,7 @@
     "maxValidatorNumber": 150,
     "candidateWithdrawDelay": 100,
     "voterWithdrawDelay": 100,
-    "epochNumber": 900,
-    "randomNumber": 90
+    "epochNumber": 900
   },
   "GA": "UA-124427827-2"
 }
