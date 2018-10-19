@@ -150,6 +150,19 @@ export default {
             let account = await self.getAccount()
             self.account = account
         } catch (e) {
+            self.$toasted.show(`You need login your account before voting`,
+                {
+                    type : 'default',
+                    duration: 5000,
+                    action : [
+                        {
+                            text : 'Login',
+                            onClick : (e, toastObject) => {
+                                self.$router.push({ path: '/setting' })
+                            }
+                        }
+                    ]
+                })
             console.log(e)
         }
     },

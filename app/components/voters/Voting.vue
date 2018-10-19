@@ -12,7 +12,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
                         <p class="tomo-list__text">
-                            <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
+                            <span><router-link :to="`/voter/${voter}`">{{ voter || 'Unknown' }}</router-link></span>
                             <span>Voter</span>
                         </p>
                     </li>
@@ -111,6 +111,19 @@ export default {
             let account = await self.getAccount()
             self.voter = account
         } catch (e) {
+            self.$toasted.show(`You need login your account before voting`,
+                {
+                    type : 'default',
+                    duration: 5000,
+                    action : [
+                        {
+                            text : 'Login',
+                            onClick : (e, toastObject) => {
+                                self.$router.push({ path: '/setting' })
+                            }
+                        }
+                    ]
+                })
             console.log(e)
         }
     },

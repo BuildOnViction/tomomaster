@@ -168,7 +168,7 @@ import {
     required
 } from 'vuelidate/lib/validators'
 import localhostUrl from '../../validators/localhostUrl.js'
-const HDWalletProvider = require('truffle-hdwallet-provider')
+const { HDWalletProvider } = require('../helpers.js')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
     name: 'App',
