@@ -147,12 +147,12 @@ export default {
                 {
                     key: 'address',
                     label: 'Address',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'name',
                     label: 'Name',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'cap',
@@ -162,7 +162,7 @@ export default {
                 {
                     key: 'latestSignedBlock',
                     label: 'Latest Signed Block',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'status',

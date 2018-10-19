@@ -31,9 +31,7 @@ router.get('/', async function (req, res, next) {
 
         let map = candidates.map(async c => {
             let bs = await db.BlockSigner.findOne({
-                'signers.signer': {
-                    $in: signers
-                }
+                'signers.signer': c.candidate
             }).sort({ _id: 'desc' })
             c.latestSignedBlock = (bs || {}).blockNumber || 0
 
