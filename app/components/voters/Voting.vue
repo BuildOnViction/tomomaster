@@ -32,7 +32,8 @@
                     <b-form-group
                         label="Vote"
                         label-for="vote-value"
-                        description="How much TOMO would you like to vote for this candidate?">
+                        description="How much TOMO would you like to vote for this candidate?
+                        TX fee: 0.0000000000525 TOMO">
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('voteValue')"
@@ -148,7 +149,7 @@ export default {
                 let rs = await contract.vote(self.candidate, {
                     from: account,
                     value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber(),
-                    gasPrice: 1,
+                    gasPrice: 2500,
                     gas: 1000000
                 })
 

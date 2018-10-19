@@ -41,7 +41,7 @@
             ok-title="Yes"
             cancel-title="No"
             @ok="resign()">
-            <p>If you resign, you will be able to withdraw all your deposit after 30 days.</p>
+            <p>If you resign, you will be able to withdraw all your deposit after around 30 days.</p>
         </b-modal>
     </div>
 </template>
@@ -93,7 +93,7 @@ export default {
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
                     from: account,
-                    gasPrice: 1,
+                    gasPrice: 2500,
                     gas: 2000000
                 })
 
