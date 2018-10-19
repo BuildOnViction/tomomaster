@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
 const { Validator } = require('../models/blockchain/validator')
-const HDWalletProvider = require('truffle-hdwallet-provider')
+const { HDWalletProvider } = require('../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 
@@ -31,9 +31,7 @@ router.get('/', async function (req, res, next) {
 
         let map = candidates.map(async c => {
             let bs = await db.BlockSigner.findOne({
-                'signers.signer': {
-                    $in: signers
-                }
+                'signers.signer': c.candidate
             }).sort({ _id: 'desc' })
             c.latestSignedBlock = (bs || {}).blockNumber || 0
 
