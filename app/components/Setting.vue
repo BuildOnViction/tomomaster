@@ -254,6 +254,7 @@ export default {
                     }
                     self.wh.push(it)
                 })
+                self.isReady = true
             } catch (e) {
                 console.log(e)
             }
