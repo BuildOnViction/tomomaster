@@ -1,69 +1,153 @@
 <template>
     <div class="container">
-        <b-row
-            align-v="center"
-            align-h="center"
-            class="m-0">
-            <b-card
-                :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
-                + (loading ? ' tomo-loading' : '')">
-                <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
-                <ul class="tomo-list list-unstyled">
-                    <li class="tomo-list__item">
-                        <i class="tm-tomo tomo-list__icon" />
-                        <p class="tomo-list__text">
-                            <span><router-link :to="`/voter/${voter}`">{{ voter || 'Unknown' }}</router-link></span>
-                            <span>Voter</span>
-                        </p>
-                    </li>
-                    <li class="tomo-list__item">
-                        <i class="tm-profile tomo-list__icon" />
-                        <p class="tomo-list__text">
-                            <span><router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link></span>
-                            <span>Candidate</span>
-                        </p>
-                    </li>
-                </ul>
+        <div
+            v-if="step === 1">
+            <b-row
+                align-v="center"
+                align-h="center"
+                class="m-0">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                    + (loading ? ' tomo-loading' : '')">
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
+                    <ul class="tomo-list list-unstyled">
+                        <li class="tomo-list__item">
+                            <i class="tm-tomo tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span><router-link :to="`/voter/${voter}`">{{ voter || 'Unknown' }}</router-link></span>
+                                <span>Voter</span>
+                            </p>
+                        </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-profile tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span><router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link></span>
+                                <span>Candidate</span>
+                            </p>
+                        </li>
+                    </ul>
 
-                <b-form
-                    class="tomo-form tomo-form--vote"
-                    novalidate
-                    @submit.prevent="validate()">
-                    <b-form-group
-                        label="Vote"
-                        label-for="vote-value"
-                        description="How much TOMO would you like to vote for this candidate?
-                        TX fee: 0.0000000000525 TOMO">
-                        <b-input-group>
-                            <number-input
-                                :class="getValidationClass('voteValue')"
-                                :min="10"
-                                :step="1"
-                                v-model="voteValue"
-                                name="vote-value"/>
-                            <b-input-group-append>
-                                <i class="tm-tomo" />
-                            </b-input-group-append>
-                            <span
-                                v-if="$v.voteValue.$dirty && !$v.voteValue.required"
-                                class="text-danger">Required field</span>
-                            <span
-                                v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                class="text-danger">Must be greater than 10 TOMO</span>
-                        </b-input-group>
-                    </b-form-group>
-                    <div class="buttons text-right">
-                        <b-button
-                            type="button"
-                            variant="secondary"
-                            @click="$router.go(-1)">Cancel</b-button>
-                        <b-button
-                            type="submit"
-                            variant="primary">Submit</b-button>
+                    <b-form
+                        class="tomo-form tomo-form--vote"
+                        novalidate
+                        @submit.prevent="validate()">
+                        <b-form-group
+                            label="Vote"
+                            label-for="vote-value"
+                            description="How much TOMO would you like to vote for this candidate?
+                            TX fee: 0.0000000000525 TOMO">
+                            <b-input-group>
+                                <number-input
+                                    :class="getValidationClass('voteValue')"
+                                    :min="10"
+                                    :step="1"
+                                    v-model="voteValue"
+                                    name="vote-value"/>
+                                <b-input-group-append>
+                                    <i class="tm-tomo" />
+                                </b-input-group-append>
+                                <span
+                                    v-if="$v.voteValue.$dirty && !$v.voteValue.required"
+                                    class="text-danger">Required field</span>
+                                <span
+                                    v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
+                                    class="text-danger">Must be greater than 10 TOMO</span>
+                            </b-input-group>
+                        </b-form-group>
+                        <div class="buttons text-right">
+                            <b-button
+                                type="button"
+                                variant="secondary"
+                                @click="$router.go(-1)">Cancel</b-button>
+                            <b-button
+                                type="submit"
+                                variant="primary">Next</b-button>
+                        </div>
+                    </b-form>
+                </b-card>
+            </b-row>
+        </div>
+        <div
+            v-if="step === 2">
+            <b-row
+                align-v="center"
+                align-h="center">
+                <b-card
+                    :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                    + (loading ? ' tomo-loading' : '')">
+                    <div>
+                        <strong>STEP 1 - Copy message below and sign the message using
+                            <a
+                                href="https://www.mycrypto.com/signmsg.html"
+                                style="color: #3498db">MyCrypto</a>
+                            or <a
+                                href="https://www.myetherwallet.com/signmsg.html"
+                                style="color: #3498db">MyEtherWallet</a>
+                        </strong>
                     </div>
-                </b-form>
-            </b-card>
-        </b-row>
+                    <div>
+                        <div>
+                            <input
+                                type="radio"
+                                checked>
+                            <b>
+                                Contract Owner/Creator: 0x00abcd
+                            </b>
+                        </div>
+                        <div
+                            class="wrapper">
+                            <div
+                                id="one">
+                                <label>
+                                    <b>Sign message</b>
+                                </label>
+                                <div
+                                    class="pull-left"
+                                    style="margin-right: -7px">
+                                    <button
+                                        v-clipboard="message"
+                                        type="button"
+                                        class="btn btn-sm mr-2 code-actions__copy"
+                                        @success="onSuccess">
+                                    <i class="fa fa-copy" />Copy</button>
+                                </div>
+                                <label style="margin-top: 5px">
+                                    <textarea
+                                        :value="message"
+                                        class="sign-message"
+                                        type="text"
+                                        disabled
+                                        cols="300"
+                                        rows="3"
+                                        style="width: 100%"/>
+                                </label>
+                            </div>
+                            <div
+                                id="two">
+                                <vue-qrcode
+                                    :value="qrCode"
+                                    :options="{size: 250 }"
+                                    class="img-fluid text-center text-lg-right tomo-qrcode"/>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="buttons text-right">
+                                <b-button
+                                    type="button"
+                                    variant="secondary"
+                                    @click="backStep">Cancel</b-button>
+                                <b-button
+                                    type="submit"
+                                    variant="primary">Submit</b-button>
+                            </div>
+                            <!-- <button
+                                class="btn btn-primary"
+                                @click.prevent="nextStep">Next</button> -->
+                        </div>
+                    </div>
+                </b-card>
+            </b-row>
+        </div>
     </div>
 </template>
 
@@ -75,11 +159,13 @@ import {
 } from 'vuelidate/lib/validators'
 import NumberInput from '../NumberInput.vue'
 import BigNumber from 'bignumber.js'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
 
 export default {
     name: 'App',
     components: {
-        NumberInput
+        NumberInput,
+        VueQrcode
     },
     mixins: [validationMixin],
     data () {
@@ -88,7 +174,9 @@ export default {
             voter: '',
             candidate: this.$route.params.candidate,
             voteValue: 10,
-            loading: false
+            loading: false,
+            step: 1,
+            message: 'Ha ha ha'
         }
     },
     validations: {
@@ -143,7 +231,8 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                this.vote()
+                this.nextStep()
+                // this.vote()
             }
         },
         vote: async function () {
@@ -183,6 +272,15 @@ export default {
                 })
                 console.log(e)
             }
+        },
+        onSuccess () {
+            this.$toasted.show('Copied')
+        },
+        nextStep () {
+            this.step++
+        },
+        backStep () {
+            this.step--
         }
     }
 }
