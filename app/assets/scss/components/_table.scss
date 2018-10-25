@@ -568,12 +568,16 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 10% 15% 55% 10% 10%;
+            grid-template-columns: 5% 10% auto 15% 10%;
+        }
+
+        td[aria-colindex="1"] {
+            text-align: center
         }
 
         th[aria-colindex="4"],
         td[aria-colindex="4"] {
-            text-align: right
+            text-align: inherit
         }
 
         th[aria-colindex="5"],
