@@ -336,13 +336,13 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'tx',
-                    label: '',
+                    key: 'createdAt',
+                    label: 'Age',
                     sortable: false
                 },
                 {
-                    key: 'createdAt',
-                    label: 'Age',
+                    key: 'tx',
+                    label: '',
                     sortable: false
                 }
             ],

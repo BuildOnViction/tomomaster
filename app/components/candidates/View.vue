@@ -339,7 +339,7 @@
 
                 <template
                     slot="id"
-                    slot-scope="data">{{ data.index + 1 }}
+                    slot-scope="data">{{ data.item.id }}
                 </template>
 
                 <template
@@ -448,7 +448,7 @@
                 </template>
 
                 <template
-                    slot="tx"
+                    slot="action"
                     slot-scope="data">
                     <a
                         v-b-tooltip.hover.right
@@ -546,7 +546,7 @@ export default {
                 {
                     key: 'id',
                     label: 'ID',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'blockNumber',
@@ -561,7 +561,7 @@ export default {
                 {
                     key: 'createdAt',
                     label: 'Age',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'action',
@@ -578,7 +578,7 @@ export default {
                 {
                     key: 'id',
                     label: 'ID',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'address',
@@ -600,7 +600,7 @@ export default {
                 {
                     key: 'id',
                     label: 'ID',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'voter',
@@ -620,7 +620,7 @@ export default {
                 {
                     key: 'createdAt',
                     label: 'Age',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'action',
@@ -735,6 +735,7 @@ export default {
                     return (s.signer === address)
                 })
                 self.signs.push({
+                    id: idx + 1,
                     tx: stx[0].tx,
                     blockNumber: bs.blockNumber,
                     createdAt: moment(bs.createdAt).fromNow(),

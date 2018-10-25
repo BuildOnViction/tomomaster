@@ -68,7 +68,7 @@
 
                 <template
                     slot="index"
-                    slot-scope="data">{{ data.index + 1 }}
+                    slot-scope="data">{{ data.item.id }}
                 </template>
 
                 <template
@@ -214,8 +214,9 @@ export default {
             self.loading = true
 
             let candidates = await axios.get('/api/candidates')
-            candidates.data.map(async (candidate) => {
+            candidates.data.map(async (candidate, index) => {
                 self.candidates.push({
+                    id: index + 1,
                     address: candidate.candidate,
                     owner: candidate.owner.toLowerCase(),
                     status: candidate.status,
