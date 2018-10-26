@@ -103,4 +103,20 @@ router.post('/apply', async function (req, res, next) {
     }
 })
 
+router.get('/:candidate/isMasternode', async function (req, res, next) {
+    try {
+        let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
+        const signers = latestSigners.signers
+        const set = new Set()
+        for (let i = 0; i < signers.length; i++) {
+            set.add(signers[i])
+        }
+        let isMasternode = (set.has(req.params.candidate || '')) ? 1 : 0
+
+        return res.json(isMasternode)
+    } catch (e) {
+        return next(e)
+    }
+})
+
 module.exports = router
