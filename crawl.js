@@ -70,7 +70,7 @@ async function watchBlockSigner () {
                     }
                 }, { upsert: true })
             } catch (e) {
-                emitter.emit('error', e)
+                console.error(e)
             }
         })
     } catch (e) {
@@ -147,13 +147,12 @@ async function watchValidator () {
                     .priority('low').removeOnComplete(true).save()
                 updateCandidateInfo(candidate)
             } catch (e) {
-                emitter.emit('error', e)
+                console.error(e)
             }
         })
     } catch (e) {
         emitter.emit('error', e)
     }
-    return emitter
 }
 
 function watchNewBlock () {
@@ -168,7 +167,7 @@ function watchNewBlock () {
                 q.create('reward', { block: blk })
                     .priority('low').removeOnComplete(true).save()
             } catch (e) {
-                emitter.emit('error', e)
+                console.error(e)
             }
         })
     } catch (e) {
