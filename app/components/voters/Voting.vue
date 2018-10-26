@@ -14,7 +14,7 @@
                         <li class="tomo-list__item">
                             <i class="tm-tomo tomo-list__icon" />
                             <p class="tomo-list__text">
-                                <span><router-link :to="`/voter/${voter}`">{{ voter || 'Unknown' }}</router-link></span>
+                                <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
                                 <span>Voter</span>
                             </p>
                         </li>
@@ -75,25 +75,13 @@
                 <b-card
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
                     <div>
-                        <strong>STEP 1 - Copy message below and sign the message using
-                            <a
-                                href="https://www.mycrypto.com/signmsg.html"
-                                style="color: #3498db">MyCrypto</a>
-                            or <a
-                                href="https://www.myetherwallet.com/signmsg.html"
-                                style="color: #3498db">MyEtherWallet</a>
+                        <strong>Using Tomo wallet to execute the action
                         </strong>
                     </div>
-                    <div>
-                        <div>
-                            <input
-                                type="radio"
-                                checked>
-                            <b>
-                                Contract Owner/Creator: 0x00abcd
-                            </b>
-                        </div>
+                    <div
+                        style="margin-top: 20px">
                         <div
                             class="wrapper">
                             <div
@@ -102,8 +90,8 @@
                                     <b>Sign message</b>
                                 </label>
                                 <div
-                                    class="pull-left"
-                                    style="margin-right: -7px">
+                                    class="pull-right"
+                                    style="margin-right: -7px; float: right">
                                     <button
                                         v-clipboard="message"
                                         type="button"
@@ -117,13 +105,13 @@
                                         class="sign-message"
                                         type="text"
                                         disabled
-                                        cols="300"
-                                        rows="3"
+                                        cols="100"
+                                        rows="4"
                                         style="width: 100%"/>
                                 </label>
                             </div>
                             <div
-                                id="two">
+                                style="text-align: center">
                                 <vue-qrcode
                                     :value="qrCode"
                                     :options="{size: 250 }"
@@ -152,6 +140,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -171,12 +160,13 @@ export default {
     data () {
         return {
             isReady: !!this.web3,
-            voter: '',
+            voter: 'Unknown',
             candidate: this.$route.params.candidate,
             voteValue: 10,
             loading: false,
             step: 1,
-            message: 'Ha ha ha'
+            message: '',
+            qrCode: 'This is qr code :DDDDdfsdfdsfdsfsfsdfsdfD'
         }
     },
     validations: {
@@ -197,7 +187,9 @@ export default {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
             let account = await self.getAccount()
-            self.voter = account
+            if (account) {
+                self.voter = account
+            }
         } catch (e) {
             self.$toasted.show(`You need login your account before voting`,
                 {
@@ -276,8 +268,23 @@ export default {
         onSuccess () {
             this.$toasted.show('Copied')
         },
-        nextStep () {
-            this.step++
+        async nextStep () {
+            const self = this
+            const data = {
+                voter: self.voter,
+                candidate: self.candidate,
+                amount: self.voteValue
+            }
+            // call api to generate qr code
+            const generatedMess = await axios.post(`/api/voters/generateQR`, data)
+            console.log(generatedMess)
+
+            self.message = generatedMess.data.message
+            self.qrCode = encodeURI(
+                'tomochain:' + self.candidate + '?' + 'amount=' + self.voteValue +
+                '&submitURL=' + generatedMess.data.url + generatedMess.data.id
+            )
+            self.step++
         },
         backStep () {
             this.step--
