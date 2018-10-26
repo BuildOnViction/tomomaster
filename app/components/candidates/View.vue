@@ -338,6 +338,11 @@
                 stacked="md" >
 
                 <template
+                    slot="id"
+                    slot-scope="data">{{ data.item.id }}
+                </template>
+
+                <template
                     slot="blockNumber"
                     slot-scope="data">{{ data.item.blockNumber }}
                 </template>
@@ -566,11 +571,6 @@ export default {
             signsTotalRows: 0,
             voterFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: true
-                },
-                {
                     key: 'address',
                     label: 'Address',
                     sortable: true
@@ -587,11 +587,6 @@ export default {
             voterPerPage: 10,
             voterTotalRows: 0,
             txFields: [
-                {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: true
-                },
                 {
                     key: 'voter',
                     label: 'Voter',
@@ -687,7 +682,6 @@ export default {
             let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
-                    id: idx + 1,
                     address: v.voter,
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
@@ -706,7 +700,6 @@ export default {
             let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
                 self.transactions.push({
-                    id: idx + 1,
                     tx: tx.tx,
                     voter: tx.voter,
                     candidate: tx.candidate,

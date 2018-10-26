@@ -67,11 +67,6 @@
                 stacked="md" >
 
                 <template
-                    slot="index"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
                     slot="address"
                     slot-scope="data">
                     <router-link
@@ -139,11 +134,6 @@ export default {
         return {
             chainConfig: {},
             fields: [
-                {
-                    key: 'index',
-                    label: 'ID',
-                    sortable: false
-                },
                 {
                     key: 'address',
                     label: 'Address',
@@ -216,7 +206,6 @@ export default {
             let candidates = await axios.get('/api/candidates')
             candidates.data.map(async (candidate, index) => {
                 self.candidates.push({
-                    id: index + 1,
                     address: candidate.candidate,
                     owner: candidate.owner.toLowerCase(),
                     status: candidate.status,
