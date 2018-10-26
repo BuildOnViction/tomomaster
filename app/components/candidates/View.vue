@@ -338,11 +338,6 @@
                 stacked="md" >
 
                 <template
-                    slot="id"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
                     slot="blockNumber"
                     slot-scope="data">{{ data.item.blockNumber }}
                 </template>
@@ -544,11 +539,6 @@ export default {
             mnRewardsTotalRows: 0,
             signsFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: true
-                },
-                {
                     key: 'blockNumber',
                     label: 'Block No.',
                     sortable: false
@@ -735,7 +725,6 @@ export default {
                     return (s.signer === address)
                 })
                 self.signs.push({
-                    id: idx + 1,
                     tx: stx[0].tx,
                     blockNumber: bs.blockNumber,
                     createdAt: moment(bs.createdAt).fromNow(),
