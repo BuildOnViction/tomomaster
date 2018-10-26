@@ -339,7 +339,7 @@
 
                 <template
                     slot="id"
-                    slot-scope="data">{{ data.index + 1 }}
+                    slot-scope="data">{{ data.item.id }}
                 </template>
 
                 <template
@@ -448,7 +448,7 @@
                 </template>
 
                 <template
-                    slot="tx"
+                    slot="action"
                     slot-scope="data">
                     <a
                         v-b-tooltip.hover.right
@@ -544,11 +544,6 @@ export default {
             mnRewardsTotalRows: 0,
             signsFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
                     key: 'blockNumber',
                     label: 'Block No.',
                     sortable: false
@@ -561,7 +556,7 @@ export default {
                 {
                     key: 'createdAt',
                     label: 'Age',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'action',
@@ -575,11 +570,6 @@ export default {
             signsPerPage: 10,
             signsTotalRows: 0,
             voterFields: [
-                {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
                 {
                     key: 'address',
                     label: 'Address',
@@ -598,11 +588,6 @@ export default {
             voterTotalRows: 0,
             txFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
                     key: 'voter',
                     label: 'Voter',
                     sortable: true
@@ -620,7 +605,7 @@ export default {
                 {
                     key: 'createdAt',
                     label: 'Age',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'action',
@@ -697,7 +682,6 @@ export default {
             let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
-                    id: idx + 1,
                     address: v.voter,
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
@@ -716,7 +700,6 @@ export default {
             let txs = await axios.get(`/api/transactions/candidate/${address}`)
             txs.data.map((tx, idx) => {
                 self.transactions.push({
-                    id: idx + 1,
                     tx: tx.tx,
                     voter: tx.voter,
                     candidate: tx.candidate,

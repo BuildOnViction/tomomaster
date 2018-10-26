@@ -255,11 +255,6 @@ export default {
         return {
             candidateFields: [
                 {
-                    key: 'index',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
                     key: 'address',
                     label: 'Address',
                     sortable: true
@@ -316,11 +311,6 @@ export default {
             loading: false,
             txFields: [
                 {
-                    key: 'id',
-                    label: 'ID',
-                    sortable: false
-                },
-                {
                     key: 'candidate',
                     label: 'Candidate',
                     sortable: true
@@ -336,13 +326,13 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'tx',
-                    label: '',
+                    key: 'createdAt',
+                    label: 'Age',
                     sortable: false
                 },
                 {
-                    key: 'createdAt',
-                    label: 'Age',
+                    key: 'tx',
+                    label: '',
                     sortable: false
                 }
             ],
@@ -415,7 +405,6 @@ export default {
             let txs = await axios.get(`/api/transactions/voter/${voter}`)
             txs.data.map((tx, idx) => {
                 self.transactions.push({
-                    id: idx + 1,
                     tx: tx.tx,
                     voter: tx.voter,
                     candidate: tx.candidate,
