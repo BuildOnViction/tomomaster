@@ -119,4 +119,14 @@ router.get('/:candidate/isMasternode', async function (req, res, next) {
     }
 })
 
+router.get('/:candidate/isCandidate', async function (req, res, next) {
+    try {
+        let validator = await Validator.deployed()
+        let isCandidate = await validator.isCandidate.call(req.params.candidate)
+        return res.json((isCandidate) ? 1 : 0)
+    } catch (e) {
+        return next(e)
+    }
+})
+
 module.exports = router
