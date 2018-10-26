@@ -91,9 +91,11 @@ router.post('/apply', async function (req, res, next) {
                 : new PrivateKeyProvider(key, network)
         Validator.setProvider(walletProvider)
         let validator = await Validator.deployed()
-        await validator.propose(req.query.coinbase, (req.query.nodeId || ''), {
+        await validator.propose(req.query.coinbase, {
             from : walletProvider.address,
-            value: 50000 * 10 ** 18
+            value: 50000 * 10 ** 18,
+            gas: 2000000,
+            gasPrice: 2500
         })
         return res.json({ status: 'OK' })
     } catch (e) {
