@@ -164,8 +164,12 @@ function watchNewBlock () {
             try {
                 let blk = await chain.eth.getBlock('latest')
                 await updateSigners(blk)
-                q.create('reward', { block: blk })
-                    .priority('high').removeOnComplete(true).save()
+                let epoch = parseInt(config.get('blockchain.epoch'))
+                let blockNumber = blk.number
+                if (blockNumber % epoch === 0) {
+                    q.create('reward', { block: blk })
+                        .priority('high').removeOnComplete(true).save()
+                }
             } catch (e) {
                 console.error(e)
             }

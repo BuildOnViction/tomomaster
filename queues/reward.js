@@ -15,11 +15,9 @@ consumer.task = async function (job, done) {
     let epoch = parseInt(config.get('blockchain.epoch'))
     let blockNumber = parseInt(block.number)
 
-    if (blockNumber % epoch !== 0) {
-        return done()
-    }
-
     try {
+        console.log('Cal reward', blockNumber, epoch)
+
         let validator = await Validator.deployed()
         let bs = await BlockSigner.deployed()
 
@@ -49,7 +47,7 @@ consumer.task = async function (job, done) {
 
         let signers = (sn || {}).signers || []
 
-        console.log('Reward masternodes', signers)
+        console.log('Reward masternodes', blockNumber, blockNumber / epoch, signers)
 
         let totalReward = config.get('blockchain.reward') // TOMO
         let mnRewardRate = config.get('blockchain.masternodeRewardRate')
@@ -146,7 +144,7 @@ consumer.task = async function (job, done) {
         await Promise.all(map)
     } catch (e) {
         console.log('ERROR Reward', e)
-        done(e)
+        done()
     }
 
     done()
