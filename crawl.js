@@ -144,7 +144,7 @@ async function watchValidator () {
                     updateVoterCap(candidate, owner)
                 }
                 q.create('voteHistory', { candidate, blockNumber })
-                    .priority('low').removeOnComplete(true).save()
+                    .priority('high').removeOnComplete(true).save()
                 updateCandidateInfo(candidate)
             } catch (e) {
                 console.error(e)
@@ -165,7 +165,7 @@ function watchNewBlock () {
                 let blk = await chain.eth.getBlock('latest')
                 await updateSigners(blk)
                 q.create('reward', { block: blk })
-                    .priority('low').removeOnComplete(true).save()
+                    .priority('high').removeOnComplete(true).save()
             } catch (e) {
                 console.error(e)
             }
