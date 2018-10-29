@@ -7,7 +7,7 @@ const q = require('./queues')
 const EventEmitter = require('events').EventEmitter
 const emitter = new EventEmitter()
 
-process.setMaxListeners(200)
+process.setMaxListeners(100)
 
 function watchNewBlock () {
     try {

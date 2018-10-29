@@ -13,7 +13,7 @@
                     <b-card class="tomo-card">
                         <h6 class="tomo-card__title">Current Block</h6>
                         <p class="tomo-card__text">
-                            <router-link :to="'/blocksigners'">#{{ chainConfig.blockNumber }}</router-link>
+                            #{{ chainConfig.blockNumber }}
                         </p>
                     </b-card>
                 </div>
@@ -25,8 +25,8 @@
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">epoch</h6>
-                        <p class="tomo-card__text">{{ chainConfig.epoch }} blocks</p>
+                        <h6 class="tomo-card__title">Epoch</h6>
+                        <p class="tomo-card__text">#{{ chainConfig.blockNumber % chainConfig.epoch }}</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
