@@ -30,11 +30,6 @@ router.get('/', async function (req, res, next) {
         }
 
         let map = candidates.map(async c => {
-            let bs = await db.BlockSigner.findOne({
-                'signers.signer': c.candidate
-            }).sort({ _id: 'desc' })
-            c.latestSignedBlock = (bs || {}).blockNumber || 0
-
             // is masternode
             c.isMasternode = set.has(c.candidate)
             return c
@@ -55,9 +50,6 @@ router.get('/:candidate', async function (req, res, next) {
         candidate: address
     }) || {})
 
-    candidate.totalSignedBlocks = await db.BlockSigner.countDocuments({
-        'signers.signer': address
-    })
     return res.json(candidate)
 })
 

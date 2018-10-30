@@ -42,10 +42,10 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Total Signed Blocks</span>
+                            <span class="tomo-info__text">Latest Signed Block</span>
                         </p>
                         <p class="tomo-info__description">
-                            {{ formatNumber(candidate.totalSignedBlocks) }}
+                            {{ formatNumber(candidate.latestSignedBlock) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -65,28 +65,11 @@
                             </b-tooltip>
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
-                        <p class="tomo-info__title">
-                            <i class="tm-arrow-up tomo-info__icon" />
-                            <span class="tomo-info__text">Total voted</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--total-voted"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.totalVoted)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.totalVoted)"
-                                ref="tooltip"
-                                target="tomo-info__description--total-voted">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.totalVoted, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
                     <div
                         v-if="isReady"
                         class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                         <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
+                            <i class="tm-arrow-up tomo-info__icon" />
                             <span class="tomo-info__text">You voted</span>
                         </p>
                         <p
@@ -314,80 +297,6 @@
                 align="center"
                 class="tomo-pagination" />
         </div>
-        <div class="container section section-signs">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-signer color-yellow" />
-                        <span>Signs</span>
-                        <span class="text-truncate section-title__description">
-                            All transactions that the candidate signed</span>
-                    </h3>
-                </div>
-            </div>
-            <b-table
-                :items="signs"
-                :fields="signsFields"
-                :current-page="signsCurrentPage"
-                :per-page="signsPerPage"
-                :sort-by.sync="signsSortBy"
-                :sort-desc.sync="signsSortDesc"
-                :show-empty="true"
-                :class="`tomo-table tomo-table--signed${loading ? ' loading' : ''}`"
-                empty-text="There are no transactions to show"
-                stacked="md" >
-
-                <template
-                    slot="id"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
-                    slot="blockNumber"
-                    slot-scope="data">{{ data.item.blockNumber }}
-                </template>
-
-                <template
-                    slot="tx"
-                    slot-scope="data">
-                    <a
-                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
-                        class="text-truncate">
-                        {{ data.item.tx }}
-                    </a>
-                </template>
-
-                <template
-                    slot="action"
-                    slot-scope="data">
-                    <a
-                        v-b-tooltip.hover.right
-                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
-                        title="View on TomoScan"
-                        target="_blank">
-                        <i class="tm-eye" />
-                        <span>View on TomoScan</span>
-                    </a>
-                </template>
-
-                <template
-                    slot="createdAt"
-                    slot-scope="data">
-                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
-                    <b-tooltip :target="`timestamp__${data.index}`">
-                        {{ data.item.dateTooltip }}
-                    </b-tooltip>
-                </template>
-            </b-table>
-
-            <b-pagination
-                v-if="signsTotalRows > 0 && signsTotalRows > signsPerPage"
-                :total-rows="signsTotalRows"
-                :per-page="signsPerPage"
-                v-model="signsCurrentPage"
-                align="center"
-                class="tomo-pagination" />
-        </div>
         <div class="container section section--txs">
             <div class="row">
                 <div class="col-12">
@@ -493,7 +402,6 @@ export default {
             config: {},
             voters: [],
             transactions: [],
-            signs: [],
             mnRewards: [],
             candidate: {
                 address: this.$route.params.address.toLowerCase(),
@@ -502,13 +410,12 @@ export default {
                 status: 'active',
                 cap: 0,
                 latestBlock: '',
-                totalSignedBlocks: 0,
+                latestSignedBlock: 0,
                 rewarded: 0,
                 hardwareInfo: '',
                 dataCenterInfo: {},
                 socials: {},
-                voted: 0,
-                totalVoted: 0
+                voted: 0
             },
             mnRewardsFields: [
                 {
@@ -522,8 +429,8 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'totalSigners',
-                    label: 'Total Signers',
+                    key: 'latestSignedBlock',
+                    label: 'Latest Signed Block',
                     sortable: false
                 },
                 {
@@ -542,33 +449,6 @@ export default {
             mnRewardsPerPage: 10,
             mnRewardsSortDesc: true,
             mnRewardsTotalRows: 0,
-            signsFields: [
-                {
-                    key: 'blockNumber',
-                    label: 'Block No.',
-                    sortable: false
-                },
-                {
-                    key: 'tx',
-                    label: 'Tx Hash',
-                    sortable: false
-                },
-                {
-                    key: 'createdAt',
-                    label: 'Age',
-                    sortable: true
-                },
-                {
-                    key: 'action',
-                    label: '',
-                    sortable: false
-                }
-            ],
-            signsSortBy: 'blockNumber',
-            signsSortDesc: true,
-            signsCurrentPage: 1,
-            signsPerPage: 10,
-            signsTotalRows: 0,
             voterFields: [
                 {
                     key: 'address',
@@ -659,7 +539,7 @@ export default {
                 self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                 self.candidate.rewarded = 0
                 self.candidate.latestBlock = '0'
-                self.candidate.totalSignedBlocks = data.totalSignedBlocks
+                self.candidate.latestSignedBlock = data.latestSignedBlock
                 self.candidate.hardwareInfo = data.hardware || 'N/A'
                 self.candidate.dataCenterInfo = {
                     name: (data.dataCenter || {}).name || 'N/A',
@@ -678,21 +558,27 @@ export default {
             }
 
             let voters = await axios.get(`/api/candidates/${address}/voters`)
-            let totalVoted = new BigNumber(0)
             let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
                     address: v.voter,
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
-                totalVoted = totalVoted.plus(v.capacity)
 
                 if (v.voter === account) {
                     youVoted = youVoted.plus(v.capacity)
                 }
             })
 
-            self.candidate.totalVoted = totalVoted.div(10 ** 18).toNumber()
+            if (account && self.web3) {
+                try {
+                    let contract = await self.TomoValidator.deployed()
+                    youVoted = await contract.getVoterCap(address, account)
+                    self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
+                    console.log(self.candidate.cap)
+                } catch (e) {}
+            }
+
             self.candidate.voted = youVoted.div(10 ** 18).toNumber()
 
             self.voterTotalRows = self.voters.length
@@ -711,21 +597,6 @@ export default {
             })
 
             self.txTotalRows = self.transactions.length
-
-            let blockSigners = await axios.get(`/api/blocksigners/getByCandidate/${address}`)
-            blockSigners.data.map((bs, idx) => {
-                let stx = bs.signers.filter(s => {
-                    return (s.signer === address)
-                })
-                self.signs.push({
-                    tx: stx[0].tx,
-                    blockNumber: bs.blockNumber,
-                    createdAt: moment(bs.createdAt).fromNow(),
-                    dateTooltip: moment(bs.createdAt).format('lll')
-                })
-            })
-
-            self.signsTotalRows = self.signs.length
 
             let mnRewards = await axios.get(`/api/candidates/${address}/rewards`)
             mnRewards.data.map((r) => {

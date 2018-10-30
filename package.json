@@ -1,6 +1,6 @@
 {
     "name": "tomomaster",
-    "version": "1.0.0",
+    "version": "0.2.6",
     "description": "TomoChain Governance DApp",
     "main": "elect.js",
     "scripts": {
@@ -8,12 +8,8 @@
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
         "nodemon": "./node_modules/.bin/nodemon index.js",
         "crawl-dev": "./node_modules/.bin/nodemon ./crawl.js",
-        "crawl-reward-dev": "./node_modules/.bin/nodemon ./crawl_reward.js",
-        "crawl-block-signer-dev": "./node_modules/.bin/nodemon ./crawl_block_signer.js",
         "start": "node index.js",
         "crawl": "node ./crawl.js",
-        "crawl-reward": "node ./crawl_reward.js",
-        "crawl-block-signer": "node ./crawl_block_signer.js",
         "start": "node index.js",
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
