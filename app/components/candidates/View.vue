@@ -65,28 +65,11 @@
                             </b-tooltip>
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info--big">
-                        <p class="tomo-info__title">
-                            <i class="tm-arrow-up tomo-info__icon" />
-                            <span class="tomo-info__text">Total voted</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--total-voted"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.totalVoted)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.totalVoted)"
-                                ref="tooltip"
-                                target="tomo-info__description--total-voted">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.totalVoted, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
                     <div
                         v-if="isReady"
                         class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                         <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
+                            <i class="tm-arrow-up tomo-info__icon" />
                             <span class="tomo-info__text">You voted</span>
                         </p>
                         <p
@@ -507,8 +490,7 @@ export default {
                 hardwareInfo: '',
                 dataCenterInfo: {},
                 socials: {},
-                voted: 0,
-                totalVoted: 0
+                voted: 0
             },
             mnRewardsFields: [
                 {
@@ -678,21 +660,27 @@ export default {
             }
 
             let voters = await axios.get(`/api/candidates/${address}/voters`)
-            let totalVoted = new BigNumber(0)
             let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
                     address: v.voter,
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
-                totalVoted = totalVoted.plus(v.capacity)
 
                 if (v.voter === account) {
                     youVoted = youVoted.plus(v.capacity)
                 }
             })
 
-            self.candidate.totalVoted = totalVoted.div(10 ** 18).toNumber()
+            if (account && self.web3) {
+                try {
+                    let contract = await self.TomoValidator.deployed()
+                    youVoted = await contract.getVoterCap(address, account)
+                    self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
+                    console.log(self.candidate.cap)
+                } catch (e) {}
+            }
+
             self.candidate.voted = youVoted.div(10 ** 18).toNumber()
 
             self.voterTotalRows = self.voters.length
