@@ -27,6 +27,7 @@ var Candidate = new Schema({
         name: String,
         location: String
     },
+    latestSignedBlock: Number,
     socials: {
         github: String,
         linkedin: String,

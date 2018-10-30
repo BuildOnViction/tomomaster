@@ -1,6 +1,8 @@
 'use strict'
 
 const { Validator } = require('./models/blockchain/validator')
+const { BlockSigner } = require('./models/blockchain/blockSigner')
+const config = require('config')
 const chain = require('./models/blockchain/chain')
 const db = require('./models/mongodb')
 const q = require('./queues')
@@ -170,8 +172,66 @@ async function getCurrentCandidates () {
     }
 }
 
+async function watchBlockSigner () {
+    try {
+        let bs = await BlockSigner.deployed()
+        let cs = await db.CrawlState.findOne({
+            smartContractAddress: bs.address
+        })
+        let blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        let epoch = parseInt(config.get('blockchain.epoch'))
+        let latestBlockNumber = await chain.eth.blockNumber
+        let validator = await Validator.deployed()
+
+        if (blockNumber < (latestBlockNumber - 1 * epoch)) {
+            blockNumber = latestBlockNumber - 1 * epoch
+        }
+        console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
+        const allEvents = bs.allEvents({
+            fromBlock: blockNumber,
+            toBlock: 'latest'
+        })
+
+        allEvents.watch(async (err, res) => {
+            if (err || !(res || {}).args) {
+                console.error(err, res)
+                return false
+            }
+            console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
+
+            try {
+                await db.CrawlState.updateOne({
+                    smartContractAddress: bs.address
+                }, { $set:{
+                    smartContractAddress: bs.address,
+                    blockNumber: res.blockNumber
+                } }, { upsert: true })
+
+                let signer = res.args._signer
+                let bN = String(res.args._blockNumber)
+
+                await db.Candidate.updateOne({
+                    smartContractAddress: validator.address,
+                    candidate: signer.toLowerCase()
+                }, {
+                    $set: {
+                        latestSignedBlock: bN
+                    }
+                }, { upsert: false })
+            } catch (e) {
+                console.error(e)
+            }
+        })
+    } catch (e) {
+        emitter.emit('error', e)
+    }
+}
+
+watchBlockSigner()
+
 getCurrentCandidates().then(() => {
     watchValidator()
+    watchBlockSigner()
 }).catch(e => {
     console.log('getCurrentCandidates', e)
     process.exit(1)
