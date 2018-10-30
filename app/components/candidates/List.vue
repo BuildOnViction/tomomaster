@@ -26,7 +26,7 @@
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
                         <h6 class="tomo-card__title">Epoch</h6>
-                        <p class="tomo-card__text">#{{ chainConfig.blockNumber % chainConfig.epoch }}</p>
+                        <p class="tomo-card__text">#{{ Math.floor(chainConfig.blockNumber / chainConfig.epoch) }}</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
