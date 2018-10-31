@@ -425,7 +425,7 @@ export default {
                 },
                 {
                     key: 'signNumber',
-                    label: 'Sign No.',
+                    label: 'Sign Number',
                     sortable: false
                 },
                 {
