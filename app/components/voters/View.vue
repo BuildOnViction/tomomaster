@@ -365,7 +365,15 @@ export default {
             let voter = self.$route.params.address
 
             self.loading = true
-            let candidates = await axios.get(`/api/voters/${voter}/candidates`)
+            // Get all informations
+            const promises = await Promise.all([
+                await axios.get(`/api/voters/${voter}/candidates`),
+                await axios.get(`/api/voters/${voter}/rewards`),
+                await axios.get(`/api/transactions/voter/${voter}`)
+            ])
+
+            // Candidate table
+            let candidates = promises[0]
 
             candidates.data.map(async (c) => {
                 self.candidates.push({
@@ -386,7 +394,9 @@ export default {
                 })
             }
 
-            let voterRewards = await axios.get(`/api/voters/${voter}/rewards`)
+            // voter reward table
+            let voterRewards = promises[1]
+
             voterRewards.data.map((r) => {
                 self.voterRewards.push({
                     epoch: r.epoch,
@@ -402,7 +412,9 @@ export default {
 
             self.voterRewardsTotalRows = self.voterRewards.length
 
-            let txs = await axios.get(`/api/transactions/voter/${voter}`)
+            // transaction table
+            let txs = promises[2]
+
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     tx: tx.tx,
