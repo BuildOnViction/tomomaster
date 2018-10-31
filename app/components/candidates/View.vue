@@ -434,11 +434,6 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'latestSignedBlock',
-                    label: 'Latest Signed Block',
-                    sortable: false
-                },
-                {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
@@ -610,7 +605,7 @@ export default {
                     epoch: r.epoch,
                     signNumber: r.signNumber,
                     reason: r.reason,
-                    reward: new BigNumber(r.reward).div(1e+18).toFixed(2),
+                    reward: new BigNumber(r.reward).div(1e+18).toFixed(8),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })

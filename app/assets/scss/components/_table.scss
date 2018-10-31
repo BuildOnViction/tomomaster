@@ -626,7 +626,7 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: 15% 20% 15% 20% 20% 15%;
+            grid-template-columns: 15% 20% 20% 25% 15%;
         }
     }
     @include media-breakpoint-up(xl) {

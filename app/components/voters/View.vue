@@ -389,12 +389,12 @@ export default {
             let voterRewards = await axios.get(`/api/voters/${voter}/rewards`)
             voterRewards.data.map((r) => {
                 self.voterRewards.push({
-                    epoch: r.checkpoint / 900 - 2,
-                    candidate: r.candidate,
+                    epoch: r.epoch,
+                    candidate: r.validator,
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(2),
+                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(8),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })
