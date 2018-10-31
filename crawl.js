@@ -2,7 +2,6 @@
 
 const { Validator } = require('./models/blockchain/validator')
 const { BlockSigner } = require('./models/blockchain/blockSigner')
-const config = require('config')
 const chain = require('./models/blockchain/chain')
 const db = require('./models/mongodb')
 const q = require('./queues')
@@ -15,11 +14,8 @@ process.setMaxListeners(100)
 async function watchValidator () {
     try {
         let v = await Validator.deployed()
-        let cs = await db.CrawlState.findOne({
-            smartContractAddress: v.address
-        })
 
-        const blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
+        const blockNumber = await chain.eth.blockNumber
         console.info('TomoValidator %s - Listen events from block number %s ...', v.address, blockNumber)
         const allEvents = v.allEvents({
             fromBlock: blockNumber,
@@ -34,12 +30,6 @@ async function watchValidator () {
             console.info('TomoValidator - New event %s from block %s', res.event, res.blockNumber)
             try {
                 let event = res.event
-                await db.CrawlState.updateOne({
-                    smartContractAddress: v.address
-                }, { $set:{
-                    smartContractAddress: v.address,
-                    blockNumber: res.blockNumber
-                } }, { upsert: true })
                 if (event === 'Withdraw') {
                     let owner = (res.args._owner || '').toLowerCase()
                     let blockNumber = res.args._blockNumber
@@ -175,17 +165,9 @@ async function getCurrentCandidates () {
 async function watchBlockSigner () {
     try {
         let bs = await BlockSigner.deployed()
-        let cs = await db.CrawlState.findOne({
-            smartContractAddress: bs.address
-        })
-        let blockNumber = parseInt((cs || {}).blockNumber || 0) + 1
-        let epoch = parseInt(config.get('blockchain.epoch'))
-        let latestBlockNumber = await chain.eth.blockNumber
+        let blockNumber = await chain.eth.blockNumber
         let validator = await Validator.deployed()
 
-        if (blockNumber < (latestBlockNumber - 1 * epoch)) {
-            blockNumber = latestBlockNumber - 1 * epoch
-        }
         console.info('BlockSigner %s - Listen events from block number %s ...', bs.address, blockNumber)
         const allEvents = bs.allEvents({
             fromBlock: blockNumber,
@@ -200,13 +182,6 @@ async function watchBlockSigner () {
             console.info('BlockSigner - New event %s from block %s', res.event, res.blockNumber)
 
             try {
-                await db.CrawlState.updateOne({
-                    smartContractAddress: bs.address
-                }, { $set:{
-                    smartContractAddress: bs.address,
-                    blockNumber: res.blockNumber
-                } }, { upsert: true })
-
                 let signer = res.args._signer
                 let bN = String(res.args._blockNumber)
 
