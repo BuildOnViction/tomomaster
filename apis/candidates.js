@@ -122,11 +122,19 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
     }
 })
 
-router.get('/:candidate/getRewards', async function (req, res, next) {
+router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
     try {
         const candidate = req.params.candidate
+        const owner = req.params.owner
         const limit = 100
-        const rewards = await axios.get(`${config.get('tomoscanUrl')}/api/expose/rewards/${candidate}?limit=${limit}`)
+        const rewards = await axios.post(
+            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            {
+                address: candidate,
+                limit,
+                owner: owner
+            }
+        )
         res.json(rewards.data)
     } catch (e) {
         return next(e)

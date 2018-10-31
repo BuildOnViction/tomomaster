@@ -21,7 +21,13 @@ router.get('/:voter/rewards', async function (req, res, next) {
     try {
         const voter = req.params.voter
         const limit = 100
-        const rewards = await axios.get(`${config.get('tomoscanUrl')}/api/expose/rewards/${voter}?limit=${limit}`)
+        const rewards = await axios.post(
+            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            {
+                address: voter,
+                limit
+            }
+        )
         res.json(rewards.data)
     } catch (e) {
         return next(e)

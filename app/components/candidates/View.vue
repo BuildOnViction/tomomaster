@@ -530,8 +530,7 @@ export default {
             const promises = await Promise.all([
                 await axios.get(`/api/candidates/${address}`),
                 await axios.get(`/api/candidates/${address}/voters`),
-                await axios.get(`/api/transactions/candidate/${address}`),
-                await axios.get(`/api/candidates/${address}/getRewards`)
+                await axios.get(`/api/transactions/candidate/${address}`)
             ])
 
             // Get candidate's information
@@ -611,7 +610,7 @@ export default {
             self.txTotalRows = self.transactions.length
 
             // Masternode reward table
-            let mnRewards = promises[3]
+            let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
 
             mnRewards.data.map((r) => {
                 self.mnRewards.push({
