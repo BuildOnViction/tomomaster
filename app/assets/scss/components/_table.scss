@@ -614,3 +614,24 @@
         }
     }
 }
+
+.tomo-table--mnrewards {
+    .text-truncate {
+        max-width: 90%;
+    }
+    @include media-breakpoint-up(lg) {
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: 15% 20% 20% 25% 15%;
+        }
+    }
+    @include media-breakpoint-up(xl) {
+        .text-truncate {
+            max-width: 100%;
+        }
+    }
+}

@@ -425,12 +425,12 @@ export default {
                 },
                 {
                     key: 'signNumber',
-                    label: 'Sign No.',
+                    label: 'Sign Number',
                     sortable: false
                 },
                 {
-                    key: 'latestSignedBlock',
-                    label: 'Latest Signed Block',
+                    key: 'reason',
+                    label: 'Reason',
                     sortable: false
                 },
                 {
@@ -526,8 +526,16 @@ export default {
             self.account = account
 
             self.loading = true
+            // Get all information at the same time
+            const promises = await Promise.all([
+                await axios.get(`/api/candidates/${address}`),
+                await axios.get(`/api/candidates/${address}/voters`),
+                await axios.get(`/api/transactions/candidate/${address}`),
+                await axios.get(`/api/candidates/${address}/getRewards`)
+            ])
 
-            let c = await axios.get(`/api/candidates/${address}`)
+            // Get candidate's information
+            let c = promises[0]
 
             if (c.data) {
                 let data = c.data
@@ -557,7 +565,9 @@ export default {
                 })
             }
 
-            let voters = await axios.get(`/api/candidates/${address}/voters`)
+            // Voter table
+            let voters = promises[1]
+
             let youVoted = new BigNumber(0)
             voters.data.map((v, idx) => {
                 self.voters.push({
@@ -583,7 +593,9 @@ export default {
 
             self.voterTotalRows = self.voters.length
 
-            let txs = await axios.get(`/api/transactions/candidate/${address}`)
+            // Get transaction table
+            let txs = promises[2]
+
             txs.data.map((tx, idx) => {
                 self.transactions.push({
                     tx: tx.tx,
@@ -598,13 +610,15 @@ export default {
 
             self.txTotalRows = self.transactions.length
 
-            let mnRewards = await axios.get(`/api/candidates/${address}/rewards`)
+            // Masternode reward table
+            let mnRewards = promises[3]
+
             mnRewards.data.map((r) => {
                 self.mnRewards.push({
-                    epoch: (r.startBlockNumber - 1) / 900,
+                    epoch: r.epoch,
                     signNumber: r.signNumber,
-                    totalSigners: r.totalSigners,
-                    reward: new BigNumber(r.reward).div(1e+18).toFixed(2),
+                    reason: r.reason,
+                    reward: new BigNumber(r.reward).div(1e+18).toFixed(8),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })
