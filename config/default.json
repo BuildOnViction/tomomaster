@@ -19,7 +19,7 @@
   },
   "explorerUrl": "http://localhost:3003",
   "grafanaUrl": "http://localhost:8000",
-  "tomoscanUrl": "http://localhost:3333",
+  "tomoscanUrl": "https://scan.testnet.tomochain.com",
   "grafanaApiKey": "eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ==",
   "redis": {
     "host": "redis",
