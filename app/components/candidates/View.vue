@@ -429,6 +429,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'reason',
+                    label: 'Reason',
+                    sortable: false
+                },
+                {
                     key: 'latestSignedBlock',
                     label: 'Latest Signed Block',
                     sortable: false
@@ -598,12 +603,13 @@ export default {
 
             self.txTotalRows = self.transactions.length
 
-            let mnRewards = await axios.get(`/api/candidates/${address}/rewards`)
+            let mnRewards = await axios.get(`/api/candidates/${address}/getRewards`)
+
             mnRewards.data.map((r) => {
                 self.mnRewards.push({
-                    epoch: (r.startBlockNumber - 1) / 900,
+                    epoch: r.epoch,
                     signNumber: r.signNumber,
-                    totalSigners: r.totalSigners,
+                    reason: r.reason,
                     reward: new BigNumber(r.reward).div(1e+18).toFixed(2),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')

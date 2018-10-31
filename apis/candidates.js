@@ -1,5 +1,6 @@
 'use strict'
 const express = require('express')
+const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
 const { Validator } = require('../models/blockchain/validator')
@@ -116,6 +117,17 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
         let validator = await Validator.deployed()
         let isCandidate = await validator.isCandidate.call(req.params.candidate)
         return res.json((isCandidate) ? 1 : 0)
+    } catch (e) {
+        return next(e)
+    }
+})
+
+router.get('/:candidate/getRewards', async function (req, res, next) {
+    try {
+        const candidate = req.params.candidate
+        const limit = 100
+        const rewards = await axios.get(`${config.get('tomoscanUrl')}/api/expose/rewards/${candidate}?limit=${limit}`)
+        res.json(rewards.data)
     } catch (e) {
         return next(e)
     }
