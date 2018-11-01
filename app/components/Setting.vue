@@ -133,6 +133,7 @@
                             <span>Capacity</span>
                         </div>
                         <b-button
+                            :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
                             @click="withdraw(w.blockNumber, k)">Withdraw</b-button>
                     </li>
