@@ -584,7 +584,6 @@ export default {
                     let contract = await self.TomoValidator.deployed()
                     youVoted = await contract.getVoterCap(address, account)
                     self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
-                    console.log(self.candidate.cap)
                 } catch (e) {}
             }
 
