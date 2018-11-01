@@ -93,8 +93,6 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
-import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -137,12 +135,9 @@ export default {
             let account = await self.getAccount()
             self.voter = account
 
-            let voters = await axios.get(`/api/candidates/${candidate}/voters`)
-            voters.data.map((v) => {
-                if (v.voter === account) {
-                    self.voted += new BigNumber(v.capacity).div(10 ** 18).toNumber()
-                }
-            })
+            let contract = await self.TomoValidator.deployed()
+            let votedCap = await contract.getVoterCap(candidate, account)
+            self.voted = votedCap.div(10 ** 18).toNumber()
         } catch (e) {
             console.log(e)
         }

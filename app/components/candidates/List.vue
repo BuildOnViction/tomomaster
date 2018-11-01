@@ -83,7 +83,7 @@
 
                 <template
                     slot="latestSignedBlock"
-                    slot-scope="data">#{{ data.item.latestSignedBlock }}
+                    slot-scope="data">#{{ data.item.latestSignedBlock || 0 }}
                 </template>
 
                 <template

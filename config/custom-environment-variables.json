@@ -9,6 +9,7 @@
   },
   "explorerUrl": "EXPLORER_URL",
   "grafanaUrl": "GRAFANA_URL",
+  "tomoscanUrl": "TOMOSCAN_SERVER_URL",
   "db": {
     "uri": "DB_URI"
   },
