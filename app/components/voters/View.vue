@@ -182,12 +182,10 @@
                 </div>
             </div>
             <b-table
-                :items="sortedTransactions"
+                :items="transactions"
                 :fields="txFields"
                 :current-page="txCurrentPage"
                 :per-page="txPerPage"
-                :sort-by.sync="txSortBy"
-                :sort-desc.sync="txSortDesc"
                 :show-empty="true"
                 :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
@@ -304,7 +302,7 @@ export default {
                 }
             ],
             voterRewardsCurrentPage: 1,
-            voterRewardsSortBy: 'checkpoint',
+            voterRewardsSortBy: 'epoch',
             voterRewardsPerPage: 10,
             voterRewardsSortDesc: true,
             voterRewardsTotalRows: 0,
@@ -337,8 +335,6 @@ export default {
                 }
             ],
             transactions: [],
-            txSortBy: 'cap',
-            txSortDesc: true,
             txCurrentPage: 1,
             txPerPage: 10,
             txTotalRows: 0
@@ -347,11 +343,6 @@ export default {
     computed: {
         sortedCandidates: function () {
             return this.candidates.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        },
-        sortedTransactions: function () {
-            return this.transactions.slice().sort(function (a, b) {
                 return b.cap - a.cap
             })
         }
@@ -404,7 +395,7 @@ export default {
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(8),
+                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(6),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })
