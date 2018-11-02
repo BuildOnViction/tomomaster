@@ -120,7 +120,7 @@
                         <p class="tomo-list__text">
                             <a :href="`${config.explorerUrl}/blocks/${w.blockNumber}`">
                                 {{ w.blockNumber }}</a>
-                            <span>Block Number</span>
+                            <span>Withdrawal Block Number</span>
                         </p>
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">
