@@ -121,7 +121,7 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
         return next(e)
     }
 })
-
+// Get masternode rewards
 router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
     try {
         const candidate = req.params.candidate
@@ -132,7 +132,8 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
             {
                 address: candidate,
                 limit,
-                owner: owner
+                owner: owner,
+                reason: 'MasterNode'
             }
         )
         res.json(rewards.data)

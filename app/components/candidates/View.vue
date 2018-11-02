@@ -427,11 +427,6 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'reason',
-                    label: 'Reason',
-                    sortable: false
-                },
-                {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
@@ -605,10 +600,9 @@ export default {
             let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
 
             mnRewards.data.map((r) => {
-                self.mnRewards.push({
+                    self.mnRewards.push({
                     epoch: r.epoch,
                     signNumber: r.signNumber,
-                    reason: r.reason,
                     reward: new BigNumber(r.reward).div(1e+18).toFixed(6),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
