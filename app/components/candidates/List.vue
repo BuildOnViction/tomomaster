@@ -13,7 +13,7 @@
                     <b-card class="tomo-card">
                         <h6 class="tomo-card__title">Current Block</h6>
                         <p class="tomo-card__text">
-                            <router-link :to="'/blocksigners'">#{{ chainConfig.blockNumber }}</router-link>
+                            #{{ chainConfig.blockNumber }}
                         </p>
                     </b-card>
                 </div>
@@ -25,8 +25,8 @@
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">epoch</h6>
-                        <p class="tomo-card__text">{{ chainConfig.epoch }} blocks</p>
+                        <h6 class="tomo-card__title">Epoch</h6>
+                        <p class="tomo-card__text">#{{ Math.floor(chainConfig.blockNumber / chainConfig.epoch) }}</p>
                     </b-card>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -67,11 +67,6 @@
                 stacked="md" >
 
                 <template
-                    slot="index"
-                    slot-scope="data">{{ data.index + 1 }}
-                </template>
-
-                <template
                     slot="address"
                     slot-scope="data">
                     <router-link
@@ -83,12 +78,12 @@
 
                 <template
                     slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.cap, 2)) }}
                 </template>
 
                 <template
                     slot="latestSignedBlock"
-                    slot-scope="data">#{{ data.item.latestSignedBlock }}
+                    slot-scope="data">#{{ data.item.latestSignedBlock || 0 }}
                 </template>
 
                 <template
@@ -139,11 +134,6 @@ export default {
         return {
             chainConfig: {},
             fields: [
-                {
-                    key: 'index',
-                    label: 'ID',
-                    sortable: false
-                },
                 {
                     key: 'address',
                     label: 'Address',
@@ -214,7 +204,7 @@ export default {
             self.loading = true
 
             let candidates = await axios.get('/api/candidates')
-            candidates.data.map(async (candidate) => {
+            candidates.data.map(async (candidate, index) => {
                 self.candidates.push({
                     address: candidate.candidate,
                     owner: candidate.owner.toLowerCase(),

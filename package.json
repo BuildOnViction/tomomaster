@@ -1,6 +1,6 @@
 {
     "name": "tomomaster",
-    "version": "1.0.0",
+    "version": "0.2.6",
     "description": "TomoChain Governance DApp",
     "main": "elect.js",
     "scripts": {
@@ -10,6 +10,7 @@
         "crawl-dev": "./node_modules/.bin/nodemon ./crawl.js",
         "start": "node index.js",
         "crawl": "node ./crawl.js",
+        "start": "node index.js",
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
         "dev": "npm run crawl-dev & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
@@ -36,6 +37,7 @@
         "@chenfengyuan/vue-qrcode": "^1.0.0",
         "bignumber.js": "^7.2.1",
         "bip39": "^2.5.0",
+        "axios": "^0.18.0",
         "body-parser": "^1.18.2",
         "commander": "^2.17.1",
         "config": "^1.30.0",
@@ -58,7 +60,6 @@
     },
     "devDependencies": {
         "asar": "^0.14.3",
-        "axios": "^0.18.0",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.2.3",
         "babel-loader": "^7.1.4",

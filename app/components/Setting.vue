@@ -109,7 +109,7 @@
                 :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
                 + (loading ? ' tomo-loading' : '')">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Withdraws</h4>
+                    Withdrawals</h4>
                 <ul
                     v-for="(w, k, index) in withdraws"
                     :key="index"
