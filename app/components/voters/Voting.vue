@@ -76,10 +76,10 @@
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
                     <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
-                    <div>
+                    <!-- <div>
                         <strong>Using Tomo wallet to execute the action
                         </strong>
-                    </div>
+                    </div> -->
                     <div
                         style="margin-top: 20px">
                         <div
@@ -87,18 +87,8 @@
                             <div
                                 id="one">
                                 <label>
-                                    <b>Sign message</b>
+                                    <b>Voting information</b>
                                 </label>
-                                <div
-                                    class="pull-right"
-                                    style="margin-right: -7px; float: right">
-                                    <button
-                                        v-clipboard="message"
-                                        type="button"
-                                        class="btn btn-sm mr-2 code-actions__copy"
-                                        @success="onSuccess">
-                                    <i class="fa fa-copy" />Copy</button>
-                                </div>
                                 <label style="margin-top: 5px">
                                     <textarea
                                         :value="message"
@@ -110,12 +100,30 @@
                                         style="width: 100%"/>
                                 </label>
                             </div>
-                            <div
-                                style="text-align: center">
-                                <vue-qrcode
-                                    :value="qrCode"
-                                    :options="{size: 250 }"
-                                    class="img-fluid text-center text-lg-right tomo-qrcode"/>
+                            <div>
+                                <label>
+                                    <b>Vote by metamask</b>
+                                </label>
+                                <div
+                                    class="pull-right"
+                                    style="margin-right: -7px; float: right">
+                                    <button
+                                        class="btn btn-primary"
+                                        variant="primary"
+                                        @click="vote">Submit</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label>
+                                    <b>Vote by Tomo wallet</b>
+                                </label>
+                                <div
+                                    style="text-align: center; margin-top: 10px">
+                                    <vue-qrcode
+                                        :value="qrCode"
+                                        :options="{size: 250 }"
+                                        class="img-fluid text-center text-lg-right"/>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -123,10 +131,10 @@
                                 <b-button
                                     type="button"
                                     variant="secondary"
-                                    @click="backStep">Cancel</b-button>
-                                <b-button
+                                    @click="backStep">Back</b-button>
+                                    <!-- <b-button
                                     type="submit"
-                                    variant="primary">Submit</b-button>
+                                    variant="primary">Submit</b-button> -->
                             </div>
                             <!-- <button
                                 class="btn btn-primary"
@@ -166,7 +174,7 @@ export default {
             loading: false,
             step: 1,
             message: '',
-            qrCode: 'This is qr code :DDDDdfsdfdsfdsfsfsdfsdfD'
+            qrCode: ''
         }
     },
     validations: {
@@ -224,7 +232,6 @@ export default {
 
             if (!this.$v.$invalid) {
                 this.nextStep()
-                // this.vote()
             }
         },
         vote: async function () {
@@ -277,11 +284,11 @@ export default {
             }
             // call api to generate qr code
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
-            console.log(generatedMess)
 
             self.message = generatedMess.data.message
             self.qrCode = encodeURI(
-                'tomochain:' + self.candidate + '?' + 'amount=' + self.voteValue +
+                'tomochain:vote?amount=' + self.voteValue + '&' + 'candidate=' + self.candidate +
+                '&name=' + generatedMess.data.candidateName +
                 '&submitURL=' + generatedMess.data.url + generatedMess.data.id
             )
             self.step++

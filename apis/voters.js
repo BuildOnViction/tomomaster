@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
 const { Validator } = require('../models/blockchain/validator')
-const abi = require('ethereumjs-abi')
+const uuidv4 = require('uuid/v4')
 
 router.get('/:voter/candidates', async function (req, res, next) {
     let validator = await Validator.deployed()
@@ -28,21 +28,20 @@ router.get('/:voter/rewards', async function (req, res, next) {
 router.post('/generateQR', async (req, res, next) => {
     try {
         const voter = req.body.voter
-        const candidate = req.body.candidate
         const amount = req.body.amount
-        const message = 'I, ' + voter + ' vote ' + amount + ' TOMO for candidate ' + candidate
-        const id = await abi.soliditySHA3(
-            ['address', 'address', 'uint', 'uint'],
-            [voter, candidate, amount, (new Date()).getTime() + Math.random().toString()]
-        ).toString('hex')
-        console.log(`id: 
-        
-        ${id}`)
+        const candidate = (req.body.candidate || '').toLowerCase()
+        const message = voter + ' vote ' + amount + ' TOMO for candidate ' + candidate
+        let validator = await Validator.deployed()
+        let candidateInfo = (await db.Candidate.findOne({
+            smartContractAddress: validator.address,
+            candidate: candidate
+        }) || {})
 
         res.send({
+            candidateName: candidateInfo.name ? candidateInfo.name : 'Anonymous Candidate',
             message,
             url: 'https://example.com/',
-            id: '0x' + id
+            id: uuidv4()
         })
     } catch (e) {
         console.log(e)
