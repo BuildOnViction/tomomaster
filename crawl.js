@@ -201,7 +201,7 @@ function watchNewBlock () {
                 emitter.emit('error', err)
             }
             try {
-                let blk = await chain.eth.getBlock('latest')
+                let blk = await chain.eth.getBlock(block)
                 await updateSigners(blk)
             } catch (e) {
                 console.error(e)
