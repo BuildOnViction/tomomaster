@@ -220,6 +220,11 @@ export default {
             console.log(e)
         }
     },
+    destroyed () {
+        if (this.interval) {
+            clearInterval(this.interval)
+        }
+    },
     async mounted () {
     },
     methods: {
@@ -311,6 +316,9 @@ export default {
             }
         },
         backStep () {
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
             this.step--
         },
         async verifyScannedQR () {
