@@ -8,7 +8,6 @@ const uuidv4 = require('uuid/v4')
 const config = require('config')
 const chain = require('../models/blockchain/chain')
 const EthereumTx = require('ethereumjs-tx')
-const BigNumber = require('bignumber.js')
 
 router.get('/:voter/candidates', async function (req, res, next) {
     let validator = await Validator.deployed()

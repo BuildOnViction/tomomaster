@@ -140,9 +140,6 @@
                                 class="btn btn-primary"
                                 variant="primary"
                                 @click="vote">Submit</button>
-                            <b-button
-                                v-if="checked"
-                                @click="createRawTx">Create</b-button>
                         </div>
                     </div>
                 </b-card>
@@ -315,15 +312,6 @@ export default {
         },
         backStep () {
             this.step--
-        },
-        async createRawTx () {
-            const rawTx = await axios.post(
-                '/api/voters/createRawTx',
-                {
-                    voteValue: this.voteValue,
-                    candidate: this.candidate
-                }
-            )
         },
         async verifyScannedQR () {
             let self = this
