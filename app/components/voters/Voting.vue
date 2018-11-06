@@ -100,24 +100,26 @@
                                         style="width: 100%"/>
                                 </label>
                             </div>
+                            <label>
+                                <input
+                                    v-model="checked"
+                                    type="checkbox"
+                                    @change="onChangeVoting">
+                                <b>Vote by TomoWallet</b>
+                            </label>
                             <div>
-                                <label>
-                                    <b>Vote by metamask</b>
-                                </label>
                                 <div
                                     class="pull-right"
                                     style="margin-right: -7px; float: right">
-                                    <button
+                                    <!-- <button
                                         class="btn btn-primary"
                                         variant="primary"
-                                        @click="vote">Submit</button>
+                                        @click="vote">Submit</button> -->
                                 </div>
                             </div>
                             <div>
-                                <label>
-                                    <b>Vote by Tomo wallet</b>
-                                </label>
                                 <div
+                                    v-if="checked"
                                     style="text-align: center; margin-top: 10px">
                                     <vue-qrcode
                                         :value="qrCode"
@@ -126,19 +128,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="buttons text-right">
-                                <b-button
-                                    type="button"
-                                    variant="secondary"
-                                    @click="backStep">Back</b-button>
-                                    <!-- <b-button
-                                    type="submit"
-                                    variant="primary">Submit</b-button> -->
-                            </div>
-                            <!-- <button
+                        <div
+                            style="margin-top: 5px"
+                            class="buttons text-right">
+                            <b-button
+                                type="button"
+                                variant="secondary"
+                                @click="backStep">Back</b-button>
+                            <button
+                                v-if="!checked"
                                 class="btn btn-primary"
-                                @click.prevent="nextStep">Next</button> -->
+                                variant="primary"
+                                @click="vote">Submit</button>
+                            <b-button
+                                v-if="checked"
+                                @click="createRawTx">Create</b-button>
                         </div>
                     </div>
                 </b-card>
@@ -174,7 +178,11 @@ export default {
             loading: false,
             step: 1,
             message: '',
-            qrCode: ''
+            qrCode: '',
+            checked:   true,
+            processing: true,
+            id: '',
+            interval: null
         }
     },
     validations: {
@@ -215,7 +223,7 @@ export default {
             console.log(e)
         }
     },
-    mounted () {
+    async mounted () {
     },
     methods: {
         getValidationClass: function (fieldName) {
@@ -260,6 +268,10 @@ export default {
 
                 setTimeout(() => {
                     self.loading = false
+                    self.processing = false
+                    if (self.interval) {
+                        clearInterval(self.interval)
+                    }
                     if (rs.tx) {
                         self.$router.push({ path: `/confirm/${rs.tx}` })
                     }
@@ -286,15 +298,73 @@ export default {
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
 
             self.message = generatedMess.data.message
+            self.id = generatedMess.data.id
+
             self.qrCode = encodeURI(
                 'tomochain:vote?amount=' + self.voteValue + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
                 '&submitURL=' + generatedMess.data.url + generatedMess.data.id
             )
             self.step++
+
+            if (self.step === 2 && self.processing) {
+                self.interval = setInterval(async () => {
+                    await this.verifyScannedQR()
+                }, 3000)
+            }
         },
         backStep () {
             this.step--
+        },
+        async createRawTx () {
+            const rawTx = await axios.post(
+                '/api/voters/createRawTx',
+                {
+                    voteValue: this.voteValue,
+                    candidate: this.candidate
+                }
+            )
+        },
+        async verifyScannedQR () {
+            let self = this
+            let body = {}
+            if (self.id) {
+                body.id = self.id
+            }
+            body.voter = self.voter
+            let { data } = await axios.post('/api/voters/getVotingResult', body)
+
+            if (!data.error) {
+                self.loading = true
+                if (self.interval) {
+                    clearInterval(self.interval)
+                }
+
+                let toastMessage = data.tx ? 'You have successfully voted!'
+                    : 'An error occurred while voting, please try again'
+                self.$toasted.show(toastMessage)
+
+                setTimeout(() => {
+                    if (data.tx) {
+                        self.loading = false
+                        self.processing = false
+                        self.step = 0
+                        self.$router.push({ path: `/confirm/${data.tx}` })
+                    }
+                }, 2000)
+            }
+        },
+        onChangeVoting (event) {
+            const checking = event.target.checked
+            if (checking) {
+                this.interval = setInterval(async () => {
+                    await this.verifyScannedQR()
+                }, 3000)
+            } else {
+                if (this.interval) {
+                    clearInterval(this.interval)
+                }
+            }
         }
     }
 }
