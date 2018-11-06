@@ -8,6 +8,7 @@ const uuidv4 = require('uuid/v4')
 const config = require('config')
 const chain = require('../models/blockchain/chain')
 const EthereumTx = require('ethereumjs-tx')
+const BigNumber = require('bignumber.js')
 
 router.get('/:voter/candidates', async function (req, res, next) {
     let validator = await Validator.deployed()
@@ -96,6 +97,9 @@ router.post('/verifyTx', async (req, res, next) => {
             res.status(406).send('raw transaction hash(rawTx) is requried')
         }
         const voter = '0x' + new EthereumTx('0x' + serializedTx).getSenderAddress().toString('hex')
+        voter.toLowerCase()
+        signer.toLowerCase()
+        candidate.toLowerCase()
 
         if (voter !== signer) {
             return res.status(406).send('Voter and signer are not match')
@@ -106,26 +110,34 @@ router.post('/verifyTx', async (req, res, next) => {
         await chain.eth.sendRawTransaction(raw, async (error, hash) => {
             if (error) {
                 console.log(error)
-                return res.status(404).send(error)
-            }
+                chain.eth.getBalance(voter, function (e, balance) {
+                    if (!e) {
+                        if (new BigNumber(balance).div(10 ** 18) < amount) {
+                            return res.status(406).send('Not enough TOMO')
+                        } else {
+                            return res.status(404).send('Something went wrong')
+                        }
+                    }
+                })
+            } else {
+                // Store id, address, msg, signature
+                let sign = await db.SignTransaction.findOne({ signedAddress: voter })
+                if (!sign) {
+                    sign = {}
+                }
+                sign.action = action
+                sign.signId = id
+                sign.amount = amount
+                sign.rawTx = '0x' + serializedTx
+                sign.candidate = candidate
+                sign.tx = hash
 
-            // Store id, address, msg, signature
-            let sign = await db.SignTransaction.findOne({ signedAddress: voter })
-            if (!sign) {
-                sign = {}
+                await db.SignTransaction.findOneAndUpdate({ signedAddress: voter }, sign, { upsert: true, new: true })
+                res.send({
+                    status: 'Done',
+                    transactionHash: hash
+                })
             }
-            sign.action = action
-            sign.signId = id
-            sign.amount = amount
-            sign.rawTx = '0x' + serializedTx
-            sign.candidate = candidate
-            sign.tx = hash
-
-            await db.SignTransaction.findOneAndUpdate({ signedAddress: voter }, sign, { upsert: true, new: true })
-            res.send({
-                status: 'Done',
-                transactionHash: hash
-            })
         })
     } catch (e) {
         console.trace(e)
