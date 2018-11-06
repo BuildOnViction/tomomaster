@@ -93,6 +93,18 @@
     border-top-color: #aca9C4;
 }
 
+#disabled-button-wrapper {
+    display: inline-block;
+}
+  
+#disabled-button-wrapper .btn[disabled] {
+    pointer-events: none;
+}
+  
+#disabled-button-wrapper {
+    cursor: not-allowed;
+}
+
 .sign-message {
     border-color: $color-input-bg;
     background-color: $color-input-bg;

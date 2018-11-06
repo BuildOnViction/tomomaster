@@ -24,7 +24,7 @@ router.get('/', async function (req, res, next) {
         let candidates = data[0]
         let latestSigners = data[1]
 
-        const signers = latestSigners.signers
+        const signers = (latestSigners || {}).signers || []
         const set = new Set()
         for (let i = 0; i < signers.length; i++) {
             set.add(signers[i])
