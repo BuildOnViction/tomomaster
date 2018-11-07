@@ -84,6 +84,7 @@ router.post('/apply', async function (req, res, next) {
                 : new PrivateKeyProvider(key, network)
         Validator.setProvider(walletProvider)
         let validator = await Validator.deployed()
+        let candidate = req.query.coinbase.toLowerCase()
         await validator.propose(req.query.coinbase, {
             from : walletProvider.address,
             value: 50000 * 10 ** 18,
@@ -92,12 +93,18 @@ router.post('/apply', async function (req, res, next) {
         })
         if (req.query.name) {
             await db.Candidate.updateOne({
-                candidate: req.query.coinbase.toLowerCase()
+                smartContractAddress: validator.address,
+                candidate: candidate
             }, {
                 $set: {
+                    smartContractAddress: validator.address,
+                    candidate: candidate,
+                    capacity: '0',
+                    status: 'PROPOSED',
+                    owner: walletProvider.address,
                     name: req.query.name
                 }
-            })
+            }, { upsert: true })
         }
         return res.json({ status: 'OK' })
     } catch (e) {
