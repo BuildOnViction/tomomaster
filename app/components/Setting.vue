@@ -220,6 +220,7 @@ export default {
                 }
                 let account = await self.getAccount()
                 self.address = account
+                self.account = account
                 self.web3.eth.getBalance(self.address, function (a, b) {
                     self.balance = new BigNumber(b).div(10 ** 18).toFormat()
                     if (a) {

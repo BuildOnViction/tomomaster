@@ -166,6 +166,7 @@
                 <b-button
                     v-if="candidate.status !== 'RESIGNED'"
                     :to="`/voting/${candidate.address}`"
+                    :disabled="!account"
                     variant="primary">Vote</b-button>
             </div>
         </div>

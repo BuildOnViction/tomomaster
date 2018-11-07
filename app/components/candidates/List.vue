@@ -108,6 +108,7 @@
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
+                        :disabled="!account "
                         variant="primary"
                         class="mt-3 mt-lg-0">Vote</b-button>
                 </template>

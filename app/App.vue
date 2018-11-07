@@ -22,11 +22,18 @@
 
                     <div class="navbar-buttons">
                         <b-button
+                            v-if="!account"
+                            id="btn-become-candidate"
+                            to="/setting"
+                            variant="primary">Login</b-button>
+                        <b-button
+                            v-else
                             id="btn-become-candidate"
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
 
                         <router-link
+                            v-if="account"
                             id="btn-setting"
                             to="/setting"><i class="tm-dots color-btn-bg"/>Setting</router-link>
                     </div>
@@ -47,7 +54,8 @@ export default {
         return {
             showProgressBar: false,
             selectedCandidate: null,
-            search: null
+            search: null,
+            account: null
         }
     },
     created: async function () {
@@ -57,6 +65,7 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
+            self.account = await self.getAccount()
         } catch (e) {
             console.log(e)
         }

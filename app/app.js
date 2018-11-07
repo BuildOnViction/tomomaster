@@ -204,5 +204,8 @@ new Vue({ // eslint-disable-line no-new
     el: '#app',
     router: router,
     components: { App },
+    data: {
+        account: null
+    },
     template: '<App/>'
 })
