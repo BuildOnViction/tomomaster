@@ -109,8 +109,9 @@
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
                         :disabled="!account "
+                        :style="[account ? {} : { 'background-color': 'grey' }]"
                         variant="primary"
-                        class="mt-3 mt-lg-0">Vote</b-button>
+                        class="mt-3 mt-lg-0 vote-btn">Vote</b-button>
                 </template>
             </b-table>
 
@@ -198,8 +199,11 @@ export default {
         self.chainConfig = config.blockchain
         try {
             if (self.isReady) {
+                let contract = await self.TomoValidator.deployed()
                 let account = await self.getAccount()
-                self.account = account.toLowerCase()
+                if (account && contract) {
+                    self.account = account.toLowerCase()
+                }
             }
 
             self.loading = true

@@ -58,6 +58,13 @@ export default {
             account: null
         }
     },
+    async updated () {
+        const contract = await this.TomoValidator.deployed()
+        const account = await this.getAccount()
+        if (account && contract) {
+            this.account = true
+        }
+    },
     created: async function () {
         let self = this
 
@@ -65,7 +72,7 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            self.account = await self.getAccount()
+            this.account = await this.getAccount()
         } catch (e) {
             console.log(e)
         }

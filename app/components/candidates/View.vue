@@ -164,9 +164,8 @@
                     :to="`/unvoting/${candidate.address}`"
                     variant="secondary">Unvote</b-button>
                 <b-button
-                    v-if="candidate.status !== 'RESIGNED'"
+                    v-if="candidate.status !== 'RESIGNED' && account"
                     :to="`/voting/${candidate.address}`"
-                    :disabled="!account"
                     variant="primary">Vote</b-button>
             </div>
         </div>
