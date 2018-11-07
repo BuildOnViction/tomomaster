@@ -43,6 +43,7 @@ router.post('/generateQR', async (req, res, next) => {
         const voter = req.body.voter
         const amount = req.body.amount
         const candidate = (req.body.candidate || '').toLowerCase()
+        const action = req.body.action
 
         let validator = await Validator.deployed()
         let candidateInfo = (await db.Candidate.findOne({
@@ -52,7 +53,7 @@ router.post('/generateQR', async (req, res, next) => {
 
         const candidateName = candidateInfo.name ? candidateInfo.name : 'Anonymous Candidate'
 
-        const message = voter + ' vote ' + amount + ' TOMO for candidate ' + candidate + ' - ' + candidateName
+        const message = voter + ' ' + action + ' ' + amount + ' TOMO for candidate ' + candidate + ' - ' + candidateName
 
         res.send({
             candidateName: candidateName,
@@ -74,8 +75,8 @@ router.post('/verifyTx', async (req, res, next) => {
     try {
         const id = req.query.id
         const action = req.body.action
-        const signer = req.body.signer
-        const candidate = req.body.candidate
+        let signer = req.body.signer
+        let candidate = req.body.candidate
         const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
         const serializedTx = req.body.rawTx
         if (!id) {
@@ -96,10 +97,10 @@ router.post('/verifyTx', async (req, res, next) => {
         if (!serializedTx) {
             res.status(406).send('raw transaction hash(rawTx) is requried')
         }
-        const voter = '0x' + new EthereumTx('0x' + serializedTx).getSenderAddress().toString('hex')
-        voter.toLowerCase()
-        signer.toLowerCase()
-        candidate.toLowerCase()
+        let voter = '0x' + new EthereumTx('0x' + serializedTx).getSenderAddress().toString('hex')
+        voter = voter.toLowerCase()
+        signer = signer.toLowerCase()
+        candidate = candidate.toLowerCase()
 
         if (voter !== signer) {
             return res.status(406).send('Voter and signer are not match')

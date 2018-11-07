@@ -294,7 +294,8 @@ export default {
             const data = {
                 voter: self.voter,
                 candidate: self.candidate,
-                amount: self.voteValue
+                amount: self.voteValue,
+                action: 'vote'
             }
             // call api to generate qr code
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
