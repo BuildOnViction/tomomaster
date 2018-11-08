@@ -1,18 +1,6 @@
 <template>
     <div>
         <div class="container">
-            <div
-                v-if="!voted"
-                class="row">
-                <div
-                    class="tomo-empty col-12">
-                    <i class="tm-notice tomo-empty__icon"/>
-                    <p class="tomo-empty__description">You have not voted for this candidate, so you can't unvote.</p>
-                    <b-button
-                        :to="`/voting/${candidate}`"
-                        variant="primary">Vote</b-button>
-                </div>
-            </div>
             <b-row
                 v-if="voted"
                 align-v="center"
