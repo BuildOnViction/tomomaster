@@ -22,7 +22,7 @@
 
                     <div class="navbar-buttons">
                         <b-button
-                            v-if="!account"
+                            v-if="!isTomonet"
                             id="btn-become-candidate"
                             to="/setting"
                             variant="primary">Login</b-button>
@@ -33,7 +33,7 @@
                             variant="primary">Become a candidate</b-button>
 
                         <router-link
-                            v-if="account"
+                            v-if="isTomonet"
                             id="btn-setting"
                             to="/setting"><i class="tm-dots color-btn-bg"/>Setting</router-link>
                     </div>
@@ -55,14 +55,14 @@ export default {
             showProgressBar: false,
             selectedCandidate: null,
             search: null,
-            account: null
+            isTomonet: false
         }
     },
     async updated () {
         const contract = await this.TomoValidator.deployed()
         const account = await this.getAccount()
         if (account && contract) {
-            this.account = true
+            this.isTomonet = true
         }
     },
     created: async function () {

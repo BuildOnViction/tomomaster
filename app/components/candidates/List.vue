@@ -108,8 +108,9 @@
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
-                        :disabled="!account "
-                        :variant="account ? 'primary' : 'secondary'"
+                        :disabled="!isTomonet "
+                        :style="[isTomonet ? {} : {'background-color': '#6595a5', 'border-color': '#6595a5'}]"
+                        :variant="isTomonet ? 'primary' : ''"
                         class="mt-3 mt-lg-0 vote-btn">Vote</b-button>
                 </template>
             </b-table>
@@ -180,7 +181,8 @@ export default {
             tableCssClass: '',
             loading: false,
             hasProposed: false,
-            hasResigned: false
+            hasResigned: false,
+            isTomonet: false
         }
     },
     computed: {
@@ -196,15 +198,20 @@ export default {
         let self = this
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
+
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
                 let account = await self.getAccount()
                 if (account && contract) {
-                    self.account = account.toLowerCase()
+                    self.isTomonet = true
                 }
             }
+        } catch (error) {
+            console.log(error)
+        }
 
+        try {
             self.loading = true
 
             let candidates = await axios.get('/api/candidates')
