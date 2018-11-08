@@ -109,8 +109,7 @@
                         v-if="data.item.status === 'PROPOSED'"
                         :to="`/voting/${data.item.address}`"
                         :disabled="!account "
-                        :style="[account ? {} : { 'background-color': 'grey' }]"
-                        variant="primary"
+                        :variant="account ? 'primary' : 'secondary'"
                         class="mt-3 mt-lg-0 vote-btn">Vote</b-button>
                 </template>
             </b-table>
