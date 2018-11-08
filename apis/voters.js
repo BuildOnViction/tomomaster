@@ -58,7 +58,7 @@ router.post('/generateQR', async (req, res, next) => {
         res.send({
             candidateName: candidateName,
             message,
-            url: 'http://localhost:3000/api/voters/verifyTx?id=',
+            url: `${config.get('baseUrl')}api/voters/verifyTx?id=`,
             id: uuidv4()
         })
     } catch (e) {
@@ -97,7 +97,8 @@ router.post('/verifyTx', async (req, res, next) => {
         if (!serializedTx) {
             res.status(406).send('raw transaction hash(rawTx) is requried')
         }
-        let voter = '0x' + new EthereumTx('0x' + serializedTx).getSenderAddress().toString('hex')
+        let voter = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
+
         voter = voter.toLowerCase()
         signer = signer.toLowerCase()
         candidate = candidate.toLowerCase()
@@ -106,9 +107,7 @@ router.post('/verifyTx', async (req, res, next) => {
             return res.status(406).send('Voter and signer are not match')
         }
 
-        const raw = '0x' + serializedTx
-
-        await chain.eth.sendRawTransaction(raw, async (error, hash) => {
+        await chain.eth.sendRawTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 console.log(error)
                 chain.eth.getBalance(voter, function (e, balance) {
