@@ -97,6 +97,11 @@ router.post('/verifyTx', async (req, res, next) => {
         if (!serializedTx) {
             res.status(406).send('raw transaction hash(rawTx) is requried')
         }
+        const checkId = await db.SignTransaction.findOne({ signId: id })
+        if (checkId) {
+            res.status(406).send('Cannot use 1 QR code twice')
+        }
+
         let voter = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         voter = voter.toLowerCase()
@@ -109,16 +114,18 @@ router.post('/verifyTx', async (req, res, next) => {
 
         await chain.eth.sendRawTransaction(serializedTx, async (error, hash) => {
             if (error) {
-                console.log(error)
-                chain.eth.getBalance(voter, function (e, balance) {
-                    if (!e) {
-                        if (new BigNumber(balance).div(10 ** 18) < amount) {
-                            return res.status(406).send('Not enough TOMO')
-                        } else {
-                            return res.status(404).send('Something went wrong')
+                if (action === 'vote') {
+                    chain.eth.getBalance(voter, function (e, balance) {
+                        if (!e) {
+                            if (new BigNumber(balance).div(10 ** 18) < amount) {
+                                return res.status(406).send('Not enough TOMO')
+                            } else {
+                                return res.status(404).send('Something went wrong')
+                            }
                         }
-                    }
-                })
+                    })
+                }
+                throw error
             } else {
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: voter })
@@ -128,7 +135,7 @@ router.post('/verifyTx', async (req, res, next) => {
                 sign.action = action
                 sign.signId = id
                 sign.amount = amount
-                sign.rawTx = '0x' + serializedTx
+                sign.rawTx = serializedTx
                 sign.candidate = candidate
                 sign.tx = hash
 
