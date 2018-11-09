@@ -59,11 +59,7 @@ export default {
         }
     },
     async updated () {
-        const contract = await this.TomoValidator.deployed()
-        const account = await this.getAccount()
-        if (account && contract) {
-            this.isTomonet = true
-        }
+        await this.checkNetworkAndLogin()
     },
     created: async function () {
         let self = this
@@ -72,7 +68,7 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            this.account = await this.getAccount()
+            await self.checkNetworkAndLogin()
         } catch (e) {
             console.log(e)
         }
@@ -103,6 +99,19 @@ export default {
         goPage: function (s) {
             console.log(s)
             this.$router.push({ path: `/candidate/${s}` })
+        },
+        async checkNetworkAndLogin () {
+            try {
+                setTimeout(async () => {
+                    const contract = await this.TomoValidator.deployed()
+                    const account = await this.getAccount()
+                    if (account && contract) {
+                        this.isTomonet = true
+                    }
+                }, 0)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }

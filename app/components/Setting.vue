@@ -214,6 +214,17 @@ export default {
         self.chainConfig = self.config.blockchain
 
         self.setupAccount = async () => {
+            let contract
+            try {
+                contract = await self.TomoValidator.deployed()
+            } catch (error) {
+                self.$toasted.show(
+                    'Error! Make sure you choose correct tomochain network.',
+                    {
+                        type : 'error'
+                    }
+                )
+            }
             try {
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
@@ -227,25 +238,26 @@ export default {
                         console.log('got an error', a)
                     }
                 })
-                let contract = await self.TomoValidator.deployed()
-                let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+                if (contract) {
+                    let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
-                await Promise.all(blks.map(async (it, index) => {
-                    let blk = new BigNumber(it).toString()
-                    if (blk !== '0') {
-                        self.aw = true
-                    }
-                    let wd = {
-                        blockNumber: blk
-                    }
-                    wd.cap = new BigNumber(
-                        await contract.getWithdrawCap.call(blk, { from: account })
-                    ).div(10 ** 18).toFormat()
-                    wd.estimatedTime = await self.getSecondsToHms(
-                        (wd.blockNumber - self.chainConfig.blockNumber)
-                    )
-                    self.withdraws[index] = wd
-                }))
+                    await Promise.all(blks.map(async (it, index) => {
+                        let blk = new BigNumber(it).toString()
+                        if (blk !== '0') {
+                            self.aw = true
+                        }
+                        let wd = {
+                            blockNumber: blk
+                        }
+                        wd.cap = new BigNumber(
+                            await contract.getWithdrawCap.call(blk, { from: account })
+                        ).div(10 ** 18).toFormat()
+                        wd.estimatedTime = await self.getSecondsToHms(
+                            (wd.blockNumber - self.chainConfig.blockNumber)
+                        )
+                        self.withdraws[index] = wd
+                    }))
+                }
 
                 let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
                 self.wh = []
@@ -259,6 +271,9 @@ export default {
                 self.isReady = true
             } catch (e) {
                 console.log(e)
+                self.$toasted.show(e, {
+                    type : 'error'
+                })
             }
         }
         await self.setupAccount()

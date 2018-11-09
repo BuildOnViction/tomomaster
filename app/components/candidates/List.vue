@@ -107,11 +107,9 @@
                     slot-scope="data">
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
-                        :to="`/voting/${data.item.address}`"
-                        :disabled="!isTomonet "
-                        :style="[isTomonet ? {} : {'background-color': '#6595a5', 'border-color': '#6595a5'}]"
-                        :variant="isTomonet ? 'primary' : ''"
-                        class="mt-3 mt-lg-0 vote-btn">Vote</b-button>
+                        variant="primary"
+                        class="mt-3 mt-lg-0 vote-btn"
+                        @click="onRowClick(data.item.address)">Vote</b-button>
                 </template>
             </b-table>
 
@@ -201,11 +199,13 @@ export default {
 
         try {
             if (self.isReady) {
-                let contract = await self.TomoValidator.deployed()
-                let account = await self.getAccount()
-                if (account && contract) {
-                    self.isTomonet = true
-                }
+                setTimeout(async () => {
+                    let contract = await self.TomoValidator.deployed()
+                    let account = await self.getAccount()
+                    if (account && contract) {
+                        self.isTomonet = true
+                    }
+                }, 0)
             }
         } catch (error) {
             console.log(error)
@@ -263,6 +263,14 @@ export default {
             cssClass += this.loading ? ' tomo-table--loading' : ''
 
             this.tableCssClass = cssClass
+        },
+        onRowClick (address) {
+            if (this.isTomonet) {
+                this.$router.push({ path: `/voting/${address}` })
+            } else {
+                const toastMessage = 'There are some errors. Make sure you have chosen tomochain network or login'
+                this.$toasted.show(toastMessage)
+            }
         }
     }
 }
