@@ -164,7 +164,7 @@
                     :to="`/unvoting/${candidate.address}`"
                     variant="secondary">Unvote</b-button>
                 <b-button
-                    v-if="candidate.status !== 'RESIGNED'"
+                    v-if="candidate.status !== 'RESIGNED' && isTomonet"
                     :to="`/voting/${candidate.address}`"
                     variant="primary">Vote</b-button>
             </div>
@@ -493,7 +493,8 @@ export default {
             txTotalRows: 0,
             loading: false,
             chartLoading: false,
-            cpu0Series: []
+            cpu0Series: [],
+            isTomonet: false
         }
     },
     computed: {
@@ -507,11 +508,23 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        let account
         self.config = await self.appConfig()
+
+        try {
+            if (self.isReady) {
+                let contract = await self.TomoValidator.deployed()
+                account = await self.getAccount()
+                if (account && contract) {
+                    self.isTomonet = true
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
         try {
             let address = self.candidate.address
-            let account = self.isReady ? await self.getAccount() : ''
-            self.account = account
 
             self.loading = true
             // Get all information at the same time
