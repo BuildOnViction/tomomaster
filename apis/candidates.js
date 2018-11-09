@@ -172,9 +172,8 @@ router.post('/unvote', async function (req, res, next) {
         Validator.setProvider(walletProvider)
         let validator = await Validator.deployed()
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.unvote(candidate, {
+        await validator.unvote(candidate, '200000000000000000000', {
             from : walletProvider.address,
-            value: '200000000000000000000',
             gas: 2000000,
             gasPrice: 2500
         })
