@@ -18,6 +18,7 @@
                 <div
                     v-if="step === 1">
                     <b-row
+                        v-if="voted"
                         align-v="center"
                         align-h="center"
                         class="m-0">
@@ -25,7 +26,8 @@
                             :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                             + (loading ? ' tomo-loading' : '')">
                             <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
-                                <span class="tomo-card__subtitle">
+                                <span
+                                    class="tomo-card__subtitle">
                                     Your TOMO will be locked in a duration after unvoting</span>
                             </h4>
                             <ul class="tomo-list list-unstyled">
@@ -40,7 +42,9 @@
                                     <i class="tm-profile tomo-list__icon" />
                                     <p class="tomo-list__text">
                                         <span>
-                                            <router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link>
+                                            <router-link :to="`/candidate/${candidate}`">
+                                                {{ candidate }}
+                                            </router-link>
                                         </span>
                                         <span>Candidate</span>
                                     </p>
@@ -167,6 +171,10 @@
                                         type="button"
                                         variant="secondary"
                                         @click="backStep">Back</b-button>
+                                    <b-button
+                                        type="button"
+                                        variant="secondary"
+                                        @click="createRawTx">create</b-button>
                                     <button
                                         v-if="!checked"
                                         class="btn btn-primary"
@@ -373,6 +381,16 @@ export default {
                     }
                 }, 2000)
             }
+        },
+        async createRawTx () {
+            const rawTx = await axios.post(
+                '/api/voters/createRawTx',
+                {
+                    voteValue: this.voteValue,
+                    candidate: this.candidate
+                }
+            )
+            console.log(rawTx.data)
         }
     }
 }

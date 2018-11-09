@@ -177,4 +177,52 @@ router.post('/getVotingResult', async (req, res, next) => {
     }
 })
 
+router.post('/createRawTx', async (req, res, next) => {
+    try {
+        const value = new BigNumber(req.body.voteValue).multipliedBy(10 ** 18).toNumber()
+        const gasPrice = 2500
+        const gas = 1000000
+
+        await chain.eth.getTransactionCount(
+            '0x33c2e732ae7dce8b05f37b2ba0cfe14c980c4dbe'
+            , function (error, lastCount) {
+                if (error) {
+                    console.log(error)
+                }
+                console.log(`lastCount
+                
+                
+                
+                
+                ${lastCount}`)
+
+                const data = '0x02aa9be2000000000000000000000000fc5571921c6d3672e13b58ea23dea534f' +
+                        '2b35fa00000000000000000000000000000000000000000000000000de0b6b3a7640000'
+
+                const rawTx = {
+                    nonce: '0x' + lastCount.toString(16),
+                    gasPrice,
+                    gasLimit: gas,
+                    value,
+                    to: '0x0000000000000000000000000000000000000088',
+                    data: data
+                }
+                const tx = new EthereumTx(rawTx)
+
+                const privateKey = Buffer
+                    .from('45a59296bfdb8f88bcd1e99c28bc1b0e294e394062e6bad340b410c343781dd3', 'hex')
+
+                tx.sign(privateKey)
+                const raw = tx.serialize().toString('hex')
+                console.log(raw)
+                return res.send({
+                    message: 'xong',
+                    raw: raw
+                })
+            })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 module.exports = router

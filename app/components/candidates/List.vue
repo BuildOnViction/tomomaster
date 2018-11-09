@@ -107,9 +107,9 @@
                     slot-scope="data">
                     <b-button
                         v-if="data.item.status === 'PROPOSED'"
-                        :to="`/voting/${data.item.address}`"
                         variant="primary"
-                        class="mt-3 mt-lg-0">Vote</b-button>
+                        class="mt-3 mt-lg-0 vote-btn"
+                        @click="onRowClick(data.item.address)">Vote</b-button>
                 </template>
             </b-table>
 
@@ -179,7 +179,8 @@ export default {
             tableCssClass: '',
             loading: false,
             hasProposed: false,
-            hasResigned: false
+            hasResigned: false,
+            isTomonet: false
         }
     },
     computed: {
@@ -195,12 +196,22 @@ export default {
         let self = this
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
+
         try {
             if (self.isReady) {
-                let account = await self.getAccount()
-                self.account = account.toLowerCase()
+                setTimeout(async () => {
+                    let contract = await self.TomoValidator.deployed()
+                    let account = await self.getAccount()
+                    if (account && contract) {
+                        self.isTomonet = true
+                    }
+                }, 0)
             }
+        } catch (error) {
+            console.log(error)
+        }
 
+        try {
             self.loading = true
 
             let candidates = await axios.get('/api/candidates')
@@ -252,6 +263,14 @@ export default {
             cssClass += this.loading ? ' tomo-table--loading' : ''
 
             this.tableCssClass = cssClass
+        },
+        onRowClick (address) {
+            if (this.isTomonet) {
+                this.$router.push({ path: `/voting/${address}` })
+            } else {
+                const toastMessage = 'There are some errors. Make sure you have chosen tomochain network or login'
+                this.$toasted.show(toastMessage)
+            }
         }
     }
 }
