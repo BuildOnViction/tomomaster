@@ -136,6 +136,53 @@ router.post('/resign', async function (req, res, next) {
     }
 })
 
+// for automation test only
+router.post('/vote', async function (req, res, next) {
+    let key = req.query.key
+    let network = config.get('blockchain.rpc')
+    try {
+        let walletProvider =
+            (key.indexOf(' ') >= 0)
+                ? new HDWalletProvider(key, network)
+                : new PrivateKeyProvider(key, network)
+        Validator.setProvider(walletProvider)
+        let validator = await Validator.deployed()
+        let candidate = req.query.coinbase.toLowerCase()
+        await validator.vote(candidate, {
+            from : walletProvider.address,
+            value: '500000000000000000000',
+            gas: 2000000,
+            gasPrice: 2500
+        })
+        return res.json({ status: 'OK' })
+    } catch (e) {
+        return res.json({ status: 'NOK' })
+    }
+})
+
+// for automation test only
+router.post('/unvote', async function (req, res, next) {
+    let key = req.query.key
+    let network = config.get('blockchain.rpc')
+    try {
+        let walletProvider =
+            (key.indexOf(' ') >= 0)
+                ? new HDWalletProvider(key, network)
+                : new PrivateKeyProvider(key, network)
+        Validator.setProvider(walletProvider)
+        let validator = await Validator.deployed()
+        let candidate = req.query.coinbase.toLowerCase()
+        await validator.unvote(candidate, '200000000000000000000', {
+            from : walletProvider.address,
+            gas: 2000000,
+            gasPrice: 2500
+        })
+        return res.json({ status: 'OK' })
+    } catch (e) {
+        return res.json({ status: 'NOK' })
+    }
+})
+
 router.get('/:candidate/isMasternode', async function (req, res, next) {
     try {
         let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
