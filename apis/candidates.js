@@ -100,7 +100,7 @@ router.post('/apply', async function (req, res, next) {
                 $set: {
                     smartContractAddress: validator.address,
                     candidate: candidate,
-                    capacity: '0',
+                    capacity: '50000000000000000000000',
                     status: 'PROPOSED',
                     owner: walletProvider.address,
                     name: req.query.name
