@@ -25,8 +25,10 @@ import BigNumber from 'bignumber.js'
 import HighchartsVue from 'highcharts-vue'
 import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
+import VueClipboards from 'vue-clipboards'
 
 Vue.use(BootstrapVue)
+Vue.use(VueClipboards)
 
 Vue.use(Toasted, {
     position: 'bottom-right',

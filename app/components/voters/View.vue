@@ -395,7 +395,7 @@ export default {
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).div(10 ** 18).toFixed(6),
+                    reward: new BigNumber(r.reward).toFixed(6),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })

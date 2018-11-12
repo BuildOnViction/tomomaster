@@ -51,7 +51,7 @@
                 <div class="col-12">
                     <h3 class="section-title">
                         <i class="tm-flag color-yellow" />
-                        <span>Candidates</span>
+                        <span>Candidates ({{ totalRows }})</span>
                     </h3>
                 </div>
             </div>

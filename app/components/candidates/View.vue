@@ -616,7 +616,7 @@ export default {
                 self.mnRewards.push({
                     epoch: r.epoch,
                     signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).div(1e+18).toFixed(6),
+                    reward: new BigNumber(r.reward).toFixed(6),
                     createdAt: moment(r.createdAt).fromNow(),
                     dateTooltip: moment(r.createdAt).format('lll')
                 })
