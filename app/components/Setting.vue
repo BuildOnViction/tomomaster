@@ -216,19 +216,16 @@ export default {
         self.setupAccount = async () => {
             let contract
             try {
-                contract = await self.TomoValidator.deployed()
-            } catch (error) {
-                self.$toasted.show(
-                    'Error! Make sure you choose correct tomochain network.',
-                    {
-                        type : 'error'
-                    }
-                )
-            }
-            try {
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
                 }
+
+                try {
+                    contract = await self.TomoValidator.deployed()
+                } catch (error) {
+                    throw Error('Make sure you choose correct tomochain network.')
+                }
+
                 let account = await self.getAccount()
                 self.address = account
                 self.account = account
@@ -269,6 +266,7 @@ export default {
                     self.wh.push(it)
                 })
                 self.isReady = true
+                self.$toasted.show('Network Provider was changed successfully')
             } catch (e) {
                 console.log(e)
                 self.$toasted.show(e, {
@@ -327,7 +325,6 @@ export default {
 
                 setTimeout(async () => {
                     self.loading = false
-                    self.$toasted.show('Network Provider was changed successfully')
                     await self.setupAccount()
                 }, 2000)
             } catch (e) {
