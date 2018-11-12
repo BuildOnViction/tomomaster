@@ -130,6 +130,9 @@ router.post('/applyBulk', async function (req, res, next) {
         for (let candidate of candidates) {
             candidate = (candidate || '').trim().toLowerCase()
             try {
+                let isCandidate = await validator.isCandidate.call(candidate)
+                if (isCandidate) continue
+
                 await validator.propose(candidate, {
                     from : walletProvider.address,
                     value: 50000 * 10 ** 18,
@@ -146,13 +149,12 @@ router.post('/applyBulk', async function (req, res, next) {
                             candidate: candidate,
                             capacity: '50000000000000000000000',
                             status: 'PROPOSED',
-                            owner: walletProvider.address,
-                            name: req.query.name
+                            owner: walletProvider.address
                         }
                     }, { upsert: true })
                 }
             } catch (e) {
-                console.log(e)
+                console.error(e)
             }
         }
         return res.json({ status: 'OK' })
