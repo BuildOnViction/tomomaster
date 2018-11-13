@@ -132,10 +132,14 @@
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
                         </div>
+                        <!-- <b-button
+                            :disabled="w.blockNumber > chainConfig.blockNumber"
+                            variant="primary"
+                            @click="withdraw(w.blockNumber, k)">Withdraw</b-button> -->
                         <b-button
                             :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
-                            @click="withdraw(w.blockNumber, k)">Withdraw</b-button>
+                            @click="changeView(w, k)">Withdraw</b-button>
                     </li>
                 </ul>
                 <ul
@@ -360,6 +364,16 @@ export default {
             } catch (e) {
                 self.loading = false
             }
+        },
+        changeView (w, k) {
+            this.$router.push({ name: 'CandidateWithdraw',
+                params: {
+                    address: this.address,
+                    blockNumber: w.blockNumber,
+                    capacity: w.cap,
+                    index: k
+                }
+            })
         }
     }
 }

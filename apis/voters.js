@@ -88,34 +88,36 @@ router.post('/verifyTx', async (req, res, next) => {
         if (!signer) {
             res.status(406).send('signer is requried')
         }
-        if (!candidate) {
-            res.status(406).send('candidate is requried')
-        }
         if (!amount) {
             res.status(406).send('amount is requried')
         }
         if (!serializedTx) {
             res.status(406).send('raw transaction hash(rawTx) is requried')
         }
+        if (action !== 'withdraw') {
+            if (!candidate) {
+                res.status(406).send('candidate is requried')
+            }
+        }
         const checkId = await db.SignTransaction.findOne({ signId: id })
         if (checkId) {
             res.status(406).send('Cannot use 1 QR code twice')
         }
 
-        let voter = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
+        let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
-        voter = voter.toLowerCase()
+        signedAddress = signedAddress.toLowerCase()
         signer = signer.toLowerCase()
-        candidate = candidate.toLowerCase()
+        candidate = candidate.toLowerCase() || ''
 
-        if (voter !== signer) {
-            return res.status(406).send('Voter and signer are not match')
+        if (signedAddress !== signer) {
+            return res.status(406).send('Signed Address and signer are not match')
         }
 
         await chain.eth.sendRawTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 if (action === 'vote') {
-                    chain.eth.getBalance(voter, function (e, balance) {
+                    chain.eth.getBalance(signedAddress, function (e, balance) {
                         if (!e) {
                             if (new BigNumber(balance).div(10 ** 18) < amount) {
                                 return res.status(406).send('Not enough TOMO')
@@ -128,7 +130,7 @@ router.post('/verifyTx', async (req, res, next) => {
                 throw error
             } else {
                 // Store id, address, msg, signature
-                let sign = await db.SignTransaction.findOne({ signedAddress: voter })
+                let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
                 if (!sign) {
                     sign = {}
                 }
@@ -139,7 +141,11 @@ router.post('/verifyTx', async (req, res, next) => {
                 sign.candidate = candidate
                 sign.tx = hash
 
-                await db.SignTransaction.findOneAndUpdate({ signedAddress: voter }, sign, { upsert: true, new: true })
+                await db.SignTransaction.findOneAndUpdate(
+                    { signedAddress: signedAddress },
+                    sign,
+                    { upsert: true, new: true }
+                )
                 res.send({
                     status: 'Done',
                     transactionHash: hash
@@ -153,7 +159,7 @@ router.post('/verifyTx', async (req, res, next) => {
     }
 })
 
-router.post('/getVotingResult', async (req, res, next) => {
+router.post('/getScanningResult', async (req, res, next) => {
     const id = req.body.id
     const voter = req.body.voter
 
