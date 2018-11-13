@@ -48,12 +48,6 @@ Vue.use(HighchartsVue)
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
-if (window.web3) {
-    var web3js = new Web3(window.web3.currentProvider)
-} else {
-    web3js = false
-}
-
 Vue.prototype.setupProvider = function (provider, wjs) {
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
@@ -65,6 +59,17 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                     if (err != null) {
                         console.log('There was an error fetching your accounts.')
                         return reject(err)
+                    }
+
+                    if (provider === 'rpc') {
+                        if (wjs.currentProvider.address) {
+                            return resolve(wjs.currentProvider.address)
+                        }
+
+                        if (wjs.currentProvider.addresses) {
+                            return resolve(wjs.currentProvider.addresses[0])
+                        }
+                        return resolve('')
                     }
 
                     if (accs.length === 0) {
@@ -80,9 +85,6 @@ Vue.prototype.setupProvider = function (provider, wjs) {
         }
     }
 }
-
-let provider = (Vue.prototype.isElectron) ? 'testnet' : 'metamask'
-Vue.prototype.setupProvider(provider, web3js)
 
 Vue.prototype.formatNumber = function (number) {
     let seps = number.toString().split('.')
@@ -190,6 +192,10 @@ const router = new VueRouter({
 })
 
 getConfig().then((config) => {
+    let provider = 'rpc'
+    var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
+    Vue.prototype.setupProvider(provider, web3js)
+
     Vue.use(VueAnalytics, {
         id: config.GA,
         router,

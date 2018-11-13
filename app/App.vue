@@ -101,17 +101,15 @@ export default {
             this.$router.push({ path: `/candidate/${s}` })
         },
         async checkNetworkAndLogin () {
-            try {
-                setTimeout(async () => {
+            setTimeout(async () => {
+                try {
                     const contract = await this.TomoValidator.deployed()
                     const account = await this.getAccount()
                     if (account && contract) {
                         this.isTomonet = true
                     }
-                }, 0)
-            } catch (error) {
-                console.log(error)
-            }
+                } catch (error) {}
+            }, 0)
         }
     }
 }
