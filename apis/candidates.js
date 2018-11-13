@@ -114,6 +114,56 @@ router.post('/apply', async function (req, res, next) {
 })
 
 // for automation test only
+router.post('/applyBulk', async function (req, res, next) {
+    let key = req.query.key
+    let network = config.get('blockchain.rpc')
+    try {
+        let walletProvider =
+            (key.indexOf(' ') >= 0)
+                ? new HDWalletProvider(key, network)
+                : new PrivateKeyProvider(key, network)
+        Validator.setProvider(walletProvider)
+        let validator = await Validator.deployed()
+
+        let candidates = (req.query.candidates || '').split(',')
+
+        for (let candidate of candidates) {
+            candidate = (candidate || '').trim().toLowerCase()
+            try {
+                let isCandidate = await validator.isCandidate.call(candidate)
+                if (isCandidate) continue
+
+                await validator.propose(candidate, {
+                    from : walletProvider.address,
+                    value: 50000 * 10 ** 18,
+                    gas: 2000000,
+                    gasPrice: 2500
+                })
+                if (req.query.name) {
+                    await db.Candidate.updateOne({
+                        smartContractAddress: validator.address,
+                        candidate: candidate
+                    }, {
+                        $set: {
+                            smartContractAddress: validator.address,
+                            candidate: candidate,
+                            capacity: '50000000000000000000000',
+                            status: 'PROPOSED',
+                            owner: walletProvider.address
+                        }
+                    }, { upsert: true })
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        return res.json({ status: 'OK' })
+    } catch (e) {
+        return res.json({ status: 'NOK' })
+    }
+})
+
+// for automation test only
 router.post('/resign', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
