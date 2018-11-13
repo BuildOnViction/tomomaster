@@ -76,7 +76,7 @@ router.post('/verifyTx', async (req, res, next) => {
         const id = req.query.id
         const action = req.body.action
         let signer = req.body.signer
-        let candidate = req.body.candidate
+        let candidate = req.body.candidate || ''
         const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
         const serializedTx = req.body.rawTx
         if (!id) {
@@ -108,7 +108,7 @@ router.post('/verifyTx', async (req, res, next) => {
 
         signedAddress = signedAddress.toLowerCase()
         signer = signer.toLowerCase()
-        candidate = candidate.toLowerCase() || ''
+        candidate = candidate.toLowerCase()
 
         if (signedAddress !== signer) {
             return res.status(406).send('Signed Address and signer are not match')
@@ -162,6 +162,7 @@ router.post('/verifyTx', async (req, res, next) => {
 router.post('/getScanningResult', async (req, res, next) => {
     const id = req.body.id
     const voter = req.body.voter
+    const action = req.body.action || ''
 
     const acc = await db.Voter.findOne({ voter: voter })
 
@@ -169,7 +170,7 @@ router.post('/getScanningResult', async (req, res, next) => {
         return res.status(404).send()
     }
     const signTx = await db.SignTransaction.findOne({ signedAddress: voter })
-    const checkTx = await db.Transaction.findOne({ tx: signTx.tx })
+    const checkTx = action === 'withdraw' ? true : await db.Transaction.findOne({ tx: signTx.tx })
     if (id === signTx.signId && voter === signTx.signedAddress && checkTx) {
         res.json({
             tx: signTx.tx
