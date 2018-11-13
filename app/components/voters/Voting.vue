@@ -25,6 +25,13 @@
                                 <span>Candidate</span>
                             </p>
                         </li>
+                        <li class="tomo-list__item">
+                            <i class="tm-tomo tomo-list__icon" />
+                            <p class="tomo-list__text">
+                                <span> {{ formatCurrencySymbol(formatNumber(balance)) }}</span>
+                                <span>Balance</span>
+                            </p>
+                        </li>
                     </ul>
 
                     <b-form
@@ -179,7 +186,8 @@ export default {
             checked:   true,
             processing: true,
             id: '',
-            interval: null
+            interval: null,
+            balance: 0
         }
     },
     validations: {
@@ -203,6 +211,12 @@ export default {
             if (account) {
                 self.voter = account
             }
+            self.web3.eth.getBalance(self.voter, function (a, b) {
+                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                if (a) {
+                    console.log('got an error', a)
+                }
+            })
         } catch (e) {
             self.$toasted.show(`You need login your account before voting`,
                 {
