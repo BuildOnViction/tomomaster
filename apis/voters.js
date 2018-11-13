@@ -137,7 +137,6 @@ router.post('/verifyTx', async (req, res, next) => {
                 sign.action = action
                 sign.signId = id
                 sign.amount = amount
-                sign.rawTx = serializedTx
                 sign.candidate = candidate
                 sign.tx = hash
 
