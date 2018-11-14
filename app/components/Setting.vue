@@ -132,10 +132,14 @@
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
                         </div>
+                        <!-- <b-button
+                            :disabled="w.blockNumber > chainConfig.blockNumber"
+                            variant="primary"
+                            @click="withdraw(w.blockNumber, k)">Withdraw</b-button> -->
                         <b-button
                             :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
-                            @click="withdraw(w.blockNumber, k)">Withdraw</b-button>
+                            @click="changeView(w, k)">Withdraw</b-button>
                     </li>
                 </ul>
                 <ul
@@ -340,30 +344,15 @@ export default {
                 console.log(e)
             }
         },
-        withdraw: async function (blockNumber, index) {
-            let self = this
-            let contract = await self.TomoValidator.deployed()
-            let account = await self.getAccount()
-            self.loading = true
-            try {
-                let wd = await contract.withdraw(String(blockNumber), String(index), {
-                    from: account,
-                    gasPrice: 2500,
-                    gas: 2000000
-                })
-                let toastMessage = wd.tx ? 'You have successfully withdrawed!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (wd.tx) {
-                        self.$router.push({ path: `/setting` })
-                    }
-                }, 2000)
-            } catch (e) {
-                self.loading = false
-            }
+        changeView (w, k) {
+            this.$router.push({ name: 'CandidateWithdraw',
+                params: {
+                    address: this.address,
+                    blockNumber: w.blockNumber,
+                    capacity: w.cap,
+                    index: k
+                }
+            })
         }
     }
 }
