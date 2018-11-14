@@ -87,7 +87,7 @@ Vue.prototype.setupProvider = function (provider, wjs) {
 }
 
 Vue.prototype.formatNumber = function (number) {
-    let seps = number.toString().split('.')
+    let seps = (number || 0).toString().split('.')
     seps[0] = seps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
     return seps.join('.')
