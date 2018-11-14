@@ -7,9 +7,9 @@
       "rpc": "BC_RPC",
       "networkId": "BC_NETWORK_ID"
   },
-  "explorerUrl": "EXPLORER_URL",
+  "explorerUrl": "TOMOSCAN_SITE_URL",
   "grafanaUrl": "GRAFANA_URL",
-  "tomoscanUrl": "TOMOSCAN_SERVER_URL",
+  "tomoscanUrl": "TOMOSCAN_API_URL",
   "baseUrl": "BASE_URL",
   "db": {
     "uri": "DB_URI"
