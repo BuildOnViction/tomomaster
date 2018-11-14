@@ -252,8 +252,6 @@ async function watchBlockSigner () {
     }
 }
 
-watchBlockSigner()
-
 updateSigners(false).then(() => {
     return getCurrentCandidates().then(() => {
         watchNewBlock()
