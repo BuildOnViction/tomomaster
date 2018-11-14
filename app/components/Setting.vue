@@ -20,6 +20,7 @@
                             <b-form-select
                                 id="provider"
                                 v-model="provider">
+                                <option value="wallet">TomoWallet</option>
                                 <option value="rpc">PrivateKey/MNEMONIC</option>
                                 <option
                                     v-if="!isElectron"
@@ -47,7 +48,7 @@
                             class="text-danger">Wrong URL format</span>
                     </b-form-group>
                     <b-form-group
-                        v-if="provider !== 'metamask'"
+                        v-if="provider === 'rpc'"
                         class="mb-4"
                         label="Privatekey/MNEMONIC"
                         label-for="mnemonic">
@@ -55,6 +56,19 @@
                             :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
                             type="text" />
+                        <span
+                            v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
+                            class="text-danger">Required field</span>
+                    </b-form-group>
+
+                    <b-form-group
+                        v-if="provider === 'wallet'"
+                        class="mb-4"
+                        style="text-align: center">
+                        <vue-qrcode
+                            :options="{size: 250 }"
+                            value="qrCoduuuuuuuuuuuuuuuuuuuuuuoooooooooooooooooooooe"
+                            class="img-fluid text-center text-lg-right"/>
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
                             class="text-danger">Required field</span>
@@ -71,6 +85,7 @@
 
                     <div class="buttons text-right">
                         <b-button
+                            v-if="provider !== 'wallet'"
                             type="submit"
                             variant="primary">Save</b-button>
                     </div>
@@ -169,10 +184,14 @@ import {
     required
 } from 'vuelidate/lib/validators'
 import localhostUrl from '../../validators/localhostUrl.js'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
 const { HDWalletProvider } = require('../../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
     name: 'App',
+    components: {
+        VueQrcode
+    },
     mixins: [validationMixin],
     data () {
         return {

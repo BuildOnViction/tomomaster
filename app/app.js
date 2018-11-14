@@ -192,7 +192,7 @@ const router = new VueRouter({
 })
 
 getConfig().then((config) => {
-    let provider = 'rpc'
+    let provider = 'wallet'
     var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     Vue.prototype.setupProvider(provider, web3js)
 
