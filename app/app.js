@@ -49,10 +49,6 @@ Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
 Vue.prototype.setupProvider = function (provider, wjs) {
-    console.log(`provider:
-    
-    
-    ${provider}`)
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs
