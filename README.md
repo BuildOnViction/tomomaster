@@ -8,6 +8,8 @@
 This is Governance Dapp for TomoChain. Full-Node can apply to become a candidate for masternode. Coin Holder can vote for candidates to become masternodes. See the detail from technical Whitepaper: https://docs.tomochain.com/whitepaper/](https://docs.tomochain.com/whitepaper/)
 
 ## Requirements
+- NodeJS (If you get EACCES permission issue, please see: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
+- Redis
 - MongoDB
 - Truffle Framework
 
@@ -16,6 +18,38 @@ This is Governance Dapp for TomoChain. Full-Node can apply to become a candidate
 cp config/default.json config/local.json
 ```
 Update `local.json` file to support your environment
+- Update mnemonic
+- Update mongodb configuration:
+    - For docker:
+    `  "db": {
+    "uri": "mongodb://mongodb:27017/governance"
+    },
+  `
+    - For localhost: 
+    `
+    "db": {
+    "uri": "mongodb://localhost:27017/governance"
+  },
+  `
+  - Update redis configuration:
+    - For docker:
+    `
+    "redis": {
+    "host": "redis",
+    "port": 6379,
+    "password": null,
+    "prefix": "tomomaster"
+    },
+    `
+    - For localhost:
+    `
+    "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": null,
+    "prefix": "tomomaster"
+    },
+  `
 
 ## Install
 ```
@@ -26,6 +60,9 @@ cp abis/*json build/contracts/
 Note: before deploying to tomochain testnet, make sure you have TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.testnet.tomochain.com)
 
 ## Run
+- Start mongodb
+- Start Redis
+- Start TomoMaster
 ```
 npm run dev
 ```
