@@ -162,7 +162,7 @@ const router = new VueRouter({
             path: '/resign/:address', component: CandidateResign
         },
         {
-            path: '/withdraw', component: CandidateWithdraw
+            path: '/withdraw', component: CandidateWithdraw, name: 'CandidateWithdraw'
         },
         {
             path: '/withdraw/:address', component: CandidateWithdraw
