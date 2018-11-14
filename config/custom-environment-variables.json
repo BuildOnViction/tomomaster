@@ -5,6 +5,7 @@
   },
   "blockchain": {
       "rpc": "BC_RPC",
+      "ws": "BC_WS",
       "networkId": "BC_NETWORK_ID"
   },
   "explorerUrl": "TOMOSCAN_SITE_URL",
