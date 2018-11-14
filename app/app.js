@@ -49,6 +49,10 @@ Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
 Vue.prototype.setupProvider = function (provider, wjs) {
+    console.log(`provider:
+    
+    
+    ${provider}`)
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs
@@ -192,7 +196,7 @@ const router = new VueRouter({
 })
 
 getConfig().then((config) => {
-    let provider = 'wallet'
+    let provider = 'rpc'
     var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     Vue.prototype.setupProvider(provider, web3js)
 

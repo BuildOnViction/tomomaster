@@ -19,8 +19,11 @@
                         <b-input-group>
                             <b-form-select
                                 id="provider"
-                                v-model="provider">
-                                <option value="wallet">TomoWallet</option>
+                                v-model="provider"
+                                @change="onChangeSelect">
+                                <option
+                                    value="wallet"
+                                    selected>TomoWallet</option>
                                 <option value="rpc">PrivateKey/MNEMONIC</option>
                                 <option
                                     v-if="!isElectron"
@@ -67,7 +70,7 @@
                         style="text-align: center">
                         <vue-qrcode
                             :options="{size: 250 }"
-                            value="qrCoduuuuuuuuuuuuuuuuuuuuuuoooooooooooooooooooooe"
+                            :value="qrCode"
                             class="img-fluid text-center text-lg-right"/>
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
@@ -92,7 +95,7 @@
                 </b-form>
             </b-card>
             <b-card
-                v-if="isReady"
+                v-if="address"
                 :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
                 + (loading ? ' tomo-loading' : '')">
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
@@ -198,7 +201,7 @@ export default {
             isReady: !!this.web3,
             mnemonic: '',
             config: {},
-            provider: 'rpc',
+            provider: 'wallet',
             address: '',
             withdraws: [],
             wh: [],
@@ -210,7 +213,10 @@ export default {
                 rpc: 'https://testnet.tomochain.com',
                 custom: 'http://localhost:8545'
             },
-            loading: false
+            loading: false,
+            qrCode: 'text',
+            id: '',
+            interval: ''
         }
     },
     validations: {
@@ -227,8 +233,13 @@ export default {
     computed: {},
     watch: {},
     updated () {},
+    beforeDestroy () {
+        if (this.interval) {
+            clearInterval(this.interval)
+        }
+    },
     created: async function () {
-        this.provider = this.NetworkProvider || 'rpc'
+        // this.provider = this.NetworkProvider || 'rpc'
         let self = this
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
@@ -254,7 +265,6 @@ export default {
                 }
 
                 self.address = account
-                self.account = account
                 self.web3.eth.getBalance(self.address, function (a, b) {
                     self.balance = new BigNumber(b).div(10 ** 18).toFormat()
                     if (a) {
@@ -298,6 +308,14 @@ export default {
                 self.$toasted.show(e, {
                     type : 'error'
                 })
+            }
+        }
+        if (self.provider === 'wallet') {
+            const hasQRCOde = self.loginByQRCode()
+            if (await hasQRCOde) {
+                self.interval = setInterval(async () => {
+                    await this.getLoginResult()
+                }, 3000)
             }
         }
         await self.setupAccount()
@@ -383,6 +401,97 @@ export default {
             } catch (e) {
                 self.loading = false
             }
+        },
+        async loginByQRCode () {
+            // generate qr code
+            const { data } = await axios.get('/api/config/generateLoginQR')
+            this.id = data.id
+            this.qrCode = encodeURI(
+                'tomochain:login?message=' + data.message +
+                '&submitURL=' + data.url + data.id
+            )
+            return true
+        },
+        async getLoginResult () {
+            // calling api every 2 seconds
+            const { data } = await axios.post('/api/config/getLoginResult', { messId: this.id })
+
+            if (!data.error && data) {
+                this.loading = true
+                if (self.interval) {
+                    clearInterval(self.interval)
+                }
+                await this.getAccountInfo(data.user)
+            }
+        },
+        onChangeSelect (event) {
+            if (event === 'wallet') {
+                this.interval = setInterval(async () => {
+                    await this.getLoginResult()
+                }, 3000)
+            } else {
+                if (this.interval) {
+                    clearInterval(this.interval)
+                }
+            }
+        },
+        async getAccountInfo (account) {
+            const self = this
+            let contract
+            try {
+                contract = await self.TomoValidator.deployed()
+            } catch (error) {
+                if (self.interval) {
+                    clearInterval(self.interval)
+                }
+                self.$toasted.show('Make sure you choose correct tomochain network.', {
+                    type : 'error'
+                })
+            }
+
+            self.address = account
+            self.web3.eth.getBalance(self.address, function (a, b) {
+                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                if (a) {
+                    console.log('got an error', a)
+                }
+            })
+            if (contract) {
+                let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+
+                await Promise.all(blks.map(async (it, index) => {
+                    let blk = new BigNumber(it).toString()
+                    if (blk !== '0') {
+                        self.aw = true
+                    }
+                    let wd = {
+                        blockNumber: blk
+                    }
+                    wd.cap = new BigNumber(
+                        await contract.getWithdrawCap.call(blk, { from: account })
+                    ).div(10 ** 18).toFormat()
+                    wd.estimatedTime = await self.getSecondsToHms(
+                        (wd.blockNumber - self.chainConfig.blockNumber)
+                    )
+                    self.withdraws[index] = wd
+                }))
+            }
+
+            let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
+            self.wh = []
+            wh.data.forEach(w => {
+                let it = {
+                    cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
+                    tx: w.tx
+                }
+                self.wh.push(it)
+            })
+            self.isReady = true
+            self.loading = false
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
+            self.$toasted.show('Network Provider was changed successfully')
         }
     }
 }
