@@ -1,15 +1,8 @@
 'use strict'
 
-const contract = require('truffle-contract')
-const ValidatorArtifacts = require('../../build/contracts/TomoValidator.json')
-const chain = require('./chain')
-const Validator = contract(ValidatorArtifacts)
+const ValidatorABI = require('../../abis/TomoValidator')
+const web3 = require('./web3')
+const config = require('config')
+const validator = new web3.eth.Contract(ValidatorABI.abi, config.get('blockchain.validatorAddress'))
 
-const provider = chain.currentProvider
-
-Validator.setProvider(provider)
-
-module.exports = {
-    chain,
-    Validator
-}
+module.exports = validator

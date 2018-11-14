@@ -6,7 +6,7 @@ const db = require('../models/mongodb')
 const { Validator } = require('../models/blockchain/validator')
 const uuidv4 = require('uuid/v4')
 const config = require('config')
-const chain = require('../models/blockchain/chain')
+const web3 = require('../models/blockchain/web3')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 
@@ -112,10 +112,10 @@ router.post('/verifyTx', async (req, res, next) => {
             return res.status(406).send('Voter and signer are not match')
         }
 
-        await chain.eth.sendRawTransaction(serializedTx, async (error, hash) => {
+        await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 if (action === 'vote') {
-                    chain.eth.getBalance(voter, function (e, balance) {
+                    web3.eth.getBalance(voter, function (e, balance) {
                         if (!e) {
                             if (new BigNumber(balance).div(10 ** 18) < amount) {
                                 return res.status(406).send('Not enough TOMO')
