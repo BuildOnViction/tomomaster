@@ -199,13 +199,11 @@ export default {
 
         try {
             if (self.isReady) {
-                setTimeout(async () => {
-                    let contract = await self.TomoValidator.deployed()
-                    let account = await self.getAccount()
-                    if (account && contract) {
-                        self.isTomonet = true
-                    }
-                }, 0)
+                let contract = await self.TomoValidator.deployed()
+                let account = await self.getAccount()
+                if (account && contract) {
+                    self.isTomonet = true
+                }
             }
         } catch (error) {
             console.log(error)
