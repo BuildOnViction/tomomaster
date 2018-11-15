@@ -3,19 +3,17 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
-const { Validator } = require('../models/blockchain/validator')
 const uuidv4 = require('uuid/v4')
 const config = require('config')
-const chain = require('../models/blockchain/chain')
+const web3 = require('../models/blockchain/web3')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 
 router.get('/:voter/candidates', async function (req, res, next) {
-    let validator = await Validator.deployed()
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let voters = await db.Voter.find({
-        smartContractAddress: validator.address,
+        smartContractAddress: config.get('blockchain.validatorAddress'),
         voter: (req.params.voter || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(voters)
@@ -45,9 +43,8 @@ router.post('/generateQR', async (req, res, next) => {
         const candidate = (req.body.candidate || '').toLowerCase()
         const action = req.body.action
 
-        let validator = await Validator.deployed()
         let candidateInfo = (await db.Candidate.findOne({
-            smartContractAddress: validator.address,
+            smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate
         }) || {})
 
@@ -114,10 +111,10 @@ router.post('/verifyTx', async (req, res, next) => {
             return res.status(406).send('Signed Address and signer are not match')
         }
 
-        await chain.eth.sendRawTransaction(serializedTx, async (error, hash) => {
+        await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 if (action === 'vote') {
-                    chain.eth.getBalance(signedAddress, function (e, balance) {
+                    web3.eth.getBalance(signedAddress, function (e, balance) {
                         if (!e) {
                             if (new BigNumber(balance).div(10 ** 18) < amount) {
                                 return res.status(406).send('Not enough TOMO')

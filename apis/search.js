@@ -2,12 +2,11 @@
 const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
-const { Validator } = require('../models/blockchain/validator')
+const config = require('config')
 
 router.get('/:candidate', async function (req, res, next) {
-    let validator = await Validator.deployed()
     let candidate = (await db.Candidate.findOne({
-        smartContractAddress: validator.address,
+        smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: req.params.candidate
     }) || {})
 
