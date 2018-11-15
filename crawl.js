@@ -232,6 +232,59 @@ async function updateLatestSignedBlock () {
     }
 }
 
+async function getPastEvent () {
+    let blockNumber = await web3.eth.getBlockNumber()
+    console.log('Get all past event from block 0 to block', blockNumber)
+    validator.getPastEvents('allEvents', { fromBlock: 0, toBlock: blockNumber }, async function (error, events) {
+        if (error) {
+            console.error(error)
+        } else {
+            events.forEach(async function (event) {
+                if (event.event === 'Withdraw') {
+                    let owner = (event.returnValues._owner || '').toLowerCase()
+                    let blockNumber = event.blockNumber
+                    let capacity = event.returnValues._cap
+                    await db.Withdraw.findOneAndUpdate({ tx: event.transactionHash }, {
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        blockNumber: blockNumber,
+                        tx: event.transactionHash,
+                        owner: owner,
+                        capacity: capacity
+                    }, { upsert: true })
+                    return true
+                } else {
+                    let candidate = (event.returnValues._candidate || '').toLowerCase()
+                    let voter = (event.returnValues._voter || '').toLowerCase()
+                    let owner = (event.returnValues._owner || '').toLowerCase()
+                    let capacity = event.returnValues._cap
+                    let blk = await web3.eth.getBlock(event.blockNumber)
+                    let createdAt = new Date(blk.timestamp * 1000)
+                    await db.Transaction.findOneAndUpdate({ tx: event.transactionHash }, {
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        tx: event.transactionHash,
+                        event: event.event,
+                        voter: voter,
+                        owner: owner,
+                        candidate: candidate,
+                        capacity: capacity,
+                        createdAt: createdAt
+                    }, { upsert: true })
+
+                    if (event.event === 'Vote' || event.event === 'Unvote') {
+                        await updateVoterCap(candidate, voter)
+                    }
+                    if (event.event === 'Resign' || event.event === 'Propose') {
+                        await updateVoterCap(candidate, owner)
+                    }
+                    q.create('voteHistory', { candidate, blockNumber })
+                        .priority('high').removeOnComplete(true).save()
+                    await updateCandidateInfo(candidate)
+                }
+            })
+        }
+    })
+}
+
 updateSigners(false).then(() => {
     return getCurrentCandidates().then(() => {
         watchNewBlock()
@@ -242,6 +295,9 @@ updateSigners(false).then(() => {
     console.log('getCurrentCandidates', e)
     process.exit(1)
 })
+
+getPastEvent()
+
 emitter.on('error', e => {
     console.error('ERROR!!!', e)
     process.exit(1)
