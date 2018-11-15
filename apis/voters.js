@@ -3,7 +3,6 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
-const { Validator } = require('../models/blockchain/validator')
 const uuidv4 = require('uuid/v4')
 const config = require('config')
 const web3 = require('../models/blockchain/web3')
@@ -11,11 +10,10 @@ const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 
 router.get('/:voter/candidates', async function (req, res, next) {
-    let validator = await Validator.deployed()
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let voters = await db.Voter.find({
-        smartContractAddress: validator.address,
+        smartContractAddress: config.get('blockchain.validatorAddress'),
         voter: (req.params.voter || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(voters)
@@ -45,9 +43,8 @@ router.post('/generateQR', async (req, res, next) => {
         const candidate = (req.body.candidate || '').toLowerCase()
         const action = req.body.action
 
-        let validator = await Validator.deployed()
         let candidateInfo = (await db.Candidate.findOne({
-            smartContractAddress: validator.address,
+            smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate
         }) || {})
 
