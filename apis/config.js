@@ -8,7 +8,7 @@ router.get('/', async function (req, res, next) {
     let appConfig = {}
     appConfig.blockchain = config.get('blockchain')
 
-    appConfig.blockchain.blockNumber = web3.eth.getBlockNumber()
+    appConfig.blockchain.blockNumber = await web3.eth.getBlockNumber()
     appConfig.explorerUrl = config.get('explorerUrl')
     appConfig.grafanaUrl = config.get('grafanaUrl')
     appConfig.GA = config.get('GA')
