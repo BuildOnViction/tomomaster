@@ -5,7 +5,6 @@ const blockSigner = require('./models/blockchain/blockSigner')
 const web3 = require('./models/blockchain/web3')
 const config = require('config')
 const db = require('./models/mongodb')
-const q = require('./queues')
 const EventEmitter = require('events').EventEmitter
 const emitter = new EventEmitter()
 
@@ -63,8 +62,6 @@ async function watchValidator () {
                     if (result.event === 'Resign' || result.event === 'Propose') {
                         await updateVoterCap(candidate, owner)
                     }
-                    q.create('voteHistory', { candidate, blockNumber })
-                        .priority('high').removeOnComplete(true).save()
                     await updateCandidateInfo(candidate)
                 }
             }
@@ -141,10 +138,6 @@ async function getCurrentCandidates () {
                 v = (v || '').toLowerCase()
                 return updateVoterCap(candidate, v)
             })
-
-            // init vote history
-            q.create('voteHistory', { candidate, blockNumber: 0 })
-                .priority('low').removeOnComplete(true).save()
 
             await Promise.all(m)
             return updateCandidateInfo(candidate)
