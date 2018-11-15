@@ -65,7 +65,7 @@
                     </b-form-group>
 
                     <b-form-group
-                        v-if="provider === 'wallet'"
+                        v-if="provider === 'wallet' && !$store.state.walletLoggedIn && !address"
                         class="mb-4"
                         style="text-align: center">
                         <vue-qrcode
@@ -211,7 +211,8 @@ export default {
             networks: {
                 // mainnet: 'https://core.tomochain.com',
                 rpc: 'https://testnet.tomochain.com',
-                custom: 'http://localhost:8545'
+                custom: 'http://localhost:8545',
+                wallet: 'https://testnet.tomochain.com'
             },
             loading: false,
             qrCode: 'text',
@@ -258,7 +259,8 @@ export default {
                     throw Error('Make sure you choose correct tomochain network.')
                 }
 
-                let account = await self.getAccount()
+                let account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
 
                 if (!account) {
                     return false
@@ -310,7 +312,7 @@ export default {
                 })
             }
         }
-        if (self.provider === 'wallet') {
+        if (self.provider === 'wallet' && !self.$store.state.walletLoggedIn) {
             const hasQRCOde = self.loginByQRCode()
             if (await hasQRCOde) {
                 self.interval = setInterval(async () => {
@@ -364,6 +366,7 @@ export default {
 
                     wjs = new Web3(walletProvider)
                 }
+                console.log(wjs)
 
                 await self.setupProvider(this.provider, wjs)
 
@@ -438,6 +441,8 @@ export default {
         async getAccountInfo (account) {
             const self = this
             let contract
+            self.$store.state.web3 = await new Web3(new Web3.providers.HttpProvider(self.networks[self.provider]))
+            await self.setupProvider(this.provider, false)
             try {
                 contract = await self.TomoValidator.deployed()
             } catch (error) {
@@ -450,6 +455,7 @@ export default {
             }
 
             self.address = account
+            self.$store.state.walletLoggedIn = account
             self.web3.eth.getBalance(self.address, function (a, b) {
                 self.balance = new BigNumber(b).div(10 ** 18).toFormat()
                 if (a) {

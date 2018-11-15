@@ -147,7 +147,8 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            let account = await self.getAccount()
+            let account = this.$store.state.walletLoggedIn
+                ? this.$store.state.walletLoggedIn : await self.getAccount()
             self.account = account
         } catch (e) {
             self.$toasted.show(`You need login your account before voting`,

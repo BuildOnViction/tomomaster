@@ -26,6 +26,7 @@ import HighchartsVue from 'highcharts-vue'
 import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
+import Vuex from 'vuex'
 
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
@@ -208,8 +209,18 @@ getConfig().then((config) => {
     throw e
 })
 
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+    state: {
+        walletLoggedIn: null,
+        web3: null
+    }
+})
+
 new Vue({ // eslint-disable-line no-new
     el: '#app',
+    store,
     router: router,
     components: { App },
     template: '<App/>'

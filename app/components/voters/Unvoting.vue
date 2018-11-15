@@ -111,7 +111,7 @@
                         <b-card
                             :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                             + (loading ? ' tomo-loading' : '')">
-                            <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote</h4>
+                            <h4 class=" color-white tomo-card__title tomo-card__title--big">Confirmation</h4>
                             <!-- <div>
                                 <strong>Using Tomo wallet to execute the action
                                 </strong>
@@ -136,13 +136,6 @@
                                                 style="width: 100%"/>
                                         </label>
                                     </div>
-                                    <label>
-                                        <input
-                                            v-model="checked"
-                                            type="checkbox"
-                                            @change="onChangeUnvoting">
-                                        <b>Unvote by TomoWallet</b>
-                                    </label>
                                     <div>
                                         <div
                                             class="pull-right"
@@ -155,7 +148,7 @@
                                     </div>
                                     <div>
                                         <div
-                                            v-if="checked"
+                                            v-if="$store.state.walletLoggedIn"
                                             style="text-align: center; margin-top: 10px">
                                             <vue-qrcode
                                                 :value="qrCode"
@@ -172,7 +165,7 @@
                                         variant="secondary"
                                         @click="backStep">Back</b-button>
                                     <button
-                                        v-if="!checked"
+                                        v-if="!$store.state.walletLoggedIn"
                                         class="btn btn-primary"
                                         variant="primary"
                                         @click="unvote">Submit</button>
@@ -237,7 +230,8 @@ export default {
         let candidate = self.candidate
 
         try {
-            let account = await self.getAccount()
+            const account = this.$store.state.walletLoggedIn
+                ? this.$store.state.walletLoggedIn : await self.getAccount()
             self.voter = account
 
             let contract = await self.TomoValidator.deployed()

@@ -200,8 +200,9 @@ export default {
         try {
             if (self.isReady) {
                 setTimeout(async () => {
-                    let contract = await self.TomoValidator.deployed()
-                    let account = await self.getAccount()
+                    const contract = await self.TomoValidator.deployed()
+                    const account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await self.getAccount()
                     if (account && contract) {
                         self.isTomonet = true
                     }
