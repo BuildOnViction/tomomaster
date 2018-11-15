@@ -191,12 +191,11 @@ async function watchNewBlock () {
     while (true) {
         try {
             let blk = await web3.eth.getBlock('latest')
-            console.log('update signer', blk.number)
+            console.log('update signer for block %s and sleep 1 second', blk.number)
             await updateSigners(blk)
         } catch (e) {
             emitter.emit('error', e)
         }
-        console.log('sleep 1 second')
         await sleep(1000)
     }
 }
@@ -214,9 +213,9 @@ async function updateLatestSignedBlock () {
                 console.error(error, result)
                 return false
             } else {
-                console.log('Sign block', result.blockNumber)
                 let signer = result.returnValues._signer
                 let bN = String(result.returnValues._blockNumber)
+                console.log('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
 
                 await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
