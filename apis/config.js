@@ -2,7 +2,7 @@
 const express = require('express')
 const config = require('config')
 const router = express.Router()
-const chain = require('../models/blockchain/chain')
+const web3 = require('../models/blockchain/web3')
 const utils = require('ethereumjs-util')
 const db = require('../models/mongodb')
 
@@ -11,8 +11,11 @@ const uuidv4 = require('uuid/v4')
 router.get('/', async function (req, res, next) {
     let appConfig = {}
     appConfig.blockchain = config.get('blockchain')
-
-    appConfig.blockchain.blockNumber = chain.eth.blockNumber
+    try {
+        appConfig.blockchain.blockNumber = await web3.eth.getBlockNumber()
+    } catch (e) {
+        console.log(e)
+    }
     appConfig.explorerUrl = config.get('explorerUrl')
     appConfig.grafanaUrl = config.get('grafanaUrl')
     appConfig.GA = config.get('GA')
@@ -57,7 +60,7 @@ router.post('/verifyLogin', async (req, res, next) => {
 
         // Store id, address, msg, signature
         let sign = await db.Signature.findOne({ signedAddress: signedAddress })
-        if (id === sign.signedId) {
+        if (sign && id === sign.signedId) {
             res.status(406).send('Cannot use a QR code twice')
         } else {
             const data = {}

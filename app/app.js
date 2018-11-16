@@ -50,6 +50,7 @@ Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
 Vue.prototype.setupProvider = function (provider, wjs) {
+    const self = this
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
         Vue.prototype.web3 = wjs
@@ -61,6 +62,9 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                         console.log('There was an error fetching your accounts.')
                         return reject(err)
                     }
+                    if (provider === 'wallet') {
+                        return resolve(self.$store.state.walletLoggedIn)
+                    }
 
                     if (provider === 'rpc') {
                         if (wjs.currentProvider.address) {
@@ -71,6 +75,9 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                             return resolve(wjs.currentProvider.addresses[0])
                         }
                         return resolve('')
+                    }
+                    if (provider === 'wallet') {
+                        return resolve(this.$store.state.walletLoggedIn)
                     }
 
                     if (accs.length === 0) {
@@ -88,7 +95,7 @@ Vue.prototype.setupProvider = function (provider, wjs) {
 }
 
 Vue.prototype.formatNumber = function (number) {
-    let seps = number.toString().split('.')
+    let seps = (number || 0).toString().split('.')
     seps[0] = seps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
     return seps.join('.')
@@ -163,7 +170,7 @@ const router = new VueRouter({
             path: '/resign/:address', component: CandidateResign
         },
         {
-            path: '/withdraw', component: CandidateWithdraw
+            path: '/withdraw', component: CandidateWithdraw, name: 'CandidateWithdraw'
         },
         {
             path: '/withdraw/:address', component: CandidateWithdraw

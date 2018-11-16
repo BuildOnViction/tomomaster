@@ -205,7 +205,6 @@ export default {
             loading: false,
             step: 1,
             interval: null,
-            checked: true,
             processing: true
         }
     },
@@ -349,7 +348,7 @@ export default {
                 body.id = self.id
             }
             body.voter = self.voter
-            let { data } = await axios.post('/api/voters/getVotingResult', body)
+            let { data } = await axios.post('/api/voters/getScanningResult', body)
 
             if (!data.error) {
                 self.loading = true

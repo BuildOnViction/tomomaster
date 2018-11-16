@@ -176,7 +176,6 @@ export default {
             step: 1,
             message: '',
             qrCode: '',
-            checked:   true,
             processing: true,
             id: '',
             interval: null,
@@ -337,7 +336,7 @@ export default {
                 body.id = self.id
             }
             body.voter = self.voter
-            let { data } = await axios.post('/api/voters/getVotingResult', body)
+            let { data } = await axios.post('/api/voters/getScanningResult', body)
 
             if (!data.error) {
                 self.loading = true

@@ -199,14 +199,12 @@ export default {
 
         try {
             if (self.isReady) {
-                setTimeout(async () => {
-                    const contract = await self.TomoValidator.deployed()
-                    const account = this.$store.state.walletLoggedIn
-                        ? this.$store.state.walletLoggedIn : await self.getAccount()
-                    if (account && contract) {
-                        self.isTomonet = true
-                    }
-                }, 0)
+                let contract = await self.TomoValidator.deployed()
+                let account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+                if (account && contract) {
+                    self.isTomonet = true
+                }
             }
         } catch (error) {
             console.log(error)

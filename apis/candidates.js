@@ -3,8 +3,8 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
-const { Validator } = require('../models/blockchain/validator')
-const { HDWalletProvider } = require('../helpers')
+const validator = require('../models/blockchain/validator')
+const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 
@@ -12,11 +12,9 @@ router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 150
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
-        let validator = await Validator.deployed()
-
         let data = await Promise.all([
             db.Candidate.find({
-                smartContractAddress: validator.address
+                smartContractAddress: config.get('blockchain.validatorAddress')
             }).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' })
         ])
@@ -44,10 +42,9 @@ router.get('/', async function (req, res, next) {
 })
 
 router.get('/:candidate', async function (req, res, next) {
-    let validator = await Validator.deployed()
     let address = (req.params.candidate || '').toLowerCase()
     let candidate = (await db.Candidate.findOne({
-        smartContractAddress: validator.address,
+        smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: address
     }) || {})
 
@@ -55,11 +52,10 @@ router.get('/:candidate', async function (req, res, next) {
 })
 
 router.get('/:candidate/voters', async function (req, res, next) {
-    let validator = await Validator.deployed()
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let voters = await db.Voter.find({
-        smartContractAddress: validator.address,
+        smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json(voters)
@@ -83,10 +79,9 @@ router.post('/apply', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
-        Validator.setProvider(walletProvider)
-        let validator = await Validator.deployed()
+
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.propose(req.query.coinbase, {
+        await validator.methods.propose(req.query.coinbase, {
             from : walletProvider.address,
             value: 50000 * 10 ** 18,
             gas: 2000000,
@@ -94,11 +89,11 @@ router.post('/apply', async function (req, res, next) {
         })
         if (req.query.name) {
             await db.Candidate.updateOne({
-                smartContractAddress: validator.address,
+                smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
             }, {
                 $set: {
-                    smartContractAddress: validator.address,
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: candidate,
                     capacity: '50000000000000000000000',
                     status: 'PROPOSED',
@@ -122,8 +117,6 @@ router.post('/applyBulk', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
-        Validator.setProvider(walletProvider)
-        let validator = await Validator.deployed()
 
         let candidates = (req.query.candidates || '').split(',')
 
@@ -133,7 +126,7 @@ router.post('/applyBulk', async function (req, res, next) {
                 let isCandidate = await validator.isCandidate.call(candidate)
                 if (isCandidate) continue
 
-                await validator.propose(candidate, {
+                await validator.methods.propose(candidate, {
                     from : walletProvider.address,
                     value: 50000 * 10 ** 18,
                     gas: 2000000,
@@ -141,11 +134,11 @@ router.post('/applyBulk', async function (req, res, next) {
                 })
                 if (req.query.name) {
                     await db.Candidate.updateOne({
-                        smartContractAddress: validator.address,
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
                         candidate: candidate
                     }, {
                         $set: {
-                            smartContractAddress: validator.address,
+                            smartContractAddress: config.get('blockchain.validatorAddress'),
                             candidate: candidate,
                             capacity: '50000000000000000000000',
                             status: 'PROPOSED',
@@ -172,10 +165,8 @@ router.post('/resign', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
-        Validator.setProvider(walletProvider)
-        let validator = await Validator.deployed()
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.resign(candidate, {
+        await validator.methods.resign(candidate, {
             from : walletProvider.address,
             gas: 2000000,
             gasPrice: 2500
@@ -195,10 +186,8 @@ router.post('/vote', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
-        Validator.setProvider(walletProvider)
-        let validator = await Validator.deployed()
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.vote(candidate, {
+        await validator.methods.vote(candidate, {
             from : walletProvider.address,
             value: '500000000000000000000',
             gas: 2000000,
@@ -219,10 +208,8 @@ router.post('/unvote', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
-        Validator.setProvider(walletProvider)
-        let validator = await Validator.deployed()
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.unvote(candidate, '200000000000000000000', {
+        await validator.methods.unvote(candidate, '200000000000000000000', {
             from : walletProvider.address,
             gas: 2000000,
             gasPrice: 2500
@@ -251,8 +238,7 @@ router.get('/:candidate/isMasternode', async function (req, res, next) {
 
 router.get('/:candidate/isCandidate', async function (req, res, next) {
     try {
-        let validator = await Validator.deployed()
-        let isCandidate = await validator.isCandidate.call(req.params.candidate)
+        let isCandidate = await validator.methods.isCandidate(req.params.candidate).call()
         return res.json((isCandidate) ? 1 : 0)
     } catch (e) {
         return next(e)

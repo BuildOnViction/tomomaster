@@ -1,7 +1,8 @@
 'use strict'
 
-const { Validator } = require('../models/blockchain/validator')
+const validator = require('../models/blockchain/validator')
 const db = require('../models/mongodb')
+const config = require('config')
 const BigNumber = require('bignumber.js')
 const consumer = {}
 
@@ -10,10 +11,9 @@ consumer.task = async function (job, done) {
     let candidate = job.data.candidate
     let blockNumber = job.data.blockNumber
     try {
-        let validator = await Validator.deployed()
-        let aVoters = await validator.getVoters.call(candidate)
+        let aVoters = await validator.methods.getVoters(candidate).call()
         let map = aVoters.map(async v => {
-            let cap = await validator.getVoterCap(candidate, v)
+            let cap = await validator.methods.getVoterCap(candidate, v)
             return {
                 address: v,
                 capacity: new BigNumber(cap).toString()
@@ -21,7 +21,7 @@ consumer.task = async function (job, done) {
         })
         let voters = await Promise.all(map)
         await db.VoteHistory.create({
-            smartContractAddress: validator.address,
+            smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate,
             blockNumber: blockNumber,
             voters: voters

@@ -508,15 +508,14 @@ export default {
     updated () {},
     created: async function () {
         let self = this
-        let account
         self.config = await self.appConfig()
 
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                account = this.$store.state.walletLoggedIn
+                self.account = this.$store.state.walletLoggedIn
                     ? this.$store.state.walletLoggedIn : await self.getAccount()
-                if (account && contract) {
+                if (self.account && contract) {
                     self.isTomonet = true
                 }
             }
@@ -576,15 +575,15 @@ export default {
                     cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                 })
 
-                if (v.voter === account) {
+                if (v.voter === self.account) {
                     youVoted = youVoted.plus(v.capacity)
                 }
             })
 
-            if (account && self.web3) {
+            if (self.account && self.web3) {
                 try {
                     let contract = await self.TomoValidator.deployed()
-                    youVoted = await contract.getVoterCap(address, account)
+                    youVoted = await contract.getVoterCap(address, self.account)
                     self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
                 } catch (e) {}
             }
