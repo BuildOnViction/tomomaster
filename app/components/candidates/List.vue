@@ -266,7 +266,7 @@ export default {
             if (this.isTomonet) {
                 this.$router.push({ path: `/voting/${address}` })
             } else {
-                const toastMessage = 'You can not vote. Make sure you have chosen tomochain network and login'
+                const toastMessage = 'You can not vote at the moment. Please log in first.'
                 this.$toasted.show(toastMessage, {
                     type: 'info',
                     delay: '5000'
