@@ -29,7 +29,8 @@ var Transaction = new Schema({
         index: true
     },
     capacity: String,
+    createdAt: { type: Date, default: Date.now },
     blockNumber: { type: Number, index: true }
-}, { timestamps: true })
+}, { timestamps: false })
 
 module.exports = mongoose.model('Transaction', Transaction)

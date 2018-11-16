@@ -6,6 +6,7 @@ const web3 = require('./models/blockchain/web3')
 const config = require('config')
 const db = require('./models/mongodb')
 const EventEmitter = require('events').EventEmitter
+const moment = require('moment')
 const emitter = new EventEmitter()
 
 process.setMaxListeners(100)
@@ -44,7 +45,7 @@ async function watchValidator () {
                     let owner = (result.returnValues._owner || '').toLowerCase()
                     let capacity = result.returnValues._cap
                     let blk = await web3.eth.getBlock(result.blockNumber)
-                    let createdAt = new Date(blk.timestamp * 1000)
+                    let createdAt = moment.unix(blk.timestamp).utc()
                     let tx = new db.Transaction({
                         smartContractAddress: config.get('blockchain.validatorAddress'),
                         tx: result.transactionHash,
@@ -231,8 +232,8 @@ async function getPastEvent () {
     let lastBlockTx = await db.Transaction.findOne().sort({ blockNumber: -1 })
     let lb = (lastBlockTx && lastBlockTx.blockNumber) ? lastBlockTx.blockNumber : 0
 
-    console.log('Get all past event from block ', lb, ' to block', blockNumber)
-    validator.getPastEvents('allEvents', { fromBlock: lb, toBlock: blockNumber }, async function (error, events) {
+    console.log('Get all past event from block', lb, 'to block', blockNumber)
+    validator.getPastEvents('allEvents', { fromBlock: 0, toBlock: blockNumber }, async function (error, events) {
         if (error) {
             console.error(error)
         } else {
@@ -254,8 +255,9 @@ async function getPastEvent () {
                     let owner = (event.returnValues._owner || '').toLowerCase()
                     let capacity = event.returnValues._cap
                     let blk = await web3.eth.getBlock(event.blockNumber)
-                    let createdAt = new Date(blk.timestamp * 1000)
-                    await db.Transaction.findOneAndUpdate({ tx: event.transactionHash }, {
+                    let createdAt = moment.unix(blk.timestamp).utc()
+                    console.log('createdAt', createdAt, event.transactionHash)
+                    await db.Transaction.updateOne({ tx: event.transactionHash }, {
                         smartContractAddress: config.get('blockchain.validatorAddress'),
                         tx: event.transactionHash,
                         blockNumber: event.blockNumber,
