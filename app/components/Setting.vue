@@ -22,7 +22,7 @@
                                 v-model="provider"
                                 @change="onChangeSelect">
                                 <option
-                                    value="wallet"
+                                    value="tomowallet"
                                     selected>TomoWallet</option>
                                 <option value="rpc">PrivateKey/MNEMONIC</option>
                                 <option
@@ -65,7 +65,7 @@
                     </b-form-group>
 
                     <b-form-group
-                        v-if="provider === 'wallet'"
+                        v-if="provider === 'tomowallet'"
                         class="mb-4"
                         style="text-align: center">
                         <vue-qrcode
@@ -88,7 +88,7 @@
 
                     <div class="buttons text-right">
                         <b-button
-                            v-if="provider !== 'wallet'"
+                            v-if="provider !== 'tomowallet'"
                             type="submit"
                             variant="primary">Save</b-button>
                     </div>
@@ -205,7 +205,7 @@ export default {
             isReady: !!this.web3,
             mnemonic: '',
             config: {},
-            provider: 'wallet',
+            provider: 'tomowallet',
             address: '',
             withdraws: [],
             wh: [],
@@ -216,7 +216,7 @@ export default {
                 // mainnet: 'https://core.tomochain.com',
                 rpc: 'https://testnet.tomochain.com',
                 custom: 'http://localhost:8545',
-                wallet: 'https://testnet.tomochain.com'
+                tomowallet: 'https://testnet.tomochain.com'
             },
             loading: false,
             qrCode: 'text',
@@ -317,7 +317,7 @@ export default {
                 })
             }
         }
-        if (self.provider === 'wallet') {
+        if (self.provider === 'tomowallet') {
             const hasQRCOde = self.loginByQRCode()
             if (await hasQRCOde) {
                 self.interval = setInterval(async () => {
@@ -435,7 +435,7 @@ export default {
             }
         },
         onChangeSelect (event) {
-            if (event === 'wallet') {
+            if (event === 'tomowallet') {
                 this.interval = setInterval(async () => {
                     await this.getLoginResult()
                 }, 3000)
@@ -507,7 +507,6 @@ export default {
             if (this.interval) {
                 clearInterval(this.interval)
             }
-            self.$toasted.show('Network Provider was changed successfully')
         },
         changeView (w, k) {
             this.$router.push({ name: 'CandidateWithdraw',
