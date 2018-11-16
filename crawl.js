@@ -230,7 +230,7 @@ async function getPastEvent () {
     let blockNumber = await web3.eth.getBlockNumber()
     let lastBlockTx = await db.Transaction.findOne().sort({ blockNumber: -1 })
     let lb = (lastBlockTx && lastBlockTx.blockNumber) ? lastBlockTx.blockNumber : 0
- 
+    
     console.log('Get all past event from block ', lb, ' to block', blockNumber)
     validator.getPastEvents('allEvents', { fromBlock: lb, toBlock: blockNumber }, async function (error, events) {
         if (error) {
