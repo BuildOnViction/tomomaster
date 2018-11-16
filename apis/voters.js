@@ -156,27 +156,33 @@ router.post('/verifyTx', async (req, res, next) => {
 })
 
 router.post('/getScanningResult', async (req, res, next) => {
-    const id = req.body.id
-    const voter = req.body.voter
-    const action = req.body.action || ''
+    try {
+        const id = req.body.id
+        const voter = req.body.voter
+        const action = req.body.action || ''
 
-    const acc = await db.Voter.findOne({ voter: voter })
+        const acc = await db.Voter.findOne({ voter: voter })
 
-    if (!acc) {
-        return res.status(404).send()
-    }
-    const signTx = await db.SignTransaction.findOne({ signedAddress: voter })
-    const checkTx = action === 'withdraw' ? true : await db.Transaction.findOne({ tx: signTx.tx })
-    if (id === signTx.signId && voter === signTx.signedAddress && checkTx) {
-        res.json({
-            tx: signTx.tx
-        })
-    } else {
-        res.send({
-            error: {
-                message: 'Not match'
-            }
-        })
+        if (!acc) {
+            return res.status(404).send()
+        }
+        const signTx = await db.SignTransaction.findOne({ signedAddress: voter })
+        const checkTx = action === 'withdraw' ? true : await db.Transaction.findOne({ tx: signTx.tx })
+        if (id === signTx.signId && voter === signTx.signedAddress && checkTx) {
+            res.json({
+                tx: signTx.tx
+            })
+        } else {
+            res.send({
+                error: {
+                    message: 'Not match'
+                }
+            })
+        }
+    } catch (e) {
+        console.trace(e)
+        console.log(e)
+        return res.status(500).send(e)
     }
 })
 
