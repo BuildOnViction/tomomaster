@@ -227,12 +227,19 @@ async function updateLatestSignedBlock () {
 
 async function getPastEvent () {
     let blockNumber = await web3.eth.getBlockNumber()
+    let lastBlockTx = await db.Transaction.findOne().sort({ blockNumber: -1 })
+    let lb
+    if (lastBlockTx && lastBlockTx.blockNumber) {
+        lb = lastBlockTx.blockNumber
+    } else {
+        lb = 0
+    }
     console.log('Get all past event from block 0 to block', blockNumber)
-    validator.getPastEvents('allEvents', { fromBlock: 0, toBlock: blockNumber }, async function (error, events) {
+    validator.getPastEvents('allEvents', { fromBlock: lb, toBlock: blockNumber }, async function (error, events) {
         if (error) {
             console.error(error)
         } else {
-            events.forEach(async function (event) {
+            let map = events.map(async function (event) {
                 if (event.event === 'Withdraw') {
                     let owner = (event.returnValues._owner || '').toLowerCase()
                     let blockNumber = event.blockNumber
@@ -244,7 +251,6 @@ async function getPastEvent () {
                         owner: owner,
                         capacity: capacity
                     }, { upsert: true })
-                    return true
                 } else {
                     let candidate = (event.returnValues._candidate || '').toLowerCase()
                     let voter = (event.returnValues._voter || '').toLowerCase()
@@ -255,6 +261,7 @@ async function getPastEvent () {
                     await db.Transaction.findOneAndUpdate({ tx: event.transactionHash }, {
                         smartContractAddress: config.get('blockchain.validatorAddress'),
                         tx: event.transactionHash,
+                        blockNumber: event.blockNumber,
                         event: event.event,
                         voter: voter,
                         owner: owner,
@@ -262,34 +269,25 @@ async function getPastEvent () {
                         capacity: capacity,
                         createdAt: createdAt
                     }, { upsert: true })
-
-                    if (event.event === 'Vote' || event.event === 'Unvote') {
-                        await updateVoterCap(candidate, voter)
-                    }
-                    if (event.event === 'Resign' || event.event === 'Propose') {
-                        await updateVoterCap(candidate, owner)
-                    }
-                    q.create('voteHistory', { candidate, blockNumber })
-                        .priority('high').removeOnComplete(true).save()
-                    await updateCandidateInfo(candidate)
                 }
             })
+            return Promise.all(map)
         }
     })
 }
 
 updateSigners(false).then(() => {
     return getCurrentCandidates().then(() => {
-        watchNewBlock()
-        watchValidator()
-        updateLatestSignedBlock()
+        return getPastEvent().then(() => {
+            watchNewBlock()
+            watchValidator()
+            updateLatestSignedBlock()
+        })
     })
 }).catch(e => {
     console.log('getCurrentCandidates', e)
     process.exit(1)
 })
-
-getPastEvent()
 
 emitter.on('error', e => {
     console.error('ERROR!!!', e)
