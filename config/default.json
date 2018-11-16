@@ -26,12 +26,6 @@
   "tomoscanUrl": "https://scan.testnet.tomochain.com",
   "baseUrl": "https://master.testnet.tomochain.com/",
   "grafanaApiKey": "eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ==",
-  "redis": {
-    "host": "redis",
-    "port": 6379,
-    "password": null,
-    "prefix": "tomomaster"
-  },
   "truffle": {
     "mnemonic": "",
     "minCandidateCap": "50000000000000000000000",
