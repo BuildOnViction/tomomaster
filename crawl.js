@@ -53,6 +53,7 @@ async function watchValidator () {
                         owner: owner,
                         candidate: candidate,
                         capacity: capacity,
+                        blockNumber: blockNumber,
                         createdAt: createdAt
                     })
                     tx.save()
