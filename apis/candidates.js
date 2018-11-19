@@ -3,6 +3,7 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
+const web3 = require('../models/blockchain/web3')
 const validator = require('../models/blockchain/validator')
 const { HDWalletProvider } = require('../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
@@ -80,6 +81,7 @@ router.post('/apply', async function (req, res, next) {
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
 
+        web3.setProvider(walletProvider)
         let candidate = req.query.coinbase.toLowerCase()
         await validator.methods.propose(req.query.coinbase, {
             from : walletProvider.address,
@@ -118,15 +120,16 @@ router.post('/applyBulk', async function (req, res, next) {
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
 
+        web3.setProvider(walletProvider)
         let candidates = (req.query.candidates || '').split(',')
 
         for (let candidate of candidates) {
             candidate = (candidate || '').trim().toLowerCase()
             try {
-                let isCandidate = await validator.isCandidate.call(candidate)
+                let isCandidate = await validator.methods.isCandidate(candidate).call()
                 if (isCandidate) continue
 
-                await validator.methods.propose(candidate, {
+                await validator.methods.propose(candidate).send({
                     from : walletProvider.address,
                     value: 50000 * 10 ** 18,
                     gas: 2000000,
@@ -165,6 +168,9 @@ router.post('/resign', async function (req, res, next) {
             (key.indexOf(' ') >= 0)
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
+
+        web3.setProvider(walletProvider)
+
         let candidate = req.query.coinbase.toLowerCase()
         await validator.methods.resign(candidate, {
             from : walletProvider.address,
@@ -187,14 +193,16 @@ router.post('/vote', async function (req, res, next) {
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.methods.vote(candidate, {
+        web3.setProvider(walletProvider)
+        let ret = await validator.methods.vote(candidate).send({
             from : walletProvider.address,
             value: '500000000000000000000',
             gas: 2000000,
             gasPrice: 2500
         })
-        return res.json({ status: 'OK' })
+        return res.json({ status: 'OK', tx: ret.transactionHash })
     } catch (e) {
+        console.log(e)
         return res.json({ status: 'NOK' })
     }
 })
@@ -209,7 +217,8 @@ router.post('/unvote', async function (req, res, next) {
                 ? new HDWalletProvider(key, network)
                 : new PrivateKeyProvider(key, network)
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.methods.unvote(candidate, '200000000000000000000', {
+        web3.setProvider(walletProvider)
+        await validator.methods.unvote(candidate, '200000000000000000000').send({
             from : walletProvider.address,
             gas: 2000000,
             gasPrice: 2500
