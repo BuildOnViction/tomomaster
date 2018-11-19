@@ -34,7 +34,7 @@
                                 class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small>
                         </b-input-group>
                     </b-form-group>
-                    <b-form-group
+                    <!-- <b-form-group
                         v-if="provider === 'custom'"
                         class="mb-4"
                         label="Network URL"
@@ -49,7 +49,7 @@
                         <span
                             v-else-if="$v.networks.custom.$dirty && !$v.networks.custom.localhostUrl"
                             class="text-danger">Wrong URL format</span>
-                    </b-form-group>
+                    </b-form-group> -->
                     <b-form-group
                         v-if="provider === 'rpc'"
                         class="mb-4"
@@ -200,7 +200,7 @@ import axios from 'axios'
 import {
     required
 } from 'vuelidate/lib/validators'
-import localhostUrl from '../../validators/localhostUrl.js'
+// import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
@@ -235,10 +235,10 @@ export default {
     },
     validations: {
         networks: {
-            custom: {
-                required,
-                localhostUrl
-            }
+            // custom: {
+            //     required,
+            //     localhostUrl
+            // }
         },
         mnemonic: {
             required
@@ -443,8 +443,9 @@ export default {
                 await this.getAccountInfo(data.user)
             }
         },
-        onChangeSelect (event) {
+        async onChangeSelect (event) {
             if (event === 'tomowallet') {
+                await this.loginByQRCode()
                 this.interval = setInterval(async () => {
                     await this.getLoginResult()
                 }, 3000)
