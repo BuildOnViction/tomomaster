@@ -67,7 +67,7 @@
                             class="text-danger">Wrong coinbase address format</span>
                         <span
                             v-if="coinbaseError"
-                            class="text-danger">Voter cannot self vote to become candidate</span>
+                            class="text-danger">Your account address cannot same with coinbase address</span>
                     </b-form-group>
                     <!--b-form-group
                         label="Node URL"

@@ -72,9 +72,19 @@
                             :options="{size: 250 }"
                             :value="qrCode"
                             class="img-fluid text-center text-lg-right"/>
-                        <span
-                            v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
-                            class="text-danger">Required field</span>
+                        <div
+                            style="margin-top: 5px">
+                            <a
+                                href="https://goo.gl/MvE1GV"
+                                class="social-links__link">
+                                <img src="/app/assets/img/app-store.png" >
+                            </a>
+                            <a
+                                href="https://goo.gl/4tFQzY"
+                                class="social-links__link">
+                                <img src="/app/assets/img/android.png" >
+                            </a>
+                        </div>
                     </b-form-group>
 
                     <div

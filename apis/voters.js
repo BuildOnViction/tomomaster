@@ -158,8 +158,10 @@ router.post('/verifyTx', async (req, res, next) => {
 router.post('/getScanningResult', async (req, res, next) => {
     try {
         const id = req.body.id
-        const voter = req.body.voter
+        const voter = req.body.voter || ''
         const action = req.body.action || ''
+
+        voter.toLowerCase()
 
         const acc = await db.Voter.findOne({ voter: voter })
 
