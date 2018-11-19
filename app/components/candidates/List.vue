@@ -127,6 +127,7 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import store from 'store'
 
 export default {
     name: 'App',
@@ -195,13 +196,18 @@ export default {
     created: async function () {
         let self = this
         let config = await self.appConfig()
+        let account
         self.chainConfig = config.blockchain
 
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                let account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+                if (store.get('address')) {
+                    account = store.get('address').toLowerCase()
+                } else {
+                    account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await self.getAccount()
+                }
                 if (account && contract) {
                     self.isTomonet = true
                 }

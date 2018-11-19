@@ -202,6 +202,7 @@ import {
 } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import store from 'store'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
@@ -388,6 +389,11 @@ export default {
                 await self.setupAccount()
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
+
+                // generate token here
+                // const token = await axios.post('/api/config/generateWebToken', { address: self.address })
+                // set cookie here
+                store.set('address', self.address)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
