@@ -65,6 +65,9 @@
                         <span
                             v-else-if="$v.coinbase.$dirty && !$v.coinbase.coinbaseAddress"
                             class="text-danger">Wrong coinbase address format</span>
+                        <span
+                            v-if="coinbaseError"
+                            class="text-danger">Voter cannot self vote to become candidate</span>
                     </b-form-group>
                     <!--b-form-group
                         label="Node URL"
@@ -119,7 +122,8 @@ export default {
             applyValue: 50000,
             coinbase: '',
             // nodeUrl: '',
-            loading: false
+            loading: false,
+            coinbaseError: false
         }
     },
     validations: {
@@ -200,7 +204,13 @@ export default {
 
                 self.loading = true
 
-                let account = await self.getAccount()
+                let account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await this.getAccount()
+                if (coinbase.toLowerCase() === account.toLowerCase()) {
+                    self.loading = false
+                    self.coinbaseError = true
+                    return false
+                }
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.propose(coinbase, {
                     from : account,
