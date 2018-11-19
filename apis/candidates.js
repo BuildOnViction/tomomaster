@@ -131,7 +131,7 @@ router.post('/applyBulk', async function (req, res, next) {
 
                 await validator.methods.propose(candidate).send({
                     from : walletProvider.address,
-                    value: 50000 * 10 ** 18,
+                    value: '50000000000000000000000',
                     gas: 2000000,
                     gasPrice: 2500
                 })
