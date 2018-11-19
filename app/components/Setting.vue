@@ -215,7 +215,6 @@ export default {
             networks: {
                 // mainnet: 'https://core.tomochain.com',
                 rpc: 'https://testnet.tomochain.com',
-                custom: 'http://localhost:8545',
                 tomowallet: 'https://testnet.tomochain.com'
             },
             loading: false,
@@ -368,8 +367,8 @@ export default {
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
                                 self.mnemonic,
-                                self.networks[self.provider], 0, 1, true, "m/44'/889'/0'/0/")
-                            : new PrivateKeyProvider(self.mnemonic, self.networks[self.provider])
+                                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/")
+                            : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
 
                     wjs = new Web3(walletProvider)
                 }
@@ -452,7 +451,7 @@ export default {
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
                 '',
-                self.networks[self.provider], 0, 1, true, "m/44'/889'/0'/0/"))
+                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
 
             await self.setupProvider(this.provider, web3)
             try {
