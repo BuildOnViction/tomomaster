@@ -123,7 +123,7 @@ router.post('/applyBulk', async function (req, res, next) {
         for (let candidate of candidates) {
             candidate = (candidate || '').trim().toLowerCase()
             try {
-                let isCandidate = await validator.isCandidate.call(candidate)
+                let isCandidate = await validator.methods.isCandidate(candidate).call()
                 if (isCandidate) continue
 
                 await validator.methods.propose(candidate, {
