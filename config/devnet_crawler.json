@@ -1,0 +1,10 @@
+{
+    "blockchain": {
+        "rpc": "http://blockchain-proxy:8545",
+        "ws": "http://blockchain-proxy:8546",
+        "networkId": 90
+    },
+    "db": {
+        "uri" : "mongodb://tomomaster_db:27017/governance"
+    }
+}
