@@ -10,7 +10,7 @@ const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 
 router.get('/', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 150
+    const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         let data = await Promise.all([
