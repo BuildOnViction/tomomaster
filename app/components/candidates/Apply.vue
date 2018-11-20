@@ -65,6 +65,9 @@
                         <span
                             v-else-if="$v.coinbase.$dirty && !$v.coinbase.coinbaseAddress"
                             class="text-danger">Wrong coinbase address format</span>
+                        <span
+                            v-if="coinbaseError"
+                            class="text-danger">Your account address cannot same with coinbase address</span>
                     </b-form-group>
                     <!--b-form-group
                         label="Node URL"
@@ -119,7 +122,8 @@ export default {
             applyValue: 50000,
             coinbase: '',
             // nodeUrl: '',
-            loading: false
+            loading: false,
+            coinbaseError: false
         }
     },
     validations: {
@@ -147,7 +151,8 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            let account = await self.getAccount()
+            let account = this.$store.state.walletLoggedIn
+                ? this.$store.state.walletLoggedIn : await self.getAccount()
             self.account = account
         } catch (e) {
             self.$toasted.show(`You need login your account before voting`,
@@ -199,7 +204,13 @@ export default {
 
                 self.loading = true
 
-                let account = await self.getAccount()
+                let account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await this.getAccount()
+                if (coinbase.toLowerCase() === account.toLowerCase()) {
+                    self.loading = false
+                    self.coinbaseError = true
+                    return false
+                }
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.propose(coinbase, {
                     from : account,

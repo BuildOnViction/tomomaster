@@ -200,7 +200,8 @@ export default {
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                let account = await self.getAccount()
+                let account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
                 if (account && contract) {
                     self.isTomonet = true
                 }

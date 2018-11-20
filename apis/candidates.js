@@ -5,7 +5,7 @@ const router = express.Router()
 const db = require('../models/mongodb')
 const web3 = require('../models/blockchain/web3')
 const validator = require('../models/blockchain/validator')
-const { HDWalletProvider } = require('../helpers')
+const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 

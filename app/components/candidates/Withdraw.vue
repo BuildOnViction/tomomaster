@@ -38,13 +38,6 @@
                             style="margin-top: 20px">
                             <div
                                 class="wrapper">
-                                <label>
-                                    <input
-                                        v-model="checked"
-                                        type="checkbox"
-                                        @change="onChangeWithdraw">
-                                    <b>Withdraw by TomoWallet</b>
-                                </label>
                                 <div>
                                     <div
                                         class="pull-right"
@@ -57,7 +50,7 @@
                                 </div>
                                 <div>
                                     <div
-                                        v-if="checked"
+                                        v-if="$store.state.walletLoggedIn"
                                         style="text-align: center; margin-top: 10px">
                                         <vue-qrcode
                                             :value="qrCode"
@@ -79,7 +72,7 @@
                                 variant="secondary"
                                 @click="resignActive = true;">Withdraw</b-button> -->
                             <button
-                                v-if="!checked"
+                                v-if="!$store.state.walletLoggedIn"
                                 class="btn btn-primary"
                                 variant="primary"
                                 @click="withdraw(blockNumber, index)">Submit</button>
@@ -117,7 +110,6 @@ export default {
             capacity: this.$route.params.capacity || 0,
             loading: false,
             index: this.$route.params.index,
-            checked: true,
             interval: null,
             qrCode: 'text',
             processing: true,

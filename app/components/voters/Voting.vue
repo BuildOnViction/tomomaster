@@ -82,7 +82,7 @@
                 <b-card
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
-                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Confirmation</h4>
                     <!-- <div>
                         <strong>Using Tomo wallet to execute the action
                         </strong>
@@ -107,13 +107,6 @@
                                         style="width: 100%"/>
                                 </label>
                             </div>
-                            <label>
-                                <input
-                                    v-model="checked"
-                                    type="checkbox"
-                                    @change="onChangeVoting">
-                                <b>Vote by TomoWallet</b>
-                            </label>
                             <div>
                                 <div
                                     class="pull-right"
@@ -126,7 +119,7 @@
                             </div>
                             <div>
                                 <div
-                                    v-if="checked"
+                                    v-if="$store.state.walletLoggedIn"
                                     style="text-align: center; margin-top: 10px">
                                     <vue-qrcode
                                         :value="qrCode"
@@ -143,7 +136,7 @@
                                 variant="secondary"
                                 @click="backStep">Back</b-button>
                             <button
-                                v-if="!checked"
+                                v-if="!$store.state.walletLoggedIn"
                                 class="btn btn-primary"
                                 variant="primary"
                                 @click="vote">Submit</button>
@@ -183,7 +176,6 @@ export default {
             step: 1,
             message: '',
             qrCode: '',
-            checked:   true,
             processing: true,
             id: '',
             interval: null,
@@ -207,7 +199,8 @@ export default {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            let account = await self.getAccount()
+            const account = this.$store.state.walletLoggedIn
+                ? this.$store.state.walletLoggedIn : await self.getAccount()
             if (account) {
                 self.voter = account
             }

@@ -97,14 +97,14 @@ export default {
             }
         },
         goPage: function (s) {
-            console.log(s)
             this.$router.push({ path: `/candidate/${s}` })
         },
         async checkNetworkAndLogin () {
             setTimeout(async () => {
                 try {
                     const contract = await this.TomoValidator.deployed()
-                    const account = await this.getAccount()
+                    const account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await this.getAccount()
                     if (account && contract) {
                         this.isTomonet = true
                     }
