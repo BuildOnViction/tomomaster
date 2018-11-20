@@ -14,7 +14,7 @@ router.get('/', async function (req, res, next) {
     try {
         appConfig.blockchain.blockNumber = await web3.eth.getBlockNumber()
     } catch (e) {
-        console.log(e)
+        appConfig.blockchain.blockNumber = 0
     }
     appConfig.explorerUrl = config.get('explorerUrl')
     appConfig.grafanaUrl = config.get('grafanaUrl')
