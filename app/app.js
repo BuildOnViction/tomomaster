@@ -62,7 +62,7 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                         console.log('There was an error fetching your accounts.')
                         return reject(err)
                     }
-                    if (provider === 'wallet') {
+                    if (provider === 'tomowallet') {
                         return resolve(self.$store.state.walletLoggedIn)
                     }
 
@@ -200,7 +200,7 @@ const router = new VueRouter({
 })
 
 getConfig().then((config) => {
-    let provider = 'rpc'
+    let provider = 'tomowallet'
     var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     Vue.prototype.setupProvider(provider, web3js)
 

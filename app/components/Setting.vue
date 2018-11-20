@@ -253,7 +253,7 @@ export default {
         }
     },
     created: async function () {
-        // this.provider = this.NetworkProvider || 'rpc'
+        this.provider = this.NetworkProvider || 'tomowallet'
         let self = this
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
