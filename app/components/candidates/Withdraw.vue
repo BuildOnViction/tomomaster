@@ -50,7 +50,7 @@
                                 </div>
                                 <div>
                                     <div
-                                        v-if="$store.state.walletLoggedIn"
+                                        v-if="provider === 'tomowallet'"
                                         style="text-align: center; margin-top: 10px">
                                         <vue-qrcode
                                             :value="qrCode"
@@ -72,7 +72,7 @@
                                 variant="secondary"
                                 @click="resignActive = true;">Withdraw</b-button> -->
                             <button
-                                v-if="!$store.state.walletLoggedIn"
+                                v-if="provider !== 'tomowallet'"
                                 class="btn btn-primary"
                                 variant="primary"
                                 @click="withdraw(blockNumber, index)">Submit</button>
@@ -96,6 +96,7 @@
 <script>
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
+import store from 'store'
 export default {
     name: 'App',
     components: {
@@ -113,7 +114,8 @@ export default {
             interval: null,
             qrCode: 'text',
             processing: true,
-            id: ''
+            id: '',
+            provider: this.Networkprovider || store.get('network') || null
         }
     },
     computed: { },
