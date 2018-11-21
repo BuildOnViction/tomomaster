@@ -185,7 +185,7 @@ let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock () {
     while (true) {
         try {
-            console.log('Update signer for block %s and sleep 10 second')
+            console.log('Update signers after sleeping 10 seconds')
             await updateSigners(false)
         } catch (e) {
             emitter.emit('error', e)
