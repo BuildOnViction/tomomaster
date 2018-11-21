@@ -48,7 +48,7 @@
 
 <script>
 import axios from 'axios'
-import store from 'store'
+import cookie from 'js-cookie'
 export default {
     name: 'App',
     data () {
@@ -66,8 +66,8 @@ export default {
         let self = this
 
         try {
-            if (store.get('network')) {
-                await self.detectNetwork(store.get('network'))
+            if (cookie.get('network')) {
+                await self.detectNetwork(cookie.get('network'))
             }
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
@@ -108,8 +108,8 @@ export default {
                 let account
                 try {
                     const contract = await this.TomoValidator.deployed()
-                    if (store.get('address')) {
-                        account = store.get('address').toLowerCase()
+                    if (cookie.get('address')) {
+                        account = cookie.get('address').toLowerCase()
                     } else {
                         account = this.$store.state.walletLoggedIn
                             ? this.$store.state.walletLoggedIn : await self.getAccount()

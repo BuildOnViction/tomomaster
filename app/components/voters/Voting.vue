@@ -158,7 +158,7 @@ import {
 import NumberInput from '../NumberInput.vue'
 import BigNumber from 'bignumber.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import store from 'store'
+import cookie from 'js-cookie'
 
 export default {
     name: 'App',
@@ -181,7 +181,7 @@ export default {
             id: '',
             interval: null,
             balance: 0,
-            provider: this.NetworkProvider || store.get('network') || null
+            provider: this.NetworkProvider || cookie.get('network') || null
         }
     },
     validations: {
@@ -199,15 +199,15 @@ export default {
         let self = this
         let account
         try {
-            if (store.get('network')) {
-                await self.detectNetwork(store.get('network'))
+            if (cookie.get('network')) {
+                await self.detectNetwork(cookie.get('network'))
                 self.isReady = !!self.web3
             }
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            if (store.get('address')) {
-                account = store.get('address').toLowerCase()
+            if (cookie.get('address')) {
+                account = cookie.get('address').toLowerCase()
             } else {
                 account = this.$store.state.walletLoggedIn
                     ? this.$store.state.walletLoggedIn : await self.getAccount()

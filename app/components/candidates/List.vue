@@ -127,7 +127,7 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
-import store from 'store'
+import cookie from 'js-cookie'
 
 export default {
     name: 'App',
@@ -203,8 +203,8 @@ export default {
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                if (store.get('address')) {
-                    account = store.get('address').toLowerCase()
+                if (cookie.get('address')) {
+                    account = cookie.get('address').toLowerCase()
                 } else {
                     account = this.$store.state.walletLoggedIn
                         ? this.$store.state.walletLoggedIn : await self.getAccount()

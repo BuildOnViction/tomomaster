@@ -108,7 +108,7 @@ import {
 import coinbaseAddress from '../../../validators/coinbaseAddress.js'
 // import nodeUrl from '../../../validators/nodeUrl.js'
 import NumberInput from '../NumberInput.vue'
-import store from 'store'
+import cookie from 'js-cookie'
 
 export default {
     name: 'App',
@@ -149,8 +149,8 @@ export default {
     created: async function () {
         let self = this
         try {
-            if (store.get('network')) {
-                await self.detectNetwork(store.get('network'))
+            if (cookie.get('network')) {
+                await self.detectNetwork(cookie.get('network'))
                 self.isReady = !!self.web3
             }
             if (!self.web3 && self.NetworkProvider === 'metamask') {

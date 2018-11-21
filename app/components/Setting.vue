@@ -202,7 +202,7 @@ import {
 } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import store from 'store'
+import cookie from 'js-cookie'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
@@ -254,7 +254,7 @@ export default {
         }
     },
     created: async function () {
-        this.provider = this.NetworkProvider || store.get('network') || 'tomowallet'
+        this.provider = this.NetworkProvider || cookie.get('network') || 'tomowallet'
         let self = this
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
@@ -282,8 +282,8 @@ export default {
                     ? this.$store.state.walletLoggedIn : (self.web3 ? await self.getAccount() : false)
 
                 if (!account) {
-                    if (store.get('address') && self.provider !== 'custom') {
-                        account = store.get('address')
+                    if (cookie.get('address') && self.provider !== 'custom') {
+                        account = cookie.get('address')
                     } else return false
                 }
 
@@ -396,8 +396,8 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                store.set('address', self.address)
-                store.set('network', self.provider)
+                cookie.set('address', self.address, { expires: 7 })
+                cookie.set('network', self.provider, { expires: 7 })
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
@@ -524,8 +524,8 @@ export default {
             })
             self.isReady = true
             self.loading = false
-            store.set('address', account)
-            store.set('network', self.provider)
+            cookie.set('address', account, { expires: 7 })
+            cookie.set('network', self.provider, { expires: 7 })
             if (this.interval) {
                 clearInterval(this.interval)
             }

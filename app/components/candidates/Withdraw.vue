@@ -96,7 +96,7 @@
 <script>
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
-import store from 'store'
+import cookie from 'js-cookie'
 export default {
     name: 'App',
     components: {
@@ -115,7 +115,7 @@ export default {
             qrCode: 'text',
             processing: true,
             id: '',
-            provider: this.Networkprovider || store.get('network') || null
+            provider: this.Networkprovider || cookie.get('network') || null
         }
     },
     computed: { },
