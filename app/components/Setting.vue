@@ -278,7 +278,9 @@ export default {
                     ? this.$store.state.walletLoggedIn : await self.getAccount()
 
                 if (!account) {
-                    return false
+                    if (store.get('address')) {
+                        account = store.get('address')
+                    } else return false
                 }
 
                 self.address = account
@@ -390,10 +392,8 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                // generate token here
-                // const token = await axios.post('/api/config/generateWebToken', { address: self.address })
-                // set cookie here
                 store.set('address', self.address)
+                store.set('network', self.provider)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
@@ -520,6 +520,8 @@ export default {
             })
             self.isReady = true
             self.loading = false
+            store.set('address', account)
+            store.set('network', self.provider)
             if (this.interval) {
                 clearInterval(this.interval)
             }

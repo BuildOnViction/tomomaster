@@ -168,7 +168,7 @@ export default {
             ],
             sortBy: 'cap',
             sortDesc: true,
-            isReady: !!this.web3,
+            isReady: false,
             account: '',
             voteActive: false,
             voteValue: 1,
@@ -198,6 +198,7 @@ export default {
         let config = await self.appConfig()
         let account
         self.chainConfig = config.blockchain
+        self.isReady = !!self.web3
 
         try {
             if (self.isReady) {

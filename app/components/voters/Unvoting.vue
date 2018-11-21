@@ -148,7 +148,7 @@
                                     </div>
                                     <div>
                                         <div
-                                            v-if="$store.state.walletLoggedIn"
+                                            v-if="provider === 'tomowallet'"
                                             style="text-align: center; margin-top: 10px">
                                             <vue-qrcode
                                                 :value="qrCode"
@@ -165,7 +165,7 @@
                                         variant="secondary"
                                         @click="backStep">Back</b-button>
                                     <button
-                                        v-if="!$store.state.walletLoggedIn"
+                                        v-if="provider !== 'tomowallet'"
                                         class="btn btn-primary"
                                         variant="primary"
                                         @click="unvote">Submit</button>
@@ -188,6 +188,7 @@ import {
 } from 'vuelidate/lib/validators'
 import NumberInput from '../NumberInput.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import store from 'store'
 export default {
     name: 'App',
     components: {
@@ -205,7 +206,8 @@ export default {
             loading: false,
             step: 1,
             interval: null,
-            processing: true
+            processing: true,
+            provider: this.NeworkProvider || store.get('network') || null
         }
     },
     validations () {
@@ -227,10 +229,19 @@ export default {
     created: async function () {
         let self = this
         let candidate = self.candidate
+        let account
 
         try {
-            const account = this.$store.state.walletLoggedIn
-                ? this.$store.state.walletLoggedIn : await self.getAccount()
+            if (store.get('network')) {
+                await self.detectNetwork(store.get('network'))
+                self.isReady = !!self.web3
+            }
+            if (store.get('address')) {
+                account = store.get('address').toLowerCase()
+            } else {
+                account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+            }
             self.voter = account
 
             let contract = await self.TomoValidator.deployed()
