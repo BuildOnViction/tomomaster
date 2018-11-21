@@ -7,6 +7,7 @@ const config = require('config')
 const db = require('./models/mongodb')
 const EventEmitter = require('events').EventEmitter
 const moment = require('moment')
+const logger = require('./helpers/logger')
 const emitter = new EventEmitter()
 
 process.setMaxListeners(100)
@@ -14,7 +15,7 @@ process.setMaxListeners(100)
 async function watchValidator () {
     try {
         const blockNumber = await web3.eth.getBlockNumber()
-        console.info('TomoValidator %s - Listen events from block number %s ...',
+        logger.log('info', 'TomoValidator %s - Listen events from block number %s ...',
             config.get('blockchain.validatorAddress'), blockNumber)
 
         validator.events.allEvents({
@@ -22,10 +23,10 @@ async function watchValidator () {
             toBlock: 'latest'
         }, async function (error, result) {
             if (error) {
-                console.error(error, result)
+                logger.log('warn', error, result)
                 return false
             } else {
-                console.log('Event %s in block %s', result.event, result.blockNumber)
+                logger.log('debug', 'Event %s in block %s', result.event, result.blockNumber)
                 if (result.event === 'Withdraw') {
                     let owner = (result.returnValues._owner || '').toLowerCase()
                     let blockNumber = result.blockNumber
@@ -69,7 +70,7 @@ async function watchValidator () {
             }
         })
     } catch (e) {
-        console.error(e)
+        logger.log('error', e)
         emitter.emit('error', e)
     }
 }
@@ -80,7 +81,7 @@ async function updateCandidateInfo (candidate) {
         let owner = (await validator.methods.getCandidateOwner(candidate).call() || '').toLowerCase()
         let status = await validator.methods.isCandidate(candidate).call()
         let result
-        console.info('Update candidate %s capacity %s', candidate, String(capacity))
+        logger.log('info', 'Update candidate %s capacity %s', candidate, String(capacity))
         if (candidate !== '0x0000000000000000000000000000000000000000') {
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -103,14 +104,14 @@ async function updateCandidateInfo (candidate) {
 
         return result
     } catch (e) {
-        console.error(e)
+        logger.log('warn', e)
     }
 }
 
 async function updateVoterCap (candidate, voter) {
     try {
         let capacity = await validator.methods.getVoterCap(candidate, voter).call()
-        console.log('Update voter %s for candidate %s capacity %s', voter, candidate, String(capacity))
+        logger.log('info', 'Update voter %s for candidate %s capacity %s', voter, candidate, String(capacity))
         return await db.Voter.updateOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate,
@@ -124,7 +125,7 @@ async function updateVoterCap (candidate, voter) {
             }
         }, { upsert: true })
     } catch (e) {
-        console.error(e)
+        logger.log('warn', e)
     }
 }
 
@@ -144,9 +145,9 @@ async function getCurrentCandidates () {
             await Promise.all(m)
             return updateCandidateInfo(candidate)
         })
-        return Promise.all(map).catch(e => console.error(e))
+        return Promise.all(map).catch(e => logger.log('warn', e))
     } catch (e) {
-        console.error(e)
+        logger.log('warn', e)
     }
 }
 
@@ -177,7 +178,7 @@ async function updateSigners (blk) {
         }
         return signers
     } catch (e) {
-        console.error(e)
+        logger.log('warn', e)
     }
 }
 
@@ -185,7 +186,7 @@ let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock () {
     while (true) {
         try {
-            console.log('Update signers after sleeping 10 seconds')
+            logger.log('debug', 'Update signers after sleeping 10 seconds')
             await updateSigners(false)
         } catch (e) {
             emitter.emit('error', e)
@@ -197,19 +198,19 @@ async function watchNewBlock () {
 async function updateLatestSignedBlock () {
     try {
         let blockNumber = await web3.eth.getBlockNumber()
-        console.info('BlockSigner %s - Listen events from block number %s ...',
+        logger.log('info', 'BlockSigner %s - Listen events from block number %s ...',
             config.get('blockchain.blockSignerAddress'), blockNumber)
         blockSigner.events.allEvents({
             fromBlock: blockNumber,
             toBlock: 'latest'
         }, async function (error, result) {
             if (error) {
-                console.error(error, result)
+                logger.log('warn', error, result)
                 return false
             } else {
                 let signer = result.returnValues._signer
                 let bN = String(result.returnValues._blockNumber)
-                console.log('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
+                logger.log('debug', '%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
 
                 await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -231,10 +232,10 @@ async function getPastEvent () {
     let lastBlockTx = await db.Transaction.findOne().sort({ blockNumber: -1 })
     let lb = (lastBlockTx && lastBlockTx.blockNumber) ? lastBlockTx.blockNumber : 0
 
-    console.log('Get all past event from block', lb, 'to block', blockNumber)
+    logger.log('info', 'Get all past event from block', lb, 'to block', blockNumber)
     validator.getPastEvents('allEvents', { fromBlock: lb, toBlock: blockNumber }, async function (error, events) {
         if (error) {
-            console.error(error)
+            logger.log('warn', error)
         } else {
             let map = events.map(async function (event) {
                 if (event.event === 'Withdraw') {
@@ -282,11 +283,11 @@ updateSigners(false).then(() => {
         })
     })
 }).catch(e => {
-    console.log('getCurrentCandidates', e)
+    logger.log('error', 'getCurrentCandidates', e)
     process.exit(1)
 })
 
 emitter.on('error', e => {
-    console.error('ERROR!!!', e)
+    logger.log('error', 'ERROR!!!', e)
     process.exit(1)
 })
