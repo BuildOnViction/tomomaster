@@ -83,9 +83,21 @@ router.post('/apply', async function (req, res, next) {
 
         web3.setProvider(walletProvider)
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.methods.propose(req.query.coinbase, {
+        let isCandidate = await validator.methods.isCandidate(candidate).call()
+        if (isCandidate) {
+            await db.Candidate.updateOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate
+            }, {
+                $set: {
+                    name: req.query.name
+                }
+            }, { upsert: false })
+            return res.json({ status: 'OK' })
+        }
+        await validator.methods.propose(candidate).send({
             from : walletProvider.address,
-            value: 50000 * 10 ** 18,
+            value: '50000000000000000000000',
             gas: 2000000,
             gasPrice: 2500
         })
@@ -106,6 +118,7 @@ router.post('/apply', async function (req, res, next) {
         }
         return res.json({ status: 'OK' })
     } catch (e) {
+        console.log(e)
         return res.json({ status: 'NOK' })
     }
 })
@@ -172,7 +185,7 @@ router.post('/resign', async function (req, res, next) {
         web3.setProvider(walletProvider)
 
         let candidate = req.query.coinbase.toLowerCase()
-        await validator.methods.resign(candidate, {
+        await validator.methods.resign(candidate).send({
             from : walletProvider.address,
             gas: 2000000,
             gasPrice: 2500
