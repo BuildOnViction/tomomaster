@@ -46,7 +46,6 @@
         "highcharts": "^6.1.1",
         "highcharts-vue": "^1.0.4",
         "js-cookie": "^2.2.0",
-        "jsonwebtoken": "^8.4.0",
         "kue": "^0.11.6",
         "lodash": "^4.17.10",
         "moment": "^2.22.2",

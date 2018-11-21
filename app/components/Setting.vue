@@ -24,7 +24,7 @@
                                 <option
                                     value="tomowallet"
                                     selected>TomoWallet</option>
-                                <option value="rpc">PrivateKey/MNEMONIC</option>
+                                <option value="custom">PrivateKey/MNEMONIC</option>
                                 <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask</option>
@@ -51,7 +51,7 @@
                             class="text-danger">Wrong URL format</span>
                     </b-form-group> -->
                     <b-form-group
-                        v-if="provider === 'rpc'"
+                        v-if="provider === 'custom'"
                         class="mb-4"
                         label="Privatekey/MNEMONIC"
                         label-for="mnemonic">
@@ -254,7 +254,7 @@ export default {
         }
     },
     created: async function () {
-        this.provider = this.NetworkProvider || 'tomowallet'
+        this.provider = this.NetworkProvider || store.get('network') || 'tomowallet'
         let self = this
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
@@ -262,7 +262,11 @@ export default {
 
         self.setupAccount = async () => {
             let contract
+            let account
             try {
+                if (!self.web3) {
+                    await self.detectNetwork(this.provider)
+                }
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
                 }
@@ -274,11 +278,11 @@ export default {
                     }
                 }
 
-                let account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+                account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : (self.web3 ? await self.getAccount() : false)
 
                 if (!account) {
-                    if (store.get('address')) {
+                    if (store.get('address') && self.provider !== 'custom') {
                         account = store.get('address')
                     } else return false
                 }
