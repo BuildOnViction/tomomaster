@@ -57,8 +57,7 @@
         "vue-toasted": "^1.1.24",
         "vuex": "^3.0.1",
         "web3": "^1.0.0-beta.36",
-        "websocket": "^1.0.26",
-        "winston": "^3.1.0"
+        "websocket": "^1.0.26"
     },
     "devDependencies": {
         "asar": "^0.14.3",
