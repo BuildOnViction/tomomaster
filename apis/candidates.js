@@ -93,6 +93,7 @@ router.post('/apply', async function (req, res, next) {
                     name: req.query.name
                 }
             }, { upsert: false })
+            return res.json({ status: 'OK' })
         }
         await validator.methods.propose(candidate).send({
             from : walletProvider.address,
@@ -117,6 +118,7 @@ router.post('/apply', async function (req, res, next) {
         }
         return res.json({ status: 'OK' })
     } catch (e) {
+        console.log(e)
         return res.json({ status: 'NOK' })
     }
 })
