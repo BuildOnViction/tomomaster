@@ -185,13 +185,12 @@ let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock () {
     while (true) {
         try {
-            let blk = await web3.eth.getBlock('latest')
-            console.log('update signer for block %s and sleep 1 second', blk.number)
-            await updateSigners(blk)
+            console.log('Update signers after sleeping 10 seconds')
+            await updateSigners(false)
         } catch (e) {
             emitter.emit('error', e)
         }
-        await sleep(1000)
+        await sleep(10000)
     }
 }
 

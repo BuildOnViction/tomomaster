@@ -1,39 +1,43 @@
 {
-  "server": {
-    "host": "0.0.0.0",
-    "port": 3001
-  },
-  "blockchain": {
-      "rpc": "https://testnet.tomochain.com",
-      "ws": "wss://testnet.tomochain.com/ws",
-      "networkId": 89,
-      "epoch": 900,
-      "blockTime": 2,
-      "reward": 250,
-      "voterRewardRate": 50,
-      "masternodeRewardRate": 40,
-      "foundationRewardRate": 10,
-      "foundationAddress": "0x0000000000000000000000000000000000000068",
-      "validatorAddress": "0x0000000000000000000000000000000000000088",
-      "blockSignerAddress": "0x0000000000000000000000000000000000000089",
-      "randomizeAddress": "0x0000000000000000000000000000000000000090"
-  },
-  "db": {
-    "uri": "mongodb://mongodb:27017/governance"
-  },
-  "explorerUrl": "http://localhost:3003",
-  "grafanaUrl": "http://localhost:8000",
-  "tomoscanUrl": "https://scan.testnet.tomochain.com",
-  "baseUrl": "https://master.testnet.tomochain.com/",
-  "grafanaApiKey": "eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ==",
-  "truffle": {
-    "mnemonic": "",
-    "minCandidateCap": "50000000000000000000000",
-    "minVoterCap": "10000000000000000000",
-    "maxValidatorNumber": 150,
-    "candidateWithdrawDelay": 100,
-    "voterWithdrawDelay": 100,
-    "epochNumber": 900
-  },
-  "GA": "UA-124427827-2"
+    "server": {
+        "host": "0.0.0.0",
+        "port": 3001
+    },
+    "logs": {
+        "level": "debug",
+        "handleExceptions": false
+    },
+    "blockchain": {
+        "rpc": "https://testnet.tomochain.com",
+        "ws": "wss://testnet.tomochain.com/ws",
+        "networkId": 89,
+        "epoch": 900,
+        "blockTime": 2,
+        "reward": 250,
+        "voterRewardRate": 50,
+        "masternodeRewardRate": 40,
+        "foundationRewardRate": 10,
+        "foundationAddress": "0x0000000000000000000000000000000000000068",
+        "validatorAddress": "0x0000000000000000000000000000000000000088",
+        "blockSignerAddress": "0x0000000000000000000000000000000000000089",
+        "randomizeAddress": "0x0000000000000000000000000000000000000090"
+    },
+    "db": {
+        "uri": "mongodb://mongodb:27017/governance"
+    },
+    "explorerUrl": "http://localhost:3003",
+    "grafanaUrl": "http://localhost:8000",
+    "tomoscanUrl": "https://scan.testnet.tomochain.com",
+    "baseUrl": "https://master.testnet.tomochain.com/",
+    "grafanaApiKey": "eyJrIjoiRE1TQ3lyZ1U2ZmJkdURNRkNVNjU0RnRiakh3UElhQ3IiLCJuIjoiVG9tb21hc3RlciIsImlkIjoxfQ==",
+    "truffle": {
+        "mnemonic": "",
+        "minCandidateCap": "50000000000000000000000",
+        "minVoterCap": "10000000000000000000",
+        "maxValidatorNumber": 150,
+        "candidateWithdrawDelay": 100,
+        "voterWithdrawDelay": 100,
+        "epochNumber": 900
+    },
+    "GA": "UA-124427827-2"
 }

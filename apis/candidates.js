@@ -26,12 +26,12 @@ router.get('/', async function (req, res, next) {
         const signers = (latestSigners || {}).signers || []
         const set = new Set()
         for (let i = 0; i < signers.length; i++) {
-            set.add(signers[i])
+            set.add((signers[i] || '').toLowerCase())
         }
 
         let map = candidates.map(async c => {
             // is masternode
-            c.isMasternode = set.has(c.candidate)
+            c.isMasternode = set.has((c.candidate || '').toLowerCase())
             return c
         })
         let ret = await Promise.all(map)
