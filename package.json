@@ -50,6 +50,7 @@
         "moment": "^2.22.2",
         "mongoose": "^5.0.17",
         "request": "^2.88.0",
+        "store": "^2.0.12",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",
         "uuid": "^3.3.2",
