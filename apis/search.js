@@ -5,15 +5,23 @@ const db = require('../models/mongodb')
 const config = require('config')
 
 router.get('/:candidate', async function (req, res, next) {
-    let candidate = (await db.Candidate.findOne({
-        smartContractAddress: config.get('blockchain.validatorAddress'),
-        candidate: req.params.candidate
-    }) || {})
+    const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
+    let search = req.params.candidate
+    let candidate = {}
+    let voter = {}
 
-    let voter = (await db.Voter.findOne({
-        voter: req.params.candidate
-    }) || {})
+    if (regexpAddr.test(search)) {
+        candidate = (await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: search
+        }) || {})
 
+        voter = (await db.Voter.findOne({
+            voter: search
+        }) || {})
+
+        return res.json({ candidate, voter })
+    }
     return res.json({ candidate, voter })
 })
 

@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div
+        v-if="loading"
+        class="tomo-loading"/>
+    <div v-else>
         <div class="container section section--candidate">
             <div class="row">
                 <div class="col-12">
@@ -505,138 +508,19 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        $route (to, from) {
+            this.candidate.address = to.params.address.toLowerCase()
+            this.getCandidateData()
+        }
+    },
     updated () {},
     created: async function () {
         let self = this
         self.config = await self.appConfig()
         self.isReady = !!self.web3
 
-        try {
-            if (self.isReady) {
-                let contract = await self.TomoValidator.deployed()
-                if (store.get('address')) {
-                    self.account = store.get('address').toLowerCase()
-                } else {
-                    self.account = this.$store.state.walletLoggedIn
-                        ? this.$store.state.walletLoggedIn : await self.getAccount()
-                }
-                if (self.account && contract) {
-                    self.isTomonet = true
-                }
-            }
-        } catch (error) {
-            console.log(error)
-        }
-
-        try {
-            let address = self.candidate.address
-
-            self.loading = true
-            // Get all information at the same time
-            const promises = await Promise.all([
-                await axios.get(`/api/candidates/${address}`),
-                await axios.get(`/api/candidates/${address}/voters`),
-                await axios.get(`/api/transactions/candidate/${address}`)
-            ])
-
-            // Get candidate's information
-            let c = promises[0]
-
-            if (c.data) {
-                let data = c.data
-                self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
-                self.candidate.status = data.status
-                self.candidate.nodeId = data.nodeId
-                self.candidate.monitor = (data.nodeId) ? 'ON' : 'OFF'
-                self.candidate.owner = data.owner
-                self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
-                self.candidate.rewarded = 0
-                self.candidate.latestBlock = '0'
-                self.candidate.latestSignedBlock = data.latestSignedBlock
-                self.candidate.hardwareInfo = data.hardware || 'N/A'
-                self.candidate.dataCenterInfo = {
-                    name: (data.dataCenter || {}).name || 'N/A',
-                    location: (data.dataCenter || {}).location || 'N/A'
-                }
-                self.candidate.socials = data.socials
-            }
-
-            if (self.web3) {
-                self.web3.eth.getBalance(self.candidate.address, function (a, b) {
-                    self.candidate.balance = new BigNumber(b).div(10 ** 18)
-                    if (a) {
-                        console.log('got an error', a)
-                    }
-                })
-            }
-
-            // Voter table
-            let voters = promises[1]
-
-            let youVoted = new BigNumber(0)
-            voters.data.map((v, idx) => {
-                self.voters.push({
-                    address: v.voter,
-                    cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
-                })
-
-                if (v.voter === self.account) {
-                    youVoted = youVoted.plus(v.capacity)
-                }
-            })
-
-            if (self.account && self.web3) {
-                try {
-                    let contract = await self.TomoValidator.deployed()
-                    youVoted = await contract.getVoterCap(address, self.account)
-                    self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
-                } catch (e) {}
-            }
-
-            self.candidate.voted = youVoted.div(10 ** 18).toNumber()
-
-            self.voterTotalRows = self.voters.length
-
-            // Get transaction table
-            let txs = promises[2]
-
-            txs.data.map((tx, idx) => {
-                self.transactions.push({
-                    tx: tx.tx,
-                    voter: tx.voter,
-                    candidate: tx.candidate,
-                    event: tx.event,
-                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                    createdAt: moment(tx.createdAt).fromNow(),
-                    dateTooltip: moment(tx.createdAt).format('lll')
-                })
-            })
-
-            self.txTotalRows = self.transactions.length
-
-            // Masternode reward table
-            let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
-
-            mnRewards.data.map((r) => {
-                self.mnRewards.push({
-                    epoch: r.epoch,
-                    signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).toFixed(6),
-                    createdAt: moment(r.createdAt).fromNow(),
-                    dateTooltip: moment(r.createdAt).format('lll')
-                })
-            })
-
-            self.recentReward = (self.mnRewards[0] || {}).reward || 0
-
-            self.mnRewardsTotalRows = self.mnRewards.length
-
-            self.loading = false
-        } catch (e) {
-            self.loading = false
-            console.log(e)
-        }
+        self.getCandidateData()
     },
     mounted () {},
     methods: {
@@ -650,6 +534,134 @@ export default {
         },
         getDate (date) {
             return date
+        },
+        async getCandidateData () {
+            let self = this
+            try {
+                if (self.isReady) {
+                    let contract = await self.TomoValidator.deployed()
+                    if (store.get('address')) {
+                        self.account = store.get('address').toLowerCase()
+                    } else {
+                        self.account = this.$store.state.walletLoggedIn
+                            ? this.$store.state.walletLoggedIn : await self.getAccount()
+                    }
+                    if (self.account && contract) {
+                        self.isTomonet = true
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+
+            try {
+                let address = self.candidate.address
+
+                self.loading = true
+                // Get all information at the same time
+                const promises = await Promise.all([
+                    await axios.get(`/api/candidates/${address}`),
+                    await axios.get(`/api/candidates/${address}/voters`),
+                    await axios.get(`/api/transactions/candidate/${address}`)
+                ])
+
+                // Get candidate's information
+                let c = promises[0]
+
+                if (c.data) {
+                    let data = c.data
+                    self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                    self.candidate.status = data.status
+                    self.candidate.nodeId = data.nodeId
+                    self.candidate.monitor = (data.nodeId) ? 'ON' : 'OFF'
+                    self.candidate.owner = data.owner
+                    self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
+                    self.candidate.rewarded = 0
+                    self.candidate.latestBlock = '0'
+                    self.candidate.latestSignedBlock = data.latestSignedBlock
+                    self.candidate.hardwareInfo = data.hardware || 'N/A'
+                    self.candidate.dataCenterInfo = {
+                        name: (data.dataCenter || {}).name || 'N/A',
+                        location: (data.dataCenter || {}).location || 'N/A'
+                    }
+                    self.candidate.socials = data.socials
+                }
+
+                if (self.web3) {
+                    self.web3.eth.getBalance(self.candidate.address, function (a, b) {
+                        self.candidate.balance = new BigNumber(b).div(10 ** 18)
+                        if (a) {
+                            console.log('got an error', a)
+                        }
+                    })
+                }
+
+                // Voter table
+                let voters = promises[1]
+
+                let youVoted = new BigNumber(0)
+                voters.data.map((v, idx) => {
+                    self.voters.push({
+                        address: v.voter,
+                        cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                    })
+
+                    if (v.voter === self.account) {
+                        youVoted = youVoted.plus(v.capacity)
+                    }
+                })
+
+                if (self.account && self.web3) {
+                    try {
+                        let contract = await self.TomoValidator.deployed()
+                        youVoted = await contract.getVoterCap(address, self.account)
+                        self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
+                    } catch (e) {}
+                }
+
+                self.candidate.voted = youVoted.div(10 ** 18).toNumber()
+
+                self.voterTotalRows = self.voters.length
+
+                // Get transaction table
+                let txs = promises[2]
+
+                txs.data.map((tx, idx) => {
+                    self.transactions.push({
+                        tx: tx.tx,
+                        voter: tx.voter,
+                        candidate: tx.candidate,
+                        event: tx.event,
+                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                        createdAt: moment(tx.createdAt).fromNow(),
+                        dateTooltip: moment(tx.createdAt).format('lll')
+                    })
+                })
+
+                self.txTotalRows = self.transactions.length
+
+                // Masternode reward table
+                let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
+
+                mnRewards.data.map((r) => {
+                    self.mnRewards.push({
+                        epoch: r.epoch,
+                        signNumber: r.signNumber,
+                        reward: new BigNumber(r.reward).toFixed(6),
+                        createdAt: moment(r.createdAt).fromNow(),
+                        dateTooltip: moment(r.createdAt).format('lll')
+                    })
+                })
+
+                self.recentReward = (self.mnRewards[0] || {}).reward || 0
+
+                self.mnRewardsTotalRows = self.mnRewards.length
+
+                self.loading = false
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
         }
     }
 }

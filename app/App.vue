@@ -11,7 +11,7 @@
                         <b-form-input
                             v-model="search"
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Search Candidate / Voter address ..."
                             @keyup.enter="searchCandidate"
                         />
                         <b-button
@@ -79,24 +79,24 @@ export default {
         searchCandidate (e) {
             e.preventDefault()
 
-            let regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
             let to = null
             let search = this.search.trim()
-
-            if (regexpAddr.test(search)) {
-                return axios.get(`/api/search/${search}`).then((response) => {
-                    if (Object.keys(response.data.candidate).length > 0) {
-                        to = { path: `/candidate/${search}` }
-                    } else {
+            axios.get(`/api/search/${search}`)
+                .then((response) => {
+                    const data = response.data
+                    if (Object.keys(data.candidate).length > 0) {
+                        to = { path: `/candidate/${data.candidate.candidate}` }
+                    } else if (Object.keys(data.voter).length > 0) {
                         to = { path: `/voter/${search}` }
+                    } else {
+                        this.$toasted.show('Not found')
                     }
                     if (!to) {
                         return false
                     }
-
+                    this.search = ''
                     return this.$router.push(to)
-                })
-            }
+                }).catch(e => console.log(e))
         },
         goPage: function (s) {
             this.$router.push({ path: `/candidate/${s}` })
