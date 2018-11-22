@@ -11,7 +11,7 @@
                         <b-form-input
                             v-model="search"
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Search Candidate / Voter address ..."
                             @keyup.enter="searchCandidate"
                         />
                         <b-button
@@ -94,6 +94,11 @@ export default {
 
                     return this.$router.push(to)
                 })
+            } else {
+                // try to search by name
+                // duplicate name
+
+                this.$toasted.show('You can only search by candidate or voter address')
             }
         },
         goPage: function (s) {

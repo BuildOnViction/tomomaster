@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div
+        v-if="loading"
+        class="tomo-loading"/>
+    <div v-else>
         <div class="container section section--voter">
             <div class="row">
                 <div class="col-12">
@@ -266,7 +269,7 @@ export default {
             sortBy: 'cap',
             sortDesc: true,
             isReady: !!this.web3,
-            voter: this.$route.params.address,
+            voter: this.$route.params.address.toLowerCase(),
             candidates: [],
             balance: 0,
             totalVoted: 0,
@@ -347,83 +350,18 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        $route (to, from) {
+            this.voter = to.params.address.toLowerCase()
+            this.getVoterData()
+        }
+    },
     update () {},
     created: async function () {
         let self = this
         self.config = await self.appConfig()
-        try {
-            let voter = self.$route.params.address
 
-            self.loading = true
-            // Get all informations
-            const promises = await Promise.all([
-                await axios.get(`/api/voters/${voter}/candidates`),
-                await axios.get(`/api/voters/${voter}/rewards`),
-                await axios.get(`/api/transactions/voter/${voter}`)
-            ])
-
-            // Candidate table
-            let candidates = promises[0]
-
-            candidates.data.map(async (c) => {
-                self.candidates.push({
-                    address: c.candidate,
-                    cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
-                })
-                self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
-            })
-
-            self.totalRows = self.candidates.length
-
-            if (typeof self.web3 !== 'undefined') {
-                self.web3.eth.getBalance(voter, function (a, b) {
-                    self.balance = new BigNumber(b).div(10 ** 18).toNumber()
-                    if (a) {
-                        throw Error(a)
-                    }
-                })
-            }
-
-            // voter reward table
-            let voterRewards = promises[1]
-
-            voterRewards.data.map((r) => {
-                self.voterRewards.push({
-                    epoch: r.epoch,
-                    candidate: r.validator,
-                    startBlockNumber: r.startBlockNumber,
-                    endBlockNumber: r.endBlockNumber,
-                    signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).toFixed(6),
-                    createdAt: moment(r.createdAt).fromNow(),
-                    dateTooltip: moment(r.createdAt).format('lll')
-                })
-            })
-
-            self.voterRewardsTotalRows = self.voterRewards.length
-
-            // transaction table
-            let txs = promises[2]
-
-            txs.data.map((tx, idx) => {
-                self.transactions.push({
-                    tx: tx.tx,
-                    voter: tx.voter,
-                    candidate: tx.candidate,
-                    event: tx.event,
-                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                    createdAt: moment(tx.createdAt).fromNow()
-                })
-            })
-
-            self.txTotalRows = self.transactions.length
-
-            self.loading = false
-        } catch (e) {
-            self.loading = false
-            console.log(e)
-        }
+        self.getVoterData()
     },
     methods: {
         getEventClass (event) {
@@ -433,6 +371,81 @@ export default {
             }
 
             return clazz
+        },
+        async getVoterData () {
+            let self = this
+            try {
+                let voter = self.voter
+
+                self.loading = true
+                // Get all informations
+                const promises = await Promise.all([
+                    await axios.get(`/api/voters/${voter}/candidates`),
+                    await axios.get(`/api/voters/${voter}/rewards`),
+                    await axios.get(`/api/transactions/voter/${voter}`)
+                ])
+
+                // Candidate table
+                let candidates = promises[0]
+
+                candidates.data.map(async (c) => {
+                    self.candidates.push({
+                        address: c.candidate,
+                        cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
+                    })
+                    self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
+                })
+
+                self.totalRows = self.candidates.length
+
+                if (typeof self.web3 !== 'undefined') {
+                    self.web3.eth.getBalance(voter, function (a, b) {
+                        self.balance = new BigNumber(b).div(10 ** 18).toNumber()
+                        if (a) {
+                            throw Error(a)
+                        }
+                    })
+                }
+
+                // voter reward table
+                let voterRewards = promises[1]
+
+                voterRewards.data.map((r) => {
+                    self.voterRewards.push({
+                        epoch: r.epoch,
+                        candidate: r.validator,
+                        startBlockNumber: r.startBlockNumber,
+                        endBlockNumber: r.endBlockNumber,
+                        signNumber: r.signNumber,
+                        reward: new BigNumber(r.reward).toFixed(6),
+                        createdAt: moment(r.createdAt).fromNow(),
+                        dateTooltip: moment(r.createdAt).format('lll')
+                    })
+                })
+
+                self.voterRewardsTotalRows = self.voterRewards.length
+
+                // transaction table
+                let txs = promises[2]
+
+                txs.data.map((tx, idx) => {
+                    self.transactions.push({
+                        tx: tx.tx,
+                        voter: tx.voter,
+                        candidate: tx.candidate,
+                        event: tx.event,
+                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                        createdAt: moment(tx.createdAt).fromNow()
+                    })
+                })
+
+                self.txTotalRows = self.transactions.length
+
+                self.loading = false
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
         }
     }
 }
