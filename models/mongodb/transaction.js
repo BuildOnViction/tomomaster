@@ -29,7 +29,7 @@ var Transaction = new Schema({
         index: true
     },
     capacity: String,
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now, index: true },
     blockNumber: { type: Number, index: true }
 }, { timestamps: false })
 

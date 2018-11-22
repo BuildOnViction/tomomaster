@@ -80,7 +80,7 @@ async function updateCandidateInfo (candidate) {
         let owner = (await validator.methods.getCandidateOwner(candidate).call() || '').toLowerCase()
         let status = await validator.methods.isCandidate(candidate).call()
         let result
-        console.info('Update candidate %s capacity %s', candidate, String(capacity))
+        console.info('Update candidate %s capacity %s %s', candidate, String(capacity), status)
         if (candidate !== '0x0000000000000000000000000000000000000000') {
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -273,12 +273,15 @@ async function getPastEvent () {
     })
 }
 
-updateSigners(false).then(() => {
-    return getCurrentCandidates().then(() => {
-        return getPastEvent().then(() => {
-            watchNewBlock()
-            watchValidator()
-            updateLatestSignedBlock()
+// Reset candidate status before crawling
+db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
+    return updateSigners(false).then(() => {
+        return getCurrentCandidates().then(() => {
+            return getPastEvent().then(() => {
+                watchNewBlock()
+                watchValidator()
+                updateLatestSignedBlock()
+            })
         })
     })
 }).catch(e => {
