@@ -17,21 +17,31 @@ router.get('/', async function (req, res, next) {
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
             }).limit(limit).skip(skip).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' })
+            db.Signer.findOne({}).sort({ _id: 'desc' }),
+            db.Penalty.findOne({}).sort({ _id: 'desc' })
         ])
 
         let candidates = data[0]
         let latestSigners = data[1]
+        let latestPenalties = data[2]
 
         const signers = (latestSigners || {}).signers || []
-        const set = new Set()
+        const penalties = (latestPenalties || {}).penalties || []
+        const setS = new Set()
         for (let i = 0; i < signers.length; i++) {
-            set.add((signers[i] || '').toLowerCase())
+            setS.add((signers[i] || '').toLowerCase())
+        }
+
+        const setP = new Set()
+        for (let i = 0; i < penalties.length; i++) {
+            setP.add((penalties[i] || '').toLowerCase())
         }
 
         let map = candidates.map(async c => {
             // is masternode
-            c.isMasternode = set.has((c.candidate || '').toLowerCase())
+            c.isMasternode = setS.has((c.candidate || '').toLowerCase())
+            // is penalty
+            c.isPenalty = setP.has((c.candidate || '').toLowerCase())
             return c
         })
         let ret = await Promise.all(map)

@@ -150,6 +150,37 @@ async function getCurrentCandidates () {
     }
 }
 
+async function updatePenalties () {
+    try {
+        let blk = {}
+        let latestBlockNumber = await web3.eth.getBlockNumber()
+        let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        if (lastCheckpoint > 0) {
+            blk = await web3.eth.getBlock(lastCheckpoint)
+        } else {
+            return false
+        }
+
+        await db.Penalty.remove({})
+        let sbuff = Buffer.from((blk.penalties || '').substring(2), 'hex')
+        let penalties = []
+        if (sbuff.length > 0) {
+            for (let i = 1; i <= sbuff.length / 20; i++) {
+                let address = sbuff.slice((i - 1) * 20, i * 20)
+                penalties.push('0x' + address.toString('hex'))
+            }
+            await db.Penalty.create({
+                networkId: config.get('blockchain.networkId'),
+                blockNumber: blk.number,
+                penalties: penalties
+            })
+        }
+        return penalties
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 async function updateSigners (blk) {
     try {
         if (!blk) {
@@ -187,6 +218,7 @@ async function watchNewBlock () {
         try {
             console.log('Update signers after sleeping 10 seconds')
             await updateSigners(false)
+            await updatePenalties()
         } catch (e) {
             emitter.emit('error', e)
         }
@@ -275,13 +307,15 @@ async function getPastEvent () {
 
 // Reset candidate status before crawling
 db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
-    return updateSigners(false).then(() => {
-        return getCurrentCandidates().then(() => {
-            return getPastEvent().then(() => {
-                watchNewBlock()
-                watchValidator()
-                updateLatestSignedBlock()
-            })
+    return updatePenalties()
+}).then(() => {
+    return updateSigners(false)
+}).then(() => {
+    return getCurrentCandidates().then(() => {
+        return getPastEvent().then(() => {
+            watchNewBlock()
+            watchValidator()
+            updateLatestSignedBlock()
         })
     })
 }).catch(e => {
