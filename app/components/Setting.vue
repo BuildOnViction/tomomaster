@@ -371,6 +371,7 @@ export default {
             }
         },
         save: async function () {
+            store.clearAll()
             const self = this
             var wjs = false
             self.loading = true
