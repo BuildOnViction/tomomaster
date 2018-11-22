@@ -45,7 +45,17 @@ router.get('/:voter/rewards', async function (req, res, next) {
                 limit
             }
         )
-        res.json(rewards.data)
+        const cs = rewards.data.map(r => r.validator)
+        const candidates = await db.Candidate.find({
+            candidate: { $in: cs }
+        }).lean().exec()
+        const rd = rewards.data.map(r => {
+            r.candidateName = (_.findLast(candidates, (c) => {
+                return (c.candidate.toLowerCase() === r.validator.toLowerCase())
+            }) || {}).name || r.validator
+            return r
+        })
+        res.json(rd)
     } catch (e) {
         return next(e)
     }

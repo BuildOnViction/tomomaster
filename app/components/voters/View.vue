@@ -141,12 +141,12 @@
                 </template>
 
                 <template
-                    slot="candidate"
+                    slot="candidateName"
                     slot-scope="data">
                     <router-link
                         :to="'/candidate/' + data.item.candidate"
                         class="text-truncate">
-                        {{ data.item.candidate }}
+                        {{ data.item.candidateName }}
                     </router-link>
                 </template>
 
@@ -286,7 +286,7 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'candidate',
+                    key: 'candidateName',
                     label: 'Masternode',
                     sortable: false
                 },
@@ -398,6 +398,7 @@ export default {
                 self.voterRewards.push({
                     epoch: r.epoch,
                     candidate: r.validator,
+                    candidateName: r.candidateName,
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
