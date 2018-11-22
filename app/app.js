@@ -28,6 +28,7 @@ import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import HDWalletProvider from 'truffle-hdwallet-provider'
+import localStorage from 'store'
 
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
@@ -198,6 +199,12 @@ const router = new VueRouter({
             path: '/setting', component: Setting
         }
     ]
+})
+
+router.beforeEach(async (to, from, next) => {
+    const provider = Vue.prototype.NetworkProvider || localStorage.get('network') || null
+    await Vue.prototype.detectNetwork(provider)
+    next()
 })
 
 getConfig().then((config) => {

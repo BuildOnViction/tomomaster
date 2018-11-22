@@ -202,7 +202,7 @@ import {
 } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import cookie from 'js-cookie'
+import store from 'store'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
@@ -254,7 +254,7 @@ export default {
         }
     },
     created: async function () {
-        this.provider = this.NetworkProvider || cookie.get('network') || 'tomowallet'
+        this.provider = this.NetworkProvider || 'tomowallet'
         let self = this
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
@@ -264,9 +264,6 @@ export default {
             let contract
             let account
             try {
-                if (!self.web3) {
-                    await self.detectNetwork(this.provider)
-                }
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
                 }
@@ -278,12 +275,16 @@ export default {
                     }
                 }
 
-                account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : (self.web3 ? await self.getAccount() : false)
+                if (store.get('address')) {
+                    account = store.get('address').toLowerCase()
+                } else {
+                    account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : (self.web3 ? await self.getAccount() : false)
+                }
 
                 if (!account) {
-                    if (cookie.get('address') && self.provider !== 'custom') {
-                        account = cookie.get('address')
+                    if (store.get('address') && self.provider !== 'custom') {
+                        account = store.get('address')
                     } else return false
                 }
 
@@ -396,8 +397,8 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                cookie.set('address', self.address, { expires: 7 })
-                cookie.set('network', self.provider, { expires: 7 })
+                store.set('address', self.address)
+                store.set('network', self.provider)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
@@ -524,8 +525,8 @@ export default {
             })
             self.isReady = true
             self.loading = false
-            cookie.set('address', account, { expires: 7 })
-            cookie.set('network', self.provider, { expires: 7 })
+            store.set('address', account)
+            store.set('network', self.provider)
             if (this.interval) {
                 clearInterval(this.interval)
             }

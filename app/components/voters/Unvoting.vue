@@ -188,7 +188,7 @@ import {
 } from 'vuelidate/lib/validators'
 import NumberInput from '../NumberInput.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import cookie from 'js-cookie'
+import store from 'store'
 export default {
     name: 'App',
     components: {
@@ -207,7 +207,7 @@ export default {
             step: 1,
             interval: null,
             processing: true,
-            provider: this.NeworkProvider || cookie.get('network') || null
+            provider: this.NeworkProvider || store.get('network') || null
         }
     },
     validations () {
@@ -232,12 +232,9 @@ export default {
         let account
 
         try {
-            if (cookie.get('network')) {
-                await self.detectNetwork(cookie.get('network'))
-                self.isReady = !!self.web3
-            }
-            if (cookie.get('address')) {
-                account = cookie.get('address').toLowerCase()
+            self.isReady = !!self.web3
+            if (store.get('address')) {
+                account = store.get('address').toLowerCase()
             } else {
                 account = this.$store.state.walletLoggedIn
                     ? this.$store.state.walletLoggedIn : await self.getAccount()
