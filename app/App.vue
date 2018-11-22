@@ -89,11 +89,12 @@ export default {
                     } else if (Object.keys(data.voter).length > 0) {
                         to = { path: `/voter/${search}` }
                     } else {
-                        this.$toasted.show('Couldn\'t find anything')
+                        this.$toasted.show('Not found')
                     }
                     if (!to) {
                         return false
                     }
+                    this.search = ''
                     return this.$router.push(to)
                 }).catch(e => console.log(e))
         },

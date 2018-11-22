@@ -21,14 +21,8 @@ router.get('/:candidate', async function (req, res, next) {
         }) || {})
 
         return res.json({ candidate, voter })
-    } else {
-        candidate = (await db.Candidate.findOne({
-            smartContractAddress: config.get('blockchain.validatorAddress'),
-            name: search
-        }) || {})
-
-        return res.json({ candidate, voter })
     }
+    return res.json({ candidate, voter })
 })
 
 module.exports = router
