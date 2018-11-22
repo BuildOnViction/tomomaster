@@ -2,7 +2,7 @@
 const express = require('express')
 const config = require('config')
 const router = express.Router()
-const web3 = require('../models/blockchain/web3')
+const web3 = require('../models/blockchain/web3rpc')
 const utils = require('ethereumjs-util')
 const db = require('../models/mongodb')
 
