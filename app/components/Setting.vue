@@ -24,7 +24,7 @@
                                 <option
                                     value="tomowallet"
                                     selected>TomoWallet</option>
-                                <option value="rpc">PrivateKey/MNEMONIC</option>
+                                <option value="custom">PrivateKey/MNEMONIC</option>
                                 <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask</option>
@@ -51,7 +51,7 @@
                             class="text-danger">Wrong URL format</span>
                     </b-form-group> -->
                     <b-form-group
-                        v-if="provider === 'rpc'"
+                        v-if="provider === 'custom'"
                         class="mb-4"
                         label="Privatekey/MNEMONIC"
                         label-for="mnemonic">
@@ -202,6 +202,7 @@ import {
 } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import store from 'store'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 export default {
@@ -261,6 +262,7 @@ export default {
 
         self.setupAccount = async () => {
             let contract
+            let account
             try {
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
@@ -273,11 +275,17 @@ export default {
                     }
                 }
 
-                let account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+                if (store.get('address')) {
+                    account = store.get('address').toLowerCase()
+                } else {
+                    account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : (self.web3 ? await self.getAccount() : false)
+                }
 
                 if (!account) {
-                    return false
+                    if (store.get('address') && self.provider !== 'custom') {
+                        account = store.get('address')
+                    } else return false
                 }
 
                 self.address = account
@@ -388,6 +396,9 @@ export default {
                 await self.setupAccount()
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
+
+                store.set('address', self.address)
+                store.set('network', self.provider)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
@@ -514,6 +525,8 @@ export default {
             })
             self.isReady = true
             self.loading = false
+            store.set('address', account)
+            store.set('network', self.provider)
             if (this.interval) {
                 clearInterval(this.interval)
             }

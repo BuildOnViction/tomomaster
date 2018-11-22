@@ -119,7 +119,7 @@
                             </div>
                             <div>
                                 <div
-                                    v-if="$store.state.walletLoggedIn"
+                                    v-if="provider === 'tomowallet'"
                                     style="text-align: center; margin-top: 10px">
                                     <vue-qrcode
                                         :value="qrCode"
@@ -136,7 +136,7 @@
                                 variant="secondary"
                                 @click="backStep">Back</b-button>
                             <button
-                                v-if="!$store.state.walletLoggedIn"
+                                v-if="provider !== 'tomowallet'"
                                 class="btn btn-primary"
                                 variant="primary"
                                 @click="vote">Submit</button>
@@ -158,6 +158,7 @@ import {
 import NumberInput from '../NumberInput.vue'
 import BigNumber from 'bignumber.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import store from 'store'
 
 export default {
     name: 'App',
@@ -179,7 +180,8 @@ export default {
             processing: true,
             id: '',
             interval: null,
-            balance: 0
+            balance: 0,
+            provider: this.NetworkProvider || store.get('network') || null
         }
     },
     validations: {
@@ -195,12 +197,18 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        let account
+        self.isReady = !!self.web3
         try {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            const account = this.$store.state.walletLoggedIn
-                ? this.$store.state.walletLoggedIn : await self.getAccount()
+            if (store.get('address')) {
+                account = store.get('address').toLowerCase()
+            } else {
+                account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+            }
             if (account) {
                 self.voter = account
             }
@@ -317,7 +325,7 @@ export default {
             )
             self.step++
 
-            if (self.step === 2 && self.processing) {
+            if (self.step === 2 && self.processing && self.NetworkProvider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)

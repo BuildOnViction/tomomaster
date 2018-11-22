@@ -383,6 +383,7 @@ import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import Chart from '../Chart.vue'
 import moment from 'moment'
+import store from 'store'
 
 export default {
     name: 'App',
@@ -391,7 +392,7 @@ export default {
     },
     data () {
         return {
-            isReady: !!this.web3,
+            isReady: false,
             account: '',
             voteActive: false,
             voteValue: 1,
@@ -509,12 +510,17 @@ export default {
     created: async function () {
         let self = this
         self.config = await self.appConfig()
+        self.isReady = !!self.web3
 
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                self.account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+                if (store.get('address')) {
+                    self.account = store.get('address').toLowerCase()
+                } else {
+                    self.account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await self.getAccount()
+                }
                 if (self.account && contract) {
                     self.isTomonet = true
                 }
