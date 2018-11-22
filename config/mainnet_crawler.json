@@ -1,7 +1,7 @@
 {
     "blockchain": {
         "rpc": "http://blockchain-proxy:8545",
-        "ws": "http://blockchain-proxy:8546",
+        "ws": "ws://blockchain-proxy:8546",
         "networkId": 88
     },
     "db": {
