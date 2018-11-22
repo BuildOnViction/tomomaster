@@ -141,12 +141,12 @@
                 </template>
 
                 <template
-                    slot="candidate"
+                    slot="candidateName"
                     slot-scope="data">
                     <router-link
                         :to="'/candidate/' + data.item.candidate"
                         class="text-truncate">
-                        {{ data.item.candidate }}
+                        {{ data.item.candidateName }}
                     </router-link>
                 </template>
 
@@ -258,6 +258,11 @@ export default {
                     sortable: true
                 },
                 {
+                    key: 'name',
+                    label: 'Name',
+                    sortable: false
+                },
+                {
                     key: 'cap',
                     label: 'Capacity',
                     sortable: true
@@ -281,7 +286,7 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'candidate',
+                    key: 'candidateName',
                     label: 'Masternode',
                     sortable: false
                 },
@@ -369,6 +374,7 @@ export default {
             candidates.data.map(async (c) => {
                 self.candidates.push({
                     address: c.candidate,
+                    name: c.candidateName,
                     cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
                 })
                 self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
@@ -392,6 +398,7 @@ export default {
                 self.voterRewards.push({
                     epoch: r.epoch,
                     candidate: r.validator,
+                    candidateName: r.candidateName,
                     startBlockNumber: r.startBlockNumber,
                     endBlockNumber: r.endBlockNumber,
                     signNumber: r.signNumber,
