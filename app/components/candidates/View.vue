@@ -510,7 +510,6 @@ export default {
     },
     watch: {
         $route (to, from) {
-            console.log(to.params.address)
             this.candidate.address = to.params.address.toLowerCase()
             this.getCandidateData()
         }
