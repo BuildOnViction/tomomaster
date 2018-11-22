@@ -383,7 +383,7 @@ import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import Chart from '../Chart.vue'
 import moment from 'moment'
-import cookie from 'js-cookie'
+import store from 'store'
 
 export default {
     name: 'App',
@@ -515,8 +515,8 @@ export default {
         try {
             if (self.isReady) {
                 let contract = await self.TomoValidator.deployed()
-                if (cookie.get('address')) {
-                    self.account = cookie.get('address').toLowerCase()
+                if (store.get('address')) {
+                    self.account = store.get('address').toLowerCase()
                 } else {
                     self.account = this.$store.state.walletLoggedIn
                         ? this.$store.state.walletLoggedIn : await self.getAccount()

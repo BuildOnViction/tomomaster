@@ -96,7 +96,7 @@
 <script>
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
-import cookie from 'js-cookie'
+import store from 'store'
 export default {
     name: 'App',
     components: {
@@ -115,7 +115,7 @@ export default {
             qrCode: 'text',
             processing: true,
             id: '',
-            provider: this.Networkprovider || cookie.get('network') || null
+            provider: this.Networkprovider || store.get('network') || null
         }
     },
     computed: { },
@@ -139,6 +139,7 @@ export default {
     },
     async mounted () {
         const self = this
+        self.isReady = !!this.web3
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
         } else {
