@@ -1,0 +1,10 @@
+{
+    "blockchain": {
+        "rpc": "https://testnet.tomochain.com",
+        "ws": "wss://testnet.tomochain.com/ws",
+        "networkId": 89
+    },
+    "db": {
+        "uri" : "mongodb://tomomaster_db:27017/governance"
+    }
+}
