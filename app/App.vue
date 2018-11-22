@@ -77,29 +77,23 @@ export default {
         searchCandidate (e) {
             e.preventDefault()
 
-            let regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
             let to = null
             let search = this.search.trim()
-
-            if (regexpAddr.test(search)) {
-                return axios.get(`/api/search/${search}`).then((response) => {
-                    if (Object.keys(response.data.candidate).length > 0) {
-                        to = { path: `/candidate/${search}` }
-                    } else {
+            axios.get(`/api/search/${search}`)
+                .then((response) => {
+                    const data = response.data
+                    if (Object.keys(data.candidate).length > 0) {
+                        to = { path: `/candidate/${data.candidate.candidate}` }
+                    } else if (Object.keys(data.voter).length > 0) {
                         to = { path: `/voter/${search}` }
+                    } else {
+                        this.$toasted.show('Couldn\'t find anything')
                     }
                     if (!to) {
                         return false
                     }
-
                     return this.$router.push(to)
-                })
-            } else {
-                // try to search by name
-                // duplicate name
-
-                this.$toasted.show('You can only search by candidate or voter address')
-            }
+                }).catch(e => console.log(e))
         },
         goPage: function (s) {
             this.$router.push({ path: `/candidate/${s}` })

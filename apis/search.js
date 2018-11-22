@@ -6,32 +6,29 @@ const config = require('config')
 
 router.get('/:candidate', async function (req, res, next) {
     const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
-    let search = req.params.str
-    search = search.trim()
+    let search = req.params.candidate
+    let candidate = {}
+    let voter = {}
 
     if (regexpAddr.test(search)) {
-        const candidate = (await db.Candidate.findOne({
+        candidate = (await db.Candidate.findOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
-            candidate: req.params.candidate
+            candidate: search
         }) || {})
 
-        const voter = (await db.Voter.findOne({
-            voter: req.params.candidate
+        voter = (await db.Voter.findOne({
+            voter: search
+        }) || {})
+
+        return res.json({ candidate, voter })
+    } else {
+        candidate = (await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            name: search
         }) || {})
 
         return res.json({ candidate, voter })
     }
-
-    // let candidate = (await db.Candidate.findOne({
-    //     smartContractAddress: config.get('blockchain.validatorAddress'),
-    //     candidate: req.params.candidate
-    // }) || {})
-
-    // let voter = (await db.Voter.findOne({
-    //     voter: req.params.candidate
-    // }) || {})
-
-    // return res.json({ candidate, voter })
 })
 
 module.exports = router
