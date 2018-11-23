@@ -97,6 +97,9 @@
                             {{ data.item.status.toUpperCase() }}
                         </span>
                         <span
+                            v-else-if="data.item.isPenalty"
+                            class="tomo-chip tomo-chip--accent">SLASHED</span>
+                        <span
                             v-else
                             class="tomo-chip tomo-chip--primary tomo-chip--masternode">MASTERNODE</span>
                     </div>
@@ -227,6 +230,7 @@ export default {
                     owner: candidate.owner.toLowerCase(),
                     status: candidate.status,
                     isMasternode: candidate.isMasternode,
+                    isPenalty: candidate.isPenalty,
                     name: candidate.name || 'Anonymous',
                     cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
                     latestSignedBlock: candidate.latestSignedBlock
