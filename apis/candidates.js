@@ -8,6 +8,8 @@ const validator = require('../models/blockchain/validator')
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
+const _ = require('lodash')
+const { check, validationResult } = require('express-validator/check')
 
 router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
@@ -297,6 +299,57 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
             }
         )
         res.json(rewards.data)
+    } catch (e) {
+        return next(e)
+    }
+})
+
+// Update masternode info
+router.put('/update', [
+    check('name').isLength({ min: 3, max: 30 }).optional().withMessage('Name must be 3 - 30 chars long'),
+    check('hardware').isLength({ min: 3, max: 30 }).optional().withMessage('Hardware must be 3 - 30 chars long'),
+    check('dcName').isLength({ min: 2, max: 30 }).optional().withMessage('dcName must be 2 - 30 chars long'),
+    check('dcLocation').isLength({ min: 2, max: 30 }).optional().withMessage('dcLocation must be 2 - 30 chars long')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+    try {
+        const { signedMessage, message } = req.body
+        const candidate = (req.body.candidate || '').toLowerCase()
+        const c = await db.Candidate.findOne({
+            candidate: candidate
+        })
+        if (!c) {
+            return next(new Error('Not found'))
+        }
+
+        const body = req.body
+        let set = _.pick(body, ['name', 'hardware'])
+
+        if (body.dcName) {
+            set['dataCenter.name'] = body.dcName
+        }
+        if (body.dcLocation) {
+            set['dataCenter.location'] = body.dcLocation
+        }
+
+        const address = await web3.eth.accounts.recover(message, signedMessage)
+
+        if (
+            address.toLowerCase() === c.candidate.toLowerCase() ||
+            address.toLowerCase() === c.owner.toLowerCase()
+        ) {
+            await db.Candidate.updateOne({
+                candidate: candidate.toLowerCase()
+            }, {
+                $set: set
+            })
+            return res.json({ status: 'OK' })
+        } else {
+            return next(new Error('Authentication failed'))
+        }
     } catch (e) {
         return next(e)
     }
