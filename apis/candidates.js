@@ -40,7 +40,7 @@ router.get('/', async function (req, res, next) {
         let map = candidates.map(async c => {
             // is masternode
             if (signers.length === 0) {
-                c.isMasternode = true
+                c.isMasternode = !!c.latestSignedBlock
             } else {
                 c.isMasternode = setS.has((c.candidate || '').toLowerCase())
             }
