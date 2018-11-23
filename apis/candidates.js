@@ -48,6 +48,10 @@ router.get('/', async function (req, res, next) {
             }
             // is penalty
             c.isPenalty = setP.has((c.candidate || '').toLowerCase())
+
+            c.status = (c.isMasternode) ? 'MASTERNODE' : c.status
+            c.status = (c.isPenalty) ? 'SLASHED' : c.status
+
             return c
         })
         let ret = await Promise.all(map)

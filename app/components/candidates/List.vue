@@ -92,17 +92,11 @@
                     slot-scope="data">
                     <div class="mt-2 mt-lg-0">
                         <span
-                            v-if="!data.item.isMasternode"
                             :class="'tomo-chip '
-                            + (data.item.status === 'PROPOSED' ? 'tomo-chip--primary' : 'tomo-chip--accent') ">
+                                + (data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE' ?
+                            'tomo-chip--primary' : 'tomo-chip--accent') ">
                             {{ data.item.status.toUpperCase() }}
                         </span>
-                        <span
-                            v-else-if="data.item.isPenalty"
-                            class="tomo-chip tomo-chip--accent">SLASHED</span>
-                        <span
-                            v-else
-                            class="tomo-chip tomo-chip--primary tomo-chip--masternode">MASTERNODE</span>
                     </div>
                 </template>
 
@@ -110,7 +104,7 @@
                     slot="action"
                     slot-scope="data">
                     <b-button
-                        v-if="data.item.status === 'PROPOSED'"
+                        v-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
                         variant="primary"
                         class="mt-3 mt-lg-0 vote-btn"
                         @click="onRowClick(data.item.address)">Vote</b-button>
