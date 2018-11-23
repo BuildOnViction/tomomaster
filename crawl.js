@@ -181,16 +181,15 @@ async function updatePenalties () {
     }
 }
 
-async function updateSigners (blk) {
+async function updateSigners () {
     try {
-        if (!blk) {
-            let latestBlockNumber = await web3.eth.getBlockNumber()
-            let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-            if (lastCheckpoint > 0) {
-                blk = await web3.eth.getBlock(lastCheckpoint)
-            } else {
-                return false
-            }
+        let blk = {}
+        let latestBlockNumber = await web3.eth.getBlockNumber()
+        let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        if (lastCheckpoint > 0) {
+            blk = await web3.eth.getBlock(lastCheckpoint)
+        } else {
+            return false
         }
         let buff = Buffer.from(blk.extraData.substring(2), 'hex')
         let sbuff = buff.slice(32, buff.length - 65)
@@ -217,7 +216,7 @@ async function watchNewBlock () {
     while (true) {
         try {
             console.log('Update signers after sleeping 10 seconds')
-            await updateSigners(false)
+            await updateSigners()
             await updatePenalties()
         } catch (e) {
             emitter.emit('error', e)
@@ -307,19 +306,19 @@ async function getPastEvent () {
 
 // Reset candidate status before crawling
 db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
+    return getCurrentCandidates()
+}).then(() => {
     return updatePenalties()
 }).then(() => {
-    return updateSigners(false)
+    return updateSigners()
 }).then(() => {
-    return getCurrentCandidates().then(() => {
-        return getPastEvent().then(() => {
-            watchNewBlock()
-            watchValidator()
-            updateLatestSignedBlock()
-        })
+    return getPastEvent().then(() => {
+        watchNewBlock()
+        watchValidator()
+        updateLatestSignedBlock()
     })
 }).catch(e => {
-    console.log('getCurrentCandidates', e)
+    console.log(e)
     process.exit(1)
 })
 

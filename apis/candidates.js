@@ -39,7 +39,11 @@ router.get('/', async function (req, res, next) {
 
         let map = candidates.map(async c => {
             // is masternode
-            c.isMasternode = setS.has((c.candidate || '').toLowerCase())
+            if (signers.length === 0) {
+                c.isMasternode = true
+            } else {
+                c.isMasternode = setS.has((c.candidate || '').toLowerCase())
+            }
             // is penalty
             c.isPenalty = setP.has((c.candidate || '').toLowerCase())
             return c
