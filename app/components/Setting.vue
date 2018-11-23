@@ -30,7 +30,6 @@
                                     value="metamask">Metamask</option>
                             </b-form-select>
                             <small
-                                v-if="provider === 'rpc'"
                                 class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small>
                         </b-input-group>
                     </b-form-group>
@@ -75,14 +74,18 @@
                         <div
                             style="margin-top: 5px">
                             <a
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 href="https://goo.gl/MvE1GV"
                                 class="social-links__link">
-                                <img src="/app/assets/img/app-store.png" >
+                                <img src="/app/assets/img/appstore.png" >
                             </a>
                             <a
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 href="https://goo.gl/4tFQzY"
                                 class="social-links__link">
-                                <img src="/app/assets/img/android.png" >
+                                <img src="/app/assets/img/googleplay.png" >
                             </a>
                         </div>
                     </b-form-group>
@@ -371,6 +374,7 @@ export default {
             }
         },
         save: async function () {
+            store.clearAll()
             const self = this
             var wjs = false
             self.loading = true
