@@ -80,7 +80,7 @@ export default {
             e.preventDefault()
 
             let to = null
-            let search = this.search.trim()
+            let search = (this.search || '').trim()
             axios.get(`/api/search/${search}`)
                 .then((response) => {
                     const data = response.data
