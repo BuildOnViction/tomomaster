@@ -278,7 +278,7 @@ export default {
                     }
                 }
 
-                if (store.get('address')) {
+                if (store.get('address') && self.isReady) {
                     account = store.get('address').toLowerCase()
                 } else {
                     account = this.$store.state.walletLoggedIn
