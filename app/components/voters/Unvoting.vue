@@ -279,6 +279,7 @@ export default {
                 self.loading = true
 
                 let account = await self.getAccount()
+                account = account.toLowerCase()
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), {
                     from: account,

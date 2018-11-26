@@ -405,7 +405,7 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                store.set('address', self.address)
+                store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
             } catch (e) {
                 self.loading = false
@@ -534,7 +534,7 @@ export default {
             })
             self.isReady = true
             self.loading = false
-            store.set('address', account)
+            store.set('address', account.toLowerCase())
             store.set('network', self.provider)
             if (this.interval) {
                 clearInterval(this.interval)

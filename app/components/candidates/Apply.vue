@@ -66,7 +66,7 @@
                             v-else-if="$v.coinbase.$dirty && !$v.coinbase.coinbaseAddress"
                             class="text-danger">Wrong coinbase address format</span>
                         <span
-                            v-if="coinbaseError"
+                            v-else-if="coinbaseError"
                             class="text-danger">Your account address cannot same with coinbase address</span>
                     </b-form-group>
                     <!--b-form-group
@@ -211,16 +211,14 @@ export default {
 
                 self.loading = true
 
-                let account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await this.getAccount()
-                if (coinbase.toLowerCase() === account.toLowerCase()) {
+                if (coinbase.toLowerCase() === self.account.toLowerCase()) {
                     self.loading = false
                     self.coinbaseError = true
                     return false
                 }
                 let contract = await self.TomoValidator.deployed()
                 let rs = await contract.propose(coinbase, {
-                    from : account,
+                    from : self.account,
                     value: parseFloat(value) * 10 ** 18,
                     gasPrice: 2500,
                     gas: 2000000
