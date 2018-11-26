@@ -415,31 +415,32 @@ export default {
                 console.log(e)
             }
         },
-        withdraw: async function (blockNumber, index) {
-            let self = this
-            let contract = await self.TomoValidator.deployed()
-            let account = await self.getAccount()
-            self.loading = true
-            try {
-                let wd = await contract.withdraw(String(blockNumber), String(index), {
-                    from: account,
-                    gasPrice: 2500,
-                    gas: 2000000
-                })
-                let toastMessage = wd.tx ? 'You have successfully withdrawed!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
+        // withdraw: async function (blockNumber, index) {
+        //     let self = this
+        //     let contract = await self.TomoValidator.deployed()
+        //     let account = await self.getAccount()
 
-                setTimeout(() => {
-                    self.loading = false
-                    if (wd.tx) {
-                        self.$router.push({ path: `/setting` })
-                    }
-                }, 2000)
-            } catch (e) {
-                self.loading = false
-            }
-        },
+        //     self.loading = true
+        //     try {
+        //         let wd = await contract.withdraw(String(blockNumber), String(index), {
+        //             from: account,
+        //             gasPrice: 2500,
+        //             gas: 2000000
+        //         })
+        //         let toastMessage = wd.tx ? 'You have successfully withdrawed!'
+        //             : 'An error occurred while withdrawing, please try again'
+        //         self.$toasted.show(toastMessage)
+
+        //         setTimeout(() => {
+        //             self.loading = false
+        //             if (wd.tx) {
+        //                 self.$router.push({ path: `/setting` })
+        //             }
+        //         }, 2000)
+        //     } catch (e) {
+        //         self.loading = false
+        //     }
+        // },
         async loginByQRCode () {
             // generate qr code
             const { data } = await axios.get('/api/auth/generateLoginQR')

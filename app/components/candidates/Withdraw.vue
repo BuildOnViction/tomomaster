@@ -173,6 +173,7 @@ export default {
             let self = this
             let contract = await self.TomoValidator.deployed()
             let account = await self.getAccount()
+            account = account.toLowerCase()
             self.loading = true
             try {
                 console.log('==>', blockNumber, index)
