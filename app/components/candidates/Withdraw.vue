@@ -161,7 +161,7 @@ export default {
                 '&submitURL=' + generatedMess.data.url + generatedMess.data.id
             )
 
-            if (self.processing && generatedMess.data) {
+            if (self.processing && generatedMess.data && self.provider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)
@@ -192,6 +192,7 @@ export default {
                     }
                 }, 2000)
             } catch (e) {
+                console.log(e)
                 self.loading = false
             }
         },

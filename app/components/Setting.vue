@@ -376,6 +376,10 @@ export default {
         save: async function () {
             store.clearAll()
             const self = this
+            // clear old data
+            self.withdraws = []
+            self.aw = []
+            self.wh = []
             var wjs = false
             self.loading = true
             try {
