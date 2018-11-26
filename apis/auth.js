@@ -56,9 +56,9 @@ router.post('/verifyLogin', async (req, res, next) => {
     }
 })
 
-router.post('/getLoginResult', async (req, res, next) => {
+router.get('/getLoginResult', async (req, res, next) => {
     try {
-        const messId = req.body.messId || ''
+        const messId = req.query.id || ''
 
         const signature = await db.Signature.findOne({ signedId: messId })
 
@@ -74,9 +74,7 @@ router.post('/getLoginResult', async (req, res, next) => {
             })
         }
     } catch (e) {
-        console.trace(e)
-        console.log(e)
-        return res.status(500).send()
+        next(e)
     }
 })
 // Get signed address

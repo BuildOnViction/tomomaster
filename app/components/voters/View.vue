@@ -1,8 +1,5 @@
 <template>
-    <div
-        v-if="loading"
-        class="tomo-loading"/>
-    <div v-else>
+    <div>
         <div class="container section section--voter">
             <div class="row">
                 <div class="col-12">
@@ -52,7 +49,9 @@
                 </div>
             </div>
         </div>
-        <div class="container section section--candiates mt-5">
+        <div
+            :class="'container section section--candiates mt-5'
+            + (loading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <div class="section-title">
@@ -104,7 +103,9 @@
                 align="center"
                 class="tomo-pagination" />
         </div>
-        <div class="container section section--voterrewards">
+        <div
+            :class="'container section section--voterrewards'
+            + (loading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -173,7 +174,9 @@
                 class="tomo-pagination" />
         </div>
 
-        <div class="container section section--txs">
+        <div
+            :class="'container section section--txs'
+            + (loading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">

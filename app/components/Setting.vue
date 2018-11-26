@@ -376,6 +376,10 @@ export default {
         save: async function () {
             store.clearAll()
             const self = this
+            // clear old data
+            self.withdraws = []
+            self.aw = []
+            self.wh = []
             var wjs = false
             self.loading = true
             try {
@@ -401,7 +405,7 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                store.set('address', self.address)
+                store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
             } catch (e) {
                 self.loading = false
@@ -411,31 +415,32 @@ export default {
                 console.log(e)
             }
         },
-        withdraw: async function (blockNumber, index) {
-            let self = this
-            let contract = await self.TomoValidator.deployed()
-            let account = await self.getAccount()
-            self.loading = true
-            try {
-                let wd = await contract.withdraw(String(blockNumber), String(index), {
-                    from: account,
-                    gasPrice: 2500,
-                    gas: 2000000
-                })
-                let toastMessage = wd.tx ? 'You have successfully withdrawed!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
+        // withdraw: async function (blockNumber, index) {
+        //     let self = this
+        //     let contract = await self.TomoValidator.deployed()
+        //     let account = await self.getAccount()
 
-                setTimeout(() => {
-                    self.loading = false
-                    if (wd.tx) {
-                        self.$router.push({ path: `/setting` })
-                    }
-                }, 2000)
-            } catch (e) {
-                self.loading = false
-            }
-        },
+        //     self.loading = true
+        //     try {
+        //         let wd = await contract.withdraw(String(blockNumber), String(index), {
+        //             from: account,
+        //             gasPrice: 2500,
+        //             gas: 2000000
+        //         })
+        //         let toastMessage = wd.tx ? 'You have successfully withdrawed!'
+        //             : 'An error occurred while withdrawing, please try again'
+        //         self.$toasted.show(toastMessage)
+
+        //         setTimeout(() => {
+        //             self.loading = false
+        //             if (wd.tx) {
+        //                 self.$router.push({ path: `/setting` })
+        //             }
+        //         }, 2000)
+        //     } catch (e) {
+        //         self.loading = false
+        //     }
+        // },
         async loginByQRCode () {
             // generate qr code
             const { data } = await axios.get('/api/auth/generateLoginQR')
@@ -448,7 +453,7 @@ export default {
         },
         async getLoginResult () {
             // calling api every 2 seconds
-            const { data } = await axios.post('/api/auth/getLoginResult', { messId: this.id })
+            const { data } = await axios.get('/api/auth/getLoginResult?id=' + this.id)
 
             if (!data.error && data) {
                 this.loading = true
@@ -529,7 +534,7 @@ export default {
             })
             self.isReady = true
             self.loading = false
-            store.set('address', account)
+            store.set('address', account.toLowerCase())
             store.set('network', self.provider)
             if (this.interval) {
                 clearInterval(this.interval)
