@@ -13,11 +13,11 @@ router.get('/:candidate', async function (req, res, next) {
     if (regexpAddr.test(search)) {
         candidate = (await db.Candidate.findOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
-            candidate: search
+            candidate: search.toLowerCase()
         }) || {})
 
         voter = (await db.Voter.findOne({
-            voter: search
+            voter: search.toLowerCase()
         }) || {})
 
         return res.json({ candidate, voter })
