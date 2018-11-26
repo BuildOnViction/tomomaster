@@ -9,7 +9,6 @@ This is Governance Dapp for TomoChain. Full-Node can apply to become a candidate
 
 ## Requirements
 - NodeJS (If you get EACCES permission issue, please see: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
-- Redis
 - MongoDB
 - Truffle Framework
 
@@ -31,25 +30,7 @@ Update `local.json` file to support your environment
     "uri": "mongodb://localhost:27017/governance"
   },
   `
-  - Update redis configuration:
-    - For docker:
-    `
-    "redis": {
-    "host": "redis",
-    "port": 6379,
-    "password": null,
-    "prefix": "tomomaster"
-    },
-    `
-    - For localhost:
-    `
-    "redis": {
-    "host": "localhost",
-    "port": 6379,
-    "password": null,
-    "prefix": "tomomaster"
-    },
-  `
+
 
 ## Install
 ```
@@ -61,7 +42,6 @@ Note: before deploying to tomochain testnet, make sure you have TOMO in the wall
 
 ## Run
 - Start mongodb
-- Start Redis
 - Start TomoMaster
 ```
 npm run dev
