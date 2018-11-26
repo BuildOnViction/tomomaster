@@ -453,7 +453,7 @@ export default {
         },
         async getLoginResult () {
             // calling api every 2 seconds
-            const { data } = await axios.post('/api/auth/getLoginResult', { messId: this.id })
+            const { data } = await axios.get('/api/auth/getLoginResult?id=' + this.id)
 
             if (!data.error && data) {
                 this.loading = true
