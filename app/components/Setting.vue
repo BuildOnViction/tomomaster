@@ -438,7 +438,7 @@ export default {
         },
         async loginByQRCode () {
             // generate qr code
-            const { data } = await axios.get('/api/config/generateLoginQR')
+            const { data } = await axios.get('/api/auth/generateLoginQR')
             this.id = data.id
             this.qrCode = encodeURI(
                 'tomochain:login?message=' + data.message +
@@ -448,7 +448,7 @@ export default {
         },
         async getLoginResult () {
             // calling api every 2 seconds
-            const { data } = await axios.post('/api/config/getLoginResult', { messId: this.id })
+            const { data } = await axios.post('/api/auth/getLoginResult', { messId: this.id })
 
             if (!data.error && data) {
                 this.loading = true
