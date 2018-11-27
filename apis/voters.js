@@ -187,7 +187,7 @@ router.get('/getScanningResult',
             const action = req.query.action || ''
 
             const signTx = await db.SignTransaction.findOne({ signId: id })
-            const checkTx = (signTx.tx && action === 'withdraw')
+            const checkTx = ((signTx || {}).tx && action === 'withdraw')
                 ? true : await db.Transaction.findOne({ tx: signTx.tx })
             if (signTx && id === signTx.signId) {
                 if (checkTx) {
