@@ -7,6 +7,7 @@ import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
 import CandidateResign from './components/candidates/Resign.vue'
 import CandidateWithdraw from './components/candidates/Withdraw.vue'
+import CandidateUpdate from './components/candidates/Update.vue'
 import VoterView from './components/voters/View'
 import VotingView from './components/voters/Voting'
 import UnvotingView from './components/voters/Unvoting'
@@ -190,6 +191,9 @@ const router = new VueRouter({
         },
         {
             path: '/candidate/:address', component: CandidateView
+        },
+        {
+            path: '/candidate/:address/update', component: CandidateUpdate
         },
         {
             path: '/voter/:address', component: VoterView

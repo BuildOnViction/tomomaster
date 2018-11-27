@@ -5,7 +5,7 @@ const router = express.Router()
 const db = require('../models/mongodb')
 const uuidv4 = require('uuid/v4')
 const config = require('config')
-const web3 = require('../models/blockchain/web3')
+const web3 = require('../models/blockchain/web3rpc')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
@@ -180,37 +180,36 @@ router.post('/verifyTx', async (req, res, next) => {
     }
 })
 
-router.post('/getScanningResult', async (req, res, next) => {
-    try {
-        const id = req.body.id
-        const voter = req.body.voter || ''
-        const action = req.body.action || ''
+router.get('/getScanningResult',
+    async (req, res, next) => {
+        try {
+            const id = req.query.id
+            const action = req.query.action || ''
 
-        voter.toLowerCase()
-
-        const acc = await db.Voter.findOne({ voter: voter })
-
-        if (!acc) {
-            return res.status(404).send()
-        }
-        const signTx = await db.SignTransaction.findOne({ signedAddress: voter })
-        const checkTx = action === 'withdraw' ? true : await db.Transaction.findOne({ tx: signTx.tx })
-        if (id === signTx.signId && voter === signTx.signedAddress && checkTx) {
-            res.json({
-                tx: signTx.tx
-            })
-        } else {
-            res.send({
-                error: {
-                    message: 'Not match'
+            const signTx = await db.SignTransaction.findOne({ signId: id })
+            const checkTx = (signTx.tx && action === 'withdraw')
+                ? true : await db.Transaction.findOne({ tx: signTx.tx })
+            if (signTx && id === signTx.signId) {
+                if (checkTx) {
+                    res.send({
+                        tx: signTx.tx
+                    })
+                } else {
+                    res.send('Scanned')
                 }
-            })
+            } else {
+                res.send({
+                    error: {
+                        message: 'Not match'
+                    }
+                })
+            }
+        } catch (e) {
+            console.trace(e)
+            console.log(e)
+            return res.status(500).send(e)
         }
-    } catch (e) {
-        console.trace(e)
-        console.log(e)
-        return res.status(500).send(e)
     }
-})
+)
 
 module.exports = router
