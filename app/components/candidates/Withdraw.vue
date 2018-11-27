@@ -211,32 +211,23 @@ export default {
         },
         async verifyScannedQR () {
             let self = this
-            let body = {
-                action: 'withdraw'
-            }
-            if (self.id) {
-                body.id = self.id
-            }
-            body.voter = self.coinbase
-            let { data } = await axios.post('/api/voters/getScanningResult', body)
+            let { data } = await axios.get('/api/voters/getScanningResult?action=withdraw&id=' + self.id)
 
             if (!data.error) {
                 self.loading = true
-                if (self.interval) {
+                if (data.tx) {
                     clearInterval(self.interval)
+                    let toastMessage = data.tx ? 'You have successfully withdrawed!'
+                        : 'An error occurred while voting, please try again'
+                    self.$toasted.show(toastMessage)
+                    setTimeout(() => {
+                        if (data.tx) {
+                            self.loading = false
+                            self.processing = false
+                            self.$router.push({ path: `/setting` })
+                        }
+                    }, 3000)
                 }
-
-                let toastMessage = data.tx ? 'You have successfully withdrawed!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    if (data.tx) {
-                        self.loading = false
-                        self.processing = false
-                        self.$router.push({ path: `/setting` })
-                    }
-                }, 2000)
             }
         }
     }

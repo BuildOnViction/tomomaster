@@ -340,31 +340,24 @@ export default {
         },
         async verifyScannedQR () {
             let self = this
-            let body = {}
-            if (self.id) {
-                body.id = self.id
-            }
-            body.voter = self.voter
-            let { data } = await axios.post('/api/voters/getScanningResult', body)
+            let { data } = await axios.get('/api/voters/getScanningResult?action=vote&id=' + self.id)
 
             if (!data.error) {
                 self.loading = true
-                if (self.interval) {
+                if (data.tx) {
                     clearInterval(self.interval)
+                    let toastMessage = data.tx ? 'You have successfully voted!'
+                        : 'An error occurred while voting, please try again'
+                    self.$toasted.show(toastMessage)
+                    setTimeout(() => {
+                        if (data.tx) {
+                            self.loading = false
+                            self.processing = false
+                            self.step = 0
+                            self.$router.push({ path: `/confirm/${data.tx}` })
+                        }
+                    }, 2000)
                 }
-
-                let toastMessage = data.tx ? 'You have successfully voted!'
-                    : 'An error occurred while voting, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    if (data.tx) {
-                        self.loading = false
-                        self.processing = false
-                        self.step = 0
-                        self.$router.push({ path: `/confirm/${data.tx}` })
-                    }
-                }, 2000)
             }
         },
         onChangeVoting (event) {
