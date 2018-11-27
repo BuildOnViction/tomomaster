@@ -10,13 +10,11 @@ provider.on('error', e => console.log('WS Error', e))
 provider.on('end', e => {
     console.log('WS closed')
     console.log('Attempting to reconnect...')
-    provider = new Web3.providers.WebsocketProvider(config.get('blockchain.ws'))
+    web3.setProvider(provider)
 
     provider.on('connect', function () {
-        console.log('WSS Reconnected')
+        console.log('WSS Reonnected')
     })
-
-    web3.setProvider(provider)
 })
 
 module.exports = web3
