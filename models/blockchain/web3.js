@@ -3,7 +3,7 @@
 const Web3 = require('web3')
 const config = require('config')
 
-let provider = new Web3.providers.WebsocketProvider(config.get('blockchain.ws'))
+const provider = new Web3.providers.WebsocketProvider(config.get('blockchain.ws'))
 const web3 = new Web3(provider)
 
 provider.on('error', e => console.log('WS Error', e))
