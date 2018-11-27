@@ -6,6 +6,12 @@
                     <div class="section-title">
                         <i class="tm-flag color-yellow" />
                         <span>{{ candidate.name }}</span>
+
+                        <router-link
+                            :to="'/candidate/' + candidate.address + '/update'"
+                            class="text-truncate">
+                            <font-awesome-icon icon="edit" />
+                        </router-link>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
                             <li

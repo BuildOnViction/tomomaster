@@ -30,6 +30,14 @@ import Vuex from 'vuex'
 import HDWalletProvider from 'truffle-hdwallet-provider'
 import localStorage from 'store'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faEdit)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
 
