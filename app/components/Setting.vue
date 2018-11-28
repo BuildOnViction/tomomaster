@@ -30,6 +30,7 @@
                                     value="metamask">Metamask</option>
                             </b-form-select>
                             <small
+                                v-if="provider !== 'metamask'"
                                 class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small>
                         </b-input-group>
                     </b-form-group>
