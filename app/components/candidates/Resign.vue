@@ -68,11 +68,11 @@ export default {
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
-                self.account = account
+                self.account = (account || '').toLowerCase()
             }
 
             let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
-            self.owner = candidate.data.owner
+            self.owner = (candidate.data.owner || '').toLowerCase()
         } catch (e) {
             console.log(e)
         }
@@ -82,7 +82,6 @@ export default {
     methods: {
         resign: async function () {
             let self = this
-            let account
             try {
                 if (!self.isReady) {
                     self.$router.push({ path: '/setting' })
@@ -90,8 +89,7 @@ export default {
 
                 self.loading = true
 
-                account = await self.getAccount()
-                account = account.toLowerCase()
+                let account = await self.getAccount()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
