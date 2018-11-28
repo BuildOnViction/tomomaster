@@ -10,6 +10,7 @@ const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 const _ = require('lodash')
 const { check, validationResult } = require('express-validator/check')
+const uuidv4 = require('uuid/v4')
 
 router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
@@ -320,9 +321,10 @@ router.put('/update', [
         return next(errors.array())
     }
     try {
-        // const { signedMessage, message } = req.body
+        const { signedMessage, message } = req.body
         const candidate = (req.body.candidate || '').toLowerCase()
         const c = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate
         })
         if (!c) {
@@ -331,12 +333,6 @@ router.put('/update', [
 
         const body = req.body
         let set = _.pick(body, ['name', 'hardware'])
-        console.log(`1
-        1
-        1
-        11
-        
-        ${JSON.stringify(set)}`)
 
         if (body.dcName) {
             set['dataCenter.name'] = body.dcName
@@ -351,25 +347,43 @@ router.put('/update', [
         }, {
             $set: set
         })
-        return res.json({ status: 'OK' })
 
-        // const address = await web3.eth.accounts.recover(message, signedMessage)
-
-        // if (
-        //     address.toLowerCase() === c.candidate.toLowerCase() ||
-        //     address.toLowerCase() === c.owner.toLowerCase()
-        // ) {
-        //     await db.Candidate.updateOne({
-        //         candidate: candidate.toLowerCase()
-        //     }, {
-        //         $set: set
-        //     })
-        //     return res.json({ status: 'OK' })
-        // } else {
-        //     return next(new Error('Authentication failed'))
-        // }
+        const address = await web3.eth.accounts.recover(message, signedMessage)
+        if (
+            address.toLowerCase() === c.candidate.toLowerCase() ||
+            address.toLowerCase() === c.owner.toLowerCase()
+        ) {
+            await db.Candidate.updateOne({
+                candidate: candidate.toLowerCase()
+            }, {
+                $set: set
+            })
+            return res.json({ status: 'OK' })
+        } else {
+            return res.json({
+                error: {
+                    message: 'Authentication failed'
+                }
+            })
+        }
     } catch (e) {
         return next(e)
+    }
+})
+
+router.get('/:candidate/generateMessage', async function (req, res, next) {
+    try {
+        const candidate = req.params.candidate
+        const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
+            ' I am the candidate ' + '[' + candidate + ']'
+        const id = uuidv4()
+        res.json({
+            message,
+            url: `${config.get('baseUrl')}api/candidate/update?id=${id}`,
+            id
+        })
+    } catch (error) {
+        next(error)
     }
 })
 

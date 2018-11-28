@@ -32,10 +32,10 @@ import HDWalletProvider from 'truffle-hdwallet-provider'
 import localStorage from 'store'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faEdit)
+library.add(faEdit, faCopy)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

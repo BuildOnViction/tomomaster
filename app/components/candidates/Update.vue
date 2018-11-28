@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <b-row
+            v-if="step === 1"
             align-v="center"
             align-h="center"
             class="m-0">
@@ -59,9 +60,115 @@
                             @click="$router.go(-1)">Cancel</b-button>
                         <b-button
                             type="submit"
-                            variant="primary">Submit</b-button>
+                            variant="primary">Next</b-button>
                     </div>
                 </b-form>
+            </b-card>
+        </b-row>
+        <b-row
+            v-if="step === 2"
+            align-v="center"
+            align-h="center"
+            class="m-0">
+            <b-card
+                :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
+                + (loading ? ' tomo-loading' : '')">
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">Confirmation</h4>
+                <div>
+                    <div
+                        class="wrapper">
+                        <div
+                            id="one">
+                            <div>
+                                <label><b>Name:</b></label>
+                                <input
+                                    v-model="name"
+                                    class="form-control"
+                                    readonly >
+                            </div>
+                            <div style="margin-top: 5px">
+                                <label><b>Hardware:</b></label>
+                                <input
+                                    v-model="hardware"
+                                    class="form-control"
+                                    readonly >
+                            </div>
+                            <div style="margin-top: 5px">
+                                <label><b>Data Center Name:</b></label>
+                                <input
+                                    v-model="dcName"
+                                    class="form-control"
+                                    readonly >
+                            </div>
+                            <div style="margin-top: 5px">
+                                <label><b>Data Center Location:</b></label>
+                                <input
+                                    v-model="dcLocation"
+                                    class="form-control"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 20px">
+                            <div
+                                v-if="provider === 'tomowallet'"
+                                style="text-align: center">
+                                <vue-qrcode
+                                    :value="qrCode"
+                                    :options="{size: 250 }"
+                                    class="img-fluid text-center text-lg-right"/>
+                            </div>
+                            <div
+                                v-if="provider === 'metamask'">
+                                <strong>Copy message below and sign the message using
+                                    <a
+                                        href="https://www.mycrypto.com/signmsg.html"
+                                        style="color: #3498db">MyCrypto</a>
+                                    or <a
+                                        href="https://www.myetherwallet.com/signmsg.html"
+                                        style="color: #3498db">MyEtherWallet</a>
+                                </strong>
+                                <label style="margin-top: 5px">
+                                    <div>
+                                        <textarea
+                                            ref="text"
+                                            :value="message"
+                                            class="sign-message"
+                                            type="text"
+                                            readonly
+                                            cols="100"
+                                            rows="2"
+                                            style="width: 100%"
+                                            @click="copyTextArea"/>
+                                    </div>
+                                </label>
+                                <div>
+                                    <input
+                                        v-model="signHash"
+                                        class="form-control"
+                                        type="text"
+                                        style="box-sizing: border-box; width: 100%"
+                                        placeholder="Enter the message signature hash">
+                                    <span
+                                        class="text-danger">{{ signHashError }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="margin-top: 10px"
+                        class="buttons text-right">
+                        <b-button
+                            type="button"
+                            variant="secondary"
+                            @click="backStep">Back</b-button>
+                        <button
+                            v-if="provider !== 'tomowallet'"
+                            class="btn btn-primary"
+                            variant="primary"
+                            @click="update">Submit</button>
+                    </div>
+                </div>
             </b-card>
         </b-row>
     </div>
@@ -75,7 +182,7 @@ import {
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-// import store from 'store'
+import store from 'store'
 export default {
     name: 'App',
     components: {
@@ -90,7 +197,13 @@ export default {
             hardware: '',
             dcName: '',
             dcLocation: '',
-            loading: false
+            loading: false,
+            step: 1,
+            provider: this.NetworkProvider || store.get('network') || null,
+            qrCode: 'text',
+            message: '',
+            signHash: '',
+            signHashError: ''
         }
     },
     validations: {
@@ -113,6 +226,10 @@ export default {
     },
     async created () {
         let self = this
+        if (!self.isReady) {
+            self.$router.push({ path: '/setting' })
+            throw Error('Web3 is not properly detected.')
+        }
         const { data } = await axios.get(`/api/candidates/${self.address}`)
         if (data) {
             self.name = data.name ? data.name : 'Anonymous Candidate'
@@ -135,18 +252,22 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                this.update()
+                this.nextStep()
+                // this.update()
             }
         },
         update: async function () {
             let self = this
+            const account = (await self.getAccount() || '').toLowerCase()
             try {
-                if (!self.isReady) {
-                    self.$router.push({ path: '/setting' })
-                    throw Error('Web3 is not properly detected.')
+                if (self.provider === 'metamask' && self.signHash === '') {
+                    self.signHashError = 'This field is required'
+                    return false
                 }
-
                 self.loading = true
+                if (self.provider === 'custom') {
+                    self.signHash = await self.web3.eth.sign(self.message, account)
+                }
                 // calling update api
                 const { data } = await axios.put(
                     '/api/candidates/update',
@@ -156,21 +277,46 @@ export default {
                         hardware: self.hardware,
                         dcName: self.dcName,
                         dcLocation: self.dcLocation,
-                        message: 'aaa',
-                        signedMessage: '0xda22579bb441c6aac42091387591e020ddf77f68307171544d087f3dbe6fe83a1e0fd5' +
-                            '0fbd1088c3ac1b6a84fa3f62f383b60fbca01e39531496c0e302320ac11b'
+                        message: self.message,
+                        signedMessage: self.signHash
                     }
                 )
-                if (data) {
+                if (!data.error) {
                     setTimeout(() => {
                         self.$toasted.show('Candidate\'s information updated successfully ')
                         self.loading = false
+                        self.signHashError = ''
                         self.$router.push({ path: `/candidate/${self.address}` })
                     }, 3000)
+                } else {
+                    self.loading = false
+                    self.$toasted.show(data.error.message, {
+                        type: 'error'
+                    })
                 }
-            } catch (error) {
-                console.log(error)
+            } catch (e) {
+                console.log(e)
+                self.loading = false
+                self.$toasted.show(`An error occurred while voting. ${String(e)}`, {
+                    type: 'error'
+                })
             }
+        },
+        async nextStep () {
+            const self = this
+            if (self.provider !== 'custom') {
+                const { data } = await axios.get('/api/candidates/' + self.address + '/generateMessage')
+
+                self.message = data.message
+            }
+            self.step++
+        },
+        backStep () {
+            this.step--
+        },
+        copyTextArea () {
+            this.$refs.text.select()
+            document.execCommand('copy')
         }
     }
 }
