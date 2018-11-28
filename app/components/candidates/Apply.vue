@@ -216,7 +216,7 @@ export default {
                     self.coinbaseError = true
                     return false
                 }
-                let contract = await self.TomoValidator.deployed()
+                let contract = await self.getTomoValidatorInstance()
                 let rs = await contract.propose(coinbase, {
                     from : self.account,
                     value: parseFloat(value) * 10 ** 18,

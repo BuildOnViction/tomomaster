@@ -271,6 +271,25 @@ Vue.prototype.detectNetwork = async function (provider) {
     }
 }
 
+/**
+ * @return TomoValidator contract instance
+ */
+Vue.prototype.getTomoValidatorInstance = async function () {
+    // workaround for web3 version 1.0.0
+    // @link https://github.com/trufflesuite/truffle-contract/issues/57#issuecomment-331300494
+    if (typeof Vue.prototype.TomoValidator.currentProvider.sendAsync !== 'function') {
+        Vue.prototype.TomoValidator.currentProvider.sendAsync = function () {
+            return Vue.prototype.TomoValidator.currentProvider.send.apply(
+                Vue.prototype.TomoValidator.currentProvider,
+                arguments
+            )
+        }
+    }
+    let instance = await Vue.prototype.TomoValidator.deployed()
+    return instance
+}
+
+
 new Vue({ // eslint-disable-line no-new
     el: '#app',
     store,

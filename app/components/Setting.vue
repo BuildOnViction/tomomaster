@@ -273,7 +273,7 @@ export default {
                 }
                 if (self.web3) {
                     try {
-                        contract = await self.TomoValidator.deployed()
+                        contract = await self.getTomoValidatorInstance()
                     } catch (error) {
                         throw Error('Make sure you choose correct tomochain network.')
                     }
@@ -487,7 +487,7 @@ export default {
 
             await self.setupProvider(this.provider, web3)
             try {
-                contract = await self.TomoValidator.deployed()
+                contract = await self.getTomoValidatorInstance()
             } catch (error) {
                 if (self.interval) {
                     clearInterval(self.interval)

@@ -90,7 +90,7 @@ export default {
                 self.loading = true
 
                 let account = (await self.getAccount() || '').toLowerCase()
-                let contract = await self.TomoValidator.deployed()
+                let contract = await self.getTomoValidatorInstance()
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
                     from: account,

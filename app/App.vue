@@ -105,7 +105,7 @@ export default {
             setTimeout(async () => {
                 let account
                 try {
-                    const contract = await this.TomoValidator.deployed()
+                    const contract = await self.getTomoValidatorInstance()
                     if (store.get('address')) {
                         account = store.get('address').toLowerCase()
                     } else {

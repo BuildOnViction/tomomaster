@@ -171,7 +171,7 @@ export default {
     methods: {
         withdraw: async function (blockNumber, index) {
             let self = this
-            let contract = await self.TomoValidator.deployed()
+            let contract = await self.getTomoValidatorInstance()
             let account = await self.getAccount()
             account = account.toLowerCase()
             self.loading = true

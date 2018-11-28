@@ -632,7 +632,7 @@ export default {
 
                 if (self.account && self.web3) {
                     try {
-                        let contract = await self.TomoValidator.deployed()
+                        let contract = await self.getTomoValidatorInstance()
                         youVoted = await contract.getVoterCap(address, self.account)
                         self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
                     } catch (e) {}
