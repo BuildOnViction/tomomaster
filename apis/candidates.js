@@ -320,7 +320,7 @@ router.put('/update', [
         return next(errors.array())
     }
     try {
-        const { signedMessage, message } = req.body
+        // const { signedMessage, message } = req.body
         const candidate = (req.body.candidate || '').toLowerCase()
         const c = await db.Candidate.findOne({
             candidate: candidate
@@ -331,6 +331,12 @@ router.put('/update', [
 
         const body = req.body
         let set = _.pick(body, ['name', 'hardware'])
+        console.log(`1
+        1
+        1
+        11
+        
+        ${JSON.stringify(set)}`)
 
         if (body.dcName) {
             set['dataCenter.name'] = body.dcName
@@ -339,21 +345,29 @@ router.put('/update', [
             set['dataCenter.location'] = body.dcLocation
         }
 
-        const address = await web3.eth.accounts.recover(message, signedMessage)
+        await db.Candidate.updateOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: candidate.toLowerCase()
+        }, {
+            $set: set
+        })
+        return res.json({ status: 'OK' })
 
-        if (
-            address.toLowerCase() === c.candidate.toLowerCase() ||
-            address.toLowerCase() === c.owner.toLowerCase()
-        ) {
-            await db.Candidate.updateOne({
-                candidate: candidate.toLowerCase()
-            }, {
-                $set: set
-            })
-            return res.json({ status: 'OK' })
-        } else {
-            return next(new Error('Authentication failed'))
-        }
+        // const address = await web3.eth.accounts.recover(message, signedMessage)
+
+        // if (
+        //     address.toLowerCase() === c.candidate.toLowerCase() ||
+        //     address.toLowerCase() === c.owner.toLowerCase()
+        // ) {
+        //     await db.Candidate.updateOne({
+        //         candidate: candidate.toLowerCase()
+        //     }, {
+        //         $set: set
+        //     })
+        //     return res.json({ status: 'OK' })
+        // } else {
+        //     return next(new Error('Authentication failed'))
+        // }
     } catch (e) {
         return next(e)
     }
