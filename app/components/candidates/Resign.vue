@@ -64,14 +64,15 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        self.isReady = !!self.web3
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
-                self.account = account
+                self.account = (account || '').toLowerCase()
             }
 
             let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
-            self.owner = candidate.data.owner
+            self.owner = (candidate.data.owner || '').toLowerCase()
         } catch (e) {
             console.log(e)
         }
@@ -88,7 +89,7 @@ export default {
 
                 self.loading = true
 
-                let account = await self.getAccount()
+                let account = (await self.getAccount() || '').toLowerCase()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
