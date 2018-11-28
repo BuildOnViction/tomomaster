@@ -25,6 +25,7 @@
                                     value="tomowallet"
                                     selected>TomoWallet</option>
                                 <option value="custom">PrivateKey/MNEMONIC</option>
+                                <option value="ledger">Ledger Wallet</option>
                                 <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask</option>
@@ -99,7 +100,6 @@
                                 target="_blank">Metamask Extension</a>
                             then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
-
                     <div class="buttons text-right">
                         <b-button
                             v-if="provider !== 'tomowallet'"
@@ -363,7 +363,7 @@ export default {
             }
         },
         validate: function () {
-            if (this.provider === 'metamask') {
+            if (['metamask', 'ledger'].includes(this.provider)) {
                 this.save()
             }
 
@@ -383,12 +383,26 @@ export default {
             var wjs = false
             self.loading = true
             try {
-                if (self.provider === 'metamask') {
+                switch (self.provider) {
+                case 'metamask':
                     if (window.web3) {
                         var p = window.web3.currentProvider
                         wjs = new Web3(p)
                     }
-                } else {
+                    break
+                case 'ledger':
+                    // Object - HttpProvider
+                    wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
+                    // Object - IpcProvider: The IPC provider is used node.js dapps when running a local node
+                    // import net from 'net'
+                    // wjs = new Web3(new Web3.providers.IpcProvider('~/.ethereum/geth.ipc', net))
+
+                    // Object - WebsocketProvider: The Websocket provider is the standard for usage in legacy browsers.
+                    // wjs = await ws.connect(self.networks.wss)
+                    // wjs = new Web3(new Web3.providers.WebsocketProvider(self.chainConfig.ws))
+                    // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
+                    break
+                default:
                     const walletProvider =
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
@@ -397,10 +411,9 @@ export default {
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
 
                     wjs = new Web3(walletProvider)
+                    break
                 }
-
                 await self.setupProvider(this.provider, wjs)
-
                 await self.setupAccount()
                 self.loading = false
                 self.$store.state.walletLoggedIn = null

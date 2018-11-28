@@ -30,6 +30,14 @@ import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import HDWalletProvider from 'truffle-hdwallet-provider'
 import localStorage from 'store'
+// Libusb is included as a submodule.
+// On Linux, you'll need libudev to build libusb.
+// On Ubuntu/Debian: sudo apt-get install build-essential libudev-dev
+// import Transport from '@ledgerhq/hw-transport-node-hid'
+
+import Transport from '@ledgerhq/hw-transport-u2f' // for browser
+import Eth from '@ledgerhq/hw-app-eth'
+import Transaction from 'ethereumjs-tx'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
@@ -59,6 +67,7 @@ Vue.use(HighchartsVue)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
+Vue.prototype.hdDerivationPath = "44'/889'/0'/0/0"
 
 Vue.prototype.setupProvider = function (provider, wjs) {
     const self = this
@@ -68,16 +77,15 @@ Vue.prototype.setupProvider = function (provider, wjs) {
         Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
         Vue.prototype.getAccount = function () {
             var p = new Promise(function (resolve, reject) {
-                wjs.eth.getAccounts(function (err, accs) {
+                wjs.eth.getAccounts(async function (err, accs) {
                     if (err != null) {
                         console.log('There was an error fetching your accounts.')
                         return reject(err)
                     }
-                    if (provider === 'tomowallet') {
+                    switch (provider) {
+                    case 'tomowallet':
                         return resolve(self.$store.state.walletLoggedIn)
-                    }
-
-                    if (provider === 'rpc') {
+                    case 'custom':
                         if (wjs.currentProvider.address) {
                             return resolve(wjs.currentProvider.address)
                         }
@@ -86,11 +94,27 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                             return resolve(wjs.currentProvider.addresses[0])
                         }
                         return resolve('')
-                    }
-                    if (provider === 'wallet') {
+                    case 'ledger':
+                        let u2fSupported = await Transport.isSupported()
+                        if (!u2fSupported) {
+                            return reject(new Error(`U2F not supported in this browser. 
+                            Please try using Google Chrome with a secure (SSL / HTTPS) connection!`))
+                        }
+                        try {
+                            let transport = await new Transport()
+                            Vue.prototype.appEth = await new Eth(transport)
+                            let result = await Vue.prototype.appEth.getAddress(
+                                Vue.prototype.hdDerivationPath
+                            )
+                            return resolve(result.address)
+                        } catch (error) {
+                            return reject(error.message)
+                        }
+                    case 'wallet':
                         return resolve(this.$store.state.walletLoggedIn)
+                    default:
+                        break
                     }
-
                     if (accs.length === 0) {
                         console.log(`Couldn't get any accounts! Make sure
                         your Ethereum client is configured correctly.`)
@@ -261,9 +285,14 @@ Vue.prototype.detectNetwork = async function (provider) {
                     '',
                     chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
                 break
+            case 'ledger':
+                // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
+                wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.rpc))
+                break
             default:
                 break
             }
+            
         }
         await this.setupProvider(provider, await wjs)
     } catch (error) {
@@ -289,6 +318,47 @@ Vue.prototype.getTomoValidatorInstance = async function () {
     return instance
 }
 
+/**
+ * @param object txParams
+ * @return object signature {r, s, v}
+ */
+Vue.prototype.signTransaction = async function (txParams) {
+    let config = await getConfig()
+    let chainConfig = config.blockchain
+    let rawTx = new Transaction(txParams)
+    // for custom network (not ethereum mainnet, we need chainId)
+    rawTx.v = Buffer.from([chainConfig.networkId])
+    let serializedRawTx = rawTx.serialize().toString('hex')
+    let signature = await Vue.prototype.appEth.signTransaction(
+        Vue.prototype.hdDerivationPath,
+        serializedRawTx
+    )
+    return signature
+}
+
+/**
+ * @param object txParams
+ * @param object signature {r,s,v}
+ * @return transactionReceipt
+ */
+Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
+    // "hexify" the keys
+    Object.keys(signature).map((key, _) => {
+        signature[key] = '0x' + signature[key]
+    })
+    let txObj = Object.assign({}, txParams, signature)
+    let tx = new Transaction(txObj)
+    let serializedTx = '0x' + tx.serialize().toString('hex')
+    // web3 v0.2, method name is sendRawTransaction
+    // You are using web3 v1.0. The method was renamed to sendSignedTransaction.
+    let rs = await Vue.prototype.web3.eth.sendSignedTransaction(
+        serializedTx
+    )
+    if (!rs.tx && rs.transactionHash) {
+        rs.tx = rs.transactionHash
+    }
+    return rs
+}
 
 new Vue({ // eslint-disable-line no-new
     el: '#app',
