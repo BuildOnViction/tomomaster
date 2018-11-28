@@ -277,15 +277,42 @@ export default {
                 }
 
                 self.loading = true
-
+                let unvoteValue = (parseFloat(value) * 10 ** 18)
                 let account = await self.getAccount()
                 account = account.toLowerCase()
-                let contract = await self.TomoValidator.deployed()
-                let rs = await contract.unvote(candidate, (parseFloat(value) * 10 ** 18), {
+                let contract = await self.getTomoValidatorInstance()
+                let txParams = {
                     from: account,
                     gasPrice: 2500,
                     gas: 1000000
-                })
+                }
+                let rs
+                if (self.NetworkProvider === 'ledger') {
+                    // check if network provider is hardware wallet
+                    // sign transaction using hardwarewallet before sending to chain
+
+                    // https://bit.ly/2KEXzQe
+                    // signing and sending processes
+                    //
+                    //
+                    // login device
+                    // sign transaction with function and parameter to get signature
+                    // attach txParams and signature then sendSignedTransaction
+                    let nonce = await self.web3.eth.getTransactionCount(account)
+                    let dataTx = contract.unvote.request(candidate, unvoteValue).params[0]
+                    Object.assign(
+                        dataTx,
+                        dataTx,
+                        txParams,
+                        {
+                            nonce: self.web3.utils.toHex(nonce)
+                        }
+                    )
+                    let signature = await self.signTransaction(dataTx)
+                    rs = await self.sendSignedTransaction(dataTx, signature)
+                } else {
+                    rs = await contract.unvote(candidate, unvoteValue, txParams)
+                }
                 self.vote -= value
 
                 let toastMessage = rs.tx ? 'You have successfully unvoted!'
