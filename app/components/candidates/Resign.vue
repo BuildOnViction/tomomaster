@@ -64,6 +64,7 @@ export default {
     updated () {},
     created: async function () {
         let self = this
+        self.isReady = !!self.web3
         try {
             if (self.isReady) {
                 let account = await self.getAccount()
@@ -81,6 +82,7 @@ export default {
     methods: {
         resign: async function () {
             let self = this
+            let account
             try {
                 if (!self.isReady) {
                     self.$router.push({ path: '/setting' })
@@ -88,7 +90,8 @@ export default {
 
                 self.loading = true
 
-                let account = await self.getAccount()
+                account = await self.getAccount()
+                account = account.toLowerCase()
                 let contract = await self.TomoValidator.deployed()
                 let coinbase = self.coinbase
                 let rs = await contract.resign(coinbase, {
