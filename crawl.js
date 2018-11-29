@@ -2,7 +2,7 @@
 
 const validator = require('./models/blockchain/validator')
 const blockSigner = require('./models/blockchain/blockSigner')
-const web3 = require('./models/blockchain/web3')
+const web3 = require('./models/blockchain/web3ws')
 const config = require('config')
 const db = require('./models/mongodb')
 const EventEmitter = require('events').EventEmitter
