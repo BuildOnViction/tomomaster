@@ -81,31 +81,31 @@
                             id="one">
                             <div>
                                 <label><b>Name:</b></label>
-                                <input
+                                <b-form-input
                                     v-model="name"
                                     class="form-control"
-                                    readonly >
+                                    readonly />
                             </div>
                             <div style="margin-top: 5px">
                                 <label><b>Hardware:</b></label>
-                                <input
+                                <b-form-input
                                     v-model="hardware"
                                     class="form-control"
-                                    readonly >
+                                    readonly />
                             </div>
                             <div style="margin-top: 5px">
                                 <label><b>Data Center Name:</b></label>
-                                <input
+                                <b-form-input
                                     v-model="dcName"
                                     class="form-control"
-                                    readonly >
+                                    readonly />
                             </div>
                             <div style="margin-top: 5px">
                                 <label><b>Data Center Location:</b></label>
-                                <input
+                                <b-form-input
                                     v-model="dcLocation"
                                     class="form-control"
-                                    readonly>
+                                    readonly />
                             </div>
                         </div>
                         <div
@@ -115,8 +115,14 @@
                                 style="text-align: center">
                                 <vue-qrcode
                                     :value="qrCode"
-                                    :options="{size: 250 }"
+                                    :options="{size: 200 }"
+                                    tag="img"
                                     class="img-fluid text-center text-lg-right"/>
+                                <div
+                                    class="mt-1">
+                                    <span
+                                        class="text-danger"><b>{{ signHashError }}</b></span>
+                                </div>
                             </div>
                             <div
                                 v-if="provider === 'metamask'">
@@ -203,7 +209,9 @@ export default {
             qrCode: 'text',
             message: '',
             signHash: '',
-            signHashError: ''
+            signHashError: '',
+            id: '',
+            interval: null
         }
     },
     validations: {
@@ -222,6 +230,11 @@ export default {
         dcLocation: {
             maxLength: maxLength(30),
             minLength: minLength(2)
+        }
+    },
+    beforeDestroy () {
+        if (this.interval) {
+            clearInterval(this.interval)
         }
     },
     async created () {
@@ -269,6 +282,45 @@ export default {
                     self.signHash = await self.web3.eth.sign(self.message, account)
                 }
                 // calling update api
+                await self.updateCandidateInfo()
+            } catch (e) {
+                console.log(e)
+                self.loading = false
+                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
+                    type: 'error'
+                })
+            }
+        },
+        async nextStep () {
+            const self = this
+            if (self.provider !== 'custom') {
+                const { data } = await axios.get('/api/candidates/' + self.address + '/generateMessage')
+
+                self.message = data.message
+                self.id = data.id
+                self.qrCode = encodeURI(
+                    'tomochain:sign?message=' + self.message +
+                    '&submitURL=' + data.url
+                )
+            }
+            self.step++
+            if (self.step === 2 && self.provider === 'tomowallet') {
+                self.interval = setInterval(async () => {
+                    await this.verifyScannedQR()
+                }, 3000)
+            }
+        },
+        backStep () {
+            this.step--
+        },
+        copyTextArea () {
+            this.$refs.text.select()
+            document.execCommand('copy')
+        },
+        async updateCandidateInfo () {
+            let self = this
+            // calling update api
+            try {
                 const { data } = await axios.put(
                     '/api/candidates/update',
                     {
@@ -286,37 +338,49 @@ export default {
                         self.$toasted.show('Candidate\'s information updated successfully ')
                         self.loading = false
                         self.signHashError = ''
+                        self.signHash = ''
                         self.$router.push({ path: `/candidate/${self.address}` })
                     }, 3000)
                 } else {
                     self.loading = false
-                    self.$toasted.show(data.error.message, {
-                        type: 'error'
-                    })
+                    self.signHashError = ''
+                    self.signHash = ''
+                    if (self.provider === 'tomowallet') {
+                        self.signHashError = data.error.message
+                        return false
+                    } else {
+                        self.signHashError = ''
+                        self.$toasted.show(data.error.message, {
+                            type: 'error'
+                        })
+                    }
                 }
             } catch (e) {
                 console.log(e)
                 self.loading = false
-                self.$toasted.show(`An error occurred while voting. ${String(e)}`, {
+                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
                     type: 'error'
                 })
             }
         },
-        async nextStep () {
+        async verifyScannedQR () {
             const self = this
-            if (self.provider !== 'custom') {
-                const { data } = await axios.get('/api/candidates/' + self.address + '/generateMessage')
-
-                self.message = data.message
+            try {
+                // 1. Get msg, signature
+                const signData = await axios.get(
+                    '/api/candidates/' + self.address + '/getSignature?id=' + self.id
+                )
+                if (!signData.data.error) {
+                    self.signHash = signData.data.signature
+                    // 2. Then call update func
+                    await self.updateCandidateInfo()
+                }
+            } catch (e) {
+                console.log(e)
+                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
+                    type: 'error'
+                })
             }
-            self.step++
-        },
-        backStep () {
-            this.step--
-        },
-        copyTextArea () {
-            this.$refs.text.select()
-            document.execCommand('copy')
         }
     }
 }
