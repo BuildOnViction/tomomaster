@@ -275,7 +275,7 @@ export default {
                     from: account,
                     value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber(),
                     gasPrice: 2500,
-                    gasLimit: 1000000
+                    gas: 1000000
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {
