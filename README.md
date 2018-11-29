@@ -16,21 +16,20 @@ This is Governance Dapp for TomoChain. Full-Node can apply to become a candidate
 ```
 cp config/default.json config/local.json
 ```
-Update `local.json` file to support your environment
-- Update mnemonic
-- Update mongodb configuration:
-    - For docker:
-    `  "db": {
-    "uri": "mongodb://mongodb:27017/governance"
-    },
-  `
-    - For localhost: 
+- Update `local.json` file to support your environment
+  - Update mnemonic
+  - Update mongodb configuration:
+      - For docker:
+      `  "db": {
+      "uri": "mongodb://mongodb:27017/governance"
+      },
     `
-    "db": {
-    "uri": "mongodb://localhost:27017/governance"
-  },
-  `
-
+      - For localhost: 
+      `
+      "db": {
+      "uri": "mongodb://localhost:27017/governance"
+    },
+    `
 
 ## Install
 ```
@@ -40,6 +39,8 @@ cp abis/*json build/contracts/
 ```
 Note: before deploying to tomochain testnet, make sure you have TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.testnet.tomochain.com)
 
+## Enable https
+``` npm run dev-https```
 ## Run
 - Start mongodb
 - Start TomoMaster
