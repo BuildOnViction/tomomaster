@@ -217,12 +217,29 @@ export default {
                     return false
                 }
                 let contract = await self.getTomoValidatorInstance()
-                let rs = await contract.propose(coinbase, {
+                let txParams = {
                     from : self.account,
                     value: parseFloat(value) * 10 ** 18,
                     gasPrice: 2500,
                     gas: 2000000
-                })
+                }
+                let rs
+                if (self.NetworkProvider === 'ledger') {
+                    let nonce = await self.web3.eth.getTransactionCount(self.account)
+                    let dataTx = contract.propose.request(coinbase).params[0]
+                    Object.assign(
+                        dataTx,
+                        dataTx,
+                        txParams,
+                        {
+                            nonce: self.web3.utils.toHex(nonce)
+                        }
+                    )
+                    let signature = await self.signTransaction(dataTx)
+                    rs = await self.sendSignedTransaction(dataTx, signature)
+                } else {
+                    rs = await contract.propose(coinbase, txParams)
+                }
                 let toastMessage = rs.tx ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
                 self.$toasted.show(toastMessage)
