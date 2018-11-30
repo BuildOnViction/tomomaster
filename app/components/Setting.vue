@@ -482,7 +482,7 @@ export default {
             self.address = account
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
-                '',
+                null,
                 self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
 
             await self.setupProvider(this.provider, web3)
