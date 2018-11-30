@@ -18,7 +18,7 @@ router.get('/', async function (req, res, next) {
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).limit(limit).skip(skip).lean().exec(),
+            }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
             db.Penalty.findOne({}).sort({ _id: 'desc' })
         ])

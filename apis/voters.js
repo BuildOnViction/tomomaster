@@ -16,8 +16,9 @@ router.get('/:voter/candidates', async function (req, res, next) {
     try {
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
-            voter: (req.params.voter || '').toLowerCase()
-        }).limit(limit).skip(skip).lean().exec()
+            voter: (req.params.voter || '').toLowerCase(),
+            capacityNumber: { $ne: 0 }
+        }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec()
         let cs = voters.map(v => v.candidate)
         let candidates = await db.Candidate.find({
             candidate: { $in: cs }
@@ -26,7 +27,7 @@ router.get('/:voter/candidates', async function (req, res, next) {
             v.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate === v.candidate)
             }) || {}).name || 'Anonymous'
-            return _.pick(v, ['candidate', 'capacity', 'candidateName'])
+            return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'candidateName'])
         })
         return res.json(voters)
     } catch (e) {
