@@ -245,23 +245,25 @@ const store = new Vuex.Store({
 })
 Vue.prototype.detectNetwork = async function (provider) {
     try {
-        let wjs = false
+        let wjs = this.web3
         const config = await getConfig()
         const chainConfig = config.blockchain
-        switch (provider) {
-        case 'metamask':
-            if (window.web3) {
-                var p = window.web3.currentProvider
-                wjs = new Web3(p)
+        if (!wjs) {
+            switch (provider) {
+            case 'metamask':
+                if (window.web3) {
+                    var p = window.web3.currentProvider
+                    wjs = new Web3(p)
+                }
+                break
+            case 'tomowallet':
+                wjs = new Web3(new HDWalletProvider(
+                    '',
+                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                break
+            default:
+                break
             }
-            break
-        case 'tomowallet':
-            wjs = new Web3(new HDWalletProvider(
-                '',
-                chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
-            break
-        default:
-            break
         }
         await this.setupProvider(provider, await wjs)
     } catch (error) {
