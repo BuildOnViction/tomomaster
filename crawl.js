@@ -5,6 +5,7 @@ const blockSigner = require('./models/blockchain/blockSigner')
 const web3 = require('./models/blockchain/web3ws')
 const config = require('config')
 const db = require('./models/mongodb')
+const BigNumber = require('bignumber.js')
 const EventEmitter = require('events').EventEmitter
 const moment = require('moment')
 const emitter = new EventEmitter()
@@ -90,6 +91,7 @@ async function updateCandidateInfo (candidate) {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: candidate,
                     capacity: String(capacity),
+                    capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
                     owner: owner
                 }
@@ -120,7 +122,8 @@ async function updateVoterCap (candidate, voter) {
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate,
                 voter: voter,
-                capacity: String(capacity)
+                capacity: String(capacity),
+                capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10)
             }
         }, { upsert: true })
     } catch (e) {
