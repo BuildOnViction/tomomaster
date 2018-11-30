@@ -9,8 +9,15 @@ const web3 = require('../models/blockchain/web3rpc')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
+const { check, validationResult } = require('express-validator/check')
 
-router.get('/:voter/candidates', async function (req, res, next) {
+router.get('/:voter/candidates', [
+    check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
