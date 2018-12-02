@@ -9,6 +9,7 @@ const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 const _ = require('lodash')
+const logger = require('../helpers/logger')
 const { check, validationResult } = require('express-validator/check')
 
 router.get('/', async function (req, res, next) {
@@ -138,8 +139,7 @@ router.post('/apply', async function (req, res, next) {
         }
         return res.json({ status: 'OK' })
     } catch (e) {
-        console.log(e)
-        return res.json({ status: 'NOK' })
+        return next(e)
     }
 })
 
@@ -183,12 +183,12 @@ router.post('/applyBulk', async function (req, res, next) {
                     }, { upsert: true })
                 }
             } catch (e) {
-                console.error(e)
+                logger.error(e)
             }
         }
         return res.json({ status: 'OK' })
     } catch (e) {
-        return res.json({ status: 'NOK' })
+        return next(e)
     }
 })
 
@@ -235,8 +235,7 @@ router.post('/vote', async function (req, res, next) {
         })
         return res.json({ status: 'OK', tx: ret.transactionHash })
     } catch (e) {
-        console.log(e)
-        return res.json({ status: 'NOK' })
+        return next(e)
     }
 })
 

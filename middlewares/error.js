@@ -1,4 +1,5 @@
 'use strict'
+const logger = require('../helpers/logger')
 const _ = require('lodash')
 
 module.exports = function (err, req, res, next) {
@@ -8,13 +9,13 @@ module.exports = function (err, req, res, next) {
         err.message = err.message || _.map(err, 'msg')[0] || 'Not Acceptable'
 
         if (parseInt(err.status) !== 401 && parseInt(err.status) !== 403) {
+            logger.error(err)
             console.trace(err)
-            console.log(err)
         }
 
         return res.status(err.status).json({
             status: err.status,
-            message: err.message
+            error: { message: err.message }
         })
     }
     return next()
