@@ -4,8 +4,7 @@
         "port": 3001
     },
     "logs": {
-        "level": "debug",
-        "handleExceptions": false
+        "level": "debug"
     },
     "blockchain": {
         "rpc": "https://testnet.tomochain.com",
