@@ -5,8 +5,10 @@ const blockSigner = require('./models/blockchain/blockSigner')
 const web3 = require('./models/blockchain/web3ws')
 const config = require('config')
 const db = require('./models/mongodb')
+const BigNumber = require('bignumber.js')
 const EventEmitter = require('events').EventEmitter
 const moment = require('moment')
+const logger = require('./helpers/logger')
 const emitter = new EventEmitter()
 
 process.setMaxListeners(100)
@@ -14,7 +16,7 @@ process.setMaxListeners(100)
 async function watchValidator () {
     try {
         const blockNumber = await web3.eth.getBlockNumber()
-        console.info('TomoValidator %s - Listen events from block number %s ...',
+        logger.info('TomoValidator %s - Listen events from block number %s ...',
             config.get('blockchain.validatorAddress'), blockNumber)
 
         validator.events.allEvents({
@@ -22,10 +24,10 @@ async function watchValidator () {
             toBlock: 'latest'
         }, async function (error, result) {
             if (error) {
-                console.error(error, result)
+                logger.error(error, result)
                 return false
             } else {
-                console.log('Event %s in block %s', result.event, result.blockNumber)
+                logger.info('Event %s in block %s', result.event, result.blockNumber)
                 if (result.event === 'Withdraw') {
                     let owner = (result.returnValues._owner || '').toLowerCase()
                     let blockNumber = result.blockNumber
@@ -69,7 +71,7 @@ async function watchValidator () {
             }
         })
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         emitter.emit('error', e)
     }
 }
@@ -80,7 +82,7 @@ async function updateCandidateInfo (candidate) {
         let owner = (await validator.methods.getCandidateOwner(candidate).call() || '').toLowerCase()
         let status = await validator.methods.isCandidate(candidate).call()
         let result
-        console.info('Update candidate %s capacity %s %s', candidate, String(capacity), status)
+        logger.info('Update candidate %s capacity %s %s', candidate, String(capacity), status)
         if (candidate !== '0x0000000000000000000000000000000000000000') {
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -90,6 +92,7 @@ async function updateCandidateInfo (candidate) {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: candidate,
                     capacity: String(capacity),
+                    capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
                     owner: owner
                 }
@@ -103,14 +106,14 @@ async function updateCandidateInfo (candidate) {
 
         return result
     } catch (e) {
-        console.error(e)
+        logger.error(e)
     }
 }
 
 async function updateVoterCap (candidate, voter) {
     try {
         let capacity = await validator.methods.getVoterCap(candidate, voter).call()
-        console.log('Update voter %s for candidate %s capacity %s', voter, candidate, String(capacity))
+        logger.info('Update voter %s for candidate %s capacity %s', voter, candidate, String(capacity))
         return await db.Voter.updateOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: candidate,
@@ -120,11 +123,12 @@ async function updateVoterCap (candidate, voter) {
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate,
                 voter: voter,
-                capacity: String(capacity)
+                capacity: String(capacity),
+                capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10)
             }
         }, { upsert: true })
     } catch (e) {
-        console.error(e)
+        logger.error(e)
     }
 }
 
@@ -144,9 +148,9 @@ async function getCurrentCandidates () {
             await Promise.all(m)
             return updateCandidateInfo(candidate)
         })
-        return Promise.all(map).catch(e => console.error(e))
+        return Promise.all(map).catch(e => logger.error(e))
     } catch (e) {
-        console.error(e)
+        logger.error(e)
     }
 }
 
@@ -177,7 +181,7 @@ async function updatePenalties () {
         }
         return penalties
     } catch (e) {
-        console.error(e)
+        logger.error(e)
     }
 }
 
@@ -207,7 +211,7 @@ async function updateSigners () {
         }
         return signers
     } catch (e) {
-        console.error(e)
+        logger.error(e)
     }
 }
 
@@ -215,7 +219,7 @@ let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock () {
     while (true) {
         try {
-            console.log('Update signers after sleeping 10 seconds')
+            logger.info('Update signers after sleeping 10 seconds')
             await updateSigners()
             await updatePenalties()
         } catch (e) {
@@ -228,19 +232,19 @@ async function watchNewBlock () {
 async function updateLatestSignedBlock () {
     try {
         let blockNumber = await web3.eth.getBlockNumber()
-        console.info('BlockSigner %s - Listen events from block number %s ...',
+        logger.info('BlockSigner %s - Listen events from block number %s ...',
             config.get('blockchain.blockSignerAddress'), blockNumber)
         blockSigner.events.allEvents({
             fromBlock: blockNumber,
             toBlock: 'latest'
         }, async function (error, result) {
             if (error) {
-                console.error(error, result)
+                logger.error(error, result)
                 return false
             } else {
                 let signer = result.returnValues._signer
                 let bN = String(result.returnValues._blockNumber)
-                console.log('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
+                logger.info('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
 
                 await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -262,10 +266,10 @@ async function getPastEvent () {
     let lastBlockTx = await db.Transaction.findOne().sort({ blockNumber: -1 })
     let lb = (lastBlockTx && lastBlockTx.blockNumber) ? lastBlockTx.blockNumber : 0
 
-    console.log('Get all past event from block', lb, 'to block', blockNumber)
+    logger.info('Get all past event from block', lb, 'to block', blockNumber)
     validator.getPastEvents('allEvents', { fromBlock: lb, toBlock: blockNumber }, async function (error, events) {
         if (error) {
-            console.error(error)
+            logger.error(error)
         } else {
             let map = events.map(async function (event) {
                 if (event.event === 'Withdraw') {
@@ -318,11 +322,11 @@ db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
         updateLatestSignedBlock()
     })
 }).catch(e => {
-    console.log(e)
+    logger.error(e)
     process.exit(1)
 })
 
 emitter.on('error', e => {
-    console.error('ERROR!!!', e)
+    logger.error('ERROR!!!', e)
     process.exit(1)
 })
