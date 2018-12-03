@@ -16,7 +16,8 @@ var Voter = new Schema({
         type: String,
         index: true
     },
-    capacity: String
+    capacity: String,
+    capacityNumber: { type: Number, index: true }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Voter', Voter)

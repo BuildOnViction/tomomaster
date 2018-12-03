@@ -9,15 +9,23 @@ const web3 = require('../models/blockchain/web3rpc')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
+const { check, validationResult } = require('express-validator/check')
 
-router.get('/:voter/candidates', async function (req, res, next) {
+router.get('/:voter/candidates', [
+    check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
-            voter: (req.params.voter || '').toLowerCase()
-        }).limit(limit).skip(skip).lean().exec()
+            voter: (req.params.voter || '').toLowerCase(),
+            capacityNumber: { $ne: 0 }
+        }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec()
         let cs = voters.map(v => v.candidate)
         let candidates = await db.Candidate.find({
             candidate: { $in: cs }
@@ -26,7 +34,7 @@ router.get('/:voter/candidates', async function (req, res, next) {
             v.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate === v.candidate)
             }) || {}).name || 'Anonymous'
-            return _.pick(v, ['candidate', 'capacity', 'candidateName'])
+            return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'candidateName'])
         })
         return res.json(voters)
     } catch (e) {

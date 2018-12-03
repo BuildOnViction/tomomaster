@@ -1,8 +1,9 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, dialog } = require('electron')
+const isOnline = require('is-online')
 
 let win = null
 
-function createWindow () {
+async function createWindow () {
     // Initialize the window to our specified dimensions
     win = new BrowserWindow(
         {
@@ -11,10 +12,24 @@ function createWindow () {
         }
     )
 
-    win.maximize()
+    if (await isOnline()) {
+        win.maximize()
 
-    // Specify entry point to default entry point of vue.js
-    win.loadURL('https://master.testnet.tomochain.com')
+        // Specify entry point to default entry point of vue.js
+        win.loadURL('https://master.testnet.tomochain.com')
+    } else {
+        win.maximize()
+        return dialog.showMessageBox({
+            title:'No internet connection',
+            message:'Check your internet connection and try again.',
+            type:'warning',
+            buttons:['OK']
+        }, index => {
+            if (index === 0) {
+                win.close()
+            }
+        })
+    }
 
     // Remove window once app is closed
     win.on('closed', function () {
