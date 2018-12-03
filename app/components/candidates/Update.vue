@@ -20,6 +20,9 @@
                             v-model="name"
                             name="name-value"/>
                         <span
+                            v-if="$v.name.$dirty && !$v.name.requried"
+                            class="text-danger">Name is required</span>
+                        <span
                             v-if="$v.name.$dirty && (!$v.name.minLength || !$v.name.maxLength)"
                             class="text-danger">Name must be 3 - 30 chars long</span>
                     </b-form-group>
@@ -80,32 +83,14 @@
                         <div
                             id="one">
                             <div>
-                                <label><b>Name:</b></label>
-                                <b-form-input
-                                    v-model="name"
-                                    class="form-control"
-                                    readonly />
-                            </div>
-                            <div style="margin-top: 5px">
-                                <label><b>Hardware:</b></label>
-                                <b-form-input
-                                    v-model="hardware"
-                                    class="form-control"
-                                    readonly />
-                            </div>
-                            <div style="margin-top: 5px">
-                                <label><b>Data Center Name:</b></label>
-                                <b-form-input
-                                    v-model="dcName"
-                                    class="form-control"
-                                    readonly />
-                            </div>
-                            <div style="margin-top: 5px">
-                                <label><b>Data Center Location:</b></label>
-                                <b-form-input
-                                    v-model="dcLocation"
-                                    class="form-control"
-                                    readonly />
+                                <textarea
+                                    :value="candidateNewInfor"
+                                    class="sign-message"
+                                    type="text"
+                                    readonly
+                                    cols="100"
+                                    rows="4"
+                                    style="width: 100%"/>
                             </div>
                         </div>
                         <div
@@ -134,6 +119,7 @@
                                         href="https://www.myetherwallet.com/signmsg.html"
                                         style="color: #3498db">MyEtherWallet</a>
                                 </strong>
+                                <span style="font-size: 12px">( Click to copy )</span>
                                 <label style="margin-top: 5px">
                                     <div>
                                         <textarea
@@ -183,6 +169,7 @@
 // import Web3 from 'web3'
 import { validationMixin } from 'vuelidate'
 import {
+    required,
     minLength,
     maxLength
 } from 'vuelidate/lib/validators'
@@ -211,11 +198,13 @@ export default {
             signHash: '',
             signHashError: '',
             id: '',
-            interval: null
+            interval: null,
+            account: ''
         }
     },
     validations: {
         name: {
+            required,
             maxLength: maxLength(30),
             minLength: minLength(3)
         },
@@ -239,16 +228,37 @@ export default {
     },
     async created () {
         let self = this
-        if (!self.isReady) {
-            self.$router.push({ path: '/setting' })
-            throw Error('Web3 is not properly detected.')
-        }
-        const { data } = await axios.get(`/api/candidates/${self.address}`)
-        if (data) {
-            self.name = data.name ? data.name : 'Anonymous Candidate'
-            self.hardware = data.hardware
-            self.dcName = (data.dataCenter || {}).name || 'N/A'
-            self.dcLocation = (data.dataCenter || {}).location || 'N/A'
+        self.isReady = !!self.web3
+        try {
+            if (!self.isReady) {
+                self.$router.push({ path: '/setting' })
+                throw Error('Web3 is not properly detected.')
+            }
+            if (store.get('address')) {
+                self.account = store.get('address').toLowerCase()
+            } else {
+                self.account = this.$store.state.walletLoggedIn
+                    ? this.$store.state.walletLoggedIn : await self.getAccount()
+            }
+            const { data } = await axios.get(`/api/candidates/${self.address}`)
+            if (data) {
+                if (data.owner !== self.account) {
+                    self.$toasted.show(`You need log the owner of candidate account in before updating`)
+                    setTimeout(() => {
+                        self.$router.push({ path: '/setting' })
+                    }, 1000)
+                } else {
+                    self.name = data.name ? data.name : 'Anonymous Candidate'
+                    self.hardware = data.hardware
+                    self.dcName = (data.dataCenter || {}).name || 'N/A'
+                    self.dcLocation = (data.dataCenter || {}).location || 'N/A'
+                }
+            }
+        } catch (e) {
+            console.log(e)
+            self.$toasted.show(e, {
+                type : 'error'
+            })
         }
     },
     methods: {
@@ -271,7 +281,6 @@ export default {
         },
         update: async function () {
             let self = this
-            const account = (await self.getAccount() || '').toLowerCase()
             try {
                 if (self.provider === 'metamask' && self.signHash === '') {
                     self.signHashError = 'This field is required'
@@ -279,7 +288,7 @@ export default {
                 }
                 self.loading = true
                 if (self.provider === 'custom') {
-                    self.signHash = await self.web3.eth.sign(self.message, account)
+                    self.signHash = await self.web3.eth.sign(self.message, self.account)
                 }
                 // calling update api
                 await self.updateCandidateInfo()
@@ -293,6 +302,10 @@ export default {
         },
         async nextStep () {
             const self = this
+            self.candidateNewInfor = 'Name: ' + self.name +
+                '\nHardware: ' + self.hardware +
+            '\nData Center Name: ' + self.dcName +
+            '\nData Center Location: ' + self.dcLocation
             if (self.provider !== 'custom') {
                 const { data } = await axios.get('/api/candidates/' + self.address + '/generateMessage')
 
@@ -321,17 +334,24 @@ export default {
             let self = this
             // calling update api
             try {
+                const body = {
+                    candidate: self.address,
+                    name: self.name,
+                    message: self.message,
+                    signedMessage: self.signHash
+                }
+                if (self.hardware !== '') {
+                    body.hardware = self.hardware
+                }
+                if (self.dcName !== '') {
+                    body.dcName = self.dcName
+                }
+                if (self.dcLocation !== '') {
+                    body.dcLocation = self.dcLocation
+                }
                 const { data } = await axios.put(
                     '/api/candidates/update',
-                    {
-                        candidate: self.address,
-                        name: self.name,
-                        hardware: self.hardware,
-                        dcName: self.dcName,
-                        dcLocation: self.dcLocation,
-                        message: self.message,
-                        signedMessage: self.signHash
-                    }
+                    body
                 )
                 if (!data.error) {
                     setTimeout(() => {

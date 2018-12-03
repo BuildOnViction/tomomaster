@@ -8,9 +8,12 @@
                         <span>{{ candidate.name }}</span>
 
                         <router-link
+                            v-if="account === candidate.owner"
                             :to="'/candidate/' + candidate.address + '/update'"
                             class="text-truncate">
-                            <font-awesome-icon icon="edit" />
+                            <font-awesome-icon
+                                icon="edit"
+                                class="fa-xs ml-1"/>
                         </router-link>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
@@ -530,6 +533,22 @@ export default {
         let self = this
         self.config = await self.appConfig()
         self.isReady = !!self.web3
+        try {
+            if (self.isReady) {
+                let contract = await self.TomoValidator.deployed()
+                if (store.get('address')) {
+                    self.account = store.get('address').toLowerCase()
+                } else {
+                    self.account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await self.getAccount()
+                }
+                if (self.account && contract) {
+                    self.isTomonet = true
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
 
         self.getCandidateData()
     },
@@ -548,22 +567,6 @@ export default {
         },
         async getCandidateData () {
             let self = this
-            try {
-                if (self.isReady) {
-                    let contract = await self.TomoValidator.deployed()
-                    if (store.get('address')) {
-                        self.account = store.get('address').toLowerCase()
-                    } else {
-                        self.account = this.$store.state.walletLoggedIn
-                            ? this.$store.state.walletLoggedIn : await self.getAccount()
-                    }
-                    if (self.account && contract) {
-                        self.isTomonet = true
-                    }
-                }
-            } catch (error) {
-                console.log(error)
-            }
 
             try {
                 let address = self.candidate.address
