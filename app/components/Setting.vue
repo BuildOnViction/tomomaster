@@ -359,6 +359,7 @@ export default {
         self.setupAccount = async () => {
             let contract
             let account
+            self.address = ''
             try {
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
