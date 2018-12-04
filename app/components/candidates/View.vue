@@ -6,6 +6,15 @@
                     <div class="section-title">
                         <i class="tm-flag color-yellow" />
                         <span>{{ candidate.name }}</span>
+
+                        <router-link
+                            v-if="account === candidate.owner"
+                            :to="'/candidate/' + candidate.address + '/update'"
+                            class="text-truncate">
+                            <font-awesome-icon
+                                icon="edit"
+                                class="fa-xs ml-1"/>
+                        </router-link>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
                             <li
@@ -524,6 +533,22 @@ export default {
         let self = this
         self.config = await self.appConfig()
         self.isReady = !!self.web3
+        try {
+            if (self.isReady) {
+                let contract = await self.TomoValidator.deployed()
+                if (store.get('address')) {
+                    self.account = store.get('address').toLowerCase()
+                } else {
+                    self.account = this.$store.state.walletLoggedIn
+                        ? this.$store.state.walletLoggedIn : await self.getAccount()
+                }
+                if (self.account && contract) {
+                    self.isTomonet = true
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
 
         self.getCandidateData()
     },
@@ -542,36 +567,24 @@ export default {
         },
         async getCandidateData () {
             let self = this
-            try {
-                if (self.isReady) {
-                    let contract = await self.TomoValidator.deployed()
-                    if (store.get('address')) {
-                        self.account = store.get('address').toLowerCase()
-                    } else {
-                        self.account = this.$store.state.walletLoggedIn
-                            ? this.$store.state.walletLoggedIn : await self.getAccount()
-                    }
-                    if (self.account && contract) {
-                        self.isTomonet = true
-                    }
-                }
-            } catch (error) {
-                console.log(error)
-            }
 
             try {
                 let address = self.candidate.address
 
                 self.loading = true
                 // Get all information at the same time
-                const promises = await Promise.all([
-                    await axios.get(`/api/candidates/${address}`),
-                    await axios.get(`/api/candidates/${address}/voters`),
-                    await axios.get(`/api/transactions/candidate/${address}`)
-                ])
+                const candidatePromise = axios.get(`/api/candidates/${address}`)
+                const voterPromise = axios.get(`/api/candidates/${address}/voters`)
+                const txPromise = axios.get(`/api/transactions/candidate/${address}`)
+                // const promises = await Promise.all([
+                //     await axios.get(`/api/candidates/${address}`),
+                //     await axios.get(`/api/candidates/${address}/voters`),
+                //     await axios.get(`/api/transactions/candidate/${address}`)
+                // ])
 
                 // Get candidate's information
-                let c = promises[0]
+                // let c = promises[0]
+                let c = await candidatePromise
 
                 if (c.data) {
                     let data = c.data
@@ -602,7 +615,8 @@ export default {
                 }
 
                 // Voter table
-                let voters = promises[1]
+                // let voters = promises[1]
+                let voters = await voterPromise
 
                 let youVoted = new BigNumber(0)
                 voters.data.map((v, idx) => {
@@ -629,7 +643,8 @@ export default {
                 self.voterTotalRows = self.voters.length
 
                 // Get transaction table
-                let txs = promises[2]
+                // let txs = promises[2]
+                let txs = await txPromise
 
                 txs.data.map((tx, idx) => {
                     self.transactions.push({

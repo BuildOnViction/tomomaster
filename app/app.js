@@ -7,6 +7,7 @@ import CandidateList from './components/candidates/List.vue'
 import CandidateApply from './components/candidates/Apply.vue'
 import CandidateResign from './components/candidates/Resign.vue'
 import CandidateWithdraw from './components/candidates/Withdraw.vue'
+import CandidateUpdate from './components/candidates/Update.vue'
 import VoterView from './components/voters/View'
 import VotingView from './components/voters/Voting'
 import UnvotingView from './components/voters/Unvoting'
@@ -29,6 +30,14 @@ import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import HDWalletProvider from 'truffle-hdwallet-provider'
 import localStorage from 'store'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faEdit, faCopy)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
@@ -184,6 +193,9 @@ const router = new VueRouter({
             path: '/candidate/:address', component: CandidateView
         },
         {
+            path: '/candidate/:address/update', component: CandidateUpdate
+        },
+        {
             path: '/voter/:address', component: VoterView
         },
         {
@@ -233,23 +245,25 @@ const store = new Vuex.Store({
 })
 Vue.prototype.detectNetwork = async function (provider) {
     try {
-        let wjs = false
+        let wjs = this.web3
         const config = await getConfig()
         const chainConfig = config.blockchain
-        switch (provider) {
-        case 'metamask':
-            if (window.web3) {
-                var p = window.web3.currentProvider
-                wjs = new Web3(p)
+        if (!wjs) {
+            switch (provider) {
+            case 'metamask':
+                if (window.web3) {
+                    var p = window.web3.currentProvider
+                    wjs = new Web3(p)
+                }
+                break
+            case 'tomowallet':
+                wjs = new Web3(new HDWalletProvider(
+                    '',
+                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                break
+            default:
+                break
             }
-            break
-        case 'tomowallet':
-            wjs = new Web3(new HDWalletProvider(
-                '',
-                chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
-            break
-        default:
-            break
         }
         await this.setupProvider(provider, await wjs)
     } catch (error) {
