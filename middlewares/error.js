@@ -9,7 +9,7 @@ module.exports = function (err, req, res, next) {
         err.message = err.message || _.map(err, 'msg')[0] || 'Not Acceptable'
 
         if (parseInt(err.status) !== 401 && parseInt(err.status) !== 403) {
-            logger.error(err)
+            logger.warn(err)
             console.trace(err)
         }
 
