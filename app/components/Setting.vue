@@ -330,7 +330,6 @@ export default {
                     self.wh.push(it)
                 })
                 self.isReady = true
-                self.$toasted.show('Network Provider was changed successfully')
             } catch (e) {
                 console.log(e)
                 self.$toasted.show(e, {
@@ -408,6 +407,7 @@ export default {
 
                 store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
+                self.$toasted.show('Network Provider was changed successfully')
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
@@ -537,6 +537,7 @@ export default {
             self.loading = false
             store.set('address', account.toLowerCase())
             store.set('network', self.provider)
+            self.$toasted.show('Network Provider was changed successfully')
             if (this.interval) {
                 clearInterval(this.interval)
             }
