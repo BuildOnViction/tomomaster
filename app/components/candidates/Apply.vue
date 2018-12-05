@@ -235,7 +235,7 @@ export default {
                 }, 2000)
             } catch (e) {
                 self.loading = false
-                self.$toasted.show('An error occurred while applying, please try again', {
+                self.$toasted.show(`An error occurred while applying, please fix it and try again: ${String(e)}`, {
                     type: 'error'
                 })
                 console.log(e)
