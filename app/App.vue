@@ -102,10 +102,11 @@ export default {
             this.$router.push({ path: `/candidate/${s}` })
         },
         async checkNetworkAndLogin () {
+            let self = this
             setTimeout(async () => {
                 let account
                 try {
-                    const contract = await this.TomoValidator.deployed()
+                    const contract = await self.getTomoValidatorInstance()
                     if (store.get('address')) {
                         account = store.get('address').toLowerCase()
                     } else {
@@ -113,7 +114,7 @@ export default {
                             ? this.$store.state.walletLoggedIn : await self.getAccount()
                     }
                     if (account && contract) {
-                        this.isTomonet = true
+                        self.isTomonet = true
                     }
                 } catch (error) {}
             }, 0)

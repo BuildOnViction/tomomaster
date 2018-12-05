@@ -25,6 +25,7 @@
                                     value="tomowallet"
                                     selected>TomoWallet</option>
                                 <option value="custom">PrivateKey/MNEMONIC</option>
+                                <option value="ledger">Ledger Wallet</option>
                                 <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask</option>
@@ -90,6 +91,20 @@
                             </a>
                         </div>
                     </b-form-group>
+                    <b-form-group
+                        v-if="provider === 'ledger'"
+                        class="mb-4"
+                        label="Select HD derivation path"
+                        label-for="hdPath">
+                        <b-form-input
+                            :class="getValidationClass('hdPath')"
+                            :value="hdPath"
+                            v-model="hdPath"
+                            type="text" />
+                        <span
+                            v-if="$v.hdPath.$dirty && !$v.hdPath.required"
+                            class="text-danger">Required field</span>
+                    </b-form-group>
 
                     <div
                         v-if="!isReady && provider === 'metamask'">
@@ -99,7 +114,6 @@
                                 target="_blank">Metamask Extension</a>
                             then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
-
                     <div class="buttons text-right">
                         <b-button
                             v-if="provider !== 'tomowallet'"
@@ -194,6 +208,74 @@
                 </ul>
             </b-card>
         </b-row>
+        <div
+            id="hdwalletModal"
+            class="tomo-modal-light"
+            style="display: none;">
+            <div
+                class="modal-backdrop">
+                <div class="modal" >
+                    <header class="modal-header">
+                        <slot name="header">
+                            Please select the address you would like to interact with
+                            <button
+                                type="button"
+                                class="close"
+                                @click="closeModal"
+                            >
+                                x
+                            </button>
+                        </slot>
+                    </header>
+                    <section class="modal-body">
+                        <slot name="hdAddress">
+                            <div
+                                v-for="(hdwallet, index) in hdWallets"
+                                :key="index">
+                                <label style="width: 100%; margin-bottom: 5px; line-height: 16px; cursor: pointer">
+                                    <input
+                                        :value="index"
+                                        name="hdWallet"
+                                        type="radio"
+                                        style="width: 5%; float: left" >
+                                    <div style="width: 70%; float: left">
+                                        {{ hdwallet.address }}
+                                    </div>
+                                    <div style="width: 20%; margin-left: 2%; float: left">
+                                        {{ hdwallet.balance }} {{ getCurrencySymbol() }}
+                                    </div>
+                                </label>
+                            </div>
+                            <div
+                                id="moreHdAddresses"
+                                style="margin-top: 10px; cursor: pointer"
+                                @click="moreHdAddresses">
+                                More Addresses
+                            </div>
+                        </slot>
+                    </section>
+                    <footer class="modal-footer">
+                        <slot name="footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                @click="closeModal"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                @click="setHdPath"
+                            >
+                                Unlock your wallet
+                            </button>
+                        </slot>
+                    </footer>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -202,13 +284,14 @@ import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
 import axios from 'axios'
 import {
-    required
+    required, minLength
 } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
+const defaultWalletNumber = 10
 export default {
     name: 'App',
     components: {
@@ -219,6 +302,8 @@ export default {
         return {
             isReady: !!this.web3,
             mnemonic: '',
+            hdPath: "m/44'/889'/0'/0", // HD DerivationPath of hardware wallet
+            hdWallets: {}, // list of addresses in hardware wallet
             config: {},
             provider: 'tomowallet',
             address: '',
@@ -247,6 +332,10 @@ export default {
         },
         mnemonic: {
             required
+        },
+        hdPath: {
+            required,
+            minLength: minLength(12)
         }
     },
     computed: {},
@@ -260,6 +349,7 @@ export default {
     created: async function () {
         this.provider = this.NetworkProvider || 'tomowallet'
         let self = this
+        self.hdWallets = self.hdWallets || {}
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.networks.rpc = self.chainConfig.rpc
@@ -273,7 +363,7 @@ export default {
                 }
                 if (self.web3) {
                     try {
-                        contract = await self.TomoValidator.deployed()
+                        contract = await self.getTomoValidatorInstance()
                     } catch (error) {
                         throw Error('Make sure you choose correct tomochain network.')
                     }
@@ -351,11 +441,9 @@ export default {
     methods: {
         getValidationClass: function (fieldName) {
             let field = this.$v[fieldName]
-
             if (typeof this.$v.networks[fieldName] !== 'undefined') {
                 field = this.$v.networks[fieldName]
             }
-
             if (field) {
                 return {
                     'is-invalid': field.$error
@@ -368,9 +456,28 @@ export default {
             }
 
             this.$v.$touch()
-
-            if (!this.$v.$invalid) {
+            if (this.provider === 'custom' && !this.$v.mnemonic.$invalid) {
                 this.save()
+            }
+            if (this.provider === 'ledger' && !this.$v.hdPath.$invalid) {
+                this.selectHdPath()
+            }
+        },
+        selectHdPath: async function (offset = 0, limit = defaultWalletNumber) {
+            let self = this
+            try {
+                self.loading = true
+                store.set('hdDerivationPath', self.hdPath)
+                let wallets = await self.loadMultipleLedgerWallets(offset, limit)
+                Object.assign(self.hdWallets, self.hdWallets, wallets)
+                document.getElementById('hdwalletModal').style.display = 'block'
+                self.loading = false
+            } catch (error) {
+                console.log(error.message)
+                self.loading = false
+                self.$toasted.show(error.message, {
+                    type : 'error'
+                })
             }
         },
         save: async function () {
@@ -383,12 +490,28 @@ export default {
             var wjs = false
             self.loading = true
             try {
-                if (self.provider === 'metamask') {
+                switch (self.provider) {
+                case 'metamask':
                     if (window.web3) {
                         var p = window.web3.currentProvider
                         wjs = new Web3(p)
                     }
-                } else {
+                    break
+                case 'ledger':
+                    // Object - HttpProvider
+                    wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
+                    // Object - IpcProvider: The IPC provider is used node.js dapps when running a local node
+                    // import net from 'net'
+                    // wjs = new Web3(new Web3.providers.IpcProvider('~/.ethereum/geth.ipc', net))
+
+                    // Object - WebsocketProvider: The Websocket provider is the standard for usage in legacy browsers.
+                    // wjs = await ws.connect(self.networks.wss)
+                    // wjs = new Web3(new Web3.providers.WebsocketProvider(self.chainConfig.ws))
+                    // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
+                    let offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    store.set('hdDerivationPath', self.hdPath + '/' + offset)
+                    break
+                default:
                     const walletProvider =
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
@@ -397,10 +520,9 @@ export default {
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
 
                     wjs = new Web3(walletProvider)
+                    break
                 }
-
                 await self.setupProvider(this.provider, wjs)
-
                 await self.setupAccount()
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
@@ -487,7 +609,7 @@ export default {
 
             await self.setupProvider(this.provider, web3)
             try {
-                contract = await self.TomoValidator.deployed()
+                contract = await self.getTomoValidatorInstance()
             } catch (error) {
                 if (self.interval) {
                     clearInterval(self.interval)
@@ -551,6 +673,20 @@ export default {
                     index: k
                 }
             })
+        },
+        closeModal () {
+            document.getElementById('hdwalletModal').style.display = 'none'
+        },
+        async setHdPath () {
+            document.getElementById('hdwalletModal').style.display = 'none'
+            await this.save()
+        },
+        async moreHdAddresses () {
+            document.getElementById('moreHdAddresses').style.cursor = 'wait'
+            document.body.style.cursor = 'wait'
+            await this.selectHdPath(Object.keys(this.hdWallets).length, this.defaultWalletNumber)
+            document.getElementById('moreHdAddresses').style.cursor = 'pointer'
+            document.body.style.cursor = 'default'
         }
     }
 }

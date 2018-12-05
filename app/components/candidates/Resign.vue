@@ -90,14 +90,30 @@ export default {
                 self.loading = true
 
                 let account = (await self.getAccount() || '').toLowerCase()
-                let contract = await self.TomoValidator.deployed()
+                let contract = await self.getTomoValidatorInstance()
                 let coinbase = self.coinbase
-                let rs = await contract.resign(coinbase, {
+                let txParams = {
                     from: account,
                     gasPrice: 2500,
                     gas: 2000000
-                })
-
+                }
+                let rs
+                if (self.NetworkProvider === 'ledger') {
+                    let nonce = await self.web3.eth.getTransactionCount(account)
+                    let dataTx = contract.resign.request(coinbase).params[0]
+                    Object.assign(
+                        dataTx,
+                        dataTx,
+                        txParams,
+                        {
+                            nonce: self.web3.utils.toHex(nonce)
+                        }
+                    )
+                    let signature = await self.signTransaction(dataTx)
+                    rs = await self.sendSignedTransaction(dataTx, signature)
+                } else {
+                    rs = await contract.resign(coinbase, txParams)
+                }
                 let toastMessage = rs.tx ? 'You have successfully resigned!'
                     : 'An error occurred while retiring, please try again'
                 self.$toasted.show(toastMessage)

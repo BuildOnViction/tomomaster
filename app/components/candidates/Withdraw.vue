@@ -171,17 +171,34 @@ export default {
     methods: {
         withdraw: async function (blockNumber, index) {
             let self = this
-            let contract = await self.TomoValidator.deployed()
+            let contract = await self.getTomoValidatorInstance()
             let account = await self.getAccount()
             account = account.toLowerCase()
             self.loading = true
             try {
                 console.log('==>', blockNumber, index)
-                let wd = await contract.withdraw(String(blockNumber), String(index), {
+                let txParams = {
                     from: account,
                     gasPrice: 2500,
                     gas: 2000000
-                })
+                }
+                let wd
+                if (self.NetworkProvider === 'ledger') {
+                    let nonce = await self.web3.eth.getTransactionCount(account)
+                    let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    Object.assign(
+                        dataTx,
+                        dataTx,
+                        txParams,
+                        {
+                            nonce: self.web3.utils.toHex(nonce)
+                        }
+                    )
+                    let signature = await self.signTransaction(dataTx)
+                    wd = await self.sendSignedTransaction(dataTx, signature)
+                } else {
+                    wd = await contract.withdraw(String(blockNumber), String(index), txParams)
+                }
                 let toastMessage = wd.tx ? 'You have successfully withdrawed!'
                     : 'An error occurred while withdrawing, please try again'
                 self.$toasted.show(toastMessage)
