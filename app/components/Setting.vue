@@ -392,9 +392,12 @@ export default {
                         console.log('got an error', a)
                     }
                 })
+                let whPromise = axios.get(`/api/owners/${self.address}/withdraws`)
                 if (contract) {
-                    let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+                    let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
+                    // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
+                    const blks = await blksPromise
                     await Promise.all(blks.map(async (it, index) => {
                         let blk = new BigNumber(it).toString()
                         if (blk !== '0') {
@@ -413,7 +416,9 @@ export default {
                     }))
                 }
 
-                let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
+                const wh = await whPromise
+
+                // let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
                 self.wh = []
                 wh.data.forEach(w => {
                     let it = {

@@ -360,6 +360,7 @@ export default {
                     body
                 )
                 if (!data.error) {
+                    self.loading = true
                     setTimeout(() => {
                         self.loading = false
                         self.signHashError = ''

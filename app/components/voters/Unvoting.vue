@@ -353,7 +353,7 @@ export default {
                 '&submitURL=' + generatedMess.data.url
             )
             this.step++
-            if (self.step === 2 && self.processing) {
+            if (self.step === 2 && self.provider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)
@@ -364,18 +364,6 @@ export default {
                 clearInterval(this.interval)
             }
             this.step--
-        },
-        onChangeUnvoting (event) {
-            const checking = event.target.checked
-            if (checking) {
-                this.interval = setInterval(async () => {
-                    await this.verifyScannedQR()
-                }, 3000)
-            } else {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-            }
         },
         async verifyScannedQR () {
             let self = this

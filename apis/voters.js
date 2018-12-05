@@ -100,6 +100,8 @@ router.post('/generateQR', async (req, res, next) => {
             { upsert: true, new: true }
         )
 
+        const id = uuidv4()
+
         res.send({
             candidateName: candidateName,
             message,
@@ -116,7 +118,17 @@ router.post('/generateQR', async (req, res, next) => {
     }
 })
 
-router.post('/verifyTx', async (req, res, next) => {
+router.post('/verifyTx', [
+    check('action').isLength({ min: 1 }).withMessage('action is required'),
+    check('signer').isLength({ min: 1 }).withMessage('signer is required'),
+    check('amount').isLength({ min: 1 }).withMessage('amount is required')
+        .isInt().withMessage('amount must be a number'),
+    check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const id = req.query.id
         const action = req.body.action
@@ -125,23 +137,11 @@ router.post('/verifyTx', async (req, res, next) => {
         const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
         const serializedTx = req.body.rawTx
         if (!id) {
-            res.status(406).send()
-        }
-        if (!action) {
-            res.status(406).send('action is requried')
-        }
-        if (!signer) {
-            res.status(406).send('signer is requried')
-        }
-        if (!amount) {
-            res.status(406).send('amount is requried')
-        }
-        if (!serializedTx) {
-            res.status(406).send('raw transaction hash(rawTx) is requried')
+            res.status(406).send('id is required')
         }
         if (action !== 'withdraw') {
             if (!candidate) {
-                res.status(406).send('candidate is requried')
+                res.status(406).send('candidate is required')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
@@ -161,7 +161,7 @@ router.post('/verifyTx', async (req, res, next) => {
 
         await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
-                if (action === 'vote') {
+                if (action === 'vote' || action === 'propose') {
                     web3.eth.getBalance(signedAddress, function (e, balance) {
                         if (!e) {
                             if (new BigNumber(balance).div(10 ** 18) < amount) {
@@ -220,7 +220,7 @@ router.get('/getScanningResult',
                         tx: signTx.tx
                     })
                 } else {
-                    res.send('Scanned')
+                    res.send('Scanned, getting transaction hash')
                 }
             } else {
                 res.send({
