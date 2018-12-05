@@ -67,7 +67,6 @@ Vue.use(HighchartsVue)
 
 Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
-Vue.prototype.hdDerivationPath = "44'/889'/0'/0/0"
 
 Vue.prototype.setupProvider = function (provider, wjs) {
     const self = this
@@ -95,16 +94,18 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                         }
                         return resolve('')
                     case 'ledger':
-                        let u2fSupported = await Transport.isSupported()
-                        if (!u2fSupported) {
-                            return reject(new Error(`U2F not supported in this browser. 
-                            Please try using Google Chrome with a secure (SSL / HTTPS) connection!`))
-                        }
                         try {
-                            let transport = await new Transport()
-                            Vue.prototype.appEth = await new Eth(transport)
+                            if (!Vue.prototype.appEth) {
+                                let transport = await new Transport()
+                                Vue.prototype.appEth = await new Eth(transport)
+                            }
+                            let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
+                            if (!ethAppConfig.arbitraryDataEnabled) {
+                                return reject(new Error(`Please go to App Setting
+                                    to enable contract data and display data on your device!`))
+                            }
                             let result = await Vue.prototype.appEth.getAddress(
-                                Vue.prototype.hdDerivationPath
+                                localStorage.get('hdDerivationPath')
                             )
                             return resolve(result.address)
                         } catch (error) {
@@ -127,6 +128,41 @@ Vue.prototype.setupProvider = function (provider, wjs) {
             return p
         }
     }
+}
+Vue.prototype.loadMultipleLedgerWallets = async function (offset, limit) {
+    let u2fSupported = await Transport.isSupported()
+    if (!u2fSupported) {
+        throw new Error(`U2F not supported in this browser. 
+                Please try using Google Chrome with a secure (SSL / HTTPS) connection!`)
+    }
+    await Vue.prototype.detectNetwork('ledger')
+    if (!Vue.prototype.appEth) {
+        let transport = await new Transport()
+        Vue.prototype.appEth = await new Eth(transport)
+    }
+    let web3 = Vue.prototype.web3
+    let balance = 0
+    let wallets = {}
+    let walker = offset
+    while (limit > 0) {
+        let tail = '/' + walker.toString()
+        let hdPath = localStorage.get('hdDerivationPath')
+        hdPath += tail
+        let result = await Vue.prototype.appEth.getAddress(
+            hdPath
+        )
+        if (!result || !result.address) {
+            return {}
+        }
+        balance = await web3.eth.getBalance(result.address)
+        wallets[walker] = {
+            address: result.address,
+            balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
+        }
+        walker++
+        limit--
+    }
+    return wallets
 }
 
 Vue.prototype.formatNumber = function (number) {
@@ -292,7 +328,6 @@ Vue.prototype.detectNetwork = async function (provider) {
             default:
                 break
             }
-            
         }
         await this.setupProvider(provider, await wjs)
     } catch (error) {
@@ -326,11 +361,11 @@ Vue.prototype.signTransaction = async function (txParams) {
     let config = await getConfig()
     let chainConfig = config.blockchain
     let rawTx = new Transaction(txParams)
-    // for custom network (not ethereum mainnet, we need chainId)
     rawTx.v = Buffer.from([chainConfig.networkId])
     let serializedRawTx = rawTx.serialize().toString('hex')
+    let path = localStorage.get('hdDerivationPath')
     let signature = await Vue.prototype.appEth.signTransaction(
-        Vue.prototype.hdDerivationPath,
+        path,
         serializedRawTx
     )
     return signature
