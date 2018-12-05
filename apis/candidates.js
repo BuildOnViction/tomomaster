@@ -131,6 +131,7 @@ router.post('/apply', async function (req, res, next) {
                 $set: {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: candidate,
+                    nodeId: (candidate || '').replace('0x', ''),
                     capacity: '50000000000000000000000',
                     status: 'PROPOSED',
                     owner: walletProvider.address,
