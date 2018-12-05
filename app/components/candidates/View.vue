@@ -668,8 +668,8 @@ export default {
                         epoch: r.epoch,
                         signNumber: r.signNumber,
                         reward: new BigNumber(r.reward).toFixed(6),
-                        createdAt: moment(r.createdAt).fromNow(),
-                        dateTooltip: moment(r.createdAt).format('lll')
+                        createdAt: moment(r.rewardTime).fromNow(),
+                        dateTooltip: moment(r.rewardTime).format('lll')
                     })
                 })
 
