@@ -307,7 +307,12 @@ export default {
             '\nData Center Name: ' + self.dcName +
             '\nData Center Location: ' + self.dcLocation
             if (self.provider !== 'custom') {
-                const { data } = await axios.get('/api/candidates/' + self.address + '/generateMessage')
+                const { data } = await axios.post(
+                    '/api/candidates/' + self.address + '/generateMessage',
+                    {
+                        account: self.account
+                    }
+                )
 
                 self.message = data.message
                 self.id = data.id
