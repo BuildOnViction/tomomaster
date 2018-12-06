@@ -42,6 +42,35 @@
             <div class="main-content">
                 <router-view/>
             </div>
+            <div class="tomo-footer mb-5">
+                <div class="container">
+                    <div class="row">
+                        <b-col
+                            md="6">
+                            <p>
+                                Tomomaster 2018 - Running on TomoChain
+                            </p>
+                        </b-col>
+                        <b-col class="md-3" />
+                        <b-col class="md-3">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <a href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/terms"><i class="tm-profile mr-2"/>Terms of Service</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </b-col>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
