@@ -95,6 +95,9 @@ async function updateCandidateInfo (candidate) {
                     capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
                     status: (status) ? 'PROPOSED' : 'RESIGNED',
                     owner: owner
+                },
+                $setOnInsert: {
+                    nodeId: candidate.replace('0x', '')
                 }
             }, { upsert: true })
         } else {
