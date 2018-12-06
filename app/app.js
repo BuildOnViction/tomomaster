@@ -13,6 +13,8 @@ import VotingView from './components/voters/Voting'
 import UnvotingView from './components/voters/Unvoting'
 import ConfirmView from './components/voters/Confirm'
 import Setting from './components/Setting.vue'
+import PrivacyPolicy from './components/PrivacyPolicy.vue'
+import TermsOfService from './components/TermsOfService.vue'
 
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -269,6 +271,12 @@ const router = new VueRouter({
         },
         {
             path: '/setting', component: Setting
+        },
+        {
+            path: '/privacyPolicy', component: PrivacyPolicy
+        },
+        {
+            path: '/terms', component: TermsOfService
         }
     ]
 })
