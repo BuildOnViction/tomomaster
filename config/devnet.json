@@ -11,5 +11,5 @@
         "uri" : "mongodb://tomomaster_db:27017/governance"
     },
     "grafanaUrl": "https://grafana.devnet.tomochain.com",
-    "grafanaApiKey": "eyJrIjoib216M3RSWFphM0ZlZGN5Vk92SWd1TlQxSWFvOUQzOFQiLCJuIjoidG9tb21hc3RlciIsImlkIjoxfQ=="
+    "grafanaApiKey": "eyJrIjoiVlhBUUo2SnRxek50VGdtMmlMZlo2ZlZYaTNKaGpXMjciLCJuIjoidG9tb21hc3RlcjIiLCJpZCI6MX0="
 }
