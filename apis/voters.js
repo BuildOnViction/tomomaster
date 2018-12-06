@@ -84,12 +84,27 @@ router.post('/generateQR', async (req, res, next) => {
         const candidateName = candidateInfo.name ? candidateInfo.name : 'Anonymous Candidate'
 
         const message = voter + ' ' + action + ' ' + amount + ' TOMO for candidate ' + candidate + ' - ' + candidateName
+        const id = uuidv4()
+
+        const signData = {
+            signId: id,
+            action,
+            amount,
+            candidate,
+            status: true
+        }
+
+        await db.SignTransaction.findOneAndUpdate(
+            { signedAddress: voter },
+            signData,
+            { upsert: true, new: true }
+        )
 
         res.send({
             candidateName: candidateName,
             message,
-            url: `${config.get('baseUrl')}api/voters/verifyTx?id=`,
-            id: uuidv4()
+            url: `${config.get('baseUrl')}api/voters/verifyTx?id=${id}`,
+            id
         })
     } catch (e) {
         console.log(e)
@@ -130,8 +145,8 @@ router.post('/verifyTx', async (req, res, next) => {
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
-        if (checkId) {
-            res.status(406).send('Cannot use 1 QR code twice')
+        if (checkId && !checkId.status) {
+            res.status(406).send('Cannot use a QR code twice')
         }
 
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
@@ -140,7 +155,7 @@ router.post('/verifyTx', async (req, res, next) => {
         signer = signer.toLowerCase()
         candidate = candidate.toLowerCase()
 
-        if (signedAddress !== signer) {
+        if (signedAddress !== signer || signedAddress !== checkId.signedAddress) {
             return res.status(406).send('Signed Address and signer are not match')
         }
 
@@ -169,6 +184,7 @@ router.post('/verifyTx', async (req, res, next) => {
                 sign.amount = amount
                 sign.candidate = candidate
                 sign.tx = hash
+                sign.status = false
 
                 await db.SignTransaction.findOneAndUpdate(
                     { signedAddress: signedAddress },
@@ -195,9 +211,10 @@ router.get('/getScanningResult',
             const action = req.query.action || ''
 
             const signTx = await db.SignTransaction.findOne({ signId: id })
-            const checkTx = ((signTx || {}).tx && action === 'withdraw')
-                ? true : await db.Transaction.findOne({ tx: signTx.tx })
-            if (signTx && id === signTx.signId) {
+
+            if (signTx && id === signTx.signId && !signTx.status) {
+                const checkTx = ((signTx || {}).tx && action === 'withdraw')
+                    ? true : await db.Transaction.findOne({ tx: signTx.tx })
                 if (checkTx) {
                     res.send({
                         tx: signTx.tx

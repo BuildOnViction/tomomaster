@@ -355,7 +355,7 @@ export default {
             self.qrCode = encodeURI(
                 'tomochain:vote?amount=' + self.voteValue + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
-                '&submitURL=' + generatedMess.data.url + generatedMess.data.id
+                '&submitURL=' + generatedMess.data.url
             )
             self.step++
 
