@@ -67,7 +67,7 @@
                             class="text-danger">Wrong coinbase address format</span>
                         <span
                             v-else-if="coinbaseError"
-                            class="text-danger">The coinbase address should be different from the depositing account.</span>
+                            class="text-danger">The candidate account should be different from the depositing account.</span>
                     </b-form-group>
                     <!--b-form-group
                         label="Node URL"
