@@ -1,0 +1,81 @@
+.tomo-footer {
+    margin-bottom: 2px;
+  
+    .row {
+      display: flex;
+      align-items: center;
+    }
+    .col {
+      flex: 1;
+      padding: 1em;
+    }
+    &__copyright {
+      font-weight: 300;
+      color: #000;
+    }
+  
+    &__social {
+      font-size: 12px;
+  
+      li.list-inline-item {
+        margin-right: 15px;
+  
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+  
+      i {
+        @extend %transit;
+      }
+  
+      .fa-github:hover {
+        color: #24292e;
+      }
+  
+      .fa-telegram:hover {
+        color: #0088cc;
+      }
+  
+      .fa-twitter:hover {
+        color: #1da1f2;
+      }
+  
+      .fa-facebook:hover {
+        color: #3b5998;
+      }
+  
+      .fa-reddit:hover {
+        color: #ff4500;
+      }
+    }
+  
+    @include media-breakpoint-up(md) {
+  
+      &__copyright p {
+        margin-bottom: 0;
+      }
+  
+      &__social {
+        margin-bottom: 0;
+  
+        li.list-inline-item {
+          margin-right: 30px;
+        }
+  
+        i {
+          font-size: 30px;
+        }
+      }
+    }
+  
+    @include media-breakpoint-up(lg) {
+      margin-bottom: 20px;
+  
+      &__social {
+        li.list-inline-item {
+          margin-right: 35px;
+        }
+      }
+    }
+  }
