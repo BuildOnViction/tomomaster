@@ -42,10 +42,18 @@ import Eth from '@ledgerhq/hw-app-eth'
 import Transaction from 'ethereumjs-tx'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import {
+    faFacebook,
+    faTelegram,
+    faTwitter,
+    faReddit,
+    faGithub
+} from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faEdit, faCopy)
+library.add(faEdit, faGithub)
+library.add(faFacebook, faTelegram, faTwitter, faReddit)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

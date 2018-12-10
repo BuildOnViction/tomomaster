@@ -1,17 +1,21 @@
 .tomo-footer {
-    margin-bottom: 20px;
+    margin-bottom: 2px;
   
     .row {
-      align-items: baseline;
+      display: flex;
+      align-items: center;
     }
-  
+    .col {
+      flex: 1;
+      padding: 1em;
+    }
     &__copyright {
       font-weight: 300;
       color: #000;
     }
   
     &__social {
-      font-size: 20px;
+      font-size: 12px;
   
       li.list-inline-item {
         margin-right: 15px;
@@ -25,23 +29,23 @@
         @extend %transit;
       }
   
-      i.fa-github:hover {
+      .fa-github:hover {
         color: #24292e;
       }
   
-      i.fa-telegram:hover {
+      .fa-telegram:hover {
         color: #0088cc;
       }
   
-      i.fa-twitter:hover {
+      .fa-twitter:hover {
         color: #1da1f2;
       }
   
-      i.fa-facebook:hover {
+      .fa-facebook:hover {
         color: #3b5998;
       }
   
-      i.fa-reddit:hover {
+      .fa-reddit:hover {
         color: #ff4500;
       }
     }
@@ -66,7 +70,7 @@
     }
   
     @include media-breakpoint-up(lg) {
-      margin-bottom: 50px;
+      margin-bottom: 20px;
   
       &__social {
         li.list-inline-item {

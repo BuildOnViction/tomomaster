@@ -42,35 +42,89 @@
             <div class="main-content">
                 <router-view/>
             </div>
-            <div class="tomo-footer mb-5">
+            <footer
+                class="tomo-footer mt-2">
                 <div class="container">
-                    <div class="row">
-                        <b-col
-                            md="6">
+                    <div
+                        class="row">
+                        <b-col class="float-left">
                             <p>
-                                Tomomaster 2018 - Running on TomoChain
+                                TomoMaster 2018 - Running on TomoChain
                             </p>
                         </b-col>
-                        <b-col class="md-3" />
-                        <b-col class="md-3">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <a href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="/terms"><i class="tm-profile mr-2"/>Terms of Service</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <b-col>
+                            <div
+                                style="text-align: right">
+                                <ul class="list-inline tomo-footer__social">
+                                    <li class="list-inline-item">
+                                        <a
+                                            href="https://t.me/tomochain"
+                                            target="_blank">
+                                            <font-awesome-icon
+                                                id="telegram"
+                                                :icon="{ prefix: 'fab', iconName: 'telegram' }"
+                                                class="fa-2x"/>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a
+                                            href="https://www.facebook.com/tomochainofficial"
+                                            target="_blank">
+                                            <font-awesome-icon
+                                                :icon="{ prefix: 'fab', iconName: 'facebook' }"
+                                                class="fa-2x"/>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a
+                                            href="https://twitter.com/TomoChainANN"
+                                            target="_blank">
+                                            <font-awesome-icon
+                                                :icon="{ prefix: 'fab', iconName: 'twitter' }"
+                                                class="fa-2x"/>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a
+                                            href="https://github.com/tomochain/"
+                                            target="_blank">
+                                            <font-awesome-icon
+                                                :icon="{ prefix: 'fab', iconName: 'github' }"
+                                                class="fa-2x"/>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a
+                                            href="https://www.reddit.com/r/Tomochain/"
+                                            target="_blank">
+                                            <font-awesome-icon
+                                                :icon="{ prefix: 'fab', iconName: 'reddit' }"
+                                                class="fa-2x"/>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </b-col>
+                        <b-col>
+                            <div
+                                class="float-right"
+                                style="display: flex; flex-direction: column;
+                                    flex: 1 1 auto">
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #3498db; margin-top: 5px"
+                                    href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #3498db; margin-top: 5px"
+                                    href="/terms"><i class="tm-profile mr-2"/>Terms of Service</a>
+                            </div>
                         </b-col>
                     </div>
                 </div>
-            </div>
+            </footer>
         </div>
     </div>
 </template>

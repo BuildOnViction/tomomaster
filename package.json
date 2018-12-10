@@ -38,6 +38,7 @@
     "dependencies": {
         "@chenfengyuan/vue-qrcode": "^1.0.0",
         "@fortawesome/fontawesome-svg-core": "^1.2.8",
+        "@fortawesome/free-brands-svg-icons": "^5.5.0",
         "@fortawesome/free-solid-svg-icons": "^5.5.0",
         "@fortawesome/vue-fontawesome": "^0.1.2",
         "@ledgerhq/hw-app-eth": "4.24.0",
@@ -53,8 +54,8 @@
         "express-validator": "^5.1.2",
         "highcharts": "^6.1.1",
         "highcharts-vue": "^1.0.4",
-        "is-online": "^8.0.0",
         "https": "^1.0.0",
+        "is-online": "^8.0.0",
         "kue": "^0.11.6",
         "lodash": "^4.17.10",
         "moment": "^2.22.2",
