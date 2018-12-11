@@ -131,6 +131,7 @@ router.post('/apply', async function (req, res, next) {
                 $set: {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: candidate,
+                    nodeId: (candidate || '').replace('0x', ''),
                     capacity: '50000000000000000000000',
                     status: 'PROPOSED',
                     owner: walletProvider.address,
@@ -365,12 +366,30 @@ router.put('/update', [
     }
 })
 
-router.get('/:candidate/generateMessage', async function (req, res, next) {
+router.post('/:candidate/generateMessage', async function (req, res, next) {
     try {
         const candidate = req.params.candidate
+        const account = (req.body.account || '').toLowerCase()
+
+        const c = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: candidate
+        })
+        if (!c) {
+            return res.status(406).send('This address is not a candidate')
+        }
+
         const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
             ' I am the candidate ' + '[' + candidate + ']'
         const id = uuidv4()
+
+        // update id, status
+        const data = {
+            signedId: id,
+            status: true
+        }
+        await db.Signature.findOneAndUpdate({ signedAddress: account }, data, { upsert: true, new: true })
+
         res.json({
             message,
             url: `${config.get('baseUrl')}api/candidates/verifyScannedQR?id=${id}`,
@@ -386,31 +405,32 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         const message = req.body.message
         const signature = req.body.signature
         const id = req.query.id
-        let signer = req.body.signer
+        let signer = (req.body.signer || '').toLowerCase()
 
         if (!message || !signature || !id || !signer) {
             return res.status(406).send('id, message, signature and signer are required')
         }
-        signer = signer.toLowerCase()
+
+        const checkId = await db.Signature.findOne({ signedId: id })
+        if (checkId && !checkId.status) {
+            return res.status(406).send('Cannot use a QR code twice')
+        }
 
         const signedAddress = (await web3.eth.accounts.recover(message, signature) || '').toLowerCase()
 
-        if (signer !== signedAddress) {
-            return res.status(401).send('The Signature Message Verification Failed')
+        if (signer !== signedAddress || checkId.signedAddress !== signedAddress ||
+            id !== checkId.signedId) {
+            return res.status(406).send('The Signature Message Verification Failed')
         }
 
         // Store id, address, msg, signature
-        let sign = await db.Signature.findOne({ signedAddress: signedAddress })
-        if (sign && id === sign.signedId) {
-            res.status(406).send('Cannot use a QR code twice')
-        } else {
-            const data = {}
-            data.signedId = id
-            data.message = message
-            data.signature = signature
+        const data = {}
+        data.signedId = id
+        data.message = message
+        data.signature = signature
+        data.status = false
 
-            await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
-        }
+        await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
         res.send('Done')
     } catch (e) {
         console.trace(e)
@@ -425,7 +445,7 @@ router.get('/:candidate/getSignature', async (req, res, next) => {
 
         const signature = await db.Signature.findOne({ signedId: messId })
 
-        if (signature) {
+        if (signature && !signature.status) {
             res.json({
                 signature: signature.signature
             })

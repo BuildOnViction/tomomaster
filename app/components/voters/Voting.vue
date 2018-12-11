@@ -59,6 +59,9 @@
                                 <span
                                     v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
                                     class="text-danger">Must be greater than 10 TOMO</span>
+                                <span
+                                    v-if="votingError"
+                                    class="text-danger">Not enough TOMO</span>
                             </b-input-group>
                         </b-form-group>
                         <div class="buttons text-right">
@@ -181,7 +184,8 @@ export default {
             id: '',
             interval: null,
             balance: 0,
-            provider: this.NetworkProvider || store.get('network') || null
+            provider: this.NetworkProvider || store.get('network') || null,
+            votingError: false
         }
     },
     validations: {
@@ -256,7 +260,12 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                this.nextStep()
+                if (this.voteValue > this.balance) {
+                    this.votingError = true
+                } else {
+                    this.votingError = false
+                    this.nextStep()
+                }
             }
         },
         vote: async function () {
@@ -346,7 +355,7 @@ export default {
             self.qrCode = encodeURI(
                 'tomochain:vote?amount=' + self.voteValue + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
-                '&submitURL=' + generatedMess.data.url + generatedMess.data.id
+                '&submitURL=' + generatedMess.data.url
             )
             self.step++
 

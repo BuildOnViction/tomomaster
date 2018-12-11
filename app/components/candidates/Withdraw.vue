@@ -158,7 +158,7 @@ export default {
             self.qrCode = encodeURI(
                 'tomochain:withdraw?amount=' + self.capacity + '&' + 'block=' + self.blockNumber +
                 '&index=' + self.index +
-                '&submitURL=' + generatedMess.data.url + generatedMess.data.id
+                '&submitURL=' + generatedMess.data.url
             )
 
             if (self.processing && generatedMess.data && self.provider === 'tomowallet') {

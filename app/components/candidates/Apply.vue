@@ -67,7 +67,9 @@
                             class="text-danger">Wrong coinbase address format</span>
                         <span
                             v-else-if="coinbaseError"
-                            class="text-danger">Your account address cannot same with coinbase address</span>
+                            class="text-danger">
+                            The masternode candidate account should bedifferent from the depositing account.
+                        </span>
                     </b-form-group>
                     <!--b-form-group
                         label="Node URL"

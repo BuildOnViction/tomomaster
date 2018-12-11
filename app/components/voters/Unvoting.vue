@@ -350,7 +350,7 @@ export default {
             self.qrCode = encodeURI(
                 'tomochain:unvote?amount=' + self.unvoteValue + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
-                '&submitURL=' + generatedMess.data.url + generatedMess.data.id
+                '&submitURL=' + generatedMess.data.url
             )
             this.step++
             if (self.step === 2 && self.processing) {

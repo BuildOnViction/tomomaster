@@ -211,7 +211,7 @@
 export default {
     data: () => {
         return {
-            email: 'vupq@tomochain.com'
+            email: 'admin@tomochain.com'
         }
     }
 }

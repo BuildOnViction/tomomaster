@@ -13,7 +13,8 @@ var Voter = new Schema({
     amount: String,
     rawTx: String,
     action: String,
-    tx: String
+    tx: String,
+    status: Boolean
 }, { timestamps: true })
 
 module.exports = mongoose.model('SignTransaction', Voter)
