@@ -114,6 +114,17 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style="color: #3498db; margin-top: 5px"
+                                    href="https://bit.ly/2B6p29o">
+                                    <font-awesome-icon
+                                        id="question-circle"
+                                        :icon="{ prefix: 'fas', iconName: 'question-circle' }"
+                                        style="font-size: 15px"
+                                        class="mr-1"/>
+                                    Need help?</a>
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #3498db; margin-top: 5px"
                                     href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
                                 <a
                                     target="_blank"
