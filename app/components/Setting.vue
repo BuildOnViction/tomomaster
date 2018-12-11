@@ -483,6 +483,8 @@ export default {
         save: async function () {
             store.clearAll()
             const self = this
+            self.address = ''
+            self.$store.state.walletLoggedIn = null
             // clear old data
             self.withdraws = []
             self.aw = []
@@ -529,7 +531,15 @@ export default {
 
                 store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
-                self.$toasted.show('Network Provider was changed successfully')
+                if (self.address) {
+                    self.$toasted.show('Network Provider was changed successfully')
+                } else {
+                    self.$toasted.show(
+                        'Couldn\'t get any accounts! Make sure ' +
+                        'your Ethereum client is configured correctly.', {
+                        type : 'error'
+                    })
+                }
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {

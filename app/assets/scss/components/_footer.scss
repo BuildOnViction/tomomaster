@@ -29,10 +29,6 @@
         @extend %transit;
       }
   
-      .fa-github:hover {
-        color: #24292e;
-      }
-  
       .fa-telegram:hover {
         color: #0088cc;
       }
@@ -79,3 +75,12 @@
       }
     }
   }
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  a {
+    color: #3498db;
+    margin-top: 5px;
+  }
+}
