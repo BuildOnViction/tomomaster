@@ -107,13 +107,9 @@
                         </b-col>
                         <b-col>
                             <div
-                                class="float-right"
-                                style="display: flex; flex-direction: column;
-                                    flex: 1 1 auto">
+                                class="float-right footer-right">
                                 <a
                                     target="_blank"
-                                    rel="noopener noreferrer"
-                                    style="color: #3498db; margin-top: 5px"
                                     href="https://bit.ly/2B6p29o">
                                     <font-awesome-icon
                                         id="question-circle"
@@ -123,13 +119,9 @@
                                     Need help?</a>
                                 <a
                                     target="_blank"
-                                    rel="noopener noreferrer"
-                                    style="color: #3498db; margin-top: 5px"
                                     href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
                                 <a
                                     target="_blank"
-                                    rel="noopener noreferrer"
-                                    style="color: #3498db; margin-top: 5px"
                                     href="/terms"><i class="tm-profile mr-2"/>Terms of Service</a>
                             </div>
                         </b-col>
