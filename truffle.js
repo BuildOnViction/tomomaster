@@ -1,7 +1,7 @@
 'use strict'
 
 const HDWalletProvider = require('truffle-hdwallet-provider')
-var NonceTrackerSubprovider = require("web3-provider-engine/subproviders/nonce-tracker")
+const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker')
 const config = require('config')
 const TestRPC = require('ganache-cli')
 
