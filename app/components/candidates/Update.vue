@@ -139,6 +139,7 @@
                                         v-model="signHash"
                                         class="form-control"
                                         type="text"
+                                        autocomplete="false"
                                         style="box-sizing: border-box; width: 100%"
                                         placeholder="Enter the message signature hash">
                                     <span
