@@ -1,6 +1,7 @@
 'use strict'
 
 const HDWalletProvider = require('truffle-hdwallet-provider')
+const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker')
 const config = require('config')
 const TestRPC = require('ganache-cli')
 
@@ -18,11 +19,15 @@ module.exports = {
         },
         tomo: {
             provider: function () {
-                return new HDWalletProvider(config.get('truffle.mnemonic'), config.get('blockchain.rpc'))
+                let w = new HDWalletProvider(config.get('truffle.mnemonic'), config.get('blockchain.rpc'))
+                let nonceTracker = new NonceTrackerSubprovider()
+                w.engine._providers.unshift(nonceTracker)
+                nonceTracker.setEngine(w.engine)
+                return w
             },
             network_id: config.get('blockchain.networkId'),
             gas: 4000000,
-            gasPrice: 1
+            gasPrice: 2500
         }
     }
 }
