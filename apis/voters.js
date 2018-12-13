@@ -100,8 +100,6 @@ router.post('/generateQR', async (req, res, next) => {
             { upsert: true, new: true }
         )
 
-        const id = uuidv4()
-
         res.send({
             candidateName: candidateName,
             message,

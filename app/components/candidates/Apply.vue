@@ -225,18 +225,29 @@ export default {
                 }
             }
         },
-        validate: function () {
+        validate: async function () {
             this.$v.$touch()
+            this.coinbaseError = false
 
             if (!this.$v.$invalid) {
-                if (this.provider !== 'tomowallet') {
-                    this.apply()
+                if (this.coinbase.toLowerCase() === this.account.toLowerCase()) {
+                    this.loading = false
+                    this.coinbaseError = true
                 } else {
-                    if (this.interval) {
-                        clearInterval(this.interval)
+                    if (this.provider !== 'tomowallet') {
+                        await this.apply()
+                    } else {
+                        if (this.interval) {
+                            clearInterval(this.interval)
+                        }
+                        await this.generateQR()
+                        this.$refs.applyModal.show()
+                        // console.log(this.qrCode)
+                        // console.log(this.coinbaseError)
+                        // if (this.qrCode !== 'text' && !this.coinbaseError) {
+                        //     this.$refs.applyModal.show()
+                        // }
                     }
-                    this.generateQR()
-                    this.$refs.applyModal.show()
                 }
             }
         },
@@ -254,11 +265,6 @@ export default {
 
                 self.loading = true
 
-                if (coinbase.toLowerCase() === self.account.toLowerCase()) {
-                    self.loading = false
-                    self.coinbaseError = true
-                    return false
-                }
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from : self.account,
@@ -310,6 +316,7 @@ export default {
         async generateQR () {
             const self = this
             const coinbase = self.coinbase.toLowerCase()
+
             try {
                 const body = {
                     action: 'propose',
@@ -327,6 +334,8 @@ export default {
                     '&candidate=' + coinbase +
                     '&submitURL=' + data.url
                 )
+                console.log(self.qrCode)
+
                 // set interval
                 self.interval = setInterval(async () => {
                     self.verifyScannedQR()
