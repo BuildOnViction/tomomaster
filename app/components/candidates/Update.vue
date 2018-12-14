@@ -20,7 +20,7 @@
                             v-model="name"
                             name="name-value"/>
                         <span
-                            v-if="$v.name.$dirty && !$v.name.requried"
+                            v-if="$v.name.$dirty && !$v.name.required"
                             class="text-danger">Name is required</span>
                         <span
                             v-if="$v.name.$dirty && (!$v.name.minLength || !$v.name.maxLength)"
