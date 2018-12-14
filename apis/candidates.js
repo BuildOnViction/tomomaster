@@ -12,6 +12,7 @@ const _ = require('lodash')
 const logger = require('../helpers/logger')
 const { check, validationResult } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
+const urljoin = require('url-join')
 
 router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
@@ -295,7 +296,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
         const owner = req.params.owner
         const limit = 100
         const rewards = await axios.post(
-            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: candidate,
                 limit,
@@ -392,7 +393,7 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
 
         res.json({
             message,
-            url: `${config.get('baseUrl')}api/candidates/verifyScannedQR?id=${id}`,
+            url: urljoin(config.get('baseUrl'), `api/candidates/verifyScannedQR?id=${id}`),
             id
         })
     } catch (error) {
