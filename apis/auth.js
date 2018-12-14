@@ -6,14 +6,16 @@ const utils = require('ethereumjs-util')
 const db = require('../models/mongodb')
 
 const uuidv4 = require('uuid/v4')
+const urljoin = require('url-join')
 
 router.get('/generateLoginQR', async (req, res, next) => {
     try {
         const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + '] Login'
+        const id = uuidv4()
         res.send({
             message,
-            url: `${config.get('baseUrl')}api/auth/verifyLogin?id=`,
-            id: uuidv4()
+            url: urljoin(config.get('baseUrl'), `api/auth/verifyLogin?id=${id}`),
+            id
         })
     } catch (e) {
         next(e)
