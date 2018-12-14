@@ -6,7 +6,7 @@
     },
     "explorerUrl": "https://scan.tomochain.com",
     "tomoscanUrl": "http://tomoscan_server:3333",
-    "baseUrl": "https://master.tomochain.com",
+    "baseUrl": "https://master.tomochain.com/",
     "db": {
         "uri" : "mongodb://tomomaster_db:27017/governance"
     },
