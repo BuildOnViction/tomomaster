@@ -303,7 +303,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
                 reason: 'MasterNode'
             }
         )
-        res.json(rewards.data)
+        return res.json(rewards.data)
     } catch (e) {
         return next(e)
     }
@@ -390,7 +390,7 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
         }
         await db.Signature.findOneAndUpdate({ signedAddress: account }, data, { upsert: true, new: true })
 
-        res.json({
+        return res.json({
             message,
             url: `${config.get('baseUrl')}api/candidates/verifyScannedQR?id=${id}`,
             id
@@ -431,7 +431,7 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         data.status = false
 
         await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
-        res.send('Done')
+        return res.send('Done')
     } catch (e) {
         console.trace(e)
         console.log(e)
@@ -446,11 +446,11 @@ router.get('/:candidate/getSignature', async (req, res, next) => {
         const signature = await db.Signature.findOne({ signedId: messId })
 
         if (signature && !signature.status) {
-            res.json({
+            return res.json({
                 signature: signature.signature
             })
         } else {
-            res.send({
+            return res.send({
                 error: {
                     message: 'No data'
                 }

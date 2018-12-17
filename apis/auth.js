@@ -10,7 +10,7 @@ const uuidv4 = require('uuid/v4')
 router.get('/generateLoginQR', async (req, res, next) => {
     try {
         const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + '] Login'
-        res.send({
+        return res.send({
             message,
             url: `${config.get('baseUrl')}api/auth/verifyLogin?id=`,
             id: uuidv4()
@@ -41,7 +41,7 @@ router.post('/verifyLogin', async (req, res, next) => {
         // Store id, address, msg, signature
         let sign = await db.Signature.findOne({ signedAddress: signedAddress })
         if (sign && id === sign.signedId) {
-            res.status(406).send('Cannot use a QR code twice')
+            return res.status(406).send('Cannot use a QR code twice')
         } else {
             const data = {}
             data.signedId = id
@@ -50,7 +50,7 @@ router.post('/verifyLogin', async (req, res, next) => {
 
             await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
         }
-        res.send('Done')
+        return res.send('Done')
     } catch (e) {
         next(e)
     }
@@ -63,11 +63,11 @@ router.get('/getLoginResult', async (req, res, next) => {
         const signature = await db.Signature.findOne({ signedId: messId })
 
         if (signature) {
-            res.json({
+            return res.json({
                 user: signature.signedAddress
             })
         } else {
-            res.send({
+            return res.send({
                 error: {
                     message: 'No data'
                 }

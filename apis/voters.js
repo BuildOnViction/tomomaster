@@ -122,13 +122,9 @@ router.post('/verifyTx', async (req, res, next) => {
         const action = req.body.action
         let signer = req.body.signer
         let candidate = req.body.candidate || ''
-        const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
+        const amount = parseFloat(req.body.amount.replace(/,/g, '')) || undefined
         const serializedTx = req.body.rawTx
 
-        console.log(`
-        
-        
-        ${JSON.stringify(req.body, null, 2)}`)
         if (!id) {
             return res.status(406).send()
         }
@@ -165,27 +161,27 @@ router.post('/verifyTx', async (req, res, next) => {
         }
 
         await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
-            console.log(11111111111)
             if (error) {
-                console.log(2222222222222)
                 if (action === 'vote') {
-                    console.log(333333333333)
                     web3.eth.getBalance(signedAddress, function (e, balance) {
-                        if (!e) {
-                            const convertedBalanc = new BigNumber(balance).div(10 ** 18)
-                            const convertedAmount = new BigNumber(amount)
+                        try {
+                            if (!e) {
+                                const convertedBalanc = new BigNumber(balance).div(10 ** 18)
+                                const convertedAmount = new BigNumber(amount)
 
-                            if (convertedBalanc.isLessThan(convertedAmount)) {
-                                return res.status(406).send('Not enough TOMO')
-                            } else {
-                                return res.status(404).send('Something went wrong')
+                                if (convertedBalanc.isLessThan(convertedAmount)) {
+                                    return res.status(406).send('Not enough TOMO')
+                                } else {
+                                    return res.status(404).send('Something went wrong')
+                                }
                             }
+                        } catch (error) {
+                            throw error
                         }
                     })
                 }
                 throw error
             } else {
-                console.log(555555555555)
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
                 if (!sign) {
@@ -210,7 +206,6 @@ router.post('/verifyTx', async (req, res, next) => {
             }
         })
     } catch (e) {
-        console.log(66666666666666)
         console.trace(e)
         console.log(e)
         return res.status(404).send(e)
