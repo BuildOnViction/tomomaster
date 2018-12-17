@@ -242,11 +242,6 @@ export default {
                         }
                         await this.generateQR()
                         this.$refs.applyModal.show()
-                        // console.log(this.qrCode)
-                        // console.log(this.coinbaseError)
-                        // if (this.qrCode !== 'text' && !this.coinbaseError) {
-                        //     this.$refs.applyModal.show()
-                        // }
                     }
                 }
             }
@@ -334,7 +329,6 @@ export default {
                     '&candidate=' + coinbase +
                     '&submitURL=' + data.url
                 )
-                console.log(self.qrCode)
 
                 // set interval
                 self.interval = setInterval(async () => {

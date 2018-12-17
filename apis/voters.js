@@ -135,12 +135,25 @@ router.post('/verifyTx', [
         let candidate = req.body.candidate || ''
         const amount = parseFloat(req.body.amount.replace(/,/g, '')) || undefined
         const serializedTx = req.body.rawTx
+
         if (!id) {
-            return res.status(406).send('id is required')
+            return res.status(406).send()
+        }
+        if (!action) {
+            return res.status(406).send('action is requried')
+        }
+        if (!signer) {
+            return res.status(406).send('signer is requried')
+        }
+        if (!amount) {
+            return res.status(406).send('amount is requried')
+        }
+        if (!serializedTx) {
+            return res.status(406).send('raw transaction hash(rawTx) is requried')
         }
         if (action !== 'withdraw') {
             if (!candidate) {
-                return res.status(406).send('candidate is required')
+                return res.status(406).send('candidate is requried')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
@@ -160,25 +173,25 @@ router.post('/verifyTx', [
 
         web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
-                console.log(1111111111)
-                console.log(action)
-                if (action === 'vote' || action === 'propose') {
-                    console.log(2222222222)
-                    web3.eth.getBalance(signedAddress, function (e, balance) {
-                        if (!e) {
-                            const a = new BigNumber(balance).div(10 ** 18)
-                            const b = new BigNumber(amount)
-                            console.log(a.isLessThan(b))
-                            if (a.isLessThan(b)) {
-                                console.log(3333333)
+                if (action === 'vote') {
+                    try {
+                        const balance = await web3.eth.getBalance(signedAddress)
+                        if (balance) {
+                            const convertedBalanc = new BigNumber(balance).div(10 ** 18)
+                            const convertedAmount = new BigNumber(amount)
+
+                            if (convertedBalanc.isLessThan(convertedAmount)) {
                                 return res.status(406).send('Not enough TOMO')
                             } else {
                                 console.log(44444444)
                                 return res.status(404).send('Something went wrong')
                             }
                         }
-                    })
-                } else throw error
+                    } catch (error) {
+                        console.log(error)
+                        next(error)
+                    }
+                } else next(error)
             } else {
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
