@@ -3,6 +3,7 @@ const express = require('express')
 const config = require('config')
 const request = require('request')
 const router = express.Router()
+const urljoin = require('url-join')
 
 router.get('/', async function (req, res, next) {
     let db = req.query.db
@@ -10,7 +11,7 @@ router.get('/', async function (req, res, next) {
     query = encodeURI(query).replace('=', '%3D').replace(';', '%3B')
     let epoch = req.query.epoch
     let apiKey = config.get('grafanaApiKey')
-    let url = `${config.get('grafanaUrl')}/api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`
+    let url = urljoin(config.get('grafanaUrl'), `api/datasources/proxy/1/query?db=${db}&q=${query}&epoch=${epoch}`)
     request({
         url: url,
         json: true,
