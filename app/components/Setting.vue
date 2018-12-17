@@ -582,7 +582,7 @@ export default {
             this.id = data.id
             this.qrCode = encodeURI(
                 'tomochain:login?message=' + data.message +
-                '&submitURL=' + data.url + data.id
+                '&submitURL=' + data.url
             )
             return true
         },
