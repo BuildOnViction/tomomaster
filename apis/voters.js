@@ -124,29 +124,34 @@ router.post('/verifyTx', async (req, res, next) => {
         let candidate = req.body.candidate || ''
         const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
         const serializedTx = req.body.rawTx
+
+        console.log(`
+        
+        
+        ${JSON.stringify(req.body, null, 2)}`)
         if (!id) {
-            res.status(406).send()
+            return res.status(406).send()
         }
         if (!action) {
-            res.status(406).send('action is requried')
+            return res.status(406).send('action is requried')
         }
         if (!signer) {
-            res.status(406).send('signer is requried')
+            return res.status(406).send('signer is requried')
         }
         if (!amount) {
-            res.status(406).send('amount is requried')
+            return res.status(406).send('amount is requried')
         }
         if (!serializedTx) {
-            res.status(406).send('raw transaction hash(rawTx) is requried')
+            return res.status(406).send('raw transaction hash(rawTx) is requried')
         }
         if (action !== 'withdraw') {
             if (!candidate) {
-                res.status(406).send('candidate is requried')
+                return res.status(406).send('candidate is requried')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
         if (checkId && !checkId.status) {
-            res.status(406).send('Cannot use a QR code twice')
+            return res.status(406).send('Cannot use a QR code twice')
         }
 
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
@@ -160,11 +165,17 @@ router.post('/verifyTx', async (req, res, next) => {
         }
 
         await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
+            console.log(11111111111)
             if (error) {
+                console.log(2222222222222)
                 if (action === 'vote') {
+                    console.log(333333333333)
                     web3.eth.getBalance(signedAddress, function (e, balance) {
                         if (!e) {
-                            if (new BigNumber(balance).div(10 ** 18) < amount) {
+                            const convertedBalanc = new BigNumber(balance).div(10 ** 18)
+                            const convertedAmount = new BigNumber(amount)
+
+                            if (convertedBalanc.isLessThan(convertedAmount)) {
                                 return res.status(406).send('Not enough TOMO')
                             } else {
                                 return res.status(404).send('Something went wrong')
@@ -174,6 +185,7 @@ router.post('/verifyTx', async (req, res, next) => {
                 }
                 throw error
             } else {
+                console.log(555555555555)
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
                 if (!sign) {
@@ -191,13 +203,14 @@ router.post('/verifyTx', async (req, res, next) => {
                     sign,
                     { upsert: true, new: true }
                 )
-                res.send({
+                return res.send({
                     status: 'Done',
                     transactionHash: hash
                 })
             }
         })
     } catch (e) {
+        console.log(66666666666666)
         console.trace(e)
         console.log(e)
         return res.status(404).send(e)
