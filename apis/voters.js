@@ -160,27 +160,26 @@ router.post('/verifyTx', async (req, res, next) => {
             return res.status(406).send('Signed Address and signer are not match')
         }
 
-        await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
+        web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 if (action === 'vote') {
-                    web3.eth.getBalance(signedAddress, function (e, balance) {
-                        try {
-                            if (!e) {
-                                const convertedBalanc = new BigNumber(balance).div(10 ** 18)
-                                const convertedAmount = new BigNumber(amount)
+                    try {
+                        const balance = await web3.eth.getBalance(signedAddress)
+                        if (balance) {
+                            const convertedBalanc = new BigNumber(balance).div(10 ** 18)
+                            const convertedAmount = new BigNumber(amount)
 
-                                if (convertedBalanc.isLessThan(convertedAmount)) {
-                                    return res.status(406).send('Not enough TOMO')
-                                } else {
-                                    return res.status(404).send('Something went wrong')
-                                }
+                            if (convertedBalanc.isLessThan(convertedAmount)) {
+                                return res.status(406).send('Not enough TOMO')
+                            } else {
+                                return res.status(404).send('Something went wrong')
                             }
-                        } catch (error) {
-                            throw error
                         }
-                    })
-                }
-                throw error
+                    } catch (error) {
+                        console.log(error)
+                        next(error)
+                    }
+                } else next(error)
             } else {
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
