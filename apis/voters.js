@@ -10,6 +10,7 @@ const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
 const { check, validationResult } = require('express-validator/check')
+const urljoin = require('url-join')
 
 router.get('/:voter/candidates', [
     check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
@@ -47,7 +48,7 @@ router.get('/:voter/rewards', async function (req, res, next) {
         const voter = req.params.voter
         const limit = 100
         const rewards = await axios.post(
-            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: voter,
                 limit
@@ -103,7 +104,7 @@ router.post('/generateQR', async (req, res, next) => {
         res.send({
             candidateName: candidateName,
             message,
-            url: `${config.get('baseUrl')}api/voters/verifyTx?id=${id}`,
+            url: urljoin(config.get('baseUrl'), `api/voters/verifyTx?id=${id}`),
             id
         })
     } catch (e) {
