@@ -86,9 +86,6 @@ router.get('/:candidate/voters', async function (req, res, next) {
 })
 
 router.get('/:candidate/rewards', async function (req, res, next) {
-    console.log(`
-    
-    ${JSON.stringify(req.query)}`)
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.MnReward.find({
