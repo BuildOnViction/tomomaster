@@ -69,7 +69,12 @@
                         <span
                             v-else-if="coinbaseError"
                             class="text-danger">
-                            The masternode candidate account should bedifferent from the depositing account.
+                            The masternode candidate account should be different from the depositing account.
+                        </span>
+                        <span
+                            v-else-if="candidateError"
+                            class="text-danger">
+                            This coinbase address is already a candidate
                         </span>
                     </b-form-group>
                     <!--b-form-group
@@ -153,8 +158,9 @@ export default {
             coinbaseError: false,
             provider: this.NetworkProvider || store.get('network') || null,
             showQR: true,
-            qrCode: 't1111111111111111111111111111ext',
-            interval: null
+            qrCode: 'text',
+            interval: null,
+            candidateError: false
         }
     },
     validations: {
@@ -234,14 +240,20 @@ export default {
                     this.loading = false
                     this.coinbaseError = true
                 } else {
-                    if (this.provider !== 'tomowallet') {
-                        await this.apply()
+                    const { data } = await axios.get('/api/candidates/' + this.coinbase)
+                    if (Object.keys(data).length > 0) {
+                        this.candidateError = true
                     } else {
-                        if (this.interval) {
-                            clearInterval(this.interval)
+                        this.candidateError = false
+                        if (this.provider !== 'tomowallet') {
+                            await this.apply()
+                        } else {
+                            if (this.interval) {
+                                clearInterval(this.interval)
+                            }
+                            await this.generateQR()
+                            this.$refs.applyModal.show()
                         }
-                        await this.generateQR()
-                        this.$refs.applyModal.show()
                     }
                 }
             }
@@ -345,12 +357,12 @@ export default {
                 let { data } = await axios.get('/api/voters/getScanningResult?action=propose&id=' + self.id)
 
                 if (!data.error) {
+                    self.hideModal()
                     self.loading = true
                     if (data.tx) {
                         let toastMessage = data.tx ? 'You have successfully applied!'
                             : 'An error occurred while applying, please try again'
                         self.$toasted.show(toastMessage)
-                        self.hideModal()
                         clearInterval(self.interval)
                         setTimeout(() => {
                             if (data.tx) {

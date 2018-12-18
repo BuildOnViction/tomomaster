@@ -161,6 +161,10 @@ router.post('/verifyTx', [
             return res.status(406).send('Cannot use a QR code twice')
         }
 
+        if (checkId && (action !== checkId.action || id !== checkId.signId)) {
+            return res.status(406).send('Wrong action')
+        }
+
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         signedAddress = signedAddress.toLowerCase()
@@ -183,7 +187,6 @@ router.post('/verifyTx', [
                             if (convertedBalanc.isLessThan(convertedAmount)) {
                                 return res.status(406).send('Not enough TOMO')
                             } else {
-                                console.log(44444444)
                                 return res.status(404).send('Something went wrong')
                             }
                         }
