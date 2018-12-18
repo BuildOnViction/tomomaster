@@ -173,7 +173,7 @@ export default {
             voteItem: {},
             candidates: [],
             currentPage: 1,
-            perPage: 10,
+            perPage: 30,
             totalRows: 0,
             tableCssClass: '',
             loading: false,
