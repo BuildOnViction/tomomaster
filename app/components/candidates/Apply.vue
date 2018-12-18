@@ -139,6 +139,7 @@ import NumberInput from '../NumberInput.vue'
 import store from 'store'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 
 export default {
     name: 'App',
@@ -160,7 +161,8 @@ export default {
             showQR: true,
             qrCode: 'text',
             interval: null,
-            candidateError: false
+            candidateError: false,
+            balance: 0
         }
     },
     validations: {
@@ -237,9 +239,19 @@ export default {
 
             if (!this.$v.$invalid) {
                 if (this.coinbase.toLowerCase() === this.account.toLowerCase()) {
-                    this.loading = false
                     this.coinbaseError = true
                 } else {
+                    // Check balance
+                    const balanc = await this.web3.eth.getBalance(this.account)
+                    this.balance = new BigNumber(balanc).div(10 ** 18)
+                    const convertedAmount = new BigNumber(this.applyValue)
+
+                    if (this.balance.isLessThan(convertedAmount)) {
+                        this.$toasted.show(`Not enough TOMO`, {
+                            type: 'error'
+                        })
+                        return false
+                    }
                     const { data } = await axios.get('/api/candidates/' + this.coinbase)
                     if (Object.keys(data).length > 0) {
                         this.candidateError = true
