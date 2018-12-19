@@ -248,18 +248,21 @@ export default {
             try {
                 self.loading = true
                 switch (self.provider) {
-                    case 'custom':
-                        self.signHash = await self.web3.eth.sign(self.message, self.account)
-                        break
-                    case 'metamask':
-                        self.signHash = await self.web3.eth.personal.sign(self.message, self.account)
-                        break
-                    default:
-                        self.loading = false
-                        self.$toasted.show(`An error occurred while updating.`, {
-                            type: 'error'
-                        })
-                        break
+                case 'custom':
+                    self.signHash = await self.web3.eth.sign(self.message, self.account)
+                    break
+                case 'metamask':
+                    self.signHash = await self.web3.eth.personal.sign(self.message, self.account)
+                    break
+                case 'ledger':
+                    self.signHash = await self.signMessage(self.message)
+                    break
+                default:
+                    self.loading = false
+                    self.$toasted.show(`An error occurred while updating.`, {
+                        type: 'error'
+                    })
+                    break
                 }
                 // calling update api
                 await self.updateCandidateInfo()
