@@ -381,7 +381,7 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
         }
 
         const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
-            ' I am the candidate ' + '[' + candidate + ']'
+            ' I am the owner of candidate ' + '[' + candidate + ']'
         const id = uuidv4()
 
         // update id, status
