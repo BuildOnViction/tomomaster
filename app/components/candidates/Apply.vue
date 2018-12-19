@@ -140,7 +140,6 @@ import BigNumber from 'bignumber.js'
 import store from 'store'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
-import BigNumber from 'bignumber.js'
 
 export default {
     name: 'App',
