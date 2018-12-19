@@ -111,6 +111,7 @@ import {
 import coinbaseAddress from '../../../validators/coinbaseAddress.js'
 // import nodeUrl from '../../../validators/nodeUrl.js'
 import NumberInput from '../NumberInput.vue'
+import BigNumber from 'bignumber.js'
 import store from 'store'
 
 export default {
@@ -222,9 +223,9 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from : self.account,
-                    value: parseFloat(value) * 10 ** 18,
-                    gasPrice: 2500,
-                    gas: 2000000
+                    value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(2000000)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

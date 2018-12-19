@@ -179,8 +179,8 @@ export default {
                 console.log('==>', blockNumber, index)
                 let txParams = {
                     from: account,
-                    gasPrice: 2500,
-                    gas: 2000000
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(2000000)
                 }
                 let wd
                 if (self.NetworkProvider === 'ledger') {
