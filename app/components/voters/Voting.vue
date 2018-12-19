@@ -359,7 +359,7 @@ export default {
             )
             self.step++
 
-            if (self.step === 2 && self.processing && self.NetworkProvider === 'tomowallet') {
+            if (self.step === 2 && self.processing && self.provider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)

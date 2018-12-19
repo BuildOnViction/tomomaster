@@ -250,7 +250,7 @@ export default {
                     }, 1000)
                 } else {
                     self.name = data.name ? data.name : 'Anonymous Candidate'
-                    self.hardware = data.hardware
+                    self.hardware = data.hardware || 'N/A'
                     self.dcName = (data.dataCenter || {}).name || 'N/A'
                     self.dcLocation = (data.dataCenter || {}).location || 'N/A'
                 }
@@ -346,9 +346,7 @@ export default {
                     message: self.message,
                     signedMessage: self.signHash
                 }
-                if (self.hardware !== '') {
-                    body.hardware = self.hardware
-                }
+                body.hardware = self.hardware || ''
                 if (self.dcName !== '') {
                     body.dcName = self.dcName
                 }
@@ -360,12 +358,14 @@ export default {
                     body
                 )
                 if (!data.error) {
+                    self.loading = true
                     setTimeout(() => {
-                        self.$toasted.show('Candidate\'s information updated successfully ')
                         self.loading = false
                         self.signHashError = ''
                         self.signHash = ''
-                        self.$router.push({ path: `/candidate/${self.address}` })
+                        self.$router.push({ path: `/candidate/${self.address}` }, () => {
+                            self.$toasted.show('Candidate\'s information updated successfully ')
+                        })
                     }, 3000)
                 } else {
                     self.loading = false

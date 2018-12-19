@@ -443,10 +443,11 @@ router.post('/verifyScannedQR', async (req, res, next) => {
 router.get('/:candidate/getSignature', async (req, res, next) => {
     try {
         const messId = req.query.id || ''
+        const candidate = (req.params.candidate || '').toLowerCase()
 
         const signature = await db.Signature.findOne({ signedId: messId })
 
-        if (signature && !signature.status) {
+        if (signature && !signature.status && candidate === signature.signedAddress.toLowerCase()) {
             return res.json({
                 signature: signature.signature
             })

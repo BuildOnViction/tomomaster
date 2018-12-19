@@ -117,7 +117,17 @@ router.post('/generateQR', async (req, res, next) => {
     }
 })
 
-router.post('/verifyTx', async (req, res, next) => {
+router.post('/verifyTx', [
+    check('action').isLength({ min: 1 }).withMessage('action is required'),
+    check('signer').isLength({ min: 1 }).withMessage('signer is required'),
+    check('amount').isLength({ min: 1 }).withMessage('amount is required')
+        .isFloat().withMessage('amount must be a number'),
+    check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const id = req.query.id
         const action = req.body.action
@@ -149,6 +159,10 @@ router.post('/verifyTx', async (req, res, next) => {
         const checkId = await db.SignTransaction.findOne({ signId: id })
         if (checkId && !checkId.status) {
             return res.status(406).send('Cannot use a QR code twice')
+        }
+
+        if (checkId && (action !== checkId.action || id !== checkId.signId)) {
+            return res.status(406).send('Wrong action')
         }
 
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
@@ -228,7 +242,7 @@ router.get('/getScanningResult',
                         tx: signTx.tx
                     })
                 } else {
-                    res.send('Scanned')
+                    res.send('Scanned, getting transaction hash')
                 }
             } else {
                 res.send({
