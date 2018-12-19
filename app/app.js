@@ -411,6 +411,24 @@ Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
     return rs
 }
 
+Vue.prototype.signMessage = async function (message) {
+    try {
+        const path = localStorage.get('hdDerivationPath')
+        const result = await Vue.prototype.appEth.signPersonalMessage(
+            path,
+            Buffer.from(message).toString('hex')
+        )
+        let v = result['v'] - 27
+        v = v.toString(16)
+        if (v.length < 2) {
+            v = '0' + v
+        }
+        return '0x' + result['r'] + result['s'] + v
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 new Vue({ // eslint-disable-line no-new
     el: '#app',
     store,

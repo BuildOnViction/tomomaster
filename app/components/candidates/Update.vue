@@ -109,43 +109,6 @@
                                         class="text-danger"><b>{{ signHashError }}</b></span>
                                 </div>
                             </div>
-                            <div
-                                v-if="provider === 'metamask'">
-                                <strong>Copy message below and sign the message using
-                                    <a
-                                        href="https://www.mycrypto.com/signmsg.html"
-                                        style="color: #3498db">MyCrypto</a>
-                                    or <a
-                                        href="https://www.myetherwallet.com/signmsg.html"
-                                        style="color: #3498db">MyEtherWallet</a>
-                                </strong>
-                                <span style="font-size: 12px">( Click to copy )</span>
-                                <label style="margin-top: 5px">
-                                    <div>
-                                        <textarea
-                                            ref="text"
-                                            :value="message"
-                                            class="sign-message"
-                                            type="text"
-                                            readonly
-                                            cols="100"
-                                            rows="2"
-                                            style="width: 100%"
-                                            @click="copyTextArea"/>
-                                    </div>
-                                </label>
-                                <div>
-                                    <input
-                                        v-model="signHash"
-                                        class="form-control"
-                                        type="text"
-                                        autocomplete="false"
-                                        style="box-sizing: border-box; width: 100%"
-                                        placeholder="Enter the message signature hash">
-                                    <span
-                                        class="text-danger">{{ signHashError }}</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div
@@ -283,20 +246,30 @@ export default {
         update: async function () {
             let self = this
             try {
-                if (self.provider === 'metamask' && self.signHash === '') {
-                    self.signHashError = 'This field is required'
-                    return false
-                }
                 self.loading = true
-                if (self.provider === 'custom') {
+                switch (self.provider) {
+                case 'custom':
                     self.signHash = await self.web3.eth.sign(self.message, self.account)
+                    break
+                case 'metamask':
+                    self.signHash = await self.web3.eth.personal.sign(self.message, self.account)
+                    break
+                case 'ledger':
+                    self.signHash = await self.signMessage(self.message)
+                    break
+                default:
+                    self.loading = false
+                    self.$toasted.show(`An error occurred while updating.`, {
+                        type: 'error'
+                    })
+                    break
                 }
                 // calling update api
                 await self.updateCandidateInfo()
             } catch (e) {
                 console.log(e)
                 self.loading = false
-                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
+                self.$toasted.show(`An error occurred while updating.`, {
                     type: 'error'
                 })
             }
@@ -384,7 +357,7 @@ export default {
             } catch (e) {
                 console.log(e)
                 self.loading = false
-                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
+                self.$toasted.show(`An error occurred while updating.`, {
                     type: 'error'
                 })
             }
@@ -403,7 +376,7 @@ export default {
                 }
             } catch (e) {
                 console.log(e)
-                self.$toasted.show(`An error occurred while updating. ${String(e)}`, {
+                self.$toasted.show(`An error occurred while updating.`, {
                     type: 'error'
                 })
             }
