@@ -283,8 +283,8 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    gasPrice: 2500,
-                    gas: 1000000
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(1000000)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {
