@@ -540,6 +540,7 @@ export default {
                 store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
                 if (self.address) {
+                    self.$bus.$emit('logged', 'user logged')
                     self.$toasted.show('Network Provider was changed successfully')
                 } else {
                     self.$toasted.show(
@@ -677,6 +678,7 @@ export default {
             self.loading = false
             store.set('address', account.toLowerCase())
             store.set('network', self.provider)
+            self.$bus.$emit('logged', 'user logged')
             self.$toasted.show('Network Provider was changed successfully')
             if (this.interval) {
                 clearInterval(this.interval)

@@ -33,10 +33,20 @@
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
 
-                        <router-link
+                        <a
                             v-if="isTomonet"
-                            id="btn-setting"
-                            to="/setting"><i class="tm-dots color-btn-bg"/>Setting</router-link>
+                            href="/setting">
+                            <font-awesome-icon
+                                :icon="{ prefix: 'fas', iconName: 'user-circle' }"
+                                class="fa-2x ml-1"
+                                style="color: #678be0" />
+                        </a>
+
+                        <!-- <router-link
+                        v-if="isTomonet"
+                        id="btn-setting"
+                        to="/setting">
+                        <i class="tm-dots color-btn-bg"/>Setting</router-link> -->
                     </div>
                 </div>
             </b-navbar>
@@ -162,7 +172,9 @@ export default {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            await self.checkNetworkAndLogin()
+            self.$bus.$on('logged', async () => {
+                await self.checkNetworkAndLogin()
+            })
         } catch (e) {
             console.log(e)
         }
