@@ -432,6 +432,7 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         data.status = false
 
         await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
+
         return res.send('Done')
     } catch (e) {
         console.trace(e)
@@ -443,11 +444,10 @@ router.post('/verifyScannedQR', async (req, res, next) => {
 router.get('/:candidate/getSignature', async (req, res, next) => {
     try {
         const messId = req.query.id || ''
-        const candidate = (req.params.candidate || '').toLowerCase()
 
         const signature = await db.Signature.findOne({ signedId: messId })
 
-        if (signature && !signature.status && candidate === signature.signedAddress.toLowerCase()) {
+        if (signature && !signature.status) {
             return res.json({
                 signature: signature.signature
             })

@@ -120,8 +120,7 @@ router.post('/generateQR', async (req, res, next) => {
 router.post('/verifyTx', [
     check('action').isLength({ min: 1 }).withMessage('action is required'),
     check('signer').isLength({ min: 1 }).withMessage('signer is required'),
-    check('amount').isLength({ min: 1 }).withMessage('amount is required')
-        .isFloat().withMessage('amount must be a number'),
+    check('amount').isLength({ min: 1 }).withMessage('amount is required'),
     check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
 ], async (req, res, next) => {
     const errors = validationResult(req)
@@ -137,23 +136,14 @@ router.post('/verifyTx', [
         const serializedTx = req.body.rawTx
 
         if (!id) {
-            return res.status(406).send()
-        }
-        if (!action) {
-            return res.status(406).send('action is requried')
-        }
-        if (!signer) {
-            return res.status(406).send('signer is requried')
+            return res.status(406).send('id is required')
         }
         if (!amount) {
-            return res.status(406).send('amount is requried')
-        }
-        if (!serializedTx) {
-            return res.status(406).send('raw transaction hash(rawTx) is requried')
+            return res.status(406).send('amount is required')
         }
         if (action !== 'withdraw') {
             if (!candidate) {
-                return res.status(406).send('candidate is requried')
+                return res.status(406).send('candidate is required')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
