@@ -50,7 +50,10 @@
                         class="row">
                         <b-col class="float-left">
                             <p>
-                                TomoMaster 2018 - Running on TomoChain
+                                TomoMaster {{ (new Date()).getFullYear() }} -
+                                <a
+                                    :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`">
+                                    v{{ version }}</a>
                             </p>
                         </b-col>
                         <b-col>
@@ -136,6 +139,7 @@
 <script>
 import axios from 'axios'
 import store from 'store'
+import pkg from '../package.json'
 export default {
     name: 'App',
     data () {
@@ -144,7 +148,8 @@ export default {
             showProgressBar: false,
             selectedCandidate: null,
             search: null,
-            isTomonet: false
+            isTomonet: false,
+            version: pkg.version
         }
     },
     async updated () {
