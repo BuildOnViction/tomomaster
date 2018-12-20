@@ -189,6 +189,7 @@ import {
 import NumberInput from '../NumberInput.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
+import BigNumber from 'bignumber.js'
 export default {
     name: 'App',
     components: {
@@ -277,7 +278,7 @@ export default {
                 }
 
                 self.loading = true
-                let unvoteValue = (parseFloat(value) * 10 ** 18)
+                let unvoteValue = new BigNumber(value).multipliedBy(1e+18).toString(10)
                 let account = await self.getAccount()
                 account = account.toLowerCase()
                 let contract = await self.getTomoValidatorInstance()
