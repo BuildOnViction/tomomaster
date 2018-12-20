@@ -1,6 +1,6 @@
 {
     "name": "tomomaster",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "TomoChain Governance DApp",
     "main": "elect.js",
     "scripts": {
