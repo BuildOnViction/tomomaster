@@ -12,6 +12,7 @@ const _ = require('lodash')
 const logger = require('../helpers/logger')
 const { check, validationResult } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
+const urljoin = require('url-join')
 
 router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
@@ -295,7 +296,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
         const owner = req.params.owner
         const limit = 100
         const rewards = await axios.post(
-            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: candidate,
                 limit,
@@ -303,7 +304,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
                 reason: 'MasterNode'
             }
         )
-        res.json(rewards.data)
+        return res.json(rewards.data)
     } catch (e) {
         return next(e)
     }
@@ -380,7 +381,7 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
         }
 
         const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
-            ' I am the candidate ' + '[' + candidate + ']'
+            ' I am the owner of candidate ' + '[' + candidate + ']'
         const id = uuidv4()
 
         // update id, status
@@ -390,9 +391,9 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
         }
         await db.Signature.findOneAndUpdate({ signedAddress: account }, data, { upsert: true, new: true })
 
-        res.json({
+        return res.json({
             message,
-            url: `${config.get('baseUrl')}api/candidates/verifyScannedQR?id=${id}`,
+            url: urljoin(config.get('baseUrl'), `api/candidates/verifyScannedQR?id=${id}`),
             id
         })
     } catch (error) {
@@ -431,7 +432,8 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         data.status = false
 
         await db.Signature.findOneAndUpdate({ signedAddress: signedAddress }, data, { upsert: true, new: true })
-        res.send('Done')
+
+        return res.send('Done')
     } catch (e) {
         console.trace(e)
         console.log(e)
@@ -446,11 +448,11 @@ router.get('/:candidate/getSignature', async (req, res, next) => {
         const signature = await db.Signature.findOne({ signedId: messId })
 
         if (signature && !signature.status) {
-            res.json({
+            return res.json({
                 signature: signature.signature
             })
         } else {
-            res.send({
+            return res.send({
                 error: {
                     message: 'No data'
                 }

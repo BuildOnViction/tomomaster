@@ -94,8 +94,8 @@ export default {
                 let coinbase = self.coinbase
                 let txParams = {
                     from: account,
-                    gasPrice: 2500,
-                    gas: 2000000
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(2000000)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

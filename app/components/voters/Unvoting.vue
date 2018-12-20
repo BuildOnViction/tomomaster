@@ -189,6 +189,7 @@ import {
 import NumberInput from '../NumberInput.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
+import BigNumber from 'bignumber.js'
 export default {
     name: 'App',
     components: {
@@ -277,14 +278,14 @@ export default {
                 }
 
                 self.loading = true
-                let unvoteValue = (parseFloat(value) * 10 ** 18)
+                let unvoteValue = new BigNumber(value).multipliedBy(1e+18).toString(10)
                 let account = await self.getAccount()
                 account = account.toLowerCase()
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    gasPrice: 2500,
-                    gas: 1000000
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(1000000)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {
@@ -353,7 +354,7 @@ export default {
                 '&submitURL=' + generatedMess.data.url
             )
             this.step++
-            if (self.step === 2 && self.processing) {
+            if (self.step === 2 && self.provider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)
@@ -364,18 +365,6 @@ export default {
                 clearInterval(this.interval)
             }
             this.step--
-        },
-        onChangeUnvoting (event) {
-            const checking = event.target.checked
-            if (checking) {
-                this.interval = setInterval(async () => {
-                    await this.verifyScannedQR()
-                }, 3000)
-            } else {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-            }
         },
         async verifyScannedQR () {
             let self = this

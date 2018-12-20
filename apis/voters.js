@@ -10,6 +10,7 @@ const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
 const { check, validationResult } = require('express-validator/check')
+const urljoin = require('url-join')
 
 router.get('/:voter/candidates', [
     check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
@@ -47,7 +48,7 @@ router.get('/:voter/rewards', async function (req, res, next) {
         const voter = req.params.voter
         const limit = 100
         const rewards = await axios.post(
-            `${config.get('tomoscanUrl')}/api/expose/rewards`,
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: voter,
                 limit
@@ -103,7 +104,7 @@ router.post('/generateQR', async (req, res, next) => {
         res.send({
             candidateName: candidateName,
             message,
-            url: `${config.get('baseUrl')}api/voters/verifyTx?id=${id}`,
+            url: urljoin(config.get('baseUrl'), `api/voters/verifyTx?id=${id}`),
             id
         })
     } catch (e) {
@@ -116,37 +117,42 @@ router.post('/generateQR', async (req, res, next) => {
     }
 })
 
-router.post('/verifyTx', async (req, res, next) => {
+router.post('/verifyTx', [
+    check('action').isLength({ min: 1 }).withMessage('action is required'),
+    check('signer').isLength({ min: 1 }).withMessage('signer is required'),
+    check('amount').isLength({ min: 1 }).withMessage('amount is required'),
+    check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const id = req.query.id
         const action = req.body.action
         let signer = req.body.signer
         let candidate = req.body.candidate || ''
-        const amount = !isNaN(req.body.amount) ? parseInt(req.body.amount) : undefined
+        const amount = parseFloat(req.body.amount.replace(/,/g, '')) || undefined
         const serializedTx = req.body.rawTx
+
         if (!id) {
-            res.status(406).send()
-        }
-        if (!action) {
-            res.status(406).send('action is requried')
-        }
-        if (!signer) {
-            res.status(406).send('signer is requried')
+            return res.status(406).send('id is required')
         }
         if (!amount) {
-            res.status(406).send('amount is requried')
-        }
-        if (!serializedTx) {
-            res.status(406).send('raw transaction hash(rawTx) is requried')
+            return res.status(406).send('amount is required')
         }
         if (action !== 'withdraw') {
             if (!candidate) {
-                res.status(406).send('candidate is requried')
+                return res.status(406).send('candidate is required')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
         if (checkId && !checkId.status) {
-            res.status(406).send('Cannot use a QR code twice')
+            return res.status(406).send('Cannot use a QR code twice')
+        }
+
+        if (checkId && (action !== checkId.action || id !== checkId.signId)) {
+            return res.status(406).send('Wrong action')
         }
 
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
@@ -159,20 +165,26 @@ router.post('/verifyTx', async (req, res, next) => {
             return res.status(406).send('Signed Address and signer are not match')
         }
 
-        await web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
+        web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
             if (error) {
                 if (action === 'vote') {
-                    web3.eth.getBalance(signedAddress, function (e, balance) {
-                        if (!e) {
-                            if (new BigNumber(balance).div(10 ** 18) < amount) {
+                    try {
+                        const balance = await web3.eth.getBalance(signedAddress)
+                        if (balance) {
+                            const convertedBalanc = new BigNumber(balance).div(10 ** 18)
+                            const convertedAmount = new BigNumber(amount)
+
+                            if (convertedBalanc.isLessThan(convertedAmount)) {
                                 return res.status(406).send('Not enough TOMO')
                             } else {
                                 return res.status(404).send('Something went wrong')
                             }
                         }
-                    })
-                }
-                throw error
+                    } catch (error) {
+                        console.log(error)
+                        next(error)
+                    }
+                } else next(error)
             } else {
                 // Store id, address, msg, signature
                 let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
@@ -191,7 +203,7 @@ router.post('/verifyTx', async (req, res, next) => {
                     sign,
                     { upsert: true, new: true }
                 )
-                res.send({
+                return res.send({
                     status: 'Done',
                     transactionHash: hash
                 })
@@ -220,7 +232,7 @@ router.get('/getScanningResult',
                         tx: signTx.tx
                     })
                 } else {
-                    res.send('Scanned')
+                    res.send('Scanned, getting transaction hash')
                 }
             } else {
                 res.send({

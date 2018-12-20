@@ -282,9 +282,9 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    value: new BigNumber(this.voteValue).multipliedBy(10 ** 18).toNumber(),
-                    gasPrice: 2500,
-                    gas: 1000000
+                    value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
+                    gasPrice: self.web3.utils.toHex(2500),
+                    gas: self.web3.utils.toHex(1000000)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {
@@ -359,7 +359,7 @@ export default {
             )
             self.step++
 
-            if (self.step === 2 && self.processing && self.NetworkProvider === 'tomowallet') {
+            if (self.step === 2 && self.processing && self.provider === 'tomowallet') {
                 self.interval = setInterval(async () => {
                     await this.verifyScannedQR()
                 }, 3000)
