@@ -33,14 +33,14 @@
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
 
-                        <a
+                        <router-link
                             v-if="isTomonet"
-                            href="/setting">
+                            to="/setting">
                             <font-awesome-icon
                                 :icon="{ prefix: 'fas', iconName: 'user-circle' }"
                                 class="fa-2x ml-1"
                                 style="color: #678be0" />
-                        </a>
+                        </router-link>
 
                         <!-- <router-link
                         v-if="isTomonet"
