@@ -62,7 +62,6 @@
                         </div>
                         <b-card-footer class="mt-3 text-right">
                             <b-button
-                                v-b-modal.resignModal
                                 :disabled="loading"
                                 :to="'/setting'"
                                 variant="secondary">Back</b-button>
