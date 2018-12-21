@@ -84,7 +84,10 @@
 
                 <template
                     slot="latestSignedBlock"
-                    slot-scope="data">#{{ data.item.latestSignedBlock || 0 }}
+                    slot-scope="data">
+                    <div style="text-align: center">
+                        #{{ data.item.latestSignedBlock || 0 }}
+                    </div>
                 </template>
 
                 <template
