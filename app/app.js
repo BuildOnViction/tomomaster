@@ -335,7 +335,7 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'tomowallet':
                 wjs = new Web3(new HDWalletProvider(
                     '',
-                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0"))
                 break
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))

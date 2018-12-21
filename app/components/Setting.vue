@@ -526,7 +526,7 @@ export default {
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
                                 self.mnemonic,
-                                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/")
+                                self.chainConfig.rpc, 0, 1, true, self.hdPath)
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
 
                     wjs = new Web3(walletProvider)
@@ -624,7 +624,7 @@ export default {
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
                 null,
-                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                self.chainConfig.rpc, 0, 1, true, self.hdPath))
 
             await self.setupProvider(this.provider, web3)
             try {

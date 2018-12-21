@@ -288,20 +288,22 @@ export default {
         },
         getColor (latestSignedBlock) {
             const currentBlock = this.chainConfig.blockNumber
+            let result
             switch (true) {
-                case latestSignedBlock <= (currentBlock - 20):
-                console.log(1)
-                    return '--green'
-                case latestSignedBlock < (currentBlock - 20) &&
-                    latestSignedBlock >= (currentBlock - 100):
-                    console.log(2)
-                    return '--orange'
-                case latestSignedBlock < (currentBlock - 100):
-                console.log(3)
-                    return '--red'
-                default:
-                    return ''
+            case latestSignedBlock >= (currentBlock - 20):
+                result = '--green'
+                break
+            case latestSignedBlock < (currentBlock - 20) &&
+                latestSignedBlock >= (currentBlock - 100):
+                result = '--orange'
+                break
+            case latestSignedBlock < (currentBlock - 100):
+                result = '--red'
+                break
+            default:
+                result = ''
             }
+            return result
         }
     }
 }

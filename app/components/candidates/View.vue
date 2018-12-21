@@ -56,6 +56,10 @@
                             <span class="tomo-info__text">Latest Signed Block</span>
                         </p>
                         <p class="tomo-info__description">
+                            <span
+                                :class="`float-left mr-1 tomo-middle${getColor(candidate.latestSignedBlock || 0)}`">
+                                &#9679;
+                            </span>
                             {{ formatNumber(candidate.latestSignedBlock) }}
                         </p>
                     </div>
@@ -532,6 +536,7 @@ export default {
     created: async function () {
         let self = this
         self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain
         self.isReady = !!self.web3
         try {
             if (self.isReady) {
@@ -674,6 +679,25 @@ export default {
                 self.loading = false
                 console.log(e)
             }
+        },
+        getColor (latestSignedBlock) {
+            const currentBlock = this.chainConfig.blockNumber
+            let result
+            switch (true) {
+            case latestSignedBlock >= (currentBlock - 20):
+                result = '--green'
+                break
+            case latestSignedBlock < (currentBlock - 20) &&
+                latestSignedBlock >= (currentBlock - 100):
+                result = '--orange'
+                break
+            case latestSignedBlock < (currentBlock - 100):
+                result = '--red'
+                break
+            default:
+                result = ''
+            }
+            return result
         }
     }
 }
