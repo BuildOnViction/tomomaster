@@ -23,7 +23,7 @@
                                 @change="onChangeSelect">
                                 <option
                                     value="tomowallet"
-                                    selected>TomoWallet</option>
+                                    selected>TomoWallet (Recommended)</option>
                                 <option value="custom">PrivateKey/MNEMONIC</option>
                                 <option value="ledger">Ledger Wallet</option>
                                 <option
@@ -74,6 +74,9 @@
                             :options="{size: 250 }"
                             :value="qrCode"
                             class="img-fluid text-center text-lg-right"/>
+                        <div>
+                            <b>In case you do not have TomoWallet, download here</b>
+                        </div>
                         <div
                             style="margin-top: 5px">
                             <a
