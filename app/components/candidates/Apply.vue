@@ -336,6 +336,10 @@ export default {
             const self = this
             const coinbase = self.coinbase.toLowerCase()
 
+            if (self.interval) {
+                clearInterval(self.interval)
+            }
+
             try {
                 const body = {
                     action: 'propose',
@@ -372,10 +376,10 @@ export default {
                     self.hideModal()
                     self.loading = true
                     if (data.tx) {
+                        clearInterval(self.interval)
                         let toastMessage = data.tx ? 'You have successfully applied!'
                             : 'An error occurred while applying, please try again'
                         self.$toasted.show(toastMessage)
-                        clearInterval(self.interval)
                         setTimeout(() => {
                             if (data.tx) {
                                 self.loading = false
