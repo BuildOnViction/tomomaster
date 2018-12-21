@@ -23,7 +23,7 @@
                                 @change="onChangeSelect">
                                 <option
                                     value="tomowallet"
-                                    selected>TomoWallet</option>
+                                    selected>TomoWallet (Recommended)</option>
                                 <option value="custom">PrivateKey/MNEMONIC</option>
                                 <option value="ledger">Ledger Wallet</option>
                                 <option
@@ -74,6 +74,9 @@
                             :options="{size: 250 }"
                             :value="qrCode"
                             class="img-fluid text-center text-lg-right"/>
+                        <div>
+                            <b>In case you do not have TomoWallet, download here</b>
+                        </div>
                         <div
                             style="margin-top: 5px">
                             <a
@@ -526,7 +529,7 @@ export default {
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
                                 self.mnemonic,
-                                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/")
+                                self.chainConfig.rpc, 0, 1, true, self.hdPath)
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
 
                     wjs = new Web3(walletProvider)
@@ -540,6 +543,7 @@ export default {
                 store.set('address', self.address.toLowerCase())
                 store.set('network', self.provider)
                 if (self.address) {
+                    self.$bus.$emit('logged', 'user logged')
                     self.$toasted.show('Network Provider was changed successfully')
                 } else {
                     self.$toasted.show(
@@ -623,7 +627,7 @@ export default {
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
                 null,
-                self.chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                self.chainConfig.rpc, 0, 1, true, self.hdPath))
 
             await self.setupProvider(this.provider, web3)
             try {
@@ -677,6 +681,7 @@ export default {
             self.loading = false
             store.set('address', account.toLowerCase())
             store.set('network', self.provider)
+            self.$bus.$emit('logged', 'user logged')
             self.$toasted.show('Network Provider was changed successfully')
             if (this.interval) {
                 clearInterval(this.interval)

@@ -62,7 +62,6 @@
                         </div>
                         <b-card-footer class="mt-3 text-right">
                             <b-button
-                                v-b-modal.resignModal
                                 :disabled="loading"
                                 :to="'/setting'"
                                 variant="secondary">Back</b-button>
@@ -143,20 +142,22 @@ export default {
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
         } else {
+            let amount = parseFloat(self.capacity.replace(/,/g, ''))
             const data = {
                 action: 'withdraw',
-                amount: self.capacity,
+                amount,
                 block: self.blockNumber,
                 index: self.index,
                 voter: self.coinbase
             }
             // call api to generate qr code
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
+            console.log(JSON.stringify(generatedMess.data))
 
             self.id = generatedMess.data.id
 
             self.qrCode = encodeURI(
-                'tomochain:withdraw?amount=' + self.capacity + '&' + 'block=' + self.blockNumber +
+                'tomochain:withdraw?amount=' + amount + '&' + 'block=' + self.blockNumber +
                 '&index=' + self.index +
                 '&submitURL=' + generatedMess.data.url
             )

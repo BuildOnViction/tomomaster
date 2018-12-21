@@ -42,7 +42,7 @@ import Eth from '@ledgerhq/hw-app-eth'
 import Transaction from 'ethereumjs-tx'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEdit, faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faQuestionCircle, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import {
     faFacebook,
     faTelegram,
@@ -52,7 +52,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faEdit, faGithub, faQuestionCircle)
+library.add(faEdit, faGithub, faQuestionCircle, faUserCircle)
 library.add(faFacebook, faTelegram, faTwitter, faReddit)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -335,7 +335,7 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'tomowallet':
                 wjs = new Web3(new HDWalletProvider(
                     '',
-                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0/"))
+                    chainConfig.rpc, 0, 1, true, "m/44'/889'/0'/0"))
                 break
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
@@ -428,6 +428,10 @@ Vue.prototype.signMessage = async function (message) {
         console.log(error)
     }
 }
+
+const EventBus = new Vue()
+
+Vue.prototype.$bus = EventBus
 
 new Vue({ // eslint-disable-line no-new
     el: '#app',

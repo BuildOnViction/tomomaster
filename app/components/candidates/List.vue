@@ -84,7 +84,13 @@
 
                 <template
                     slot="latestSignedBlock"
-                    slot-scope="data">#{{ data.item.latestSignedBlock || 0 }}
+                    slot-scope="data">
+                    <div>
+                        <span
+                            :class="`float-left mr-1 tomo-middle${getColor(data.item.latestSignedBlock || 0)}`">
+                            &#9679;
+                        </span> {{ data.item.latestSignedBlock || 0 }}
+                    </div>
                 </template>
 
                 <template
@@ -279,6 +285,25 @@ export default {
                     delay: '5000'
                 })
             }
+        },
+        getColor (latestSignedBlock) {
+            const currentBlock = this.chainConfig.blockNumber
+            let result
+            switch (true) {
+            case latestSignedBlock >= (currentBlock - 20):
+                result = '--green'
+                break
+            case latestSignedBlock < (currentBlock - 20) &&
+                latestSignedBlock >= (currentBlock - 100):
+                result = '--orange'
+                break
+            case latestSignedBlock < (currentBlock - 100):
+                result = '--red'
+                break
+            default:
+                result = ''
+            }
+            return result
         }
     }
 }

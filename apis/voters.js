@@ -103,7 +103,7 @@ router.post('/generateQR', async (req, res, next) => {
 
         res.send({
             candidateName: candidateName,
-            message,
+            message: (action === 'resign') ? '' : message,
             url: urljoin(config.get('baseUrl'), `api/voters/verifyTx?id=${id}`),
             id
         })
@@ -120,7 +120,6 @@ router.post('/generateQR', async (req, res, next) => {
 router.post('/verifyTx', [
     check('action').isLength({ min: 1 }).withMessage('action is required'),
     check('signer').isLength({ min: 1 }).withMessage('signer is required'),
-    check('amount').isLength({ min: 1 }).withMessage('amount is required'),
     check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
 ], async (req, res, next) => {
     const errors = validationResult(req)
@@ -132,16 +131,20 @@ router.post('/verifyTx', [
         const action = req.body.action
         let signer = req.body.signer
         let candidate = req.body.candidate || ''
-        const amount = parseFloat(req.body.amount.replace(/,/g, '')) || undefined
+        const amount = (req.body.amount) ? parseFloat(req.body.amount.replace(/,/g, '')) : undefined
         const serializedTx = req.body.rawTx
+
+        console.log(JSON.stringify(req.body, null, 2))
 
         if (!id) {
             return res.status(406).send('id is required')
         }
         if (!amount) {
-            return res.status(406).send('amount is required')
+            if (action !== 'resign') {
+                return res.status(406).send('amount is required')
+            }
         }
-        if (action !== 'withdraw') {
+        if (action !== 'withdraw' || action !== 'resign') {
             if (!candidate) {
                 return res.status(406).send('candidate is required')
             }
@@ -154,7 +157,6 @@ router.post('/verifyTx', [
         if (checkId && (action !== checkId.action || id !== checkId.signId)) {
             return res.status(406).send('Wrong action')
         }
-
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         signedAddress = signedAddress.toLowerCase()
