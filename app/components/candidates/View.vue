@@ -120,10 +120,18 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Monitor</span>
+                            <span
+                                class="tomo-info__text">
+                                Status
+                            </span>
                         </p>
-                        <p class="tomo-info__description">
-                            {{ candidate.monitor }}
+                        <p
+                            :class="{ 'text-success': candidate.status === 'MASTERNODE',
+                                      'text-danger': candidate.status === 'SLASHED',
+                                      'text-danger': candidate.status === 'RESIGNED' }"
+                            class="tomo-info__description"
+                        >
+                            {{ candidate.status }}
                         </p>
                     </div>
                     <div
@@ -427,7 +435,7 @@ export default {
                 address: this.$route.params.address.toLowerCase(),
                 name: '',
                 balance: '',
-                status: 'active',
+                status: '',
                 cap: 0,
                 latestBlock: '',
                 latestSignedBlock: 0,

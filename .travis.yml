@@ -12,6 +12,8 @@ jobs:
       - $HOME/.cache/electron-builder
     - stage: Lint
       script: npm run lint
+    - stage: Audit
+      script: npm audit --production
     - stage: Test
     - stage: Coverage
       script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
@@ -108,6 +110,7 @@ jobs:
 
 stages:
   - name: Lint
+  - name: Audit
   - name: Test
   - name: Coverage
   - name: Build and push image
