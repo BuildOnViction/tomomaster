@@ -340,10 +340,11 @@ export default {
         },
         async nextStep () {
             const self = this
+            const amount = new BigNumber(self.voteValue).toString(10)
             const data = {
                 voter: self.voter,
                 candidate: self.candidate,
-                amount: self.voteValue,
+                amount,
                 action: 'vote'
             }
             // call api to generate qr code
@@ -353,7 +354,7 @@ export default {
             self.id = generatedMess.data.id
 
             self.qrCode = encodeURI(
-                'tomochain:vote?amount=' + self.voteValue + '&' + 'candidate=' + self.candidate +
+                'tomochain:vote?amount=' + amount + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
                 '&submitURL=' + generatedMess.data.url
             )

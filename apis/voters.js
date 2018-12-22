@@ -131,7 +131,9 @@ router.post('/verifyTx', [
         const action = req.body.action
         let signer = req.body.signer
         let candidate = req.body.candidate || ''
-        const amount = (req.body.amount) ? parseFloat(req.body.amount.replace(/,/g, '')) : undefined
+        const amount = (req.body.amount)
+            ? new BigNumber(req.body.amount.replace(/,/g, '')).toString(10)
+            : undefined
         const serializedTx = req.body.rawTx
 
         console.log(JSON.stringify(req.body, null, 2))
@@ -144,12 +146,15 @@ router.post('/verifyTx', [
                 return res.status(406).send('amount is required')
             }
         }
+        const checkId = await db.SignTransaction.findOne({ signId: id })
+
         if (action !== 'withdraw' || action !== 'resign') {
             if (!candidate) {
                 return res.status(406).send('candidate is required')
             }
+        } else if (checkId && checkId.candidate !== candidate) {
+            return res.status(406).send('candidate is not match')
         }
-        const checkId = await db.SignTransaction.findOne({ signId: id })
         if (checkId && !checkId.status) {
             return res.status(406).send('Cannot use a QR code twice')
         }
@@ -165,6 +170,12 @@ router.post('/verifyTx', [
 
         if (signedAddress !== signer || signedAddress !== checkId.signedAddress) {
             return res.status(406).send('Signed Address and signer are not match')
+        }
+
+        if (action === 'vote' || action === 'unvote' || action === 'withdraw' || action === 'propose') {
+            if (checkId.amount !== amount) {
+                return res.status(406).send('Amount is not match')
+            }
         }
 
         web3.eth.sendSignedTransaction(serializedTx, async (error, hash) => {
