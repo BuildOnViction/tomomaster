@@ -252,8 +252,8 @@ export default {
                         })
                         return false
                     }
-                    const { data } = await axios.get('/api/candidates/' + this.coinbase)
-                    if (Object.keys(data).length > 0) {
+                    const { data } = await axios.get('/api/candidates/' + this.coinbase + '/isCandidate')
+                    if (data) {
                         this.candidateError = true
                     } else {
                         this.candidateError = false
