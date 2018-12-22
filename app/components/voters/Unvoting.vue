@@ -336,11 +336,12 @@ export default {
         },
         async nextStep () {
             const self = this
+            const amount = new BigNumber(self.unvoteValue).toString(10)
             const data = {
                 action: 'unvote',
                 voter: self.voter,
                 candidate: self.candidate,
-                amount: self.unvoteValue
+                amount
             }
             // call api to generate qr code
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
@@ -349,7 +350,7 @@ export default {
             self.id = generatedMess.data.id
 
             self.qrCode = encodeURI(
-                'tomochain:unvote?amount=' + self.unvoteValue + '&' + 'candidate=' + self.candidate +
+                'tomochain:unvote?amount=' + amount + '&' + 'candidate=' + self.candidate +
                 '&name=' + generatedMess.data.candidateName +
                 '&submitURL=' + generatedMess.data.url
             )

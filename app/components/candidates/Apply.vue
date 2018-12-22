@@ -341,11 +341,12 @@ export default {
             }
 
             try {
+                const amount = new BigNumber(self.applyValue).toString(10)
                 const body = {
                     action: 'propose',
                     voter: self.account.toLowerCase(),
                     candidate: coinbase,
-                    amount: self.applyValue
+                    amount
                 }
                 // call api to generate qr code
                 const { data } = await axios.post(`/api/voters/generateQR`, body)
@@ -353,7 +354,7 @@ export default {
                 self.message = data.message
                 self.id = data.id
                 self.qrCode = encodeURI(
-                    'tomochain:propose?amount=' + self.applyValue +
+                    'tomochain:propose?amount=' + amount +
                     '&candidate=' + coinbase +
                     '&submitURL=' + data.url
                 )

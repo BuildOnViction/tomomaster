@@ -187,7 +187,6 @@
                             variant="primary"
                             @click="withdraw(w.blockNumber, k)">Withdraw</b-button> -->
                         <b-button
-                            :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
                             @click="changeView(w, k)">Withdraw</b-button>
                     </li>

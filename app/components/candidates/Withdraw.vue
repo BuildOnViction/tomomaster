@@ -96,6 +96,7 @@
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import axios from 'axios'
 import store from 'store'
+import BigNumber from 'bignumber.js'
 export default {
     name: 'App',
     components: {
@@ -142,7 +143,7 @@ export default {
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
         } else {
-            let amount = parseFloat(self.capacity.replace(/,/g, ''))
+            let amount = new BigNumber(self.capacity.replace(/,/g, '')).toString(10)
             const data = {
                 action: 'withdraw',
                 amount,
