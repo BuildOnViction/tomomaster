@@ -136,8 +136,6 @@ router.post('/verifyTx', [
             : undefined
         const serializedTx = req.body.rawTx
 
-        console.log(JSON.stringify(req.body, null, 2))
-
         if (!id) {
             return res.status(406).send('id is required')
         }
@@ -148,7 +146,7 @@ router.post('/verifyTx', [
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
 
-        if (action !== 'withdraw' || action !== 'resign') {
+        if (action !== 'withdraw' && action !== 'resign') {
             if (!candidate) {
                 return res.status(406).send('candidate is required')
             }
