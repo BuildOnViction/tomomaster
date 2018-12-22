@@ -72,6 +72,33 @@ router.get('/:candidate', async function (req, res, next) {
         candidate: address
     }) || {})
 
+    let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
+    let latestPenalties = await db.Penalty.findOne({}).sort({ _id: 'desc' })
+
+    const signers = (latestSigners || {}).signers || []
+    const penalties = (latestPenalties || {}).penalties || []
+
+    const setS = new Set()
+    for (let i = 0; i < signers.length; i++) {
+        setS.add((signers[i] || '').toLowerCase())
+    }
+
+    const setP = new Set()
+    for (let i = 0; i < penalties.length; i++) {
+        setP.add((penalties[i] || '').toLowerCase())
+    }
+
+    if (signers.length === 0) {
+        candidate.isMasternode = !!candidate.latestSignedBlock
+    } else {
+        candidate.isMasternode = setS.has((candidate.candidate || '').toLowerCase())
+    }
+
+    candidate.isPenalty = setP.has((candidate.candidate || '').toLowerCase())
+
+    candidate.status = (candidate.isMasternode) ? 'MASTERNODE' : candidate.status
+    candidate.status = (candidate.isPenalty) ? 'SLASHED' : candidate.status
+
     return res.json(candidate)
 })
 
