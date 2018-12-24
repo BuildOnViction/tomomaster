@@ -129,12 +129,13 @@ router.post('/verifyTx', [
     try {
         const id = req.query.id
         const action = req.body.action
-        let signer = req.body.signer
-        let candidate = req.body.candidate || ''
+        let signer = (req.body.signer || '').toLowerCase()
+        let candidate = (req.body.candidate || '').toLowerCase()
         const amount = (req.body.amount)
             ? new BigNumber(req.body.amount.replace(/,/g, '')).toString(10)
             : undefined
         const serializedTx = req.body.rawTx
+        console.log(JSON.stringify(req.body))
 
         if (!id) {
             return res.status(406).send('id is required')
@@ -150,7 +151,7 @@ router.post('/verifyTx', [
             if (!candidate) {
                 return res.status(406).send('candidate is required')
             }
-        } else if (checkId && checkId.candidate !== candidate) {
+        } else if (checkId && checkId.candidate.toLowerCase() !== candidate) {
             return res.status(406).send('candidate is not match')
         }
         if (checkId && !checkId.status) {
@@ -163,8 +164,6 @@ router.post('/verifyTx', [
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         signedAddress = signedAddress.toLowerCase()
-        signer = signer.toLowerCase()
-        candidate = candidate.toLowerCase()
 
         if (signedAddress !== signer || signedAddress !== checkId.signedAddress) {
             return res.status(406).send('Signed Address and signer are not match')
