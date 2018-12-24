@@ -26,6 +26,7 @@
 </template>
 <script>
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 export default {
     name: 'App',
     data () {
@@ -62,10 +63,11 @@ export default {
                     }
 
                     if (self.status === 'success') {
+                        const amount = new BigNumber(transaction.capacity).div(10 ** 18).toString(10)
                         self.icon = 'checkmark'
                         self.title = 'Success'
                         self.description = `You have ${event} 
-                        <span class="color-white">${transaction.capacity / 10 ** 18} TOMO</span> for candidate 
+                        <span class="color-white">${amount} TOMO</span> for candidate 
                         <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
                         <br/><br/>
                         Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
