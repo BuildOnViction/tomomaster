@@ -22,13 +22,14 @@
                                 v-model="provider"
                                 @change="onChangeSelect">
                                 <option
-                                    value="tomowallet"
-                                    selected>TomoWallet (Recommended)</option>
-                                <option value="custom">PrivateKey/MNEMONIC</option>
-                                <option value="ledger">Ledger Wallet</option>
+                                    value="tomowallet">TomoWallet (Recommended)</option>
+                                <option
+                                    value="custom">PrivateKey/MNEMONIC</option>
+                                <option
+                                    value="ledger">Ledger Wallet</option>
                                 <option
                                     v-if="!isElectron"
-                                    value="metamask">Metamask</option>
+                                    value="metamask">Metamask/TrustWallet</option>
                             </b-form-select>
                             <small
                                 v-if="provider !== 'metamask'"
