@@ -67,8 +67,7 @@
                             </p>
                         </b-col>
                         <b-col>
-                            <div
-                                style="text-align: right">
+                            <div class="footer-center">
                                 <ul class="list-inline tomo-footer__social">
                                     <li class="list-inline-item">
                                         <a

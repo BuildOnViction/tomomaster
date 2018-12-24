@@ -5,7 +5,7 @@ var Schema = mongoose.Schema
 
 var Penalty = new Schema({
     networkId: Number,
-    blockNumber: Number,
+    blockNumber: { type: Number, index: true },
     penalties: [{
         type: String,
         index: true

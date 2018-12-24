@@ -129,8 +129,8 @@ router.post('/verifyTx', [
     try {
         const id = req.query.id
         const action = req.body.action
-        let signer = req.body.signer
-        let candidate = req.body.candidate || ''
+        let signer = (req.body.signer || '').toLowerCase()
+        let candidate = (req.body.candidate || '').toLowerCase()
         const amount = (req.body.amount)
             ? new BigNumber(req.body.amount.replace(/,/g, '')).toString(10)
             : undefined
@@ -150,7 +150,7 @@ router.post('/verifyTx', [
             if (!candidate) {
                 return res.status(406).send('candidate is required')
             }
-        } else if (checkId && checkId.candidate !== candidate) {
+        } else if (checkId && checkId.candidate.toLowerCase() !== candidate) {
             return res.status(406).send('candidate is not match')
         }
         if (checkId && !checkId.status) {
@@ -163,8 +163,6 @@ router.post('/verifyTx', [
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         signedAddress = signedAddress.toLowerCase()
-        signer = signer.toLowerCase()
-        candidate = candidate.toLowerCase()
 
         if (signedAddress !== signer || signedAddress !== checkId.signedAddress) {
             return res.status(406).send('Signed Address and signer are not match')
@@ -231,16 +229,17 @@ router.get('/getScanningResult',
     async (req, res, next) => {
         try {
             const id = req.query.id
-            const action = req.query.action || ''
 
             const signTx = await db.SignTransaction.findOne({ signId: id })
 
             if (signTx && id === signTx.signId && !signTx.status) {
-                const checkTx = ((signTx || {}).tx && action === 'withdraw')
-                    ? true : await db.Transaction.findOne({ tx: signTx.tx })
+                const checkTx = await web3.eth.getTransactionReceipt(signTx.tx)
+                // const checkTx = ((signTx || {}).tx && action === 'withdraw')
+                //     ? true : await db.Transaction.findOne({ tx: signTx.tx })
                 if (checkTx) {
                     res.send({
-                        tx: signTx.tx
+                        tx: signTx.tx,
+                        status: checkTx.status
                     })
                 } else {
                     res.send('Scanned, getting transaction hash')

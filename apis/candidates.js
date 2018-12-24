@@ -23,15 +23,19 @@ router.get('/', async function (req, res, next) {
                 smartContractAddress: config.get('blockchain.validatorAddress')
             }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
-            db.Penalty.findOne({}).sort({ _id: 'desc' })
+            db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])
 
         let candidates = data[0]
         let latestSigners = data[1]
         let latestPenalties = data[2]
 
-        const signers = (latestSigners || {}).signers || []
-        const penalties = (latestPenalties || {}).penalties || []
+        let signers = (latestSigners || {}).signers || []
+        let penalties = []
+        latestPenalties.forEach(p => {
+            penalties = _.concat(penalties, (p || {}).penalties || [])
+        })
+
         const setS = new Set()
         for (let i = 0; i < signers.length; i++) {
             setS.add((signers[i] || '').toLowerCase())
@@ -65,6 +69,32 @@ router.get('/', async function (req, res, next) {
     }
 })
 
+router.get('/crawlStatus', async function (req, res, next) {
+    const limit = 200
+    const skip = 0
+    try {
+        let candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress')
+        }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec()
+
+        let latestSignedBlock = 0
+
+        for (let c of candidates) {
+            latestSignedBlock = (parseInt(c.latestSignedBlock || 0) > latestSignedBlock)
+                ? parseInt(c.latestSignedBlock || 0)
+                : latestSignedBlock
+        }
+
+        let blockNumber = await web3.eth.getBlockNumber()
+
+        return res.json({
+            latestSignedBlock, blockNumber
+        })
+    } catch (e) {
+        return next(e)
+    }
+})
+
 router.get('/:candidate', async function (req, res, next) {
     let address = (req.params.candidate || '').toLowerCase()
     let candidate = (await db.Candidate.findOne({
@@ -73,10 +103,13 @@ router.get('/:candidate', async function (req, res, next) {
     }) || {})
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
-    let latestPenalties = await db.Penalty.findOne({}).sort({ _id: 'desc' })
+    let latestPenalties = await db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
 
-    const signers = (latestSigners || {}).signers || []
-    const penalties = (latestPenalties || {}).penalties || []
+    let signers = (latestSigners || {}).signers || []
+    let penalties = []
+    latestPenalties.forEach(p => {
+        penalties = _.concat(penalties, (p || {}).penalties || [])
+    })
 
     const setS = new Set()
     for (let i = 0; i < signers.length; i++) {
