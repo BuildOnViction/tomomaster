@@ -24,7 +24,7 @@ async function watchValidator () {
             toBlock: 'latest'
         }, async function (error, result) {
             if (error) {
-                logger.error(error, result)
+                logger.error('watchValidator %s %s', error, result)
                 return false
             } else {
                 logger.info('Event %s in block %s', result.event, result.blockNumber)
@@ -71,7 +71,7 @@ async function watchValidator () {
             }
         })
     } catch (e) {
-        logger.error(e)
+        logger.error('watchValidator2 %s', e)
         emitter.emit('error', e)
     }
 }
@@ -109,7 +109,7 @@ async function updateCandidateInfo (candidate) {
 
         return result
     } catch (e) {
-        logger.error(e)
+        logger.error('updateCandidateInfo %s', e)
     }
 }
 
@@ -131,7 +131,7 @@ async function updateVoterCap (candidate, voter) {
             }
         }, { upsert: true })
     } catch (e) {
-        logger.error(e)
+        logger.error('updateVoterCap %s', e)
     }
 }
 
@@ -151,9 +151,9 @@ async function getCurrentCandidates () {
             await Promise.all(m)
             return updateCandidateInfo(candidate)
         })
-        return Promise.all(map).catch(e => logger.error(e))
+        return Promise.all(map).catch(e => logger.error('getCurrentCandidates %s', e))
     } catch (e) {
-        logger.error(e)
+        logger.error('getCurrentCandidates2 %s', e)
     }
 }
 
@@ -184,7 +184,7 @@ async function updatePenalties () {
         }
         return penalties
     } catch (e) {
-        logger.error(e)
+        logger.error('updatePenalties %s', e)
     }
 }
 
@@ -214,7 +214,7 @@ async function updateSigners () {
         }
         return signers
     } catch (e) {
-        logger.error(e)
+        logger.error('updateSigners %s', e)
     }
 }
 
@@ -226,6 +226,7 @@ async function watchNewBlock () {
             await updateSigners()
             await updatePenalties()
         } catch (e) {
+            logger.error('watchNewBlock %s', e)
             emitter.emit('error', e)
         }
         await sleep(10000)
