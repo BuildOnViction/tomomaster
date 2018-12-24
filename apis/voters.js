@@ -135,7 +135,6 @@ router.post('/verifyTx', [
             ? new BigNumber(req.body.amount.replace(/,/g, '')).toString(10)
             : undefined
         const serializedTx = req.body.rawTx
-        console.log(JSON.stringify(req.body))
 
         if (!id) {
             return res.status(406).send('id is required')
@@ -230,16 +229,17 @@ router.get('/getScanningResult',
     async (req, res, next) => {
         try {
             const id = req.query.id
-            const action = req.query.action || ''
 
             const signTx = await db.SignTransaction.findOne({ signId: id })
 
             if (signTx && id === signTx.signId && !signTx.status) {
-                const checkTx = ((signTx || {}).tx && action === 'withdraw')
-                    ? true : await db.Transaction.findOne({ tx: signTx.tx })
+                const checkTx = await web3.eth.getTransactionReceipt(signTx.tx)
+                // const checkTx = ((signTx || {}).tx && action === 'withdraw')
+                //     ? true : await db.Transaction.findOne({ tx: signTx.tx })
                 if (checkTx) {
                     res.send({
-                        tx: signTx.tx
+                        tx: signTx.tx,
+                        status: checkTx.status
                     })
                 } else {
                     res.send('Scanned, getting transaction hash')

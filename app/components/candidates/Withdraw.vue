@@ -153,7 +153,6 @@ export default {
             }
             // call api to generate qr code
             const generatedMess = await axios.post(`/api/voters/generateQR`, data)
-            console.log(JSON.stringify(generatedMess.data))
 
             self.id = generatedMess.data.id
 
@@ -236,7 +235,7 @@ export default {
                 self.loading = true
                 if (data.tx) {
                     clearInterval(self.interval)
-                    let toastMessage = data.tx ? 'You have successfully withdrawed!'
+                    let toastMessage = (data.tx && data.status) ? 'You have successfully withdrawed!'
                         : 'An error occurred while voting, please try again'
                     self.$toasted.show(toastMessage)
                     setTimeout(() => {
