@@ -540,11 +540,8 @@ export default {
             this.getCandidateData()
         }
     },
-    updated () {},
     created: async function () {
         let self = this
-        self.config = await self.appConfig()
-        self.chainConfig = self.config.blockchain
         self.isReady = !!self.web3
         try {
             if (self.isReady) {
@@ -688,8 +685,10 @@ export default {
                 console.log(e)
             }
         },
-        getColor (latestSignedBlock) {
-            const currentBlock = this.chainConfig.blockNumber
+        async getColor (latestSignedBlock) {
+            const config = await this.appConfig()
+            const currentBlock = config.blockchain.blockNumber
+
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
