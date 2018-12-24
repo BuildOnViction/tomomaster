@@ -23,15 +23,19 @@ router.get('/', async function (req, res, next) {
                 smartContractAddress: config.get('blockchain.validatorAddress')
             }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
-            db.Penalty.findOne({}).sort({ _id: 'desc' })
+            db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])
 
         let candidates = data[0]
         let latestSigners = data[1]
         let latestPenalties = data[2]
 
-        const signers = (latestSigners || {}).signers || []
-        const penalties = (latestPenalties || {}).penalties || []
+        let signers = (latestSigners || {}).signers || []
+        let penalties = []
+        latestPenalties.forEach(p => {
+            penalties = _.concat(penalties, (p || {}).penalties || [])
+        })
+
         const setS = new Set()
         for (let i = 0; i < signers.length; i++) {
             setS.add((signers[i] || '').toLowerCase())
@@ -99,10 +103,13 @@ router.get('/:candidate', async function (req, res, next) {
     }) || {})
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
-    let latestPenalties = await db.Penalty.findOne({}).sort({ _id: 'desc' })
+    let latestPenalties = await db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
 
-    const signers = (latestSigners || {}).signers || []
-    const penalties = (latestPenalties || {}).penalties || []
+    let signers = (latestSigners || {}).signers || []
+    let penalties = []
+    latestPenalties.forEach(p => {
+        penalties = _.concat(penalties, (p || {}).penalties || [])
+    })
 
     const setS = new Set()
     for (let i = 0; i < signers.length; i++) {
