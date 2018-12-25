@@ -542,6 +542,7 @@ export default {
     },
     created: async function () {
         let self = this
+        self.config = await this.appConfig()
         self.isReady = !!self.web3
         try {
             if (self.isReady) {
@@ -685,9 +686,8 @@ export default {
                 console.log(e)
             }
         },
-        async getColor (latestSignedBlock) {
-            const config = await this.appConfig()
-            const currentBlock = config.blockchain.blockNumber
+        getColor (latestSignedBlock) {
+            const currentBlock = this.config.blockchain.blockNumber
 
             let result
             switch (true) {
