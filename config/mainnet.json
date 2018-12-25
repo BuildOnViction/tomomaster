@@ -1,4 +1,7 @@
 {
+    "logs": {
+        "level": "warn"
+    },
     "blockchain": {
         "rpc": "https://rpc.tomochain.com",
         "ws": "wss://ws.tomochain.com",
