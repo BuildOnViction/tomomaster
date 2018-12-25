@@ -28,6 +28,8 @@
                                 <option
                                     value="ledger">Ledger Wallet</option>
                                 <option
+                                    value="trezor">Trezor Wallet</option>
+                                <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask/TrustWallet</option>
                             </b-form-select>
@@ -524,6 +526,10 @@ export default {
                     // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
                     let offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
                     store.set('hdDerivationPath', self.hdPath + '/' + offset)
+                    break
+                case 'trezor':
+                    wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
+                    console.log(wjs)
                     break
                 default:
                     const walletProvider =
