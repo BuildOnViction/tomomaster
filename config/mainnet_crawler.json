@@ -1,4 +1,7 @@
 {
+    "logs": {
+        "level": "warn"
+    },
     "blockchain": {
         "rpc": "http://blockchain-proxy:8545",
         "ws": "ws://blockchain-proxy:8546",
