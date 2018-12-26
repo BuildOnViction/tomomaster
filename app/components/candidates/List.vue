@@ -87,7 +87,8 @@
                     slot-scope="data">
                     <div>
                         <span
-                            :class="`float-left mr-1 tomo-middle${getColor(data.item.latestSignedBlock || 0)}`">
+                            :class="`float-left mr-1 tomo-middle${getColor(
+                            data.item.latestSignedBlock || 0, currentBlock)}`">
                             &#9679;
                         </span> {{ data.item.latestSignedBlock || 0 }}
                     </div>
@@ -203,6 +204,7 @@ export default {
         self.isReady = !!self.web3
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
+        self.currentBlock = self.chainConfig.blockNumber
 
         try {
             if (self.isReady) {
@@ -286,8 +288,7 @@ export default {
                 })
             }
         },
-        getColor (latestSignedBlock) {
-            const currentBlock = this.chainConfig.blockNumber
+        getColor (latestSignedBlock, currentBlock) {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
