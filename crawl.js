@@ -162,12 +162,15 @@ async function updatePenalties () {
         let blks = []
         let latestBlockNumber = await web3.eth.getBlockNumber()
         let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        if (lastCheckpoint > 2700) {
-            blks.push(await web3.eth.getBlock(lastCheckpoint))
-            blks.push(await web3.eth.getBlock(lastCheckpoint - 900))
-            blks.push(await web3.eth.getBlock(lastCheckpoint - 1800))
-            blks.push(await web3.eth.getBlock(lastCheckpoint - 2700))
-        } else {
+
+        for (let i = 0; i <= 4; i++) {
+            let checkpoint = lastCheckpoint - (i * 900)
+            if (checkpoint > 0) {
+                blks.push(await web3.eth.getBlock(checkpoint))
+            }
+        }
+
+        if (blks.length === 0) {
             return false
         }
 
