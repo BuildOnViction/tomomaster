@@ -87,9 +87,9 @@ router.get('/crawlStatus', async function (req, res, next) {
 
         let blockNumber = await web3.eth.getBlockNumber()
 
-        return res.json({
-            latestSignedBlock, blockNumber
-        })
+        return res.json(
+            (parseInt(latestSignedBlock) > parseInt(blockNumber) - 20)
+        )
     } catch (e) {
         return next(e)
     }
@@ -100,7 +100,7 @@ router.get('/:candidate', async function (req, res, next) {
     let candidate = (await db.Candidate.findOne({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: address
-    }) || {})
+    }).lean().exec() || {})
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
     let latestPenalties = await db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
