@@ -547,6 +547,7 @@ export default {
         self.config = await this.appConfig()
         self.currentBlock = self.config.blockchain.blockNumber
         self.isReady = !!self.web3
+        console.log(this.$store.state)
         try {
             if (self.isReady) {
                 let contract = self.TomoValidator.deployed()

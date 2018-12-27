@@ -28,7 +28,7 @@
                         <li class="tomo-list__item">
                             <i class="tm-tomo tomo-list__icon" />
                             <p class="tomo-list__text">
-                                <span> {{ formatCurrencySymbol(formatNumber(balance.toFormat())) }}</span>
+                                <span> {{ formatCurrencySymbol(formatNumber(balance)) }}</span>
                                 <span>Balance</span>
                             </p>
                         </li>
