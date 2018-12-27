@@ -250,17 +250,21 @@ async function updateSigners () {
 
 let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock () {
+    let b = true
     while (true) {
         try {
-            logger.info('Update signers after sleeping 5 seconds')
-            await updateSigners()
-            await updatePenalties()
+            logger.info('Update signers after sleeping 3 seconds')
+            if (b) {
+                await updateSigners()
+                await updatePenalties()
+            }
             await updateLatestSignedBlock()
             await watchValidator()
+            b = !b
         } catch (e) {
             logger.error('watchNewBlock %s', e)
         }
-        await sleep(5000)
+        await sleep(3000)
     }
 }
 
