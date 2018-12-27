@@ -48,13 +48,15 @@
     width: 20px;
 
     i {
-        font-size: 20px;
+        display: inline-block;
+        font-size: 18px;
+        color: #678be0;
 
         @extend %transit;
     }
 
     &:hover i {
-        display: inline-block;
         color: $color-link !important;
+        transform: rotate(45deg);
     }
 }

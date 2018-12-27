@@ -8,12 +8,9 @@
                         <span>{{ candidate.name }}</span>
 
                         <router-link
-                            v-if="account === candidate.owner"
                             :to="'/candidate/' + candidate.address + '/update'"
-                            class="text-truncate">
-                            <font-awesome-icon
-                                icon="edit"
-                                class="fa-xs ml-1"/>
+                            class="edit-link">
+                            <i class="tm-edit ml-2 mr-0" />
                         </router-link>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">

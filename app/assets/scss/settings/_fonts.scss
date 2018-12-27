@@ -91,6 +91,9 @@ line-height: 1;
 -moz-osx-font-smoothing: grayscale;
 }
 
+.tm-edit:before {
+    content: "\e91b";
+}
 .tm-arrow-up:before {
     content: "\e900";
 }

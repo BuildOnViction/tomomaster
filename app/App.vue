@@ -35,11 +35,9 @@
 
                         <router-link
                             v-if="isTomonet"
+                            id="btn-setting"
                             to="/setting">
-                            <font-awesome-icon
-                                :icon="{ prefix: 'fas', iconName: 'user-circle' }"
-                                class="fa-2x ml-1"
-                                style="color: #678be0" />
+                            <i class="tm-cog ml-2" />
                         </router-link>
 
                         <!-- <router-link
