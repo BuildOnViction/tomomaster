@@ -20,7 +20,7 @@ var cpValidator = 0
 async function watchValidator () {
     try {
         const blockNumber = cpValidator || await web3.eth.getBlockNumber()
-        logger.debug('TomoValidator %s - Listen events from block number %s ...',
+        logger.info('TomoValidator %s - Listen events from block number %s ...',
             config.get('blockchain.validatorAddress'), blockNumber)
 
         return validator.getPastEvents('allEvents', {
@@ -269,7 +269,7 @@ async function updateLatestSignedBlock () {
         let blockNumber = cpBlockSigner || await web3.eth.getBlockNumber()
         cpBlockSigner = await web3.eth.getBlockNumber()
 
-        logger.debug('BlockSigner %s - Listen events from block number %s ...',
+        logger.info('BlockSigner %s - Listen events from block number %s ...',
             config.get('blockchain.blockSignerAddress'), blockNumber)
         return blockSigner.getPastEvents('Sign', {
             fromBlock: blockNumber,
