@@ -54,11 +54,10 @@
                         </p>
                         <p class="tomo-info__description">
                             <span
-                                :class="`float-left mr-1 color-${getColor(
+                                :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
                                 candidate.latestSignedBlock || 0, currentBlock)}`">
-                                &#9679;
+                                {{ formatNumber(candidate.latestSignedBlock) }}
                             </span>
-                            {{ formatNumber(candidate.latestSignedBlock) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
