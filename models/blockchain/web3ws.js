@@ -2,8 +2,6 @@
 
 const Web3 = require('web3')
 const config = require('config')
-const logger = require('../../helpers/logger')
-
 
 function Web3Ws () {
     let provider = new Web3.providers.WebsocketProvider(config.get('blockchain.ws'))

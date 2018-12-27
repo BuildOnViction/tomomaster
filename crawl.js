@@ -6,7 +6,6 @@ const Web3Ws = require('./models/blockchain/web3ws')
 const config = require('config')
 const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
-const EventEmitter = require('events').EventEmitter
 const moment = require('moment')
 const logger = require('./helpers/logger')
 
@@ -81,7 +80,9 @@ async function watchValidator () {
             })
 
             return Promise.all(map).then(() => {
-                return web3.eth.getBlockNumber(n => cpValidator = n)
+                return web3.eth.getBlockNumber(n => {
+                    cpValidator = n
+                })
             })
         }).catch(e => {
             logger.error('watchValidator %s', e)
@@ -290,9 +291,10 @@ async function updateLatestSignedBlock () {
                 }, { upsert: false })
             })
 
-
             return Promise.all(map).then(() => {
-                return web3.eth.getBlockNumber(n => cpBlockSigner = n)
+                return web3.eth.getBlockNumber(n => {
+                    cpBlockSigner = n
+                })
             })
         }).catch(e => {
             logger.error('updateLatestSignedBlock2 %s', e)
