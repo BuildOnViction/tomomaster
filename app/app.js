@@ -39,6 +39,7 @@ import localStorage from 'store'
 
 import Transport from '@ledgerhq/hw-transport-u2f' // for browser
 import Eth from '@ledgerhq/hw-app-eth'
+import TrezorConnect from '../models/blockchain/trezorCOnnect_V4'
 import Transaction from 'ethereumjs-tx'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -121,8 +122,10 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                         } catch (error) {
                             return reject(error.message)
                         }
-                    case 'wallet':
-                        return resolve(this.$store.state.walletLoggedIn)
+                    case 'trezor':
+                        const a = await TrezorConnect.getXPubKey("m/44'/889'/0'/0")
+                        console.log('1111', a)
+                        break
                     default:
                         break
                     }

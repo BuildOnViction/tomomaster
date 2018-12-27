@@ -476,6 +476,9 @@ export default {
             if (this.provider === 'ledger' && !this.$v.hdPath.$invalid) {
                 this.selectHdPath()
             }
+            if (this.provider === 'trezor') {
+                this.save()
+            }
         },
         selectHdPath: async function (offset = 0, limit = defaultWalletNumber) {
             let self = this
@@ -506,6 +509,7 @@ export default {
             var wjs = false
             self.loading = true
             try {
+                console.log(self.provider)
                 switch (self.provider) {
                 case 'metamask':
                     if (window.web3) {
@@ -529,7 +533,7 @@ export default {
                     break
                 case 'trezor':
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
-                    console.log(wjs)
+                    console.log(1111111)
                     break
                 default:
                     const walletProvider =
