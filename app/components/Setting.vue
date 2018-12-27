@@ -295,7 +295,8 @@ import {
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
-const HDWalletProvider = require('truffle-hdwallet-provider')
+// const HDWalletProvider = require('truffle-hdwallet-provider')
+const { HDWalletProvider } = require('../../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const defaultWalletNumber = 10
 export default {
@@ -529,10 +530,9 @@ export default {
                     const walletProvider =
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
-                                self.mnemonic,
-                                self.chainConfig.rpc, 0, 1, true, self.hdPath)
+                                self.mnemonic.trim(),
+                                self.chainConfig.rpc, 0, 1, self.hdPath)
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
-
                     wjs = new Web3(walletProvider)
                     break
                 }
@@ -627,8 +627,8 @@ export default {
             self.address = account
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
-                null,
-                self.chainConfig.rpc, 0, 1, true, self.hdPath))
+                '',
+                self.chainConfig.rpc, 0, 1, self.hdPath))
 
             await self.setupProvider(this.provider, web3)
             try {
