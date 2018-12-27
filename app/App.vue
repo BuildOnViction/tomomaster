@@ -54,90 +54,76 @@
                 <router-view/>
             </div>
             <footer
-                class="tomo-footer mt-2">
+                class="tomo-footer">
                 <div class="container">
-                    <div
-                        class="row">
-                        <b-col class="float-left">
-                            <p>
-                                TomoMaster {{ (new Date()).getFullYear() }} -
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="tomo-footer__copyright">
+                                TomoMaster &copy; {{ (new Date()).getFullYear() }} -
                                 <a
-                                    :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`">
+                                    :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`"
+                                    class="version-tag">
                                     v{{ version }}</a>
-                            </p>
-                        </b-col>
-                        <b-col>
-                            <div class="footer-center">
-                                <ul class="list-inline tomo-footer__social">
+                            </div>
+                            <div class="tomo-footer__links">
+                                <ul class="list-inline">
                                     <li class="list-inline-item">
                                         <a
-                                            href="https://t.me/tomochain"
-                                            target="_blank">
-                                            <font-awesome-icon
-                                                id="telegram"
-                                                :icon="{ prefix: 'fab', iconName: 'telegram' }"
-                                                class="fa-2x"/>
-                                        </a>
+                                            target="_blank"
+                                            href="https://bit.ly/2B6p29o"><i class="tm-lifebuoy mr-1"/>Need help?</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
-                                            href="https://www.facebook.com/tomochainofficial"
-                                            target="_blank">
-                                            <font-awesome-icon
-                                                :icon="{ prefix: 'fab', iconName: 'facebook' }"
-                                                class="fa-2x"/>
-                                        </a>
+                                            target="_blank"
+                                            href="/privacyPolicy"><i class="tm-lock mr-1"/>Privacy Policy</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
-                                            href="https://twitter.com/TomoChainANN"
-                                            target="_blank">
-                                            <font-awesome-icon
-                                                :icon="{ prefix: 'fab', iconName: 'twitter' }"
-                                                class="fa-2x"/>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a
-                                            href="https://github.com/tomochain/"
-                                            target="_blank">
-                                            <font-awesome-icon
-                                                :icon="{ prefix: 'fab', iconName: 'github' }"
-                                                class="fa-2x"/>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a
-                                            href="https://www.reddit.com/r/Tomochain/"
-                                            target="_blank">
-                                            <font-awesome-icon
-                                                :icon="{ prefix: 'fab', iconName: 'reddit' }"
-                                                class="fa-2x"/>
-                                        </a>
+                                            target="_blank"
+                                            href="/terms"><i class="tm-profile mr-1"/>Terms of Service</a>
                                     </li>
                                 </ul>
                             </div>
-                        </b-col>
-                        <b-col>
-                            <div
-                                class="float-right footer-right">
-                                <a
-                                    target="_blank"
-                                    href="https://bit.ly/2B6p29o">
-                                    <font-awesome-icon
-                                        id="question-circle"
-                                        :icon="{ prefix: 'fas', iconName: 'question-circle' }"
-                                        style="font-size: 15px"
-                                        class="mr-1"/>
-                                    Need help?</a>
-                                <a
-                                    target="_blank"
-                                    href="/privacyPolicy"><i class="tm-lock mr-2"/>Privacy Policy</a>
-                                <a
-                                    target="_blank"
-                                    href="/terms"><i class="tm-profile mr-2"/>Terms of Service</a>
-                            </div>
-                        </b-col>
+                        </div>
+                        <div class="col-md-4 tomo-footer__social">
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a
+                                        href="https://t.me/tomochain"
+                                        target="_blank">
+                                        <i class="tm-telegram" />
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a
+                                        href="https://www.facebook.com/tomochainofficial"
+                                        target="_blank">
+                                        <i class="tm-facebook" />
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a
+                                        href="https://twitter.com/TomoChainANN"
+                                        target="_blank">
+                                        <i class="tm-twitter" />
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a
+                                        href="https://github.com/tomochain/"
+                                        target="_blank">
+                                        <i class="tm-github" />
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a
+                                        href="https://www.reddit.com/r/Tomochain/"
+                                        target="_blank">
+                                        <i class="tm-reddit" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </footer>
