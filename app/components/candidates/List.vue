@@ -313,6 +313,7 @@ export default {
         },
         pageChange (page) {
             this.$store.state.currentPage = page
+            window.scrollTo(0, 320)
         }
     }
 }
