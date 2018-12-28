@@ -18,10 +18,13 @@ var cpBlockSigner = 0
 var cpValidator = 0
 
 async function watchValidator () {
+    var blockNumber = cpValidator || await web3.eth.getBlockNumber()
     try {
-        const blockNumber = cpValidator || await web3.eth.getBlockNumber()
+        blockNumber = blockNumber || await web3.eth.getBlockNumber()
         logger.info('TomoValidator %s - Listen events from block number %s ...',
             config.get('blockchain.validatorAddress'), blockNumber)
+
+        cpValidator = await web3.eth.getBlockNumber()
 
         return validator.getPastEvents('allEvents', {
             fromBlock: blockNumber,
@@ -32,14 +35,13 @@ async function watchValidator () {
                 logger.debug('Event %s in block %s', result.event, result.blockNumber)
                 if (result.event === 'Withdraw') {
                     let owner = (result.returnValues._owner || '').toLowerCase()
-                    let blockNumber = result.blockNumber
                     let capacity = result.returnValues._cap
                     return db.Withdraw.updateOne({
                         tx: result.transactionHash
                     }, {
                         $set: {
                             smartContractAddress: config.get('blockchain.validatorAddress'),
-                            blockNumber: blockNumber,
+                            blockNumber: result.blockNumber,
                             tx: result.transactionHash,
                             owner: owner,
                             capacity: capacity
@@ -63,7 +65,7 @@ async function watchValidator () {
                             owner: owner,
                             candidate: candidate,
                             capacity: capacity,
-                            blockNumber: blockNumber,
+                            blockNumber: result.blockNumber,
                             createdAt: createdAt
                         }
                     }, {
@@ -79,16 +81,14 @@ async function watchValidator () {
                 }
             })
 
-            return Promise.all(map).then(() => {
-                return web3.eth.getBlockNumber(n => {
-                    cpValidator = n
-                })
-            })
+            return Promise.all(map)
         }).catch(e => {
             logger.error('watchValidator %s', e)
+            cpValidator = blockNumber
         })
     } catch (e) {
         logger.error('watchValidator2 %s', e)
+        cpValidator = blockNumber
     }
 }
 
