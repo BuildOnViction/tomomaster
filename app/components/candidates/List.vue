@@ -180,7 +180,7 @@ export default {
             voteItem: {},
             candidates: [],
             currentPage: 1,
-            perPage: 50,
+            perPage: 10,
             totalRows: 0,
             tableCssClass: '',
             loading: false,
@@ -225,8 +225,13 @@ export default {
 
         try {
             self.loading = true
-
-            let candidates = await axios.get('/api/candidates')
+            const params = {
+                page: self.currentPage,
+                limit: self.perPage
+            }
+            const query = self.serializeQuery(params)
+            console.log(JSON.stringify(query))
+            let candidates = await axios.get('/api/candidates' + '?' + query)
             candidates.data.map(async (candidate, index) => {
                 self.candidates.push({
                     address: candidate.candidate,

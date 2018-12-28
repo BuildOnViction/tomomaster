@@ -15,6 +15,8 @@ const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
 
 router.get('/', async function (req, res, next) {
+    // current page: 1
+    // limit per page: 50
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
