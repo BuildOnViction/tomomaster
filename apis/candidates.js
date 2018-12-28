@@ -361,7 +361,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
                 address: candidate,
                 limit,
                 owner: owner,
-                reason: 'MasterNode'
+                reason: 'Voter'
             }
         )
         return res.json(rewards.data)
