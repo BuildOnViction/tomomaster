@@ -20,6 +20,9 @@ router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
+        const total = await db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress')
+        })
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
@@ -65,7 +68,10 @@ router.get('/', async function (req, res, next) {
         })
         let ret = await Promise.all(map)
 
-        return res.json(ret)
+        return res.json({
+            candidates: ret,
+            total
+        })
     } catch (e) {
         return next(e)
     }

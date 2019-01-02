@@ -117,6 +117,64 @@
                         @click="onRowClick(data.item.address)">Vote</b-button>
                 </template>
             </b-table>
+            <!-- <table-base
+                :fields="fields"
+                :items="candidates"
+                :class="'tomo-table tomo-table--candidates ' + tableCssClass">
+                <template
+                    slot="address"
+                    slot-scope="data">
+                    <router-link
+                        :to="'/candidate/' + data.item.address"
+                        class="text-truncate">
+                        {{ data.item.address }}
+                    </router-link>
+                </template>
+
+                <template
+                    slot="cap"
+                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.cap, 2)) }}
+                </template>
+
+                <template
+                    slot="latestSignedBlock"
+                    slot-scope="data">
+                    <div>
+                        <span
+                            :class="`float-left mr-1 tomo-middle${getColor(
+                            data.item.latestSignedBlock || 0, currentBlock)}`">
+                            &#9679;
+                        </span> {{ data.item.latestSignedBlock || 0 }}
+                    </div>
+                </template>
+
+                <template
+                    slot="status"
+                    slot-scope="data">
+                    <div>
+                        <div class="mt-2 mt-lg-0">
+                            <span
+                                :class="'tomo-chip '
+                                    + (data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE' ?
+                                'tomo-chip--primary' : 'tomo-chip--accent') ">
+                                {{ data.item.status.toUpperCase() }}
+                            </span>
+                        </div>
+                    </div>
+                </template>
+
+                <template
+                    slot="action"
+                    slot-scope="data">
+                    <div>
+                        <b-button
+                            v-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
+                            variant="primary"
+                            class="mt-3 mt-lg-0 vote-btn"
+                            @click="onRowClick(data.item.address)">Vote</b-button>
+                    </div>
+                </template>
+            </table-base> -->
 
             <b-pagination
                 v-if="totalRows > 0 && totalRows > perPage"
@@ -133,9 +191,13 @@
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import store from 'store'
+import TableBase from '../TableBase.vue'
 
 export default {
     name: 'App',
+    components: {
+        TableBase
+    },
     data () {
         return {
             chainConfig: {},
@@ -196,7 +258,12 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        currentPage: async function (val) {
+            this.currentPage = val
+            await this.getDataFromApi()
+        }
+    },
     updated () {},
     created: async function () {
         let self = this
@@ -223,36 +290,7 @@ export default {
             console.log(error)
         }
 
-        try {
-            self.loading = true
-            const params = {
-                page: self.currentPage,
-                limit: self.perPage
-            }
-            const query = self.serializeQuery(params)
-            console.log(JSON.stringify(query))
-            let candidates = await axios.get('/api/candidates' + '?' + query)
-            candidates.data.map(async (candidate, index) => {
-                self.candidates.push({
-                    address: candidate.candidate,
-                    owner: candidate.owner.toLowerCase(),
-                    status: candidate.status,
-                    isMasternode: candidate.isMasternode,
-                    isPenalty: candidate.isPenalty,
-                    name: candidate.name || 'Anonymous',
-                    cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                    latestSignedBlock: candidate.latestSignedBlock
-                })
-            })
-
-            self.totalRows = self.candidates.length
-
-            self.loading = false
-            self.getTableCssClass()
-        } catch (e) {
-            self.loading = false
-            console.log(e)
-        }
+        self.getDataFromApi()
     },
     mounted () { },
     methods: {
@@ -310,6 +348,41 @@ export default {
                 result = ''
             }
             return result
+        },
+        async getDataFromApi () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage
+                }
+                const query = self.serializeQuery(params)
+                console.log(JSON.stringify(query))
+                let candidates = await axios.get('/api/candidates' + '?' + query)
+                let items = []
+                candidates.data.candidates.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
         }
     }
 }
