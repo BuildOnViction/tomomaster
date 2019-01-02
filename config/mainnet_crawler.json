@@ -1,6 +1,6 @@
 {
     "logs": {
-        "level": "warn"
+        "level": "info"
     },
     "blockchain": {
         "rpc": "http://blockchain-proxy:8545",

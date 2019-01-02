@@ -148,7 +148,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ formatNumber(balance) }}
+                            <p class="color-white mb-0">{{ balance }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Balance</span>
                         </div>
@@ -327,8 +327,7 @@ export default {
             loading: false,
             qrCode: 'text',
             id: '',
-            interval: '',
-            txFee: 0.0000000000525
+            interval: ''
         }
     },
     validations: {
@@ -393,7 +392,7 @@ export default {
 
                 self.address = account
                 self.web3.eth.getBalance(self.address, function (a, b) {
-                    self.balance = new BigNumber(b).div(10 ** 18)
+                    self.balance = new BigNumber(b).div(10 ** 18).toFormat()
                     if (a) {
                         console.log('got an error', a)
                     }
@@ -690,20 +689,14 @@ export default {
             }
         },
         changeView (w, k) {
-            if (this.balance.isGreaterThanOrEqualTo(this.txFee)) {
-                this.$router.push({ name: 'CandidateWithdraw',
-                    params: {
-                        address: this.address,
-                        blockNumber: w.blockNumber,
-                        capacity: w.cap,
-                        index: k
-                    }
-                })
-            } else {
-                this.$toasted.show('Not enough TOMO for transaction fee', {
-                    type : 'info'
-                })
-            }
+            this.$router.push({ name: 'CandidateWithdraw',
+                params: {
+                    address: this.address,
+                    blockNumber: w.blockNumber,
+                    capacity: w.cap,
+                    index: k
+                }
+            })
         },
         closeModal () {
             document.getElementById('hdwalletModal').style.display = 'none'
