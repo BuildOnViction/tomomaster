@@ -240,7 +240,7 @@ export default {
                 })
             })
 
-            self.totalRows = self.candidates.length
+            self.totalRows = self.candidates.filter(c => c.status !== 'RESIGNED').length
 
             self.loading = false
             self.getTableCssClass()
