@@ -58,7 +58,7 @@
                             :class="getValidationClass('coinbase')"
                             v-model="coinbase"
                             name="coinbase"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text"/>
                         <span
                             v-if="$v.coinbase.$dirty && !$v.coinbase.required"
@@ -152,7 +152,7 @@ export default {
         return {
             account: '',
             isReady: !!this.web3,
-            applyValue: 50000,
+            applyValue: '50000',
             coinbase: '',
             // nodeUrl: '',
             loading: false,

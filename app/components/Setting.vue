@@ -60,7 +60,7 @@
                         <b-form-input
                             :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text" />
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
@@ -173,11 +173,11 @@
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
-                        <div class="tomo-list__text">
+                        <!-- <div class="tomo-list__text">
                             <p class="color-white mb-0">
                                 {{ w.estimatedTime }}</p>
                             <span>Estimated Time</span>
-                        </div>
+                        </div> -->
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
@@ -242,7 +242,7 @@
                                         :value="index"
                                         name="hdWallet"
                                         type="radio"
-                                        autocomplete="false"
+                                        autocomplete="off"
                                         style="width: 5%; float: left" >
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}
