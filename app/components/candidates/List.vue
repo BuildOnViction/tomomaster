@@ -124,7 +124,8 @@
                 :per-page="perPage"
                 v-model="currentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="pageChange"/>
         </div>
     </div>
 </template>
@@ -179,7 +180,7 @@ export default {
             voteValue: 1,
             voteItem: {},
             candidates: [],
-            currentPage: 1,
+            currentPage: this.$store.state.currentPage || 1,
             perPage: 50,
             totalRows: 0,
             tableCssClass: '',
@@ -196,7 +197,11 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        currentPage: function (val) {
+            this.currentPage = this.$store.state.currentPage
+        }
+    },
     updated () {},
     created: async function () {
         let self = this
@@ -305,6 +310,10 @@ export default {
                 result = ''
             }
             return result
+        },
+        pageChange (page) {
+            this.$store.state.currentPage = page
+            window.scrollTo(0, 320)
         }
     }
 }

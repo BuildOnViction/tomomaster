@@ -52,7 +52,10 @@
                                 <li class="tomo-list__item">
                                     <i class="tm-tomo tomo-list__icon" />
                                     <p class="tomo-list__text">
-                                        <span> {{ formatCurrencySymbol(formatNumber(voted)) }}</span>
+                                        <span> {{ formatCurrencySymbol(formatNumber(voted)) }}
+                                            - <a
+                                                href="javascript:"
+                                                @click="unvoteAll">All</a></span>
                                         <span>You voted</span>
                                     </p>
                                 </li>
@@ -80,10 +83,13 @@
                                             v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
                                             class="text-danger">Required field</span>
                                         <span
-                                            v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.minValue"
+                                            v-if="!isNumeric"
+                                            class="text-danger">Must be number</span>
+                                        <span
+                                            v-if="isMin"
                                             class="text-danger">Must be greater than 10<sup>-18 TOMO</sup></span>
                                         <span
-                                            v-else-if="$v.unvoteValue.$dirty && !$v.unvoteValue.maxValue"
+                                            v-if="isMax"
                                             class="text-danger">Must be less than {{ voted }} TOMO</span>
                                     </b-input-group>
                                 </b-form-group>
@@ -182,9 +188,9 @@
 import axios from 'axios'
 import { validationMixin } from 'vuelidate'
 import {
-    required,
-    minValue,
-    maxValue
+    required
+    // minValue,
+    // maxValue
 } from 'vuelidate/lib/validators'
 import NumberInput from '../NumberInput.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
@@ -203,20 +209,26 @@ export default {
             voter: '',
             candidate: this.$route.params.candidate,
             voted: 0,
-            unvoteValue: 1,
+            unvoteValue: '1',
             loading: false,
             step: 1,
             interval: null,
             processing: true,
-            provider: this.NeworkProvider || store.get('network') || null
+            provider: this.NeworkProvider || store.get('network') || null,
+            isMin: false,
+            isMax: false,
+            isNumeric: true,
+            minValue: new BigNumber(10 ** -18),
+            maxValue: new BigNumber(this.voted),
+            converted: null
         }
     },
     validations () {
         return {
             unvoteValue: {
-                required,
-                minValue: minValue(10 ** -18),
-                maxValue: maxValue(this.voted)
+                required
+                // minValue: minValue(10 ** -18),
+                // maxValue: maxValue(this.voted)
             }
         }
     },
@@ -261,10 +273,19 @@ export default {
             }
         },
         validate: function () {
-            this.$v.$touch()
+            this.unvoteValue = this.unvoteValue.replace(/,/g, '')
+            // check minValue
+            this.isMin = this.validateMinAmount(this.unvoteValue)
+            // check maxValue
+            this.isMax = this.validateMaxAmount(this.unvoteValue)
+            // check numeric
+            this.isNumeric = this.validateNumeric(this.unvoteValue)
 
-            if (!this.$v.$invalid) {
-                this.nextStep()
+            if (this.isNumeric && !this.isMax && !this.isMin) {
+                this.$v.$touch()
+                if (!this.$v.$invalid) {
+                    this.nextStep()
+                }
             }
         },
         unvote: async function () {
@@ -388,6 +409,32 @@ export default {
                     }, 2000)
                 }
             }
+        },
+        validateMinAmount (value) {
+            this.converted = new BigNumber(value)
+            if (this.converted.isLessThan(this.minValue)) {
+                return true
+            }
+            return false
+        },
+        validateMaxAmount (value) {
+            this.converted = new BigNumber(value)
+            this.maxValue = new BigNumber(this.voted)
+            if (this.converted.isGreaterThan(this.maxValue)) {
+                return true
+            }
+            return false
+        },
+        validateNumeric (value) {
+            this.converted = new BigNumber(value).toNumber()
+            // check numeric
+            if (isNaN(this.converted)) {
+                return false
+            }
+            return true
+        },
+        unvoteAll () {
+            this.unvoteValue = this.voted.toString()
         }
     }
 }
