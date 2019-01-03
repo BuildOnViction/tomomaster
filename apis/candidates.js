@@ -414,6 +414,13 @@ router.put('/update', [
             }, {
                 $set: set
             })
+            await db.Signature.updateOne({
+                signedAddress: address.toLowerCase()
+            }, {
+                $set: {
+                    signature: ''
+                }
+            })
             return res.json({ status: 'OK' })
         } else {
             return res.json({
