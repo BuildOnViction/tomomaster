@@ -327,8 +327,7 @@ export default {
             loading: false,
             qrCode: 'text',
             id: '',
-            interval: '',
-            txFee: 0.0000000000525
+            interval: ''
         }
     },
     validations: {
@@ -664,7 +663,9 @@ export default {
             }
         },
         changeView (w, k) {
-            if (this.balance.isGreaterThanOrEqualTo(this.txFee)) {
+            const txFee = new BigNumber(this.chainConfig.gas * this.chainConfig.gasPrice).div(10 ** 18)
+
+            if (this.balance.isGreaterThanOrEqualTo(txFee)) {
                 this.$router.push({ name: 'CandidateWithdraw',
                     params: {
                         address: this.address,

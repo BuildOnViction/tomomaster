@@ -29,9 +29,9 @@
                     novalidate
                     @submit.prevent="validate()">
                     <b-form-group
+                        :description="`How much TOMO do you want to deposit? TX fee: ${txFee} TOMO`"
                         label="Vote"
-                        label-for="apply-value"
-                        description="How much TOMO do you want to deposit? TX fee: 0.0000000000525 TOMO">
+                        label-for="apply-value">
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('applyValue')"

@@ -63,9 +63,9 @@
                                 novalidate
                                 @submit.prevent="validate()">
                                 <b-form-group
+                                    :description="`The amount of TOMO to unvote. TX fee: ${txFee} TOMO`"
                                     label="Amount"
-                                    label-for="unvote-value"
-                                    description="The amount of TOMO to unvote. TX fee: 0.0000000000525 TOMO">
+                                    label-for="unvote-value">
                                     <b-input-group>
                                         <number-input
                                             :class="getValidationClass('unvoteValue')"

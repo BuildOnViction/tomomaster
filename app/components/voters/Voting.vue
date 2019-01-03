@@ -39,10 +39,10 @@
                         novalidate
                         @submit.prevent="validate()">
                         <b-form-group
+                            :description="`How much TOMO would you like to vote for this candidate?
+                            TX fee: ${txFee} TOMO`"
                             label="Vote"
-                            label-for="vote-value"
-                            description="How much TOMO would you like to vote for this candidate?
-                            TX fee: 0.0000000000525 TOMO">
+                            label-for="vote-value">
                             <b-input-group>
                                 <number-input
                                     :class="getValidationClass('voteValue')"
