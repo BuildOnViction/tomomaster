@@ -469,19 +469,22 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         let signer = (req.body.signer || '').toLowerCase()
 
         if (!message || !signature || !id || !signer) {
-            return res.status(406).send('id, message, signature and signer are required')
+            throw Error('id, message, signature and signer are required')
         }
 
         const checkId = await db.Signature.findOne({ signedId: id })
-        if (checkId && !checkId.status) {
-            return res.status(406).send('Cannot use a QR code twice')
+        if (!checkId) {
+            throw Error('id is not match')
+        }
+        if (!checkId.status) {
+            throw Error('Cannot use a QR code twice')
         }
 
         const signedAddress = (await web3.eth.accounts.recover(message, signature) || '').toLowerCase()
 
         if (signer !== signedAddress || checkId.signedAddress !== signedAddress ||
             id !== checkId.signedId) {
-            return res.status(406).send('The Signature Message Verification Failed')
+            throw Error('The Signature Message Verification Failed')
         }
 
         // Store id, address, msg, signature
@@ -497,7 +500,7 @@ router.post('/verifyScannedQR', async (req, res, next) => {
     } catch (e) {
         console.trace(e)
         console.log(e)
-        return res.status(404).send(e)
+        return next(e)
     }
 })
 
