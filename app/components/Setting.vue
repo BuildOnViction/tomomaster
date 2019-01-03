@@ -173,11 +173,11 @@
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
-                        <div class="tomo-list__text">
+                        <!-- <div class="tomo-list__text">
                             <p class="color-white mb-0">
                                 {{ w.estimatedTime }}</p>
                             <span>Estimated Time</span>
-                        </div>
+                        </div> -->
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
