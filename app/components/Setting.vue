@@ -60,7 +60,7 @@
                         <b-form-input
                             :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text" />
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
@@ -242,7 +242,7 @@
                                         :value="index"
                                         name="hdWallet"
                                         type="radio"
-                                        autocomplete="false"
+                                        autocomplete="off"
                                         style="width: 5%; float: left" >
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}

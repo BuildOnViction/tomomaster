@@ -11,7 +11,7 @@
                         <b-form-input
                             v-model="search"
                             type="text"
-                            autocomplete="false"
+                            autocomplete="off"
                             placeholder="Search Candidate / Voter address ..."
                             @keyup.enter="searchCandidate"
                         />
