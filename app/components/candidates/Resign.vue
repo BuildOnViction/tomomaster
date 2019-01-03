@@ -99,6 +99,8 @@ export default {
     created: async function () {
         let self = this
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         try {
             if (self.isReady) {
@@ -134,8 +136,8 @@ export default {
                 let coinbase = self.coinbase
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(2000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

@@ -192,6 +192,8 @@ export default {
     created: async function () {
         let self = this
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         try {
             self.isReady = !!self.web3
             if (!self.web3 && self.NetworkProvider === 'metamask') {
@@ -288,8 +290,8 @@ export default {
                 let txParams = {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(2000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

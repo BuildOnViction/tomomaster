@@ -231,6 +231,8 @@ export default {
         let self = this
         let candidate = self.candidate
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
 
         try {
             self.isReady = !!self.web3
@@ -284,8 +286,8 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(1000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {
