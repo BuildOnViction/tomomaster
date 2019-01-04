@@ -175,7 +175,7 @@ export default {
             isReady: !!this.web3,
             voter: 'Unknown',
             candidate: this.$route.params.candidate,
-            voteValue: 10,
+            voteValue: '10',
             loading: false,
             step: 1,
             message: '',
@@ -217,7 +217,7 @@ export default {
                 self.voter = account
             }
             self.web3.eth.getBalance(self.voter, function (a, b) {
-                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                self.balance = new BigNumber(b).div(10 ** 18)
                 if (a) {
                     console.log('got an error', a)
                 }
@@ -257,10 +257,11 @@ export default {
             }
         },
         validate: function () {
+            this.voteValue = this.voteValue.replace(/,/g, '')
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                if (this.voteValue > this.balance) {
+                if ((new BigNumber(this.voteValue)).isGreaterThan(this.balance)) {
                     this.votingError = true
                 } else {
                     this.votingError = false
