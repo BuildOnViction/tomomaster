@@ -75,6 +75,14 @@
                             :options="{size: 250 }"
                             :value="qrCode"
                             class="img-fluid text-center text-lg-right"/>
+                        <div
+                            v-if="mobileCheck">
+                            <b-button
+                                :href="qrCodeApp"
+                                variant="primary">
+                                Open in App
+                            </b-button>
+                        </div>
                         <div>
                             <b>In case you do not have TomoWallet, download here</b>
                         </div>
@@ -327,7 +335,8 @@ export default {
             loading: false,
             qrCode: 'text',
             id: '',
-            interval: ''
+            interval: '',
+            qrCodeApp: ''
         }
     },
     validations: {
@@ -345,7 +354,13 @@ export default {
             minLength: minLength(12)
         }
     },
-    computed: {},
+    computed: {
+        mobileCheck: () => {
+            const isAndroid = navigator.userAgent.match(/Android/i)
+            const isIOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            return (isAndroid || isIOS)
+        }
+    },
     watch: {},
     updated () {},
     beforeDestroy () {
@@ -593,6 +608,10 @@ export default {
             this.id = data.id
             this.qrCode = encodeURI(
                 'tomochain:login?message=' + data.message +
+                '&submitURL=' + data.url
+            )
+            this.qrCodeApp = encodeURI(
+                'tomochain://login?message=' + data.message +
                 '&submitURL=' + data.url
             )
             return true
