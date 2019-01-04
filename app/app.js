@@ -284,6 +284,10 @@ getConfig().then((config) => {
     // var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     // Vue.prototype.setupProvider(provider, web3js)
 
+    Vue.prototype.txFee = new BigNumber(
+        config.blockchain.gas * config.blockchain.gasPrice
+    ).div(10 ** 18).toString(10)
+
     Vue.use(VueAnalytics, {
         id: config.GA,
         router,
