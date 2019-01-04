@@ -1,80 +1,43 @@
 .tomo-footer {
-    margin-bottom: 2px;
-  
-    .row {
-      display: flex;
-      align-items: center;
-    }
-    .col {
-      flex: 1;
-      padding: 1em;
-    }
-    &__copyright {
-      font-weight: 300;
-      color: #000;
-    }
-  
-    &__social {
-      font-size: 12px;
-  
-      li.list-inline-item {
-        margin-right: 15px;
-  
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-  
-      i {
-        @extend %transit;
-      }
-  
-      .fa-telegram:hover {
-        color: #0088cc;
-      }
-  
-      .fa-twitter:hover {
-        color: #1da1f2;
-      }
-  
-      .fa-facebook:hover {
-        color: #3b5998;
-      }
-  
-      .fa-reddit:hover {
-        color: #ff4500;
-      }
-    }
-  
-    @include media-breakpoint-up(md) {
-  
-      &__copyright p {
-        margin-bottom: 0;
-      }
-  
-      &__social {
-        margin-bottom: 0;
-  
-        li.list-inline-item {
-          margin-right: 30px;
-        }
-  
-        i {
-          font-size: 30px;
-        }
-      }
-    }
-  
-    @include media-breakpoint-up(lg) {
-      margin-bottom: 20px;
-  
-      &__social {
-        li.list-inline-item {
-          margin-right: 35px;
-        }
-      }
+  margin-bottom: 20px;
+
+  a {
+    color: #7573a6;
+  }
+
+  a:hover {
+    color: #cfcde1;
+  }
+
+  &__copyright {
+    margin-bottom: 1rem;
+
+    a {
+      color: #6a8ae8;
     }
   }
+
+  &__social {
+    font-size: 18px;
+  }
+
+  @include media-breakpoint-up(md) {
+
+    > .container > .row {
+      align-items: center;
+    }
+
+    &__copyright {
+      margin-bottom: 0.5rem;
+    }
+
+    &__social {
+      text-align: right;
+      font-size: 20px;
+    }
+  }
+}
+
 .footer-right {
   display: flex;
   flex-direction: column;

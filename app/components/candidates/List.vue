@@ -87,10 +87,10 @@
                     slot-scope="data">
                     <div>
                         <span
-                            :class="`float-left mr-1 tomo-middle${getColor(
+                            :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
                             data.item.latestSignedBlock || 0, currentBlock)}`">
-                            &#9679;
-                        </span> {{ data.item.latestSignedBlock || 0 }}
+                            {{ data.item.latestSignedBlock || 0 }}
+                        </span>
                     </div>
                 </template>
 
@@ -297,14 +297,14 @@ export default {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
-                result = '--green'
+                result = 'cyan'
                 break
             case latestSignedBlock < (currentBlock - 20) &&
                 latestSignedBlock >= (currentBlock - 100):
-                result = '--orange'
+                result = 'yellow'
                 break
             case latestSignedBlock < (currentBlock - 100):
-                result = '--red'
+                result = 'pink'
                 break
             default:
                 result = ''

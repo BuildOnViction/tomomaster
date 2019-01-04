@@ -1,5 +1,9 @@
-.color-hightlight {
+.color-highlight {
     color: $color-text-highlight !important;
+}
+
+.color-cyan {
+    color: $color-link !important;
 }
 
 .color-white {
@@ -135,15 +139,3 @@
     }
 }
 
-.tomo-middle {
-    color: #7573a6
-}
-.tomo-middle--red {
-    color: #f83f7d
-}
-.tomo-middle--orange {
-    color: orange
-}
-.tomo-middle--green {
-    color: green
-}

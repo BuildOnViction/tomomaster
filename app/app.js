@@ -41,22 +41,6 @@ import Transport from '@ledgerhq/hw-transport-u2f' // for browser
 import Eth from '@ledgerhq/hw-app-eth'
 import Transaction from 'ethereumjs-tx'
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEdit, faQuestionCircle, faUserCircle } from '@fortawesome/free-solid-svg-icons'
-import {
-    faFacebook,
-    faTelegram,
-    faTwitter,
-    faReddit,
-    faGithub
-} from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faEdit, faGithub, faQuestionCircle, faUserCircle)
-library.add(faFacebook, faTelegram, faTwitter, faReddit)
-
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
 

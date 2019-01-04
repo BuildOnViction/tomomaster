@@ -29,3 +29,17 @@
     50%{background-position:100% 50%}
     100%{background-position:0% 50%}
 }
+
+@keyframes glowingColor1 {
+    0% { box-shadow: 0 0 5px 4px rgba(52, 128, 153, 0.5); }
+    40% { box-shadow: 0 0 5px 8px rgba(52, 128, 153, 0.5); }
+    60% { box-shadow: 0 0 5px 8px rgba(52, 128, 153, 0.5); }
+    100% { box-shadow: 0 0 5px 4px rgba(52, 128, 153, 0.5); }
+}
+
+@keyframes glowingColor2 {
+    0% { box-shadow: 0 0 20px 4px rgba(255, 181, 103, 0.2); }
+    40% { box-shadow: 0 0 20px 8px rgba(255, 181, 103, 0.2); }
+    60% { box-shadow: 0 0 20px 8px rgba(255, 181, 103, 0.2); }
+    100% { box-shadow: 0 0 20px 4px rgba(255, 181, 103, 0.2); }
+}

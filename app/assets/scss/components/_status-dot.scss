@@ -1,0 +1,30 @@
+.tomo-status-dot {
+
+    &:before {
+        content: '';
+        height: 6px;
+        width: 6px;
+        border-radius: 100%;
+        display: inline-block;
+        vertical-align: 2px;
+        background-color: #fff;
+
+        .section--candidate & {
+            vertical-align: 3px;
+        }
+    }
+
+    &--cyan:before {
+        background-color: $color-link;
+        animation: glowingColor1 3s infinite;
+    }
+
+    &--pink:before {
+        background-color: $color-pink;
+    }
+
+    &--yellow:before {
+        background-color: $color-yellow;
+        animation: glowingColor2 3s infinite;
+    }
+}
