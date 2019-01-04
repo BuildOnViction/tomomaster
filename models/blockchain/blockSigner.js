@@ -1,8 +1,11 @@
 'use strict'
 
 const BlockSignerABI = require('../../build/contracts/BlockSigner')
-const web3 = require('./web3ws')
 const config = require('config')
-const blockSigner = new web3.eth.Contract(BlockSignerABI.abi, config.get('blockchain.blockSignerAddress'))
 
-module.exports = blockSigner
+function BlockSigner (web3) {
+    let blockSigner = new web3.eth.Contract(BlockSignerABI.abi, config.get('blockchain.blockSignerAddress'))
+    return blockSigner
+}
+
+module.exports = BlockSigner

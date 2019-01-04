@@ -57,7 +57,8 @@
                         </p>
                         <p class="tomo-info__description">
                             <span
-                                :class="`float-left mr-1 tomo-middle${getColor(candidate.latestSignedBlock || 0)}`">
+                                :class="`float-left mr-1 tomo-middle${getColor(
+                                candidate.latestSignedBlock || 0, currentBlock)}`">
                                 &#9679;
                             </span>
                             {{ formatNumber(candidate.latestSignedBlock) }}
@@ -524,7 +525,8 @@ export default {
             loading: false,
             chartLoading: false,
             cpu0Series: [],
-            isTomonet: false
+            isTomonet: false,
+            currentBlock: null
         }
     },
     computed: {
@@ -543,7 +545,9 @@ export default {
     created: async function () {
         let self = this
         self.config = await this.appConfig()
+        self.currentBlock = self.config.blockchain.blockNumber
         self.isReady = !!self.web3
+        console.log(this.$store.state)
         try {
             if (self.isReady) {
                 let contract = self.TomoValidator.deployed()
@@ -686,9 +690,7 @@ export default {
                 console.log(e)
             }
         },
-        getColor (latestSignedBlock) {
-            const currentBlock = this.config.blockchain.blockNumber
-
+        getColor (latestSignedBlock, currentBlock) {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):

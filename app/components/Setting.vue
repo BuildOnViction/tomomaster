@@ -62,7 +62,7 @@
                         <b-form-input
                             :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text" />
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
@@ -175,11 +175,11 @@
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
-                        <div class="tomo-list__text">
+                        <!-- <div class="tomo-list__text">
                             <p class="color-white mb-0">
                                 {{ w.estimatedTime }}</p>
                             <span>Estimated Time</span>
-                        </div>
+                        </div> -->
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
@@ -244,7 +244,7 @@
                                         :value="index"
                                         name="hdWallet"
                                         type="radio"
-                                        autocomplete="false"
+                                        autocomplete="off"
                                         style="width: 5%; float: left" >
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}
@@ -297,7 +297,8 @@ import {
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
-const HDWalletProvider = require('truffle-hdwallet-provider')
+// const HDWalletProvider = require('truffle-hdwallet-provider')
+const { HDWalletProvider } = require('../../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const defaultWalletNumber = 10
 export default {
@@ -539,10 +540,9 @@ export default {
                     const walletProvider =
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
-                                self.mnemonic,
-                                self.chainConfig.rpc, 0, 1, true, self.hdPath)
+                                self.mnemonic.trim(),
+                                self.chainConfig.rpc, 0, 1, self.hdPath)
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
-
                     wjs = new Web3(walletProvider)
                     break
                 }
@@ -637,8 +637,8 @@ export default {
             self.address = account
             self.$store.state.walletLoggedIn = account
             const web3 = new Web3(new HDWalletProvider(
-                null,
-                self.chainConfig.rpc, 0, 1, true, self.hdPath))
+                '',
+                self.chainConfig.rpc, 0, 1, self.hdPath))
 
             await self.setupProvider(this.provider, web3)
             try {

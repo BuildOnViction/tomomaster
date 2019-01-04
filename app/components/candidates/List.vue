@@ -87,7 +87,8 @@
                     slot-scope="data">
                     <div>
                         <span
-                            :class="`float-left mr-1 tomo-middle${getColor(data.item.latestSignedBlock || 0)}`">
+                            :class="`float-left mr-1 tomo-middle${getColor(
+                            data.item.latestSignedBlock || 0, currentBlock)}`">
                             &#9679;
                         </span> {{ data.item.latestSignedBlock || 0 }}
                     </div>
@@ -123,7 +124,8 @@
                 :per-page="perPage"
                 v-model="currentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="pageChange"/>
         </div>
     </div>
 </template>
@@ -178,7 +180,7 @@ export default {
             voteValue: 1,
             voteItem: {},
             candidates: [],
-            currentPage: 1,
+            currentPage: this.$store.state.currentPage || 1,
             perPage: 50,
             totalRows: 0,
             tableCssClass: '',
@@ -195,7 +197,11 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        currentPage: function (val) {
+            this.currentPage = this.$store.state.currentPage
+        }
+    },
     updated () {},
     created: async function () {
         let self = this
@@ -203,6 +209,7 @@ export default {
         self.isReady = !!self.web3
         let config = await self.appConfig()
         self.chainConfig = config.blockchain
+        self.currentBlock = self.chainConfig.blockNumber
 
         try {
             if (self.isReady) {
@@ -238,7 +245,7 @@ export default {
                 })
             })
 
-            self.totalRows = self.candidates.length
+            self.totalRows = self.candidates.filter(c => c.status !== 'RESIGNED').length
 
             self.loading = false
             self.getTableCssClass()
@@ -286,8 +293,7 @@ export default {
                 })
             }
         },
-        getColor (latestSignedBlock) {
-            const currentBlock = this.chainConfig.blockNumber
+        getColor (latestSignedBlock, currentBlock) {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
@@ -304,6 +310,10 @@ export default {
                 result = ''
             }
             return result
+        },
+        pageChange (page) {
+            this.$store.state.currentPage = page
+            window.scrollTo(0, 320)
         }
     }
 }
