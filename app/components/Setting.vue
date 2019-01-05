@@ -501,7 +501,7 @@ export default {
             } catch (error) {
                 console.log(error.message)
                 self.loading = false
-                self.$toasted.show(error.message, {
+                self.$toasted.show(error.message || error, {
                     type : 'error'
                 })
             }
@@ -519,7 +519,6 @@ export default {
             self.loading = true
             try {
                 let offset
-                console.log(self.provider)
                 switch (self.provider) {
                 case 'metamask':
                     if (window.web3) {

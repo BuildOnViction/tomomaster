@@ -187,22 +187,26 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
     try {
         const wallets = {}
         const payload = Vue.prototype.trezorPayload
-        let convertedAddress
-        let balance
-        let web3
-        if (!Vue.prototype.web3) {
-            await Vue.prototype.detectNetwork('trezor')
-        }
-        web3 = Vue.prototype.web3
-        for (let i = offset; i < (offset + limit); i++) {
-            convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
-            balance = await web3.eth.getBalance(convertedAddress)
-            wallets[i] = {
-                address: convertedAddress,
-                balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
+        if (payload && !payload.error) {
+            let convertedAddress
+            let balance
+            let web3
+            if (!Vue.prototype.web3) {
+                await Vue.prototype.detectNetwork('trezor')
             }
+            web3 = Vue.prototype.web3
+            for (let i = offset; i < (offset + limit); i++) {
+                convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
+                balance = await web3.eth.getBalance(convertedAddress)
+                wallets[i] = {
+                    address: convertedAddress,
+                    balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
+                }
+            }
+            return wallets
+        } else {
+            throw payload.error || 'Something went wrong'
         }
-        return wallets
     } catch (error) {
         console.log(error)
         throw error
