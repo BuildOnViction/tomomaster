@@ -39,8 +39,9 @@ import localStorage from 'store'
 
 import Transport from '@ledgerhq/hw-transport-u2f' // for browser
 import Eth from '@ledgerhq/hw-app-eth'
-import TrezorConnect from '../models/blockchain/trezorCOnnect_V4'
+import TrezorConnect from 'trezor-connect'
 import Transaction from 'ethereumjs-tx'
+import * as HDKey from 'ethereumjs-wallet/hdkey'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faEdit, faQuestionCircle, faUserCircle } from '@fortawesome/free-solid-svg-icons'
@@ -123,9 +124,10 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                             return reject(error.message)
                         }
                     case 'trezor':
-                        const a = await TrezorConnect.getXPubKey("m/44'/889'/0'/0")
-                        console.log('1111', a)
-                        break
+                        const payload = Vue.prototype.trezorPayload
+                        const offset = localStorage.get('offset')
+                        const result = Vue.prototype.HDWalletCreate(payload, offset)
+                        return resolve(result)
                     default:
                         break
                     }
@@ -176,6 +178,51 @@ Vue.prototype.loadMultipleLedgerWallets = async function (offset, limit) {
         limit--
     }
     return wallets
+}
+
+Vue.prototype.unlockTrezor = async () => {
+    try {
+        const result = await TrezorConnect.getPublicKey({
+            path: localStorage.get('hdDerivationPath')
+        })
+        Vue.prototype.trezorPayload = result.payload
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+Vue.prototype.HDWalletCreate = (payload, index) => {
+    const hdWallet = HDKey.fromExtendedKey(payload.xpub)
+    const node = hdWallet.deriveChild(index)
+
+    return '0x' + node.getWallet().getAddress().toString('hex')
+}
+
+Vue.prototype.loadTrezorWallets = async (offset, limit) => {
+    try {
+        const wallets = {}
+        const payload = Vue.prototype.trezorPayload
+        let convertedAddress
+        let balance
+        let web3
+        if (!Vue.prototype.web3) {
+            await Vue.prototype.detectNetwork('trezor')
+        }
+        web3 = Vue.prototype.web3
+        for (let i = offset; i < (offset + limit); i++) {
+            convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
+            balance = await web3.eth.getBalance(convertedAddress)
+            wallets[i] = {
+                address: convertedAddress,
+                balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
+            }
+        }
+        return wallets
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
 }
 
 Vue.prototype.formatNumber = function (number) {
@@ -340,6 +387,7 @@ Vue.prototype.detectNetwork = async function (provider) {
                     '',
                     chainConfig.rpc, 0, 1, true))
                 break
+            case 'trezor':
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
                 wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.rpc))

@@ -99,7 +99,7 @@
                         </div>
                     </b-form-group>
                     <b-form-group
-                        v-if="provider === 'ledger'"
+                        v-if="provider === 'ledger' || provider === 'trezor'"
                         class="mb-4"
                         label="Select HD derivation path"
                         label-for="hdPath">
@@ -477,19 +477,27 @@ export default {
             if (this.provider === 'ledger' && !this.$v.hdPath.$invalid) {
                 this.selectHdPath()
             }
-            if (this.provider === 'trezor') {
-                this.save()
+            if (this.provider === 'trezor' && !this.$v.hdPath.$invalid) {
+                this.selectHdPath()
             }
         },
         selectHdPath: async function (offset = 0, limit = defaultWalletNumber) {
             let self = this
+            let wallets
             try {
                 self.loading = true
                 store.set('hdDerivationPath', self.hdPath)
-                let wallets = await self.loadMultipleLedgerWallets(offset, limit)
-                Object.assign(self.hdWallets, self.hdWallets, wallets)
-                document.getElementById('hdwalletModal').style.display = 'block'
-                self.loading = false
+                if (self.provider === 'trezor') {
+                    await self.unlockTrezor()
+                    wallets = await self.loadTrezorWallets(offset, limit)
+                } else {
+                    wallets = await self.loadMultipleLedgerWallets(offset, limit)
+                }
+                if (Object.keys(wallets).length > 0) {
+                    Object.assign(self.hdWallets, self.hdWallets, wallets)
+                    document.getElementById('hdwalletModal').style.display = 'block'
+                    self.loading = false
+                }
             } catch (error) {
                 console.log(error.message)
                 self.loading = false
@@ -510,6 +518,7 @@ export default {
             var wjs = false
             self.loading = true
             try {
+                let offset
                 console.log(self.provider)
                 switch (self.provider) {
                 case 'metamask':
@@ -529,12 +538,13 @@ export default {
                     // wjs = await ws.connect(self.networks.wss)
                     // wjs = new Web3(new Web3.providers.WebsocketProvider(self.chainConfig.ws))
                     // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
-                    let offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
                     store.set('hdDerivationPath', self.hdPath + '/' + offset)
                     break
                 case 'trezor':
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
-                    console.log(1111111)
+                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    store.set('offset', offset)
                     break
                 default:
                     const walletProvider =
@@ -571,32 +581,6 @@ export default {
                 console.log(e)
             }
         },
-        // withdraw: async function (blockNumber, index) {
-        //     let self = this
-        //     let contract = await self.TomoValidator.deployed()
-        //     let account = await self.getAccount()
-
-        //     self.loading = true
-        //     try {
-        //         let wd = await contract.withdraw(String(blockNumber), String(index), {
-        //             from: account,
-        //             gasPrice: 2500,
-        //             gas: 2000000
-        //         })
-        //         let toastMessage = wd.tx ? 'You have successfully withdrawed!'
-        //             : 'An error occurred while withdrawing, please try again'
-        //         self.$toasted.show(toastMessage)
-
-        //         setTimeout(() => {
-        //             self.loading = false
-        //             if (wd.tx) {
-        //                 self.$router.push({ path: `/setting` })
-        //             }
-        //         }, 2000)
-        //     } catch (e) {
-        //         self.loading = false
-        //     }
-        // },
         async loginByQRCode () {
             // generate qr code
             const { data } = await axios.get('/api/auth/generateLoginQR')
