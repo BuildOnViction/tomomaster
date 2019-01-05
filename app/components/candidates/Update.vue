@@ -370,6 +370,7 @@ export default {
                     '/api/candidates/' + self.address + '/getSignature?id=' + self.id
                 )
                 if (!signData.data.error) {
+                    clearInterval(self.interval)
                     self.signHash = signData.data.signature
                     // 2. Then call update func
                     await self.updateCandidateInfo()

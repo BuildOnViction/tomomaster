@@ -14,6 +14,9 @@ const { check, validationResult } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
 
+const gas = config.get('blockchain.gas')
+const gasPrice = config.get('blockchain.gasPrice')
+
 router.get('/', async function (req, res, next) {
     const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
@@ -181,8 +184,8 @@ router.post('/apply', async function (req, res, next) {
         await validator.methods.propose(candidate).send({
             from : walletProvider.address,
             value: '50000000000000000000000',
-            gas: 2000000,
-            gasPrice: 2500
+            gas,
+            gasPrice
         })
         if (req.query.name) {
             await db.Candidate.updateOne({
@@ -228,8 +231,8 @@ router.post('/applyBulk', async function (req, res, next) {
                 await validator.methods.propose(candidate).send({
                     from : walletProvider.address,
                     value: '50000000000000000000000',
-                    gas: 2000000,
-                    gasPrice: 2500
+                    gas,
+                    gasPrice
                 })
                 if (req.query.name) {
                     await db.Candidate.updateOne({
@@ -270,8 +273,8 @@ router.post('/resign', async function (req, res, next) {
         let candidate = req.query.coinbase.toLowerCase()
         await validator.methods.resign(candidate).send({
             from : walletProvider.address,
-            gas: 2000000,
-            gasPrice: 2500
+            gas,
+            gasPrice
         })
         return res.json({ status: 'OK' })
     } catch (e) {
@@ -293,8 +296,8 @@ router.post('/vote', async function (req, res, next) {
         let ret = await validator.methods.vote(candidate).send({
             from : walletProvider.address,
             value: '500000000000000000000',
-            gas: 2000000,
-            gasPrice: 2500
+            gas,
+            gasPrice
         })
         return res.json({ status: 'OK', tx: ret.transactionHash })
     } catch (e) {
@@ -315,8 +318,8 @@ router.post('/unvote', async function (req, res, next) {
         web3.setProvider(walletProvider)
         await validator.methods.unvote(candidate, '200000000000000000000').send({
             from : walletProvider.address,
-            gas: 2000000,
-            gasPrice: 2500
+            gas,
+            gasPrice
         })
         return res.json({ status: 'OK' })
     } catch (e) {
@@ -414,6 +417,13 @@ router.put('/update', [
             }, {
                 $set: set
             })
+            await db.Signature.updateOne({
+                signedAddress: address.toLowerCase()
+            }, {
+                $set: {
+                    signature: ''
+                }
+            })
             return res.json({ status: 'OK' })
         } else {
             return res.json({
@@ -469,19 +479,22 @@ router.post('/verifyScannedQR', async (req, res, next) => {
         let signer = (req.body.signer || '').toLowerCase()
 
         if (!message || !signature || !id || !signer) {
-            return res.status(406).send('id, message, signature and signer are required')
+            throw Error('id, message, signature and signer are required')
         }
 
         const checkId = await db.Signature.findOne({ signedId: id })
-        if (checkId && !checkId.status) {
-            return res.status(406).send('Cannot use a QR code twice')
+        if (!checkId) {
+            throw Error('id is not match')
+        }
+        if (!checkId.status) {
+            throw Error('Cannot use a QR code twice')
         }
 
         const signedAddress = (await web3.eth.accounts.recover(message, signature) || '').toLowerCase()
 
         if (signer !== signedAddress || checkId.signedAddress !== signedAddress ||
             id !== checkId.signedId) {
-            return res.status(406).send('The Signature Message Verification Failed')
+            throw Error('The Signature Message Verification Failed')
         }
 
         // Store id, address, msg, signature
@@ -497,7 +510,7 @@ router.post('/verifyScannedQR', async (req, res, next) => {
     } catch (e) {
         console.trace(e)
         console.log(e)
-        return res.status(404).send(e)
+        return next(e)
     }
 })
 

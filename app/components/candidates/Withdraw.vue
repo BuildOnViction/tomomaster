@@ -139,6 +139,8 @@ export default {
     },
     async mounted () {
         const self = this
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         self.isReady = !!this.web3
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
@@ -180,8 +182,8 @@ export default {
                 console.log('==>', blockNumber, index)
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(2000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let wd
                 if (self.NetworkProvider === 'ledger') {

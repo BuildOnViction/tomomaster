@@ -39,10 +39,10 @@
                         novalidate
                         @submit.prevent="validate()">
                         <b-form-group
+                            :description="`How much TOMO would you like to vote for this candidate?
+                            TX fee: ${txFee} TOMO`"
                             label="Vote"
-                            label-for="vote-value"
-                            description="How much TOMO would you like to vote for this candidate?
-                            TX fee: 0.0000000000525 TOMO">
+                            label-for="vote-value">
                             <b-input-group>
                                 <number-input
                                     :class="getValidationClass('voteValue')"
@@ -202,6 +202,8 @@ export default {
     created: async function () {
         let self = this
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         try {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
@@ -284,8 +286,8 @@ export default {
                 let txParams = {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(1000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

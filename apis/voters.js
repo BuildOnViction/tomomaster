@@ -137,40 +137,45 @@ router.post('/verifyTx', [
         const serializedTx = req.body.rawTx
 
         if (!id) {
-            return res.status(406).send('id is required')
+            throw new Error('id is required')
         }
         if (!amount) {
             if (action !== 'resign') {
-                return res.status(406).send('amount is required')
+                throw new Error('amount is required')
             }
         }
         const checkId = await db.SignTransaction.findOne({ signId: id })
 
-        if (action !== 'withdraw' && action !== 'resign') {
-            if (!candidate) {
-                return res.status(406).send('candidate is required')
-            }
-        } else if (checkId && checkId.candidate.toLowerCase() !== candidate) {
-            return res.status(406).send('candidate is not match')
-        }
-        if (checkId && !checkId.status) {
-            return res.status(406).send('Cannot use a QR code twice')
+        if (!checkId) {
+            throw Error('id is not match, wrong qr code')
         }
 
-        if (checkId && (action !== checkId.action || id !== checkId.signId)) {
-            return res.status(406).send('Wrong action')
+        if (action !== 'withdraw' && action !== 'resign') {
+            if (!candidate) {
+                throw Error('candidate is required')
+            }
+        } else if (checkId.candidate.toLowerCase() !== candidate) {
+            throw Error('candidate is not match')
         }
+        if (!checkId.status) {
+            throw Error('Cannot use a QR code twice')
+        }
+
+        if (action !== checkId.action || id !== checkId.signId) {
+            throw Error(`Wrong action, ${action} in stead of ${checkId.action}`)
+        }
+
         let signedAddress = '0x' + new EthereumTx(serializedTx).getSenderAddress().toString('hex')
 
         signedAddress = signedAddress.toLowerCase()
 
         if (signedAddress !== signer || signedAddress !== checkId.signedAddress) {
-            return res.status(406).send('Signed Address and signer are not match')
+            throw Error('Signed Address and signer are not match')
         }
 
-        if (action === 'vote' || action === 'unvote' || action === 'withdraw' || action === 'propose') {
+        if (action !== 'resign') {
             if (checkId.amount !== amount) {
-                return res.status(406).send('Amount is not match')
+                throw Error('Amount is not match')
             }
         }
 
@@ -184,44 +189,51 @@ router.post('/verifyTx', [
                             const convertedAmount = new BigNumber(amount)
 
                             if (convertedBalanc.isLessThan(convertedAmount)) {
-                                return res.status(406).send('Not enough TOMO')
+                                throw Error('Not enough TOMO')
                             } else {
-                                return res.status(404).send('Something went wrong')
+                                throw Error('Something went wrong')
                             }
                         }
                     } catch (error) {
+                        console.trace(error)
                         console.log(error)
-                        next(error)
+                        return next(error)
                     }
                 } else next(error)
             } else {
-                // Store id, address, msg, signature
-                let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
-                if (!sign) {
-                    sign = {}
-                }
-                sign.action = action
-                sign.signId = id
-                sign.amount = amount
-                sign.candidate = candidate
-                sign.tx = hash
-                sign.status = false
+                try {
+                    // Store id, address, msg, signature
+                    let sign = await db.SignTransaction.findOne({ signedAddress: signedAddress })
+                    if (!sign) {
+                        sign = {}
+                    }
+                    sign.action = action
+                    sign.signId = id
+                    sign.amount = amount
+                    sign.candidate = candidate
+                    sign.tx = hash
+                    sign.status = false
 
-                await db.SignTransaction.findOneAndUpdate(
-                    { signedAddress: signedAddress },
-                    sign,
-                    { upsert: true, new: true }
-                )
-                return res.send({
-                    status: 'Done',
-                    transactionHash: hash
-                })
+                    await db.SignTransaction.findOneAndUpdate(
+                        { signedAddress: signedAddress },
+                        sign,
+                        { upsert: true, new: true }
+                    )
+                    return res.send({
+                        status: 'Done',
+                        transactionHash: hash
+                    })
+                } catch (error) {
+                    console.trace(error)
+                    console.log(error)
+                    return next(error)
+                }
             }
         })
     } catch (e) {
         console.trace(e)
         console.log(e)
-        return res.status(404).send(e)
+        return next(e)
     }
 })
 

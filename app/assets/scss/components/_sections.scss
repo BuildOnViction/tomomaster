@@ -30,6 +30,18 @@
 
 .section--candidate {
 
+    .section-title .edit-link {
+        color: #678be0;
+
+        i {
+            vertical-align: -1px;
+        }
+
+        &:hover {
+            color: #cfcde1;
+        }
+    }
+
     .social-links {
         margin-top: 15px;
         margin-bottom: 0;

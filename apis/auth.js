@@ -27,23 +27,22 @@ router.post('/verifyLogin', async (req, res, next) => {
         const message = req.body.message
         const signature = req.body.signature
         const id = req.query.id
-        let signer = req.body.signer
+        let signer = (req.body.signer || '').toLowerCase()
 
         if (!message || !signature || !id || !signer) {
-            return res.status(406).send('id, message, signature and signer are required')
+            throw Error('id, message, signature and signer are required')
         }
-        signer = signer.toLowerCase()
 
-        const signedAddress = ecRecover(message, signature)
+        const signedAddress = (ecRecover(message, signature) || '').toLowerCase()
 
         if (signer !== signedAddress) {
-            return res.status(401).send('The Signature Message Verification Failed')
+            throw Error('The Signature Message Verification Failed')
         }
 
         // Store id, address, msg, signature
         let sign = await db.Signature.findOne({ signedAddress: signedAddress })
         if (sign && id === sign.signedId) {
-            return res.status(406).send('Cannot use a QR code twice')
+            throw Error('Cannot use a QR code twice')
         } else {
             const data = {}
             data.signedId = id
@@ -54,7 +53,9 @@ router.post('/verifyLogin', async (req, res, next) => {
         }
         return res.send('Done')
     } catch (e) {
-        next(e)
+        console.trace(e)
+        console.log(e)
+        return next(e)
     }
 })
 

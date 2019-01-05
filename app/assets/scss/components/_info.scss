@@ -11,6 +11,10 @@
         color: #6e92f7;
         margin-right: 6px;
         max-width: 6px;
+
+        &.tm-arrow-up {
+            font-size: 10px;
+        }
     }
 
     .tomo-info__text {
@@ -37,19 +41,5 @@
         .tomo-info__description {
             margin-left: 20px;
         }
-    }
-}
-
-.tomo-info-status--active {
-
-    .tomo-info__description {
-        color: $color-success;
-    }
-}
-
-.tomo-info-status--inactive {
-
-    .tomo-info__description {
-        color: $color-error;
     }
 }
