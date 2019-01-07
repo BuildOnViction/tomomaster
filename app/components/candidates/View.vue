@@ -192,7 +192,9 @@
         <div
             v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
             class="container section section--hardware">
-            <div class="row">
+            <div
+                v-if="!candidate.nodeId"
+                class="row">
                 <div class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-cpu color-pink" />
