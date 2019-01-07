@@ -5,8 +5,8 @@
             :min="min"
             :max="max"
             :step="step"
-            v-model.number="currentValue"
-            type="number"
+            v-model="currentValue"
+            type="text"
             class="form-control"
             @blur="blur"
             @keydown.esc="blur"
@@ -42,7 +42,7 @@ export default {
             default: -Infinity
         },
         value: {
-            type: Number,
+            type: String,
             required: true
         },
         step: {
@@ -53,7 +53,7 @@ export default {
 
     data () {
         return {
-            currentValue: this.value,
+            currentValue: (this.value) ? this.value.replace(/,/g, '') : '',
             decrementDisabled: false,
             incrementDisabled: false,
             inputDisabled: false
@@ -67,7 +67,7 @@ export default {
     },
 
     mounted () {
-        if (this.value === this.min) {
+        if (new BigNumber(this.value) === this.min) {
             this.decrementDisabled = true
         }
     },
@@ -82,7 +82,7 @@ export default {
             let newVal = val.plus(this.step)
             this.decrementDisabled = false
 
-            this._updateValue(newVal.toNumber())
+            this._updateValue(newVal.toString())
         },
         decrement () {
             if (this.disabled || this.decrementDisabled) {
@@ -93,15 +93,15 @@ export default {
             let newVal = val.minus(this.step)
             this.incrementDisabled = false
 
-            this._updateValue(newVal.toNumber())
+            this._updateValue(newVal.toString())
         },
         blur () {
             this.$emit('input', this.currentValue)
         },
         _updateValue (newVal) {
-            const oldVal = this.currentValue
+            const oldVal = new BigNumber(this.currentValue)
 
-            if (oldVal === newVal || typeof this.value !== 'number') {
+            if (oldVal === newVal) {
                 return
             }
             if (newVal <= this.min) {
@@ -112,7 +112,7 @@ export default {
                 newVal = this.max
                 this.incrementDisabled = true
             }
-            this.currentValue = newVal
+            this.currentValue = newVal.toString()
             this.$emit('input', this.currentValue)
         }
     }

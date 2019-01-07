@@ -29,9 +29,9 @@
                     novalidate
                     @submit.prevent="validate()">
                     <b-form-group
+                        :description="`How much TOMO do you want to deposit? TX fee: ${txFee} TOMO`"
                         label="Vote"
-                        label-for="apply-value"
-                        description="How much TOMO do you want to deposit? TX fee: 0.0000000000525 TOMO">
+                        label-for="apply-value">
                         <b-input-group>
                             <number-input
                                 :class="getValidationClass('applyValue')"
@@ -58,7 +58,7 @@
                             :class="getValidationClass('coinbase')"
                             v-model="coinbase"
                             name="coinbase"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text"/>
                         <span
                             v-if="$v.coinbase.$dirty && !$v.coinbase.required"
@@ -152,7 +152,7 @@ export default {
         return {
             account: '',
             isReady: !!this.web3,
-            applyValue: 50000,
+            applyValue: '50000',
             coinbase: '',
             // nodeUrl: '',
             loading: false,
@@ -192,6 +192,8 @@ export default {
     created: async function () {
         let self = this
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         try {
             self.isReady = !!self.web3
             if (!self.web3 && self.NetworkProvider === 'metamask') {
@@ -288,8 +290,8 @@ export default {
                 let txParams = {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(2000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

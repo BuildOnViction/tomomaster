@@ -87,10 +87,10 @@
                     slot-scope="data">
                     <div>
                         <span
-                            :class="`float-left mr-1 tomo-middle${getColor(
+                            :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
                             data.item.latestSignedBlock || 0, currentBlock)}`">
-                            &#9679;
-                        </span> {{ data.item.latestSignedBlock || 0 }}
+                            {{ data.item.latestSignedBlock || 0 }}
+                        </span>
                     </div>
                 </template>
 
@@ -182,7 +182,8 @@
                 :per-page="perPage"
                 v-model="currentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="pageChange"/>
         </div>
     </div>
 </template>
@@ -241,8 +242,8 @@ export default {
             voteValue: 1,
             voteItem: {},
             candidates: [],
-            currentPage: 1,
-            perPage: 10,
+            currentPage: this.$store.state.currentPage || 1,
+            perPage: 50,
             totalRows: 0,
             tableCssClass: '',
             loading: false,
@@ -260,7 +261,7 @@ export default {
     },
     watch: {
         currentPage: async function (val) {
-            this.currentPage = val
+            this.currentPage = this.$store.state.currentPage
             await this.getDataFromApi()
         }
     },
@@ -335,14 +336,14 @@ export default {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
-                result = '--green'
+                result = 'cyan'
                 break
             case latestSignedBlock < (currentBlock - 20) &&
                 latestSignedBlock >= (currentBlock - 100):
-                result = '--orange'
+                result = 'yellow'
                 break
             case latestSignedBlock < (currentBlock - 100):
-                result = '--red'
+                result = 'pink'
                 break
             default:
                 result = ''
@@ -375,7 +376,7 @@ export default {
                 })
                 self.candidates = items
 
-                self.totalRows = candidates.data.total
+                self.totalRows = self.candidates.filter(c => c.status !== 'RESIGNED').length
 
                 self.loading = false
                 self.getTableCssClass()
@@ -383,6 +384,10 @@ export default {
                 self.loading = false
                 console.log(e)
             }
+        },
+        pageChange (page) {
+            this.$store.state.currentPage = page
+            window.scrollTo(0, 320)
         }
     }
 }

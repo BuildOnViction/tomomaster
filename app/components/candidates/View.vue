@@ -10,10 +10,8 @@
                         <router-link
                             v-if="account === candidate.owner"
                             :to="'/candidate/' + candidate.address + '/update'"
-                            class="text-truncate">
-                            <font-awesome-icon
-                                icon="edit"
-                                class="fa-xs ml-1"/>
+                            class="edit-link">
+                            <i class="tm-edit ml-2 mr-0" />
                         </router-link>
                         <span class="text-truncate section-title__description">{{ candidate.address }}</span>
                         <ul class="list-inline social-links">
@@ -36,17 +34,16 @@
                 + (loading ? ' tomo-loading' : '')">
                 <div class="row m-md-0">
                     <div
-                        :class="'col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info tomo-info-status--'
-                        + candidate.status">
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info text-truncate">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
                             <span class="tomo-info__text">Owner</span>
                         </p>
-                        <p class="tomo-info__description">
+                        <p class="tomo-info__description color-cyan">
                             <router-link
                                 :to="'/voter/' + candidate.owner"
                                 class="text-truncate">
-                                {{ (candidate.owner || '').substring(0, 8) }}...
+                                {{ candidate.owner }}
                             </router-link>
                         </p>
                     </div>
@@ -57,11 +54,10 @@
                         </p>
                         <p class="tomo-info__description">
                             <span
-                                :class="`float-left mr-1 tomo-middle${getColor(
+                                :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
                                 candidate.latestSignedBlock || 0, currentBlock)}`">
-                                &#9679;
+                                {{ formatNumber(candidate.latestSignedBlock) }}
                             </span>
-                            {{ formatNumber(candidate.latestSignedBlock) }}
                         </p>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
@@ -118,7 +114,8 @@
                             </b-tooltip>
                         </p>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                    <div
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                         <p class="tomo-info__title">
                             <i class="tm-dot tomo-info__icon" />
                             <span
@@ -127,11 +124,10 @@
                             </span>
                         </p>
                         <p
-                            :class="{ 'text-success': candidate.status === 'MASTERNODE',
-                                      'text-danger': candidate.status === 'SLASHED',
-                                      'text-danger': candidate.status === 'RESIGNED' }"
-                            class="tomo-info__description"
-                        >
+                            :class="{ 'color-cyan': candidate.status === 'MASTERNODE',
+                                      'color-pink': candidate.status === 'SLASHED',
+                                      'color-pink': candidate.status === 'RESIGNED' }"
+                            class="tomo-info__description">
                             {{ candidate.status }}
                         </p>
                     </div>
@@ -547,6 +543,7 @@ export default {
         self.config = await this.appConfig()
         self.currentBlock = self.config.blockchain.blockNumber
         self.isReady = !!self.web3
+        console.log(this.$store.state)
         try {
             if (self.isReady) {
                 let contract = self.TomoValidator.deployed()
@@ -693,14 +690,14 @@ export default {
             let result
             switch (true) {
             case latestSignedBlock >= (currentBlock - 20):
-                result = '--green'
+                result = 'cyan'
                 break
             case latestSignedBlock < (currentBlock - 20) &&
                 latestSignedBlock >= (currentBlock - 100):
-                result = '--orange'
+                result = 'yellow'
                 break
             case latestSignedBlock < (currentBlock - 100):
-                result = '--red'
+                result = 'pink'
                 break
             default:
                 result = ''

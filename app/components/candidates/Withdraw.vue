@@ -9,7 +9,7 @@
                     <b-card
                         :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--animated p-0'
                         + (loading ? ' tomo-loading' : '')">
-                        <h4 class=" color-white tomo-card__title tomo-card__title--big">Withdrawal</h4>
+                        <h4 class=" color-white tomo-card__title tomo-card__title--big">Withdrawal Confirmation</h4>
 
                         <ul class="tomo-list list-unstyled">
                             <li class="tomo-list__item">
@@ -139,6 +139,8 @@ export default {
     },
     async mounted () {
         const self = this
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         self.isReady = !!this.web3
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
@@ -180,8 +182,8 @@ export default {
                 console.log('==>', blockNumber, index)
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(2000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let wd
                 if (self.NetworkProvider === 'ledger') {

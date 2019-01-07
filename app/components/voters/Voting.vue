@@ -39,10 +39,10 @@
                         novalidate
                         @submit.prevent="validate()">
                         <b-form-group
+                            :description="`How much TOMO would you like to vote for this candidate?
+                            TX fee: ${txFee} TOMO`"
                             label="Vote"
-                            label-for="vote-value"
-                            description="How much TOMO would you like to vote for this candidate?
-                            TX fee: 0.0000000000525 TOMO">
+                            label-for="vote-value">
                             <b-input-group>
                                 <number-input
                                     :class="getValidationClass('voteValue')"
@@ -175,7 +175,7 @@ export default {
             isReady: !!this.web3,
             voter: 'Unknown',
             candidate: this.$route.params.candidate,
-            voteValue: 10,
+            voteValue: '10',
             loading: false,
             step: 1,
             message: '',
@@ -202,6 +202,8 @@ export default {
     created: async function () {
         let self = this
         let account
+        self.config = await self.appConfig()
+        self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         try {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
@@ -217,7 +219,7 @@ export default {
                 self.voter = account
             }
             self.web3.eth.getBalance(self.voter, function (a, b) {
-                self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                self.balance = new BigNumber(b).div(10 ** 18)
                 if (a) {
                     console.log('got an error', a)
                 }
@@ -257,10 +259,11 @@ export default {
             }
         },
         validate: function () {
+            this.voteValue = this.voteValue.replace(/,/g, '')
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                if (this.voteValue > this.balance) {
+                if ((new BigNumber(this.voteValue)).isGreaterThan(this.balance)) {
                     this.votingError = true
                 } else {
                     this.votingError = false
@@ -283,8 +286,8 @@ export default {
                 let txParams = {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(2500),
-                    gas: self.web3.utils.toHex(1000000)
+                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
                 if (self.NetworkProvider === 'ledger') {

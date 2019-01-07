@@ -60,7 +60,7 @@
                         <b-form-input
                             :class="getValidationClass('mnemonic')"
                             v-model="mnemonic"
-                            autocomplete="false"
+                            autocomplete="off"
                             type="text" />
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
@@ -148,7 +148,7 @@
                     <li class="tomo-list__item">
                         <i class="tm-tomo tomo-list__icon" />
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ balance }}
+                            <p class="color-white mb-0">{{ formatNumber(balance) }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Balance</span>
                         </div>
@@ -173,11 +173,11 @@
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
-                        <div class="tomo-list__text">
+                        <!-- <div class="tomo-list__text">
                             <p class="color-white mb-0">
                                 {{ w.estimatedTime }}</p>
                             <span>Estimated Time</span>
-                        </div>
+                        </div> -->
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
@@ -242,7 +242,7 @@
                                         :value="index"
                                         name="hdWallet"
                                         type="radio"
-                                        autocomplete="false"
+                                        autocomplete="off"
                                         style="width: 5%; float: left" >
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}
@@ -392,7 +392,7 @@ export default {
 
                 self.address = account
                 self.web3.eth.getBalance(self.address, function (a, b) {
-                    self.balance = new BigNumber(b).div(10 ** 18).toFormat()
+                    self.balance = new BigNumber(b).div(10 ** 18)
                     if (a) {
                         console.log('got an error', a)
                     }
@@ -561,32 +561,6 @@ export default {
                 console.log(e)
             }
         },
-        // withdraw: async function (blockNumber, index) {
-        //     let self = this
-        //     let contract = await self.TomoValidator.deployed()
-        //     let account = await self.getAccount()
-
-        //     self.loading = true
-        //     try {
-        //         let wd = await contract.withdraw(String(blockNumber), String(index), {
-        //             from: account,
-        //             gasPrice: 2500,
-        //             gas: 2000000
-        //         })
-        //         let toastMessage = wd.tx ? 'You have successfully withdrawed!'
-        //             : 'An error occurred while withdrawing, please try again'
-        //         self.$toasted.show(toastMessage)
-
-        //         setTimeout(() => {
-        //             self.loading = false
-        //             if (wd.tx) {
-        //                 self.$router.push({ path: `/setting` })
-        //             }
-        //         }, 2000)
-        //     } catch (e) {
-        //         self.loading = false
-        //     }
-        // },
         async loginByQRCode () {
             // generate qr code
             const { data } = await axios.get('/api/auth/generateLoginQR')
@@ -689,14 +663,22 @@ export default {
             }
         },
         changeView (w, k) {
-            this.$router.push({ name: 'CandidateWithdraw',
-                params: {
-                    address: this.address,
-                    blockNumber: w.blockNumber,
-                    capacity: w.cap,
-                    index: k
-                }
-            })
+            const txFee = new BigNumber(this.chainConfig.gas * this.chainConfig.gasPrice).div(10 ** 18)
+
+            if (this.balance.isGreaterThanOrEqualTo(txFee)) {
+                this.$router.push({ name: 'CandidateWithdraw',
+                    params: {
+                        address: this.address,
+                        blockNumber: w.blockNumber,
+                        capacity: w.cap,
+                        index: k
+                    }
+                })
+            } else {
+                this.$toasted.show('Not enough TOMO for transaction fee', {
+                    type : 'info'
+                })
+            }
         },
         closeModal () {
             document.getElementById('hdwalletModal').style.display = 'none'
