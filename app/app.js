@@ -108,9 +108,14 @@ Vue.prototype.setupProvider = function (provider, wjs) {
                             return reject(error.message)
                         }
                     case 'trezor':
-                        const payload = Vue.prototype.trezorPayload
+                        const xpub = (Vue.prototype.trezorPayload) ? Vue.prototype.trezorPayload.xpub
+                            : localStorage.get('trezorXpub')
                         const offset = localStorage.get('offset')
-                        const result = Vue.prototype.HDWalletCreate(payload, offset)
+                        const result = Vue.prototype.HDWalletCreate(
+                            xpub,
+                            offset
+                        )
+                        localStorage.set('trezorXpub', xpub)
                         return resolve(result)
                     default:
                         break
@@ -176,8 +181,8 @@ Vue.prototype.unlockTrezor = async () => {
     }
 }
 
-Vue.prototype.HDWalletCreate = (payload, index) => {
-    const hdWallet = HDKey.fromExtendedKey(payload.xpub)
+Vue.prototype.HDWalletCreate = (xpub, index) => {
+    const hdWallet = HDKey.fromExtendedKey(xpub)
     const node = hdWallet.deriveChild(index)
 
     return '0x' + node.getWallet().getAddress().toString('hex')
@@ -188,6 +193,7 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
         const wallets = {}
         const payload = Vue.prototype.trezorPayload
         if (payload && !payload.error) {
+            const xpub = payload.xpub
             let convertedAddress
             let balance
             let web3
@@ -196,7 +202,7 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
             }
             web3 = Vue.prototype.web3
             for (let i = offset; i < (offset + limit); i++) {
-                convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
+                convertedAddress = Vue.prototype.HDWalletCreate(xpub, i)
                 balance = await web3.eth.getBalance(convertedAddress)
                 wallets[i] = {
                     address: convertedAddress,
@@ -417,16 +423,58 @@ Vue.prototype.getTomoValidatorInstance = async function () {
  * @return object signature {r, s, v}
  */
 Vue.prototype.signTransaction = async function (txParams) {
-    let config = await getConfig()
-    let chainConfig = config.blockchain
-    let rawTx = new Transaction(txParams)
+    const config = await getConfig()
+    const chainConfig = config.blockchain
+    const rawTx = new Transaction(txParams)
     rawTx.v = Buffer.from([chainConfig.networkId])
-    let serializedRawTx = rawTx.serialize().toString('hex')
-    let path = localStorage.get('hdDerivationPath')
-    let signature = await Vue.prototype.appEth.signTransaction(
-        path,
-        serializedRawTx
-    )
+    const serializedRawTx = rawTx.serialize().toString('hex')
+    const path = localStorage.get('hdDerivationPath')
+    const provider = Vue.prototype.NetworkProvider
+    let signature
+    if (provider === 'ledger') {
+        signature = await Vue.prototype.appEth.signTransaction(
+            path,
+            serializedRawTx
+        )
+    }
+    if (provider === 'trezor') {
+        // delete txParams.from
+        console.log(JSON.stringify(txParams))
+        console.log(path)
+        try {
+            // TrezorConnect1.signEthereumTx(
+            //     path,
+            //     getNakedAddress(txParams.nonce),
+            //     getNakedAddress(txParams.gasPrice),
+            //     getNakedAddress(txParams.gas),
+            //     getNakedAddress(txParams.to),
+            //     getNakedAddress(txParams.value),
+            //     getNakedAddress(txParams.data),
+            //     txParams.chainId,
+            //     (result) => {
+            //         return new Promise((resolve, reject) => {
+            //             if (!result.success) {
+            //                 reject(result.error)
+            //             }
+            //             resolve(result)
+            //         })
+            //     }
+            // )
+            console.log(path)
+
+            const result = await TrezorConnect.ethereumSignTransaction({
+                path: "m/44'/60'/0'",
+                transaction: txParams
+            })
+            signature = result.payload
+            console.log(signature)
+        } catch (error) {
+            console.log(22222222222222222222)
+            console.log(error)
+            throw error
+        }
+    }
+    console.log(JSON.stringify(signature))
     return signature
 }
 
@@ -438,7 +486,9 @@ Vue.prototype.signTransaction = async function (txParams) {
 Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
     // "hexify" the keys
     Object.keys(signature).map((key, _) => {
-        signature[key] = '0x' + signature[key]
+        if (signature[key].startsWith('0x')) {
+            return signature[key]
+        } else signature[key] = '0x' + signature[key]
     })
     let txObj = Object.assign({}, txParams, signature)
     let tx = new Transaction(txObj)

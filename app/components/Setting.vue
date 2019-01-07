@@ -543,6 +543,7 @@ export default {
                 case 'trezor':
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
                     offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    store.set('hdDerivationPath', self.hdPath + '/' + offset)
                     store.set('offset', offset)
                     break
                 default:

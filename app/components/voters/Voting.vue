@@ -287,10 +287,13 @@ export default {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
                     gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas)
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                console.log(self.NetworkProvider)
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
                     // sign transaction using hardwarewallet before sending to chain
 
@@ -311,6 +314,7 @@ export default {
                             nonce: self.web3.utils.toHex(nonce)
                         }
                     )
+                    console.log(dataTx)
                     let signature = await self.signTransaction(dataTx)
                     rs = await self.sendSignedTransaction(dataTx, signature)
                 } else {
