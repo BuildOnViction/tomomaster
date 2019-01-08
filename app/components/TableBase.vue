@@ -3,9 +3,9 @@
         <thead>
             <tr>
                 <th
-                    v-for="(field) in fields"
-                    :key="field.key"
-                    :class="field.cssClass">{{ field.label }}</th>
+                    v-for="(field, index) in fields"
+                    :key="index"
+                    :aria-colindex="index + 1">{{ field.label }}</th>
             </tr>
         </thead>
         <tbody role="rowgroup">

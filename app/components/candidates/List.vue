@@ -52,14 +52,13 @@
                 <div class="col-12">
                     <h3 class="section-title">
                         <i class="tm-flag color-yellow" />
-                        <span>Candidates ({{ totalRows }})</span>
+                        <span>Candidates ({{ activeCandidates }})</span>
                     </h3>
                 </div>
             </div>
             <b-table
                 :items="sortedCandidates"
                 :fields="fields"
-                :current-page="currentPage"
                 :per-page="perPage"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
@@ -117,64 +116,6 @@
                         @click="onRowClick(data.item.address)">Vote</b-button>
                 </template>
             </b-table>
-            <!-- <table-base
-                :fields="fields"
-                :items="candidates"
-                :class="'tomo-table tomo-table--candidates ' + tableCssClass">
-                <template
-                    slot="address"
-                    slot-scope="data">
-                    <router-link
-                        :to="'/candidate/' + data.item.address"
-                        class="text-truncate">
-                        {{ data.item.address }}
-                    </router-link>
-                </template>
-
-                <template
-                    slot="cap"
-                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.cap, 2)) }}
-                </template>
-
-                <template
-                    slot="latestSignedBlock"
-                    slot-scope="data">
-                    <div>
-                        <span
-                            :class="`float-left mr-1 tomo-middle${getColor(
-                            data.item.latestSignedBlock || 0, currentBlock)}`">
-                            &#9679;
-                        </span> {{ data.item.latestSignedBlock || 0 }}
-                    </div>
-                </template>
-
-                <template
-                    slot="status"
-                    slot-scope="data">
-                    <div>
-                        <div class="mt-2 mt-lg-0">
-                            <span
-                                :class="'tomo-chip '
-                                    + (data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE' ?
-                                'tomo-chip--primary' : 'tomo-chip--accent') ">
-                                {{ data.item.status.toUpperCase() }}
-                            </span>
-                        </div>
-                    </div>
-                </template>
-
-                <template
-                    slot="action"
-                    slot-scope="data">
-                    <div>
-                        <b-button
-                            v-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
-                            variant="primary"
-                            class="mt-3 mt-lg-0 vote-btn"
-                            @click="onRowClick(data.item.address)">Vote</b-button>
-                    </div>
-                </template>
-            </table-base> -->
 
             <b-pagination
                 v-if="totalRows > 0 && totalRows > perPage"
@@ -192,13 +133,9 @@
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import store from 'store'
-import TableBase from '../TableBase.vue'
 
 export default {
     name: 'App',
-    components: {
-        TableBase
-    },
     data () {
         return {
             chainConfig: {},
@@ -249,7 +186,8 @@ export default {
             loading: false,
             hasProposed: false,
             hasResigned: false,
-            isTomonet: false
+            isTomonet: false,
+            activeCandidates: 0
         }
     },
     computed: {
@@ -359,7 +297,6 @@ export default {
                     limit: self.perPage
                 }
                 const query = self.serializeQuery(params)
-                console.log(JSON.stringify(query))
                 let candidates = await axios.get('/api/candidates' + '?' + query)
                 let items = []
                 candidates.data.candidates.map(async (candidate, index) => {
@@ -376,7 +313,8 @@ export default {
                 })
                 self.candidates = items
 
-                self.totalRows = self.candidates.filter(c => c.status !== 'RESIGNED').length
+                self.totalRows = candidates.data.total
+                self.activeCandidates = candidates.data.activeCandidates
 
                 self.loading = false
                 self.getTableCssClass()
