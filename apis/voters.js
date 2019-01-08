@@ -19,8 +19,11 @@ router.get('/:voter/candidates', [
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 200) {
+        limit = 200
+    }
     try {
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),

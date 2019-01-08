@@ -387,9 +387,9 @@ export default {
 
                 self.loading = true
                 // Get all informations
-                const candiatePromise = axios.get(`/api/voters/${voter}/candidates`)
+                const candiatePromise = axios.get(`/api/voters/${voter}/candidates?limit=100`)
                 const rewardPromise = axios.get(`/api/voters/${voter}/rewards`)
-                const txPromise = axios.get(`/api/transactions/voter/${voter}`)
+                const txPromise = axios.get(`/api/transactions/voter/${voter}?limit=100`)
 
                 // Candidate table
                 let candidates = await candiatePromise
