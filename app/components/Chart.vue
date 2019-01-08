@@ -3,6 +3,7 @@
 </template>
 <script>
 import axios from 'axios'
+import lodashGet from 'lodash/get'
 
 export default {
     props: {
@@ -175,6 +176,15 @@ export default {
         let query = this.buildQuery()
 
         let data = await this.fetchData('telegraf', query, 'ms')
+        if (data) {
+            if (this.dataType === 'cpu' && !lodashGet(data, ['0', 'series'])) {
+                this.$bus.$emit('CPUResult', false)
+            }
+            if (this.dataType === 'memory' && !lodashGet(data, ['0', 'series'])) {
+                this.$bus.$emit('MEMResult', false)
+            }
+        }
+
         this.series = this.bindDataToChart(data, this.colors, this.fillColor)
     },
     methods: {
