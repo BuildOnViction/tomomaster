@@ -7,7 +7,7 @@ const db = require('../models/mongodb')
 
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
-const { check, validationResult } = require('express-validator/check')
+const { check, validationResult, query } = require('express-validator/check')
 
 router.get('/generateLoginQR', async (req, res, next) => {
     try {
@@ -24,9 +24,10 @@ router.get('/generateLoginQR', async (req, res, next) => {
 })
 
 router.post('/verifyLogin', [
-    check('message').isLength({ min: 1 }).optional().withMessage('message is required'),
-    check('signature').isLength({ min: 1 }).optional().withMessage('signature is required'),
-    check('signer').isLength({ min: 1 }).optional().withMessage('signer is required')
+    query('id').exists().withMessage('id is required'),
+    check('message').isLength({ min: 1 }).exists().withMessage('message is required'),
+    check('signature').isLength({ min: 1 }).exists().withMessage('signature is required'),
+    check('signer').isLength({ min: 1 }).exists().withMessage('signer is required')
 ], async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -37,9 +38,6 @@ router.post('/verifyLogin', [
         const signature = req.body.signature
         const id = req.query.id
         let signer = req.body.signer.toLowerCase()
-        if (!id) {
-            throw Error('id is required')
-        }
 
         const signedAddress = (ecRecover(message, signature) || '').toLowerCase()
 
@@ -67,7 +65,13 @@ router.post('/verifyLogin', [
     }
 })
 
-router.get('/getLoginResult', async (req, res, next) => {
+router.get('/getLoginResult', [
+    query('id').exists().withMessage('id is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const messId = req.query.id || ''
 

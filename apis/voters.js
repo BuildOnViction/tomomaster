@@ -9,7 +9,7 @@ const web3 = require('../models/blockchain/web3rpc')
 const EthereumTx = require('ethereumjs-tx')
 const BigNumber = require('bignumber.js')
 const _ = require('lodash')
-const { check, validationResult } = require('express-validator/check')
+const { check, validationResult, query } = require('express-validator/check')
 const urljoin = require('url-join')
 
 router.get('/:voter/candidates', [
@@ -127,9 +127,10 @@ router.post('/generateQR', [
 })
 
 router.post('/verifyTx', [
-    check('action').isLength({ min: 1 }).withMessage('action is required'),
-    check('signer').isLength({ min: 1 }).withMessage('signer is required'),
-    check('rawTx').isLength({ min: 1 }).withMessage('rawTx is required')
+    query('id').exists().withMessage('is is required'),
+    check('action').isLength({ min: 1 }).exists().withMessage('action is required'),
+    check('signer').isLength({ min: 1 }).exists().withMessage('signer is required'),
+    check('rawTx').isLength({ min: 1 }).exists().withMessage('rawTx is required')
 ], async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -144,10 +145,6 @@ router.post('/verifyTx', [
             ? new BigNumber(req.body.amount.replace(/,/g, '')).toString(10)
             : undefined
         const serializedTx = req.body.rawTx
-
-        if (!id) {
-            throw new Error('id is required')
-        }
         if (!amount) {
             if (action !== 'resign') {
                 throw new Error('amount is required')
@@ -246,38 +243,43 @@ router.post('/verifyTx', [
     }
 })
 
-router.get('/getScanningResult',
-    async (req, res, next) => {
-        try {
-            const id = req.query.id
-
-            const signTx = await db.SignTransaction.findOne({ signId: id })
-
-            if (signTx && id === signTx.signId && !signTx.status) {
-                const checkTx = await web3.eth.getTransactionReceipt(signTx.tx)
-                // const checkTx = ((signTx || {}).tx && action === 'withdraw')
-                //     ? true : await db.Transaction.findOne({ tx: signTx.tx })
-                if (checkTx) {
-                    res.send({
-                        tx: signTx.tx,
-                        status: checkTx.status
-                    })
-                } else {
-                    res.send('Scanned, getting transaction hash')
-                }
-            } else {
-                res.send({
-                    error: {
-                        message: 'Not match'
-                    }
-                })
-            }
-        } catch (e) {
-            console.trace(e)
-            console.log(e)
-            return res.status(500).send(e)
-        }
+router.get('/getScanningResult', [
+    query('id').exists().withMessage('id is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
     }
+    try {
+        const id = req.query.id
+
+        const signTx = await db.SignTransaction.findOne({ signId: id })
+
+        if (signTx && id === signTx.signId && !signTx.status) {
+            const checkTx = await web3.eth.getTransactionReceipt(signTx.tx)
+            // const checkTx = ((signTx || {}).tx && action === 'withdraw')
+            //     ? true : await db.Transaction.findOne({ tx: signTx.tx })
+            if (checkTx) {
+                res.send({
+                    tx: signTx.tx,
+                    status: checkTx.status
+                })
+            } else {
+                res.send('Scanned, getting transaction hash')
+            }
+        } else {
+            res.send({
+                error: {
+                    message: 'Not match'
+                }
+            })
+        }
+    } catch (e) {
+        console.trace(e)
+        console.log(e)
+        return res.status(500).send(e)
+    }
+}
 )
 
 module.exports = router
