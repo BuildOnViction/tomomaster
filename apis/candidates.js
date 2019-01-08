@@ -18,8 +18,11 @@ const gas = config.get('blockchain.gas')
 const gasPrice = config.get('blockchain.gasPrice')
 
 router.get('/', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 200) {
+        limit = 200
+    }
     try {
         let data = await Promise.all([
             db.Candidate.find({
@@ -139,8 +142,11 @@ router.get('/:candidate', async function (req, res, next) {
 })
 
 router.get('/:candidate/voters', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 100) {
+        limit = 100
+    }
     let voters = await db.Voter.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()

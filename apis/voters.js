@@ -70,11 +70,20 @@ router.get('/:voter/rewards', async function (req, res, next) {
     }
 })
 
-router.post('/generateQR', async (req, res, next) => {
+router.post('/generateQR', [
+    check('voter').isLength({ min: 1 }).withMessage('voter is required'),
+    check('amount').isLength({ min: 1 }).withMessage('amount is required'),
+    check('candidate').isLength({ min: 1 }).withMessage('candidate is required'),
+    check('action').isLength({ min: 1 }).withMessage('action is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
-        const voter = req.body.voter
+        const voter = req.body.voter.toLowerCase()
         const amount = req.body.amount
-        const candidate = (req.body.candidate || '').toLowerCase()
+        const candidate = req.body.candidate.toLowerCase()
         const action = req.body.action
 
         let candidateInfo = (await db.Candidate.findOne({
