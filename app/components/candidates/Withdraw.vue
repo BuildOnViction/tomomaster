@@ -183,10 +183,13 @@ export default {
                 let txParams = {
                     from: account,
                     gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let wd
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
                     Object.assign(

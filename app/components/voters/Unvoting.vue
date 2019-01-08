@@ -308,10 +308,13 @@ export default {
                 let txParams = {
                     from: account,
                     gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
                     // sign transaction using hardwarewallet before sending to chain
 

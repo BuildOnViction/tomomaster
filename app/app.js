@@ -439,42 +439,17 @@ Vue.prototype.signTransaction = async function (txParams) {
     }
     if (provider === 'trezor') {
         // delete txParams.from
-        console.log(JSON.stringify(txParams))
-        console.log(path)
         try {
-            // TrezorConnect1.signEthereumTx(
-            //     path,
-            //     getNakedAddress(txParams.nonce),
-            //     getNakedAddress(txParams.gasPrice),
-            //     getNakedAddress(txParams.gas),
-            //     getNakedAddress(txParams.to),
-            //     getNakedAddress(txParams.value),
-            //     getNakedAddress(txParams.data),
-            //     txParams.chainId,
-            //     (result) => {
-            //         return new Promise((resolve, reject) => {
-            //             if (!result.success) {
-            //                 reject(result.error)
-            //             }
-            //             resolve(result)
-            //         })
-            //     }
-            // )
-            console.log(path)
-
             const result = await TrezorConnect.ethereumSignTransaction({
-                path: "m/44'/60'/0'",
+                path,
                 transaction: txParams
             })
             signature = result.payload
-            console.log(signature)
         } catch (error) {
-            console.log(22222222222222222222)
             console.log(error)
             throw error
         }
     }
-    console.log(JSON.stringify(signature))
     return signature
 }
 
@@ -507,18 +482,34 @@ Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
 Vue.prototype.signMessage = async function (message) {
     try {
         const path = localStorage.get('hdDerivationPath')
-        const result = await Vue.prototype.appEth.signPersonalMessage(
-            path,
-            Buffer.from(message).toString('hex')
-        )
-        let v = result['v'] - 27
-        v = v.toString(16)
-        if (v.length < 2) {
-            v = '0' + v
+        const provider = Vue.prototype.NetworkProvider
+        let result
+        switch (provider) {
+        case 'ledger':
+            const signature = await Vue.prototype.appEth.signPersonalMessage(
+                path,
+                Buffer.from(message).toString('hex')
+            )
+            let v = signature['v'] - 27
+            v = v.toString(16)
+            if (v.length < 2) {
+                v = '0' + v
+            }
+            result = '0x' + signature['r'] + signature['s'] + v
+            break
+        case 'trezor':
+            result = await TrezorConnect.ethereumSignMessage(
+                path,
+                message
+            ).payload.signature
+            break
+        default:
+            break
         }
-        return '0x' + result['r'] + result['s'] + v
+        return result
     } catch (error) {
         console.log(error)
+        throw error
     }
 }
 

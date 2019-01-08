@@ -99,7 +99,7 @@
                         </div>
                     </b-form-group>
                     <b-form-group
-                        v-if="provider === 'ledger' || provider === 'trezor'"
+                        v-if="provider === 'ledger'"
                         class="mb-4"
                         label="Select HD derivation path"
                         label-for="hdPath">
@@ -111,6 +111,23 @@
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
                             class="text-danger">Required field</span>
+                    </b-form-group>
+
+                    <b-form-group
+                        v-if="provider === 'trezor'"
+                        class="mb-4"
+                        label-for="hdPath">
+                        <span>HD derivation path: </span>
+                        <label class="ml-1"><b>m/44'/60'/0'/0</b></label>
+                        <!-- <b-form-input
+                            :class="getValidationClass('hdPath')"
+                            :value="hdPath"
+                            v-model="hdPath"
+                            readonly
+                            type="text" /> -->
+                        <!-- <span
+                            v-if="$v.hdPath.$dirty && !$v.hdPath.required"
+                            class="text-danger">Required field</span> -->
                     </b-form-group>
 
                     <div
@@ -478,6 +495,7 @@ export default {
                 this.selectHdPath()
             }
             if (this.provider === 'trezor' && !this.$v.hdPath.$invalid) {
+                this.hdPath = "m/44'/60'/0'/0"
                 this.selectHdPath()
             }
         },
@@ -604,16 +622,35 @@ export default {
             }
         },
         async onChangeSelect (event) {
-            if (event === 'tomowallet') {
-                await this.loginByQRCode()
-                this.interval = setInterval(async () => {
-                    await this.getLoginResult()
-                }, 3000)
-            } else {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
+            switch (event) {
+                case 'tomowallet':
+                    await this.loginByQRCode()
+                    this.interval = setInterval(async () => {
+                        await this.getLoginResult()
+                    }, 3000)
+                    break
+                case 'trezor':
+                    this.hdPath = "m/44'/60'/0'/0"
+                    break
+                case 'ledger':
+                    this.hdPath = "m/44'/889'/0'/0"
+                    break
+                default:
+                    if (this.interval) {
+                        clearInterval(this.interval)
+                    }
+                    break
             }
+            // if (event === 'tomowallet') {
+            //     await this.loginByQRCode()
+            //     this.interval = setInterval(async () => {
+            //         await this.getLoginResult()
+            //     }, 3000)
+            // } else {
+            //     if (this.interval) {
+            //         clearInterval(this.interval)
+            //     }
+            // }
         },
         async getAccountInfo (account) {
             const self = this
