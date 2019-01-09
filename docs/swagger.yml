@@ -16,7 +16,7 @@ paths:
         Get TomoMaster Application Configuration
       responses:
         200:
-          description: Returns a access token
+          description: OK
         401:
           description: Unauthorized
         400:

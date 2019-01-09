@@ -7,9 +7,15 @@ const validator = require('express-validator')
 const path = require('path')
 const yaml = require('js-yaml')
 const fs = require('fs')
+const cors = require('cors')
 
 // body parse
 const app = express()
+
+// cors
+app.use(cors({
+    origin: config.get('cors')
+}))
 
 const server = require('http').Server(app)
 
