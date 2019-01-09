@@ -35,11 +35,18 @@ router.get('/candidate/:candidate', async function (req, res, next) {
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
     try {
+        const total = db.Transaction.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: (req.params.candidate || '').toLowerCase()
+        })
         let txs = await db.Transaction.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: (req.params.candidate || '').toLowerCase()
         }).sort({ createdAt: -1 }).limit(limit).skip(skip)
-        return res.json(txs)
+        return res.json({
+            items: txs,
+            total: await total
+        })
     } catch (e) {
         return next(e)
     }

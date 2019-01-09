@@ -74,7 +74,7 @@ router.get('/', async function (req, res, next) {
         let ret = await Promise.all(map)
 
         return res.json({
-            candidates: ret,
+            items: ret,
             total: await total,
             activeCandidates: await activeCandidates
         })
@@ -162,7 +162,7 @@ router.get('/:candidate/voters', async function (req, res, next) {
         candidate: (req.params.candidate || '').toLowerCase()
     }).limit(limit).skip(skip)
     return res.json({
-        voters: await voters,
+        items: await voters,
         total: await total
     })
 })

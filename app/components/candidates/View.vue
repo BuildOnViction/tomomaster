@@ -337,7 +337,6 @@
             <b-table
                 :items="transactions"
                 :fields="txFields"
-                :current-page="txCurrentPage"
                 :per-page="txPerPage"
                 :show-empty="true"
                 :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
@@ -400,7 +399,8 @@
                 :per-page="txPerPage"
                 v-model="txCurrentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="txPageChange"/>
         </div>
     </div>
 </template>
@@ -535,7 +535,11 @@ export default {
     watch: {
         $route (to, from) {
             this.candidate.address = to.params.address.toLowerCase()
-            this.getCandidateData()
+            this.getCandidateData().then(() => {
+                this.getCandidateVoters()
+                this.getCandidateTransactions()
+                this.getCandidateRewards()
+            }).catch((error) => { console.log(error) })
         }
     },
     created: async function () {
@@ -561,7 +565,10 @@ export default {
             console.log(error)
         }
 
-        self.getCandidateData()
+        await self.getCandidateData()
+        self.getCandidateVoters()
+        self.getCandidateTransactions()
+        self.getCandidateRewards()
     },
     mounted () {},
     methods: {
@@ -585,8 +592,6 @@ export default {
                 self.loading = true
                 // Get all information at the same time
                 const candidatePromise = axios.get(`/api/candidates/${address}`)
-                const voterPromise = axios.get(`/api/candidates/${address}/voters`)
-                const txPromise = axios.get(`/api/transactions/candidate/${address}`)
 
                 // Get candidate's information
                 let c = await candidatePromise
@@ -619,72 +624,90 @@ export default {
                     })
                 }
 
-                // Voter table
-                let voters = await voterPromise
-
-                let youVoted = new BigNumber(0)
-                voters.data.map((v, idx) => {
-                    self.voters.push({
-                        address: v.voter,
-                        cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
-                    })
-
-                    if (v.voter === self.account) {
-                        youVoted = youVoted.plus(v.capacity)
-                    }
-                })
-
-                if (self.account && self.web3) {
-                    try {
-                        let contract = await self.getTomoValidatorInstance()
-                        youVoted = await contract.getVoterCap(address, self.account)
-                        self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
-                    } catch (e) {}
-                }
-
-                self.candidate.voted = youVoted.div(10 ** 18).toNumber()
-
-                self.voterTotalRows = self.voters.length
-
-                // Get transaction table
-                let txs = await txPromise
-
-                txs.data.map((tx, idx) => {
-                    self.transactions.push({
-                        tx: tx.tx,
-                        voter: tx.voter,
-                        candidate: tx.candidate,
-                        event: tx.event,
-                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                        createdAt: moment(tx.createdAt).fromNow(),
-                        dateTooltip: moment(tx.createdAt).format('lll')
-                    })
-                })
-
-                self.txTotalRows = self.transactions.length
-
-                // Masternode reward table
-                let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
-
-                mnRewards.data.map((r) => {
-                    self.mnRewards.push({
-                        epoch: r.epoch,
-                        signNumber: r.signNumber,
-                        reward: new BigNumber(r.reward).toFixed(6),
-                        createdAt: moment(r.rewardTime).fromNow(),
-                        dateTooltip: moment(r.rewardTime).format('lll')
-                    })
-                })
-
-                self.recentReward = (self.mnRewards[0] || {}).reward || 0
-
-                self.mnRewardsTotalRows = self.mnRewards.length
-
                 self.loading = false
             } catch (e) {
                 self.loading = false
                 console.log(e)
             }
+        },
+        async getCandidateRewards () {
+            const self = this
+            const address = self.candidate.address
+            // Masternode reward table
+            let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
+
+            mnRewards.data.map((r) => {
+                self.mnRewards.push({
+                    epoch: r.epoch,
+                    signNumber: r.signNumber,
+                    reward: new BigNumber(r.reward).toFixed(6),
+                    createdAt: moment(r.rewardTime).fromNow(),
+                    dateTooltip: moment(r.rewardTime).format('lll')
+                })
+            })
+
+            self.recentReward = (self.mnRewards[0] || {}).reward || 0
+
+            self.mnRewardsTotalRows = self.mnRewards.length
+        },
+        async getCandidateVoters () {
+            const self = this
+            const address = self.candidate.address
+            const voterPromise = axios.get(`/api/candidates/${address}/voters`)
+
+            // Voter table
+            let voters = await voterPromise
+
+            let youVoted = new BigNumber(0)
+            voters.data.items.map((v, idx) => {
+                self.voters.push({
+                    address: v.voter,
+                    cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                })
+
+                if (v.voter === self.account) {
+                    youVoted = youVoted.plus(v.capacity)
+                }
+            })
+
+            if (self.account && self.web3) {
+                try {
+                    let contract = await self.getTomoValidatorInstance()
+                    youVoted = await contract.getVoterCap(address, self.account)
+                    self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
+                } catch (e) {}
+            }
+
+            self.candidate.voted = youVoted.div(10 ** 18).toNumber()
+
+            self.voterTotalRows = voters.data.total
+        },
+        async getCandidateTransactions () {
+            const self = this
+            const address = self.candidate.address
+            const params = {
+                page: self.txCurrentPage,
+                limit: self.txPerPage
+            }
+            const txPromise = axios.get(`/api/transactions/candidate/${address}?${self.serializeQuery(params)}`)
+            // Get transaction table
+            let txs = await txPromise
+            let items = []
+
+            txs.data.items.map((tx, idx) => {
+                items.push({
+                    tx: tx.tx,
+                    voter: tx.voter,
+                    candidate: tx.candidate,
+                    event: tx.event,
+                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                    createdAt: moment(tx.createdAt).fromNow(),
+                    dateTooltip: moment(tx.createdAt).format('lll')
+                })
+            })
+            self.transactions = items
+
+            self.txTotalRows = txs.data.total
         },
         getColor (latestSignedBlock, currentBlock) {
             let result
@@ -703,6 +726,10 @@ export default {
                 result = ''
             }
             return result
+        },
+        txPageChange (val) {
+            this.txCurrentPage = val
+            this.getCandidateTransactions()
         }
     }
 }

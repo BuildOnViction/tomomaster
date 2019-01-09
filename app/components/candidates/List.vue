@@ -299,7 +299,7 @@ export default {
                 const query = self.serializeQuery(params)
                 let candidates = await axios.get('/api/candidates' + '?' + query)
                 let items = []
-                candidates.data.candidates.map(async (candidate, index) => {
+                candidates.data.items.map(async (candidate, index) => {
                     items.push({
                         address: candidate.candidate,
                         owner: candidate.owner.toLowerCase(),
