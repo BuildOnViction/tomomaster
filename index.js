@@ -5,9 +5,17 @@ const config = require('config')
 const bodyParser = require('body-parser')
 const validator = require('express-validator')
 const path = require('path')
+const yaml = require('js-yaml')
+const fs = require('fs')
+const cors = require('cors')
 
 // body parse
 const app = express()
+
+// cors
+app.use(cors({
+    origin: config.get('cors')
+}))
 
 const server = require('http').Server(app)
 
@@ -17,6 +25,11 @@ app.use(validator({}))
 
 app.use('/build', express.static('build'))
 app.use('/app/assets', express.static('app/assets'))
+
+app.get('/docs', function (req, res) {
+    const docs = yaml.safeLoad(fs.readFileSync('./docs/swagger.yml', 'utf8'))
+    return res.send(JSON.stringify(docs))
+})
 
 // apis
 app.use(require('./apis'))

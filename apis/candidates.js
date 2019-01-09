@@ -10,7 +10,7 @@ const PrivateKeyProvider = require('truffle-privatekey-provider')
 const config = require('config')
 const _ = require('lodash')
 const logger = require('../helpers/logger')
-const { check, validationResult } = require('express-validator/check')
+const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
 
@@ -18,8 +18,11 @@ const gas = config.get('blockchain.gas')
 const gasPrice = config.get('blockchain.gasPrice')
 
 router.get('/', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 200) {
+        limit = 200
+    }
     try {
         const total = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress')
@@ -150,14 +153,18 @@ router.get('/:candidate', async function (req, res, next) {
 })
 
 router.get('/:candidate/voters', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 200) {
+        limit = 200
+    }
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()
     })
-    let voters = db.Voter.find({
+
+    let voters = await db.Voter.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()
     }).limit(limit).skip(skip)
@@ -168,8 +175,11 @@ router.get('/:candidate/voters', async function (req, res, next) {
 })
 
 router.get('/:candidate/rewards', async function (req, res, next) {
-    const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    if (limit > 200) {
+        limit = 200
+    }
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)
@@ -456,7 +466,14 @@ router.put('/update', [
     }
 })
 
-router.post('/:candidate/generateMessage', async function (req, res, next) {
+router.post('/:candidate/generateMessage', [
+    check('candidate').isLength({ min: 1 }).exists().withMessage('candidate is required'),
+    check('account').isLength({ min: 1 }).exists().withMessage('account is required')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const candidate = req.params.candidate
         const account = (req.body.account || '').toLowerCase()
@@ -490,16 +507,22 @@ router.post('/:candidate/generateMessage', async function (req, res, next) {
     }
 })
 
-router.post('/verifyScannedQR', async (req, res, next) => {
+router.post('/verifyScannedQR', [
+    query('id').exists().withMessage('id is required'),
+    check('message').isLength({ min: 1 }).exists().withMessage('message is required'),
+    check('signature').isLength({ min: 1 }).exists().withMessage('signature is required'),
+    check('signer').isLength({ min: 1 }).exists().withMessage('signer is required'),
+    check('message').isLength({ min: 1 }).exists().withMessage('message is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const message = req.body.message
         const signature = req.body.signature
         const id = req.query.id
-        let signer = (req.body.signer || '').toLowerCase()
-
-        if (!message || !signature || !id || !signer) {
-            throw Error('id, message, signature and signer are required')
-        }
+        let signer = req.body.signer.toLowerCase()
 
         const checkId = await db.Signature.findOne({ signedId: id })
         if (!checkId) {
@@ -533,7 +556,13 @@ router.post('/verifyScannedQR', async (req, res, next) => {
     }
 })
 
-router.get('/:candidate/getSignature', async (req, res, next) => {
+router.get('/:candidate/getSignature', [
+    query('id').exists().withMessage('id is required')
+], async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
     try {
         const messId = req.query.id || ''
 
