@@ -597,8 +597,8 @@ export default {
                 self.loading = true
                 // Get all information at the same time
                 const candidatePromise = axios.get(`/api/candidates/${address}`)
-                const voterPromise = axios.get(`/api/candidates/${address}/voters`)
-                const txPromise = axios.get(`/api/transactions/candidate/${address}`)
+                const voterPromise = axios.get(`/api/candidates/${address}/voters?limit=100`)
+                const txPromise = axios.get(`/api/transactions/candidate/${address}?limit=100`)
 
                 // Get candidate's information
                 let c = await candidatePromise

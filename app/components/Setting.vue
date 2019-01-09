@@ -397,7 +397,7 @@ export default {
                         console.log('got an error', a)
                     }
                 })
-                let whPromise = axios.get(`/api/owners/${self.address}/withdraws`)
+                let whPromise = axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
                 if (contract) {
                     let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
                     // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
@@ -643,7 +643,7 @@ export default {
                 }))
             }
 
-            let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
+            let wh = await axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
             self.wh = []
             wh.data.forEach(w => {
                 let it = {
