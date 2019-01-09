@@ -192,8 +192,11 @@
         <div
             v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
             class="container section section--hardware">
-            <div class="row">
-                <div class="col-12 col-lg-6">
+            <div
+                class="row">
+                <div
+                    v-if="loadedCPU"
+                    class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-cpu color-pink" />
                         <span>CPUs</span>
@@ -203,7 +206,9 @@
                         data-type="cpu"
                         class="mb-5" />
                 </div>
-                <div class="col-12 col-lg-6">
+                <div
+                    v-if="loadedMEM"
+                    class="col-12 col-lg-6">
                     <h3 class="section-title">
                         <i class="tm-memory color-orange" />
                         <span>Memory</span>
@@ -522,7 +527,9 @@ export default {
             chartLoading: false,
             cpu0Series: [],
             isTomonet: false,
-            currentBlock: null
+            currentBlock: null,
+            loadedCPU: true,
+            loadedMEM: true
         }
     },
     computed: {
@@ -543,7 +550,6 @@ export default {
         self.config = await this.appConfig()
         self.currentBlock = self.config.blockchain.blockNumber
         self.isReady = !!self.web3
-        console.log(this.$store.state)
         try {
             if (self.isReady) {
                 let contract = self.TomoValidator.deployed()
@@ -557,6 +563,12 @@ export default {
                     self.isTomonet = true
                 }
             }
+            this.$bus.$on('CPUResult', function (res) {
+                self.loadedCPU = res
+            })
+            this.$bus.$on('MEMResult', function (res) {
+                self.loadedMEM = res
+            })
         } catch (error) {
             console.log(error)
         }
