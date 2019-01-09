@@ -376,7 +376,7 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
     try {
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const limit = 100
+        const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
