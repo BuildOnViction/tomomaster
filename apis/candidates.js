@@ -19,10 +19,11 @@ const gasPrice = config.get('blockchain.gasPrice')
 
 router.get('/', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let skip
     if (limit > 200) {
         limit = 200
     }
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress')
@@ -154,10 +155,12 @@ router.get('/:candidate', async function (req, res, next) {
 
 router.get('/:candidate/voters', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let skip
     if (limit > 200) {
         limit = 200
     }
+
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -176,10 +179,11 @@ router.get('/:candidate/voters', async function (req, res, next) {
 
 router.get('/:candidate/rewards', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let skip
     if (limit > 200) {
         limit = 200
     }
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)
@@ -386,17 +390,25 @@ router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
     try {
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        const page = (req.query.page) ? parseInt(req.query.page) : 0
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        if (limit > 100) {
+            limit = 100
+        }
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: candidate,
                 limit,
+                page,
                 owner: owner,
                 reason: 'Voter'
             }
         )
-        return res.json(rewards.data)
+        return res.json({
+            items: rewards.data.items,
+            total: rewards.data.total
+        })
     } catch (e) {
         return next(e)
     }

@@ -20,11 +20,17 @@ router.get('/:voter/candidates', [
         return next(errors.array())
     }
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let skip
     if (limit > 200) {
         limit = 200
     }
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
+        const total = db.Voter.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            voter: (req.params.voter || '').toLowerCase(),
+            capacityNumber: { $ne: 0 }
+        })
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase(),
@@ -40,7 +46,10 @@ router.get('/:voter/candidates', [
             }) || {}).name || 'Anonymous'
             return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'candidateName'])
         })
-        return res.json(voters)
+        return res.json({
+            items: voters,
+            total: await total
+        })
     } catch (e) {
         return next(e)
     }
@@ -49,25 +58,39 @@ router.get('/:voter/candidates', [
 router.get('/:voter/rewards', async function (req, res, next) {
     try {
         const voter = req.params.voter
-        const limit = 100
+        const page = (req.query.page) ? parseInt(req.query.page) : 0
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        if (limit > 100) {
+            limit = 100
+        }
+        console.log({
+            address: voter,
+            limit,
+            page: page
+        })
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: voter,
-                limit
+                limit,
+                page: page
             }
         )
-        const cs = rewards.data.map(r => r.validator)
+        console.log(rewards.data)
+        const cs = rewards.data.items.map(r => r.validator)
         const candidates = await db.Candidate.find({
             candidate: { $in: cs }
         }).lean().exec()
-        const rd = rewards.data.map(r => {
+        const rd = rewards.data.items.map(r => {
             r.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate.toLowerCase() === r.validator.toLowerCase())
             }) || {}).name || r.validator
             return r
         })
-        res.json(rd)
+        res.json({
+            items: rd,
+            total: rewards.data.total
+        })
     } catch (e) {
         return next(e)
     }

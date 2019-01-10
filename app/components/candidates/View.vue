@@ -235,7 +235,6 @@
             <b-table
                 :items="mnRewards"
                 :fields="mnRewardsFields"
-                :current-page="mnRewardsCurrentPage"
                 :sort-by.sync="mnRewardsSortBy"
                 :sort-desc.sync="mnRewardsSortDesc"
                 :per-page="mnRewardsPerPage"
@@ -272,7 +271,8 @@
                 :per-page="mnRewardsPerPage"
                 v-model="mnRewardsCurrentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="rewardPageChange" />
         </div>
         <div
             :class="'container section section-voters'
@@ -656,10 +656,17 @@ export default {
                 const self = this
                 const address = self.candidate.address
                 // Masternode reward table
-                let mnRewards = await axios.get(`/api/candidates/${address}/${self.candidate.owner}/getRewards`)
+                const params = {
+                    page: self.mnRewardsCurrentPage,
+                    limit: self.mnRewardsPerPage
+                }
+                let mnRewards = await axios.get(
+                    `/api/candidates/${address}/${self.candidate.owner}/getRewards?${self.serializeQuery(params)}`
+                )
+                let items = []
 
-                mnRewards.data.map((r) => {
-                    self.mnRewards.push({
+                mnRewards.data.items.map((r) => {
+                    items.push({
                         epoch: r.epoch,
                         signNumber: r.signNumber,
                         reward: new BigNumber(r.reward).toFixed(6),
@@ -667,10 +674,11 @@ export default {
                         dateTooltip: moment(r.rewardTime).format('lll')
                     })
                 })
+                self.mnRewards = items
 
                 self.recentReward = (self.mnRewards[0] || {}).reward || 0
 
-                self.mnRewardsTotalRows = self.mnRewards.length
+                self.mnRewardsTotalRows = mnRewards.data.total
             } catch (error) {
                 console.log(error)
             }
@@ -746,12 +754,22 @@ export default {
             return result
         },
         txPageChange (val) {
-            this.txCurrentPage = val
-            this.getCandidateTransactions()
+            if (this.txCurrentPage !== val) {
+                this.txCurrentPage = val
+                this.getCandidateTransactions()
+            }
         },
         voterPageChange (val) {
-            this.voterCurrentPage = val
-            this.getCandidateVoters()
+            if (this.voterCurrentPage !== val) {
+                this.voterCurrentPage = val
+                this.getCandidateVoters()
+            }
+        },
+        rewardPageChange (val) {
+            if (this.mnRewardsCurrentPage !== val) {
+                this.mnRewardsCurrentPage = val
+                this.getCandidateRewards()
+            }
         }
     }
 }
