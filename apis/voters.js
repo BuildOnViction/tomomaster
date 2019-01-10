@@ -63,11 +63,7 @@ router.get('/:voter/rewards', async function (req, res, next) {
         if (limit > 100) {
             limit = 100
         }
-        console.log({
-            address: voter,
-            limit,
-            page: page
-        })
+
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
@@ -76,7 +72,7 @@ router.get('/:voter/rewards', async function (req, res, next) {
                 page: page
             }
         )
-        console.log(rewards.data)
+
         const cs = rewards.data.items.map(r => r.validator)
         const candidates = await db.Candidate.find({
             candidate: { $in: cs }

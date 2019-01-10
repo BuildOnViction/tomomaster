@@ -221,7 +221,7 @@
         </div>
         <div
             :class="'container section section--mnrewards'
-            + (loading ? ' tomo-loading' : '')">
+            + (rewardLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -239,7 +239,7 @@
                 :sort-desc.sync="mnRewardsSortDesc"
                 :per-page="mnRewardsPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--mnrewards${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--mnrewards${rewardLoading ? ' loading' : ''}`"
                 empty-text="There are no rewards to show"
                 stacked="md" >
 
@@ -276,7 +276,7 @@
         </div>
         <div
             :class="'container section section-voters'
-            + (loading ? ' tomo-loading' : '')">
+            + (voterLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -292,7 +292,7 @@
                 :fields="voterFields"
                 :per-page="voterPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--voted${voterLoading ? ' loading' : ''}`"
                 empty-text="There are no voters to show"
                 stacked="md" >
 
@@ -328,7 +328,7 @@
         </div>
         <div
             :class="'container section section--txs'
-            + (loading ? ' tomo-loading' : '')">
+            + (txLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -344,7 +344,7 @@
                 :fields="txFields"
                 :per-page="txPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
@@ -524,6 +524,9 @@ export default {
             txPerPage: 10,
             txTotalRows: 0,
             loading: false,
+            rewardLoading: false,
+            voterLoading: false,
+            txLoading: false,
             chartLoading: false,
             cpu0Series: [],
             isTomonet: false,
@@ -656,6 +659,7 @@ export default {
                 const self = this
                 const address = self.candidate.address
                 // Masternode reward table
+                self.rewardLoading = true
                 const params = {
                     page: self.mnRewardsCurrentPage,
                     limit: self.mnRewardsPerPage
@@ -679,35 +683,45 @@ export default {
                 self.recentReward = (self.mnRewards[0] || {}).reward || 0
 
                 self.mnRewardsTotalRows = mnRewards.data.total
+                self.rewardLoading = false
             } catch (error) {
+                self.rewardLoading = false
                 console.log(error)
             }
         },
         async getCandidateVoters () {
-            const self = this
-            const address = self.candidate.address
-            const params = {
-                page: self.voterCurrentPage,
-                limit: self.voterPerPage
-            }
-            const voterPromise = axios.get(`/api/candidates/${address}/voters?${self.serializeQuery(params)}`)
+            try {
+                const self = this
+                const address = self.candidate.address
+                self.voterLoading = true
+                const params = {
+                    page: self.voterCurrentPage,
+                    limit: self.voterPerPage
+                }
+                const voterPromise = axios.get(`/api/candidates/${address}/voters?${self.serializeQuery(params)}`)
 
-            // Voter table
-            let voters = await voterPromise
+                // Voter table
+                let voters = await voterPromise
 
-            voters.data.items.map((v, idx) => {
-                self.voters.push({
-                    address: v.voter,
-                    cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                voters.data.items.map((v, idx) => {
+                    self.voters.push({
+                        address: v.voter,
+                        cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
+                    })
                 })
-            })
 
-            self.voterTotalRows = voters.data.total
+                self.voterTotalRows = voters.data.total
+                self.voterLoading = false
+            } catch (error) {
+                self.voterLoading = false
+                console.log(error)
+            }
         },
         async getCandidateTransactions () {
             try {
                 const self = this
                 const address = self.candidate.address
+                self.txLoading = true
                 const params = {
                     page: self.txCurrentPage,
                     limit: self.txPerPage
@@ -731,7 +745,9 @@ export default {
                 self.transactions = items
 
                 self.txTotalRows = txs.data.total
+                self.txLoading = false
             } catch (error) {
+                self.txLoading = false
                 console.log(error)
             }
         },

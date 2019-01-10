@@ -105,7 +105,7 @@
         </div>
         <div
             :class="'container section section--voterrewards'
-            + (loading ? ' tomo-loading' : '')">
+            + (rewardLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -123,7 +123,7 @@
                 :sort-desc.sync="voterRewardsSortDesc"
                 :per-page="voterRewardsPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--voterrewards${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--voterrewards${rewardLoading ? ' loading' : ''}`"
                 empty-text="There are no rewards to show"
                 stacked="md" >
 
@@ -176,7 +176,7 @@
 
         <div
             :class="'container section section--txs'
-            + (loading ? ' tomo-loading' : '')">
+            + (txLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -192,7 +192,7 @@
                 :fields="txFields"
                 :per-page="txPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md" >
 
@@ -318,6 +318,8 @@ export default {
             voterRewardsSortDesc: true,
             voterRewardsTotalRows: 0,
             loading: false,
+            rewardLoading: false,
+            txLoading: false,
             txFields: [
                 {
                     key: 'candidate',
@@ -428,63 +430,77 @@ export default {
             }
         },
         async getTransactions () {
-            const self = this
-            const voter = self.$route.params.address
-            const params = {
-                page: self.txCurrentPage,
-                limit: self.txPerPage
-            }
-            const txPromise = axios.get(`/api/transactions/voter/${voter}?${self.serializeQuery(params)}`)
+            try {
+                const self = this
+                const voter = self.$route.params.address
+                self.txLoading = true
+                const params = {
+                    page: self.txCurrentPage,
+                    limit: self.txPerPage
+                }
+                const txPromise = axios.get(`/api/transactions/voter/${voter}?${self.serializeQuery(params)}`)
 
-            // transaction table
-            let txs = await txPromise
-            let items = []
+                // transaction table
+                let txs = await txPromise
+                let items = []
 
-            txs.data.items.map((tx, idx) => {
-                items.push({
-                    tx: tx.tx,
-                    voter: tx.voter,
-                    candidate: tx.candidate,
-                    event: tx.event,
-                    cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                    createdAt: moment(tx.createdAt).fromNow()
+                txs.data.items.map((tx, idx) => {
+                    items.push({
+                        tx: tx.tx,
+                        voter: tx.voter,
+                        candidate: tx.candidate,
+                        event: tx.event,
+                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                        createdAt: moment(tx.createdAt).fromNow()
+                    })
                 })
-            })
-            self.transactions = items
+                self.transactions = items
 
-            self.txTotalRows = txs.data.total
+                self.txTotalRows = txs.data.total
+                self.txLoading = false
+            } catch (error) {
+                self.txLoading = false
+                console.log(error)
+            }
         },
         async getRewards () {
-            const self = this
-            const voter = self.$route.params.address
+            try {
+                const self = this
+                const voter = self.$route.params.address
+                self.rewardLoading = true
 
-            const params = {
-                page: self.voterRewardsCurrentPage,
-                limit: self.voterRewardsPerPage
-            }
+                const params = {
+                    page: self.voterRewardsCurrentPage,
+                    limit: self.voterRewardsPerPage
+                }
 
-            const rewardPromise = axios.get(`/api/voters/${voter}/rewards?${self.serializeQuery(params)}`)
+                const rewardPromise = axios.get(`/api/voters/${voter}/rewards?${self.serializeQuery(params)}`)
 
-            // voter reward table
-            let voterRewards = await rewardPromise
-            let items = []
+                // voter reward table
+                let voterRewards = await rewardPromise
+                let items = []
 
-            voterRewards.data.items.map((r) => {
-                items.push({
-                    epoch: r.epoch,
-                    candidate: r.validator,
-                    candidateName: r.candidateName,
-                    startBlockNumber: r.startBlockNumber,
-                    endBlockNumber: r.endBlockNumber,
-                    signNumber: r.signNumber,
-                    reward: new BigNumber(r.reward).toFixed(6),
-                    createdAt: moment(r.rewardTime).fromNow(),
-                    dateTooltip: moment(r.rewardTime).format('lll')
+                voterRewards.data.items.map((r) => {
+                    items.push({
+                        epoch: r.epoch,
+                        candidate: r.validator,
+                        candidateName: r.candidateName,
+                        startBlockNumber: r.startBlockNumber,
+                        endBlockNumber: r.endBlockNumber,
+                        signNumber: r.signNumber,
+                        reward: new BigNumber(r.reward).toFixed(6),
+                        createdAt: moment(r.rewardTime).fromNow(),
+                        dateTooltip: moment(r.rewardTime).format('lll')
+                    })
                 })
-            })
-            self.voterRewards = items
+                self.voterRewards = items
 
-            self.voterRewardsTotalRows = voterRewards.data.total
+                self.voterRewardsTotalRows = voterRewards.data.total
+                self.rewardLoading = false
+            } catch (error) {
+                self.rewardLoading = false
+                console.log(error)
+            }
         },
         txPageChange (val) {
             if (this.txCurrentPage !== val) {
