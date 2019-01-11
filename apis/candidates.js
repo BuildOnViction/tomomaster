@@ -154,7 +154,7 @@ router.get('/:candidate/voters', async function (req, res, next) {
     }).limit(limit).skip(skip)
     return res.json(voters)
 })
-
+// deprecated
 router.get('/:candidate/rewards', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
