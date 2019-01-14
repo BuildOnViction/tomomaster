@@ -5,12 +5,10 @@
       "title": "TomoMaster APIs",
       "description": "Happy to code TomoMaster APIs",
       "license": {
-        "name": "Tomomaster",
+        "name": "Github",
         "url": "https://github.com/tomochain/tomomaster"
       }
     },
-    "host": "localhost:3000",
-    "basePath": "/",
     "tags": [
       {
         "name": "Config",
