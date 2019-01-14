@@ -8,6 +8,7 @@ const path = require('path')
 const yaml = require('js-yaml')
 const fs = require('fs')
 const cors = require('cors')
+const morgan = require('morgan')
 
 // body parse
 const app = express()
@@ -16,6 +17,7 @@ const app = express()
 app.use(cors({
     origin: config.get('cors')
 }))
+app.use(morgan('dev'))
 
 const server = require('http').Server(app)
 
