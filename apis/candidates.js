@@ -75,6 +75,19 @@ router.get('/', async function (req, res, next) {
     }
 })
 
+router.get('/listByHash', async function (req, res, next) {
+    let hashes = req.query.hashes
+    let listHash = hashes.split(',')
+
+    try {
+        let candidates = await db.Candidate.find({ candidate: { $in: listHash } })
+        return res.json(candidates)
+    } catch (e) {
+        logger.warn('Cannot get list candidate by hash. Error %s', e)
+        return next(e)
+    }
+})
+
 router.get('/crawlStatus', async function (req, res, next) {
     const limit = 200
     const skip = 0
