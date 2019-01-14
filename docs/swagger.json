@@ -27,6 +27,10 @@
       {
         "name": "Voters",
         "description": "Get Voter information"
+      },
+      {
+        "name": "Transaction",
+        "description": "Get transactions of candidate and voter"
       }
     ],
     "schemes": [
@@ -395,6 +399,76 @@
             }
           }
         }
+      },
+      "/api/transactions/candidate/{candidate}": {
+        "parameters": [
+          {
+            "name": "candidate",
+            "in": "path",
+            "type": "string",
+            "description": "candidate's address",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "number",
+            "description": "number of records"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "number",
+            "description": "page number"
+          }
+        ],
+        "get": {
+          "tags": ["Transaction"],
+          "summary": "Get transactions of a candidate",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/txCandidate"
+              }
+            }
+          }
+        }
+      },
+      "/api/transactions/voter/{voter}": {
+        "parameters": [
+          {
+            "name": "voter",
+            "in": "path",
+            "type": "string",
+            "description": "voter's address",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "number",
+            "description": "number of records"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "number",
+            "description": "page number"
+          }
+        ],
+        "get": {
+          "tags": ["Transaction"],
+          "summary": "Get transactions of a voter",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/txVoter"
+              }
+            }
+          }
+        }
       }
     },
     "definitions": {
@@ -708,6 +782,66 @@
       "isCandidate": {
         "type": "number",
         "enum": ["1", "0"]
+      },
+      "txCandidate": {
+        "properties": {
+          "items": {
+            "type" : "array",
+            "description": "Candidate's transactions array",
+            "items": {
+              "type":"object",
+              "description": "Candidate's transactions",
+              "example": {
+                  "_id": "5c247c545e769d2f2c10ab38",
+                  "smartContractAddress": "0x0000000000000000000000000000000000000088",
+                  "tx": "0x0f96e419c89dcf1397a6206959334a4485c5a158a0320cb8a8e98db3b7888141",
+                  "event": "Vote",
+                  "voter": "0xe91dc9746eed1b5971aabd6e1681da1a4d06be8d",
+                  "owner": "",
+                  "candidate": "0x11621900588eca4410c00097a9f59237f34064cd",
+                  "capacity": "11000000000000000000",
+                  "blockNumber": 2897395,
+                  "createdAt": "2018-12-27T07:16:36.000Z",
+                  "__v": 0
+              }
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Number of candidate",
+            "example": 100
+          }
+        }
+      },
+      "txVoter": {
+        "properties": {
+          "items": {
+            "type" : "array",
+            "description": "Candidate's transactions array",
+            "items": {
+              "type":"object",
+              "description": "Candidate's transactions",
+              "example": {
+                  "_id": "5c24a189ff305840a2498bf0",
+                  "smartContractAddress": "0x0000000000000000000000000000000000000088",
+                  "tx": "0xf8f2d402c6b1cb5f891b687d69ddcd920e58d9e9fe002857cac0e7ce47998884",
+                  "event": "Unvote",
+                  "voter": "0x487d62d33467c4842c5e54eb370837e4e88bba0f",
+                  "owner": "",
+                  "candidate": "0xfc5571921c6d3672e13b58ea23dea534f2b35fa0",
+                  "capacity": "10000999000000000000000",
+                  "blockNumber": 763397,
+                  "createdAt": "2018-12-27T09:55:21.000Z",
+                  "__v": 0
+              }
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Number of candidate",
+            "example": 100
+          }
+        }
       }
     }
   }
