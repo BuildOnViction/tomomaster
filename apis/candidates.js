@@ -76,7 +76,7 @@ router.get('/', async function (req, res, next) {
 })
 
 router.get('/listByHash', async function (req, res, next) {
-    let hashes = req.query.hashes
+    let hashes = req.body.hashes
     let listHash = hashes.split(',')
 
     try {
