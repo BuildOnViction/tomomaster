@@ -17,7 +17,7 @@ const app = express()
 app.use(cors({
     origin: config.get('cors')
 }))
-app.use(morgan('dev'))
+app.use(morgan('short'))
 
 const server = require('http').Server(app)
 
