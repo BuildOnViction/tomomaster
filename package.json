@@ -60,6 +60,7 @@
         "lodash": "^4.17.10",
         "moment": "^2.22.2",
         "mongoose": "^5.0.17",
+        "morgan": "^1.9.1",
         "request": "^2.88.0",
         "store": "^2.0.12",
         "swagger-ui-express": "^4.0.2",

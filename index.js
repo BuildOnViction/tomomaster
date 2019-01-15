@@ -9,6 +9,7 @@ const yaml = require('js-yaml')
 const fs = require('fs')
 const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
+const morgan = require('morgan')
 
 // body parse
 const app = express()
@@ -17,6 +18,7 @@ const app = express()
 app.use(cors({
     origin: config.get('cors')
 }))
+app.use(morgan('short'))
 
 const server = require('http').Server(app)
 
