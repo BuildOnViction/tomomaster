@@ -6,6 +6,9 @@
     "logs": {
         "level": "debug"
     },
+    "cors": [
+        "https://swagger.tomochain.com"
+    ],
     "blockchain": {
         "rpc": "https://testnet.tomochain.com",
         "ws": "wss://testnet.tomochain.com/ws",
