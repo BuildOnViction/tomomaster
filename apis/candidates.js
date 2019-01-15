@@ -75,9 +75,12 @@ router.get('/', async function (req, res, next) {
     }
 })
 
-router.get('/listByHash', async function (req, res, next) {
-    if (!req.body.hashes || req.body.hashes === '') {
-        return res.status(400).json({ error: { message: 'Missing hashes params' } })
+router.post('/listByHash', [
+    check('hashes').exists().withMessage('Missing hashes params')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
     }
     let hashes = req.body.hashes
     let listHash = hashes.split(',')
