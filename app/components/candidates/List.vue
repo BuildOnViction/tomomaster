@@ -149,7 +149,7 @@ export default {
                 {
                     key: 'name',
                     label: 'Name',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     key: 'cap',
