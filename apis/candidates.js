@@ -76,6 +76,9 @@ router.get('/', async function (req, res, next) {
 })
 
 router.get('/listByHash', async function (req, res, next) {
+    if (!req.body.hashes || req.body.hashes === '') {
+        return res.status(400).json({ error: { message: 'Missing hashes params' } })
+    }
     let hashes = req.body.hashes
     let listHash = hashes.split(',')
 
