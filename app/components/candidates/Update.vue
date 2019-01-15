@@ -327,6 +327,7 @@ export default {
                 if (self.dcLocation !== '') {
                     body.dcLocation = self.dcLocation
                 }
+
                 const { data } = await axios.put(
                     '/api/candidates/update',
                     body

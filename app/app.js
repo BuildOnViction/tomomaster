@@ -497,10 +497,11 @@ Vue.prototype.signMessage = async function (message) {
             result = '0x' + signature['r'] + signature['s'] + v
             break
         case 'trezor':
-            result = await TrezorConnect.ethereumSignMessage(
+            const sig = await TrezorConnect.ethereumSignMessage({
                 path,
                 message
-            ).payload.signature
+            })
+            result = '0x' + sig.payload.signature || ''
             break
         default:
             break
