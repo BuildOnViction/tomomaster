@@ -146,6 +146,10 @@ export default {
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.resign.request(coinbase).params[0]
+
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
