@@ -1,8 +1,8 @@
 {
     "blockchain": {
-        "rpc": "https://rpc.devnet.tomochain.com",
-        "ws": "wss://ws.devnet.tomochain.com",
-        "networkId": 90
+        "rpc": "https://testnet.tomochain.com",
+        "ws": "wss://testnet.tomochain.com/ws",
+        "networkId": 89
     },
     "explorerUrl": "https://scan.devnet.tomochain.com",
     "tomoscanUrl": "http://tomoscan_server:3333",
