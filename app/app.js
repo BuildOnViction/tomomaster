@@ -423,22 +423,21 @@ Vue.prototype.getTomoValidatorInstance = async function () {
  * @return object signature {r, s, v}
  */
 Vue.prototype.signTransaction = async function (txParams) {
-    const config = await getConfig()
-    const chainConfig = config.blockchain
-    const rawTx = new Transaction(txParams)
-    rawTx.v = Buffer.from([chainConfig.networkId])
-    const serializedRawTx = rawTx.serialize().toString('hex')
     const path = localStorage.get('hdDerivationPath')
     const provider = Vue.prototype.NetworkProvider
     let signature
     if (provider === 'ledger') {
+        const config = await getConfig()
+        const chainConfig = config.blockchain
+        const rawTx = new Transaction(txParams)
+        rawTx.v = Buffer.from([chainConfig.networkId])
+        const serializedRawTx = rawTx.serialize().toString('hex')
         signature = await Vue.prototype.appEth.signTransaction(
             path,
             serializedRawTx
         )
     }
     if (provider === 'trezor') {
-        // delete txParams.from
         try {
             const result = await TrezorConnect.ethereumSignTransaction({
                 path,

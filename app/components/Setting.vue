@@ -642,23 +642,23 @@ export default {
         },
         async onChangeSelect (event) {
             switch (event) {
-                case 'tomowallet':
-                    await this.loginByQRCode()
-                    this.interval = setInterval(async () => {
-                        await this.getLoginResult()
-                    }, 3000)
-                    break
-                case 'trezor':
-                    this.hdPath = "m/44'/60'/0'/0"
-                    break
-                case 'ledger':
-                    this.hdPath = "m/44'/889'/0'/0"
-                    break
-                default:
-                    if (this.interval) {
-                        clearInterval(this.interval)
-                    }
-                    break
+            case 'tomowallet':
+                await this.loginByQRCode()
+                this.interval = setInterval(async () => {
+                    await this.getLoginResult()
+                }, 3000)
+                break
+            case 'trezor':
+                this.hdPath = "m/44'/60'/0'/0"
+                break
+            case 'ledger':
+                this.hdPath = "m/44'/889'/0'/0"
+                break
+            default:
+                if (this.interval) {
+                    clearInterval(this.interval)
+                }
+                break
             }
             // if (event === 'tomowallet') {
             //     await this.loginByQRCode()

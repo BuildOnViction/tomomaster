@@ -292,7 +292,6 @@ export default {
                     chainId: self.chainConfig.networkId
                 }
                 let rs
-                console.log(self.NetworkProvider)
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
@@ -315,7 +314,6 @@ export default {
                             nonce: self.web3.utils.toHex(nonce)
                         }
                     )
-                    console.log(dataTx)
                     let signature = await self.signTransaction(dataTx)
                     rs = await self.sendSignedTransaction(dataTx, signature)
                 } else {

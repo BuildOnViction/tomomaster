@@ -327,6 +327,9 @@ export default {
                     // attach txParams and signature then sendSignedTransaction
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.unvote.request(candidate, unvoteValue).params[0]
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
