@@ -8,6 +8,7 @@ const path = require('path')
 const yaml = require('js-yaml')
 const fs = require('fs')
 const cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
 const morgan = require('morgan')
 
 // body parse
@@ -27,11 +28,8 @@ app.use(validator({}))
 
 app.use('/build', express.static('build'))
 app.use('/app/assets', express.static('app/assets'))
-
-app.get('/docs', function (req, res) {
-    const docs = yaml.safeLoad(fs.readFileSync('./docs/swagger.yml', 'utf8'))
-    return res.send(JSON.stringify(docs))
-})
+const docs = yaml.safeLoad(fs.readFileSync('./docs/swagger.yml', 'utf8'))
+app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(docs))
 
 // apis
 app.use(require('./apis'))
