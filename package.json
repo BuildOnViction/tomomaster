@@ -6,7 +6,7 @@
     "scripts": {
         "lint": "eslint --cache ./ --ext .vue --ext .js",
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
-        "nodemon": "./node_modules/.bin/nodemon index.js",
+        "nodemon": "./node_modules/.bin/nodemon index.js --watch docs/swagger.yml",
         "crawl-dev": "./node_modules/.bin/nodemon ./crawl.js",
         "server-dev": "npm run nodemon",
         "client-dev": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
@@ -64,6 +64,7 @@
         "request": "^2.88.0",
         "store": "^2.0.12",
         "trezor-connect": "^6.0.2",
+        "swagger-ui-express": "^4.0.2",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",
         "url-join": "^4.0.0",
