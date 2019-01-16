@@ -24,16 +24,8 @@ router.get('/voter/:voter', async function (req, res, next) {
     }
     try {
         let txs = await db.Transaction.find({
-            $or: [
-                {
-                    smartContractAddress: config.get('blockchain.validatorAddress'),
-                    voter: (req.params.voter || '').toLowerCase()
-                },
-                {
-                    smartContractAddress: config.get('blockchain.validatorAddress'),
-                    owner: (req.params.voter || '').toLowerCase()
-                }
-            ]
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            voter: (req.params.voter || '').toLowerCase()
         }).sort({ createdAt: -1 }).limit(limit).skip(skip)
         return res.json(txs)
     } catch (e) {
