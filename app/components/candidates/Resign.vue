@@ -137,12 +137,19 @@ export default {
                 let txParams = {
                     from: account,
                     gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.resign.request(coinbase).params[0]
+
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,

@@ -291,10 +291,13 @@ export default {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
                     gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(self.account)
                     let dataTx = contract.propose.request(coinbase).params[0]
                     Object.assign(

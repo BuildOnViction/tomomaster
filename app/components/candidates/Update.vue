@@ -254,6 +254,7 @@ export default {
                 case 'metamask':
                     self.signHash = await self.web3.eth.personal.sign(self.message, self.account)
                     break
+                case 'trezor':
                 case 'ledger':
                     self.signHash = await self.signMessage(self.message)
                     break
@@ -326,6 +327,7 @@ export default {
                 if (self.dcLocation !== '') {
                     body.dcLocation = self.dcLocation
                 }
+
                 const { data } = await axios.put(
                     '/api/candidates/update',
                     body
