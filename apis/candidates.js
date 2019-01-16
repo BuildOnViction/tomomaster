@@ -17,12 +17,17 @@ const urljoin = require('url-join')
 const gas = config.get('blockchain.gas')
 const gasPrice = config.get('blockchain.gasPrice')
 
-router.get('/', async function (req, res, next) {
+router.get('/', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    if (limit > 200) {
-        limit = 200
-    }
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Candidate.countDocuments({
@@ -153,12 +158,17 @@ router.get('/:candidate', async function (req, res, next) {
     return res.json(candidate)
 })
 
-router.get('/:candidate/voters', async function (req, res, next) {
+router.get('/:candidate/voters', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    if (limit > 200) {
-        limit = 200
-    }
 
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
@@ -386,15 +396,21 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
 })
 
 // Get masternode rewards
-router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
+router.get('/:candidate/:owner/getRewards', [
+    query('limit')
+        .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return next(errors.array())
+        }
+
         const candidate = req.params.candidate
         const owner = req.params.owner
         const page = (req.query.page) ? parseInt(req.query.page) : 0
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
-        if (limit > 100) {
-            limit = 100
-        }
+
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {

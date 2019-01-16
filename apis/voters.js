@@ -13,17 +13,16 @@ const { check, validationResult, query } = require('express-validator/check')
 const urljoin = require('url-join')
 
 router.get('/:voter/candidates', [
-    check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    if (limit > 200) {
-        limit = 200
-    }
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Voter.countDocuments({
@@ -55,14 +54,19 @@ router.get('/:voter/candidates', [
     }
 })
 
-router.get('/:voter/rewards', async function (req, res, next) {
+router.get('/:voter/rewards', [
+    query('limit')
+        .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return next(errors.array())
+        }
+
         const voter = req.params.voter
         const page = (req.query.page) ? parseInt(req.query.page) : 0
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
-        if (limit > 100) {
-            limit = 100
-        }
 
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),

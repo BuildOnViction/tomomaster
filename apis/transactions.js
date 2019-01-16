@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
 const config = require('config')
+const { validationResult, query } = require('express-validator/check')
 
 router.get('/:tx', async function (req, res, next) {
     try {
@@ -16,12 +17,17 @@ router.get('/:tx', async function (req, res, next) {
     }
 })
 
-router.get('/voter/:voter', async function (req, res, next) {
+router.get('/voter/:voter', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    if (limit > 200) {
-        limit = 200
-    }
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Transaction.countDocuments({
@@ -42,12 +48,18 @@ router.get('/voter/:voter', async function (req, res, next) {
     }
 })
 
-router.get('/candidate/:candidate', async function (req, res, next) {
+router.get('/candidate/:candidate', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    if (limit > 200) {
-        limit = 200
-    }
+
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
     try {
