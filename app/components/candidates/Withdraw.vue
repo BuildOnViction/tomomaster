@@ -192,6 +192,9 @@ export default {
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -218,6 +221,9 @@ export default {
             } catch (e) {
                 console.log(e)
                 self.loading = false
+                self.$toasted.show('An error occurred while withdrawing, please try again', {
+                    type: 'error'
+                })
             }
         },
         onChangeWithdraw (event) {
