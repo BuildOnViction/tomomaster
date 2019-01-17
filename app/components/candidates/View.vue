@@ -702,14 +702,16 @@ export default {
 
                 // Voter table
                 let voters = await voterPromise
+                let items = []
 
                 voters.data.items.map((v, idx) => {
-                    self.voters.push({
+                    items.push({
                         address: v.voter,
                         cap: new BigNumber(v.capacity).div(10 ** 18).toNumber()
                     })
                 })
 
+                self.voters = items
                 self.voterTotalRows = voters.data.total
                 self.voterLoading = false
             } catch (error) {
