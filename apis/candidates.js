@@ -182,7 +182,7 @@ router.get('/:candidate/voters', [
     let voters = await db.Voter.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()
-    }).limit(limit).skip(skip)
+    }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip)
     return res.json({
         items: await voters,
         total: await total
