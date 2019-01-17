@@ -19,7 +19,8 @@ router.get('/:tx', async function (req, res, next) {
 
 router.get('/voter/:voter', [
     query('limit')
-        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -50,7 +51,8 @@ router.get('/voter/:voter', [
 
 router.get('/candidate/:candidate', [
     query('limit')
-        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
