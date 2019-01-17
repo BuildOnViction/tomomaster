@@ -63,7 +63,7 @@
                 </div>
             </div>
             <b-table
-                :items="sortedCandidates"
+                :items="candidates"
                 :fields="candidateFields"
                 :per-page="perPage"
                 :sort-by.sync="sortBy"
@@ -71,7 +71,8 @@
                 :show-empty="true"
                 :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
                 empty-text="There are no candidates to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeCandidate" >
 
                 <template
                     slot="index"
@@ -89,7 +90,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacityNumber"
                     slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
             </b-table>
@@ -269,12 +270,12 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'cap',
+                    key: 'capacityNumber',
                     label: 'Capacity',
                     sortable: true
                 }
             ],
-            sortBy: 'cap',
+            sortBy: 'capacityNumber',
             sortDesc: true,
             isReady: !!this.web3,
             voter: this.$route.params.address.toLowerCase(),
@@ -394,7 +395,9 @@ export default {
                 self.loading = true
                 const params = {
                     page: self.currentPage,
-                    limit: self.perPage
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
                 }
                 const candiatePromise = axios.get(`/api/voters/${voter}/candidates?${self.serializeQuery(params)}`)
 
@@ -519,6 +522,11 @@ export default {
                 this.currentPage = val
                 this.getCandidates()
             }
+        },
+        sortingChangeCandidate (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.getCandidates()
         }
     }
 }

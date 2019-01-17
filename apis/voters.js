@@ -31,11 +31,18 @@ router.get('/:voter/candidates', [
             voter: (req.params.voter || '').toLowerCase(),
             capacityNumber: { $ne: 0 }
         })
+        const sort = {}
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+        } else {
+            sort.capacityNumber = -1
+        }
+        console.log(sort)
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase(),
             capacityNumber: { $ne: 0 }
-        }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec()
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
         let cs = voters.map(v => v.candidate)
         let candidates = await db.Candidate.find({
             candidate: { $in: cs }

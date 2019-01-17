@@ -288,13 +288,14 @@
                 </div>
             </div>
             <b-table
-                :items="sortedVoters"
+                :items="voters"
                 :fields="voterFields"
                 :per-page="voterPerPage"
                 :show-empty="true"
                 :class="`tomo-table tomo-table--voted${voterLoading ? ' loading' : ''}`"
                 empty-text="There are no voters to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeVoters" >
 
                 <template
                     slot="id"
@@ -312,7 +313,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacityNumber"
                     slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
             </b-table>
@@ -481,12 +482,12 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacityNumber',
                     label: 'Capacity',
                     sortable: true
                 }
             ],
-            voterSortBy: 'cap',
+            voterSortBy: 'capacityNumber',
             voterSortDesc: true,
             voterCurrentPage: 1,
             voterPerPage: 10,
@@ -696,7 +697,9 @@ export default {
                 self.voterLoading = true
                 const params = {
                     page: self.voterCurrentPage,
-                    limit: self.voterPerPage
+                    limit: self.voterPerPage,
+                    sortBy: self.voterSortBy,
+                    sortDesc: self.voterSortDesc
                 }
                 const voterPromise = axios.get(`/api/candidates/${address}/voters?${self.serializeQuery(params)}`)
 
@@ -788,6 +791,11 @@ export default {
                 this.mnRewardsCurrentPage = val
                 this.getCandidateRewards()
             }
+        },
+        sortingChangeVoters (obj) {
+            this.voterSortBy = obj.sortBy
+            this.voterSortDesc = obj.sortDesc
+            this.getCandidateVoters()
         }
     }
 }
