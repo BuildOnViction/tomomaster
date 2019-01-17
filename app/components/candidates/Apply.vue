@@ -162,7 +162,9 @@ export default {
             qrCode: 'text',
             interval: null,
             candidateError: false,
-            balance: 0
+            balance: 0,
+            txFee: 0,
+            gasPrice: null
         }
     },
     validations: {
@@ -190,12 +192,14 @@ export default {
         }
     },
     created: async function () {
-        let self = this
+        const self = this
         let account
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         try {
             self.isReady = !!self.web3
+            self.gasPrice = await self.web3.eth.getGasPrice()
+            self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
@@ -290,7 +294,7 @@ export default {
                 let txParams = {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
                     gas: self.web3.utils.toHex(self.chainConfig.gas),
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
