@@ -9,7 +9,7 @@ const yaml = require('js-yaml')
 const fs = require('fs')
 const cors = require('cors')
 const morgan = require('morgan')
-
+const logger = require('./helpers/logger')
 // body parse
 const app = express()
 
@@ -17,7 +17,8 @@ const app = express()
 app.use(cors({
     origin: config.get('cors')
 }))
-app.use(morgan('short'))
+
+app.use(morgan('short', { stream: logger.stream }))
 
 const server = require('http').Server(app)
 

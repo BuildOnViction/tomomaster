@@ -290,6 +290,7 @@ getConfig().then((config) => {
 
     Vue.use(VueAnalytics, {
         id: config.GA,
+        linkers: ['tomochain.com'],
         router,
         autoTraking: {
             screenView: true
