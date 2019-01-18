@@ -479,7 +479,7 @@ export default {
                 {
                     key: 'address',
                     label: 'Address',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'capacityNumber',
