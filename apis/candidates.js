@@ -49,7 +49,7 @@ router.get('/', [
                 collation.numericOrdering = true
             }
         } else {
-            sort.createdAt = -1
+            sort.capacityNumber = -1
         }
 
         let data = await Promise.all([
