@@ -63,16 +63,16 @@
                 </div>
             </div>
             <b-table
-                :items="sortedCandidates"
+                :items="candidates"
                 :fields="candidateFields"
-                :current-page="currentPage"
                 :per-page="perPage"
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
                 :show-empty="true"
                 :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
                 empty-text="There are no candidates to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeCandidate" >
 
                 <template
                     slot="index"
@@ -90,7 +90,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacityNumber"
                     slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
                 </template>
             </b-table>
@@ -101,11 +101,12 @@
                 :per-page="perPage"
                 v-model="currentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="candidatePageChange" />
         </div>
         <div
             :class="'container section section--voterrewards'
-            + (loading ? ' tomo-loading' : '')">
+            + (rewardLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -119,12 +120,11 @@
             <b-table
                 :items="voterRewards"
                 :fields="voterRewardsFields"
-                :current-page="voterRewardsCurrentPage"
                 :sort-by.sync="voterRewardsSortBy"
                 :sort-desc.sync="voterRewardsSortDesc"
                 :per-page="voterRewardsPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--voterrewards${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--voterrewards${rewardLoading ? ' loading' : ''}`"
                 empty-text="There are no rewards to show"
                 stacked="md" >
 
@@ -171,12 +171,13 @@
                 :per-page="voterRewardsPerPage"
                 v-model="voterRewardsCurrentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="rewardPageChange" />
         </div>
 
         <div
             :class="'container section section--txs'
-            + (loading ? ' tomo-loading' : '')">
+            + (txLoading ? ' tomo-loading' : '')">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -190,12 +191,12 @@
             <b-table
                 :items="transactions"
                 :fields="txFields"
-                :current-page="txCurrentPage"
                 :per-page="txPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--transactions${loading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeTxes" >
 
                 <template
                     slot="id"
@@ -219,7 +220,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacity"
                     slot-scope="data">
                     {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
                 </template>
@@ -244,7 +245,8 @@
                 :per-page="txPerPage"
                 v-model="txCurrentPage"
                 align="center"
-                class="tomo-pagination" />
+                class="tomo-pagination"
+                @change="txPageChange" />
         </div>
     </div>
 </template>
@@ -261,7 +263,7 @@ export default {
                 {
                     key: 'address',
                     label: 'Address',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'name',
@@ -269,12 +271,12 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'cap',
+                    key: 'capacityNumber',
                     label: 'Capacity',
                     sortable: true
                 }
             ],
-            sortBy: 'cap',
+            sortBy: 'capacityNumber',
             sortDesc: true,
             isReady: !!this.web3,
             voter: this.$route.params.address.toLowerCase(),
@@ -318,11 +320,13 @@ export default {
             voterRewardsSortDesc: true,
             voterRewardsTotalRows: 0,
             loading: false,
+            rewardLoading: false,
+            txLoading: false,
             txFields: [
                 {
                     key: 'candidate',
                     label: 'Candidate',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'event',
@@ -330,7 +334,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacity',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -348,7 +352,9 @@ export default {
             transactions: [],
             txCurrentPage: 1,
             txPerPage: 10,
-            txTotalRows: 0
+            txTotalRows: 0,
+            txSortBy: 'createdAt',
+            txSortDesc: true
         }
     },
     computed: {
@@ -361,7 +367,9 @@ export default {
     watch: {
         $route (to, from) {
             this.voter = to.params.address.toLowerCase()
-            this.getVoterData()
+            this.getCandidates()
+            this.getTransactions()
+            this.getRewards()
         }
     },
     update () {},
@@ -369,7 +377,9 @@ export default {
         let self = this
         self.config = await self.appConfig()
 
-        self.getVoterData()
+        self.getCandidates()
+        self.getRewards()
+        self.getTransactions()
     },
     methods: {
         getEventClass (event) {
@@ -380,30 +390,35 @@ export default {
 
             return clazz
         },
-        async getVoterData () {
+        async getCandidates () {
             let self = this
             try {
                 let voter = self.$route.params.address
 
                 self.loading = true
-                // Get all informations
-                const candiatePromise = axios.get(`/api/voters/${voter}/candidates?limit=100`)
-                const rewardPromise = axios.get(`/api/voters/${voter}/rewards`)
-                const txPromise = axios.get(`/api/transactions/voter/${voter}?limit=100`)
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const candiatePromise = axios.get(`/api/voters/${voter}/candidates?${self.serializeQuery(params)}`)
 
                 // Candidate table
                 let candidates = await candiatePromise
+                let items = []
 
-                candidates.data.map(async (c) => {
-                    self.candidates.push({
+                candidates.data.items.map(async (c) => {
+                    items.push({
                         address: c.candidate,
                         name: c.candidateName,
                         cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
                     })
                     self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
                 })
+                self.candidates = items
 
-                self.totalRows = self.candidates.length
+                self.totalRows = candidates.data.total
 
                 if (typeof self.web3 !== 'undefined') {
                     self.web3.eth.getBalance(voter, function (a, b) {
@@ -414,11 +429,68 @@ export default {
                     })
                 }
 
+                self.loading = false
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
+        async getTransactions () {
+            try {
+                const self = this
+                const voter = self.$route.params.address
+                self.txLoading = true
+                const params = {
+                    page: self.txCurrentPage,
+                    limit: self.txPerPage,
+                    sortBy: self.txSortBy,
+                    sortDesc: self.txSortDesc
+                }
+
+                const txPromise = axios.get(`/api/transactions/voter/${voter}?${self.serializeQuery(params)}`)
+
+                // transaction table
+                let txs = await txPromise
+                let items = []
+
+                txs.data.items.map((tx, idx) => {
+                    items.push({
+                        tx: tx.tx,
+                        voter: tx.voter,
+                        candidate: tx.candidate,
+                        event: tx.event,
+                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
+                        createdAt: moment(tx.createdAt).fromNow()
+                    })
+                })
+                self.transactions = items
+
+                self.txTotalRows = txs.data.total
+                self.txLoading = false
+            } catch (error) {
+                self.txLoading = false
+                console.log(error)
+            }
+        },
+        async getRewards () {
+            try {
+                const self = this
+                const voter = self.$route.params.address
+                self.rewardLoading = true
+
+                const params = {
+                    page: self.voterRewardsCurrentPage,
+                    limit: self.voterRewardsPerPage
+                }
+
+                const rewardPromise = axios.get(`/api/voters/${voter}/rewards?${self.serializeQuery(params)}`)
+
                 // voter reward table
                 let voterRewards = await rewardPromise
+                let items = []
 
-                voterRewards.data.map((r) => {
-                    self.voterRewards.push({
+                voterRewards.data.items.map((r) => {
+                    items.push({
                         epoch: r.epoch,
                         candidate: r.validator,
                         candidateName: r.candidateName,
@@ -430,30 +502,42 @@ export default {
                         dateTooltip: moment(r.rewardTime).format('lll')
                     })
                 })
+                self.voterRewards = items
 
-                self.voterRewardsTotalRows = self.voterRewards.length
-
-                // transaction table
-                let txs = await txPromise
-
-                txs.data.map((tx, idx) => {
-                    self.transactions.push({
-                        tx: tx.tx,
-                        voter: tx.voter,
-                        candidate: tx.candidate,
-                        event: tx.event,
-                        cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                        createdAt: moment(tx.createdAt).fromNow()
-                    })
-                })
-
-                self.txTotalRows = self.transactions.length
-
-                self.loading = false
-            } catch (e) {
-                self.loading = false
-                console.log(e)
+                self.voterRewardsTotalRows = voterRewards.data.total
+                self.rewardLoading = false
+            } catch (error) {
+                self.rewardLoading = false
+                console.log(error)
             }
+        },
+        txPageChange (val) {
+            if (this.txCurrentPage !== val) {
+                this.txCurrentPage = val
+                this.getTransactions()
+            }
+        },
+        rewardPageChange (val) {
+            if (this.voterRewardsCurrentPage !== val) {
+                this.voterRewardsCurrentPage = val
+                this.getRewards()
+            }
+        },
+        candidatePageChange (val) {
+            if (this.currentPage !== val) {
+                this.currentPage = val
+                this.getCandidates()
+            }
+        },
+        sortingChangeCandidate (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.getCandidates()
+        },
+        sortingChangeTxes (obj) {
+            this.txSortBy = obj.sortBy
+            this.txSortDesc = obj.sortDesc
+            this.getTransactions()
         }
     }
 }
