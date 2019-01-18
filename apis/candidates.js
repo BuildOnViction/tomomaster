@@ -93,6 +93,25 @@ router.get('/', [
     }
 })
 
+router.post('/listByHash', [
+    check('hashes').exists().withMessage('Missing hashes params')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+    let hashes = req.body.hashes
+    let listHash = hashes.split(',')
+
+    try {
+        let candidates = await db.Candidate.find({ candidate: { $in: listHash } })
+        return res.json(candidates)
+    } catch (e) {
+        logger.warn('Cannot get list candidate by hash. Error %s', e)
+        return next(e)
+    }
+})
+
 router.get('/crawlStatus', async function (req, res, next) {
     const limit = 200
     const skip = 0
@@ -195,7 +214,7 @@ router.get('/:candidate/voters', [
         total: await total
     })
 })
-
+// deprecated
 router.get('/:candidate/rewards', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip

@@ -7,7 +7,7 @@
         "level": "debug"
     },
     "cors": [
-        "tomochain.com"
+        "https://swagger.tomochain.com"
     ],
     "blockchain": {
         "rpc": "https://testnet.tomochain.com",
