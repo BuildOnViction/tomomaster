@@ -195,7 +195,8 @@
                 :show-empty="true"
                 :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeTxes" >
 
                 <template
                     slot="id"
@@ -219,7 +220,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacity"
                     slot-scope="data">
                     {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
                 </template>
@@ -325,7 +326,7 @@ export default {
                 {
                     key: 'candidate',
                     label: 'Candidate',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'event',
@@ -333,7 +334,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacity',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -351,7 +352,9 @@ export default {
             transactions: [],
             txCurrentPage: 1,
             txPerPage: 10,
-            txTotalRows: 0
+            txTotalRows: 0,
+            txSortBy: 'createdAt',
+            txSortDesc: true
         }
     },
     computed: {
@@ -439,8 +442,11 @@ export default {
                 self.txLoading = true
                 const params = {
                     page: self.txCurrentPage,
-                    limit: self.txPerPage
+                    limit: self.txPerPage,
+                    sortBy: self.txSortBy,
+                    sortDesc: self.txSortDesc
                 }
+
                 const txPromise = axios.get(`/api/transactions/voter/${voter}?${self.serializeQuery(params)}`)
 
                 // transaction table
@@ -527,6 +533,11 @@ export default {
             this.sortBy = obj.sortBy
             this.sortDesc = obj.sortDesc
             this.getCandidates()
+        },
+        sortingChangeTxes (obj) {
+            this.txSortBy = obj.sortBy
+            this.txSortDesc = obj.sortDesc
+            this.getTransactions()
         }
     }
 }

@@ -36,10 +36,23 @@ router.get('/voter/:voter', [
             voter: (req.params.voter || '').toLowerCase()
         })
 
+        const sort = {}
+        const collation = {}
+
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+            if (req.query.sortBy === 'capacity') {
+                collation.locale = 'en_US'
+                collation.numericOrdering = true
+            }
+        } else {
+            sort.createdAt = -1
+        }
+
         let txs = await db.Transaction.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase()
-        }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+        }).sort(sort).collation(collation).limit(limit).skip(skip)
         return res.json({
             items: txs,
             total: await total
@@ -69,10 +82,23 @@ router.get('/candidate/:candidate', [
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: (req.params.candidate || '').toLowerCase()
         })
+        const sort = {}
+        const collation = {}
+
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+            if (req.query.sortBy === 'capacity') {
+                collation.locale = 'en_US'
+                collation.numericOrdering = true
+            }
+        } else {
+            sort.createdAt = -1
+        }
+
         let txs = await db.Transaction.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: (req.params.candidate || '').toLowerCase()
-        }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+        }).sort(sort).collation(collation).limit(limit).skip(skip)
         return res.json({
             items: txs,
             total: await total

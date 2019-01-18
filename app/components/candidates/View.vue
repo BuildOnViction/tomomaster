@@ -347,7 +347,8 @@
                 :show-empty="true"
                 :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChangeTxes" >
 
                 <template
                     slot="id"
@@ -371,7 +372,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacity"
                     slot-scope="data">
                     {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
                 </template>
@@ -504,7 +505,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacity',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -519,7 +520,7 @@ export default {
                     sortable: false
                 }
             ],
-            txSortBy: 'cap',
+            txSortBy: 'createdAt',
             txSortDesc: true,
             txCurrentPage: 1,
             txPerPage: 10,
@@ -729,8 +730,11 @@ export default {
                 self.txLoading = true
                 const params = {
                     page: self.txCurrentPage,
-                    limit: self.txPerPage
+                    limit: self.txPerPage,
+                    sortBy: self.txSortBy,
+                    sortDesc: self.txSortDesc
                 }
+
                 const txPromise = axios.get(`/api/transactions/candidate/${address}?${self.serializeQuery(params)}`)
                 // Get transaction table
                 let txs = await txPromise
@@ -796,6 +800,11 @@ export default {
             this.voterSortBy = obj.sortBy
             this.voterSortDesc = obj.sortDesc
             this.getCandidateVoters()
+        },
+        sortingChangeTxes (obj) {
+            this.txSortBy = obj.sortBy
+            this.txSortDesc = obj.sortDesc
+            this.getCandidateTransactions()
         }
     }
 }
