@@ -38,10 +38,24 @@ router.get('/', [
             smartContractAddress: config.get('blockchain.validatorAddress'),
             status: { $ne: 'RESIGNED' }
         })
+
+        const sort = {}
+        const collation = {}
+
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+            if (req.query.sortBy === 'capacity') {
+                collation.locale = 'en_US'
+                collation.numericOrdering = true
+            }
+        } else {
+            sort.createdAt = -1
+        }
+
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec(),
+            }).sort(sort).collation(collation).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
             db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])

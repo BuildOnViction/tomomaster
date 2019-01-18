@@ -60,11 +60,10 @@
                 :items="sortedCandidates"
                 :fields="fields"
                 :per-page="perPage"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
                 :class="'tomo-table tomo-table--candidates ' + tableCssClass"
                 empty-text="There are no candidates to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChange" >
 
                 <template
                     slot="address"
@@ -77,7 +76,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacity"
                     slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.cap, 2)) }}
                 </template>
 
@@ -151,7 +150,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacity',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -171,7 +170,7 @@ export default {
                     sortable: false
                 }
             ],
-            sortBy: 'cap',
+            sortBy: 'capacity',
             sortDesc: true,
             isReady: false,
             account: '',
@@ -294,9 +293,12 @@ export default {
                 self.loading = true
                 const params = {
                     page: self.currentPage,
-                    limit: self.perPage
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
                 }
                 const query = self.serializeQuery(params)
+
                 let candidates = await axios.get('/api/candidates' + '?' + query)
                 let items = []
                 candidates.data.items.map(async (candidate, index) => {
@@ -326,6 +328,11 @@ export default {
         pageChange (page) {
             this.$store.state.currentPage = page
             window.scrollTo(0, 320)
+        },
+        sortingChange (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.getDataFromApi()
         }
     }
 }
