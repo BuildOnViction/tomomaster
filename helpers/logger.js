@@ -15,4 +15,10 @@ const logger = createLogger({
     transports: [new transports.Console()]
 })
 
+logger.stream = {
+    write: (t) => {
+        logger.info(t)
+    }
+}
+
 module.exports = logger
