@@ -47,38 +47,40 @@ async function watchValidator () {
                             capacity: capacity
                         }
                     }, { upsert: true })
-                } else {
-                    let candidate = (result.returnValues._candidate || '').toLowerCase()
-                    let voter = (result.returnValues._voter || '').toLowerCase()
-                    let owner = (result.returnValues._owner || '').toLowerCase()
-                    let capacity = result.returnValues._cap
-                    let blk = await web3.eth.getBlock(result.blockNumber)
-                    let createdAt = moment.unix(blk.timestamp).utc()
-                    await db.Transaction.updateOne({
-                        tx: result.transactionHash
-                    }, {
-                        $set: {
-                            smartContractAddress: config.get('blockchain.validatorAddress'),
-                            tx: result.transactionHash,
-                            event: result.event,
-                            voter: voter,
-                            owner: owner,
-                            candidate: candidate,
-                            capacity: capacity,
-                            blockNumber: result.blockNumber,
-                            createdAt: createdAt
-                        }
-                    }, {
-                        upsert: true
-                    })
-                    if (result.event === 'Vote' || result.event === 'Unvote') {
-                        await updateVoterCap(candidate, voter)
-                    }
-                    if (result.event === 'Resign' || result.event === 'Propose') {
-                        await updateVoterCap(candidate, owner)
-                    }
-                    await updateCandidateInfo(candidate)
                 }
+                let candidate = (result.returnValues._candidate || '').toLowerCase()
+                let voter = (result.returnValues._voter || '').toLowerCase()
+                let owner = (result.returnValues._owner || '').toLowerCase()
+                if (!voter && (event.event === 'Resign' || event.event === 'Withdraw' || event.event === 'Propose')) {
+                    voter = owner
+                }
+                let capacity = result.returnValues._cap
+                let blk = await web3.eth.getBlock(result.blockNumber)
+                let createdAt = moment.unix(blk.timestamp).utc()
+                await db.Transaction.updateOne({
+                    tx: result.transactionHash
+                }, {
+                    $set: {
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        tx: result.transactionHash,
+                        event: result.event,
+                        voter: voter,
+                        owner: owner,
+                        candidate: candidate,
+                        capacity: capacity,
+                        blockNumber: result.blockNumber,
+                        createdAt: createdAt
+                    }
+                }, {
+                    upsert: true
+                })
+                if (result.event === 'Vote' || result.event === 'Unvote') {
+                    await updateVoterCap(candidate, voter)
+                }
+                if (result.event === 'Resign' || result.event === 'Propose') {
+                    await updateVoterCap(candidate, owner)
+                }
+                await updateCandidateInfo(candidate)
             })
 
             return Promise.all(map)
@@ -330,25 +332,27 @@ async function getPastEvent () {
                         owner: owner,
                         capacity: capacity
                     }, { upsert: true })
-                } else {
-                    let candidate = (event.returnValues._candidate || '').toLowerCase()
-                    let voter = (event.returnValues._voter || '').toLowerCase()
-                    let owner = (event.returnValues._owner || '').toLowerCase()
-                    let capacity = event.returnValues._cap
-                    let blk = await web3.eth.getBlock(event.blockNumber)
-                    let createdAt = moment.unix(blk.timestamp).utc()
-                    await db.Transaction.updateOne({ tx: event.transactionHash }, {
-                        smartContractAddress: config.get('blockchain.validatorAddress'),
-                        tx: event.transactionHash,
-                        blockNumber: event.blockNumber,
-                        event: event.event,
-                        voter: voter,
-                        owner: owner,
-                        candidate: candidate,
-                        capacity: capacity,
-                        createdAt: createdAt
-                    }, { upsert: true })
                 }
+                let candidate = (event.returnValues._candidate || '').toLowerCase()
+                let voter = (event.returnValues._voter || '').toLowerCase()
+                let owner = (event.returnValues._owner || '').toLowerCase()
+                if (!voter && (event.event === 'Resign' || event.event === 'Withdraw' || event.event === 'Propose')) {
+                    voter = owner
+                }
+                let capacity = event.returnValues._cap
+                let blk = await web3.eth.getBlock(event.blockNumber)
+                let createdAt = moment.unix(blk.timestamp).utc()
+                await db.Transaction.updateOne({ tx: event.transactionHash }, {
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    tx: event.transactionHash,
+                    blockNumber: event.blockNumber,
+                    event: event.event,
+                    voter: voter,
+                    owner: owner,
+                    candidate: candidate,
+                    capacity: capacity,
+                    createdAt: createdAt
+                }, { upsert: true })
             })
             return Promise.all(map)
         }
