@@ -20,7 +20,6 @@
         "masternodeRewardRate": 40,
         "foundationRewardRate": 10,
         "gas": 2000000,
-        "gasPrice": 2500,
         "foundationAddress": "0x0000000000000000000000000000000000000068",
         "validatorAddress": "0x0000000000000000000000000000000000000088",
         "blockSignerAddress": "0x0000000000000000000000000000000000000089",

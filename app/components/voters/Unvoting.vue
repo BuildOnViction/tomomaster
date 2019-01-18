@@ -220,7 +220,9 @@ export default {
             isNumeric: true,
             minValue: new BigNumber(10 ** -18),
             maxValue: new BigNumber(this.voted),
-            converted: null
+            converted: null,
+            txFee: 0,
+            gasPrice: null
         }
     },
     validations () {
@@ -245,6 +247,8 @@ export default {
         let account
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
+        self.gasPrice = await self.web3.eth.getGasPrice()
+            self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
 
         try {
             self.isReady = !!self.web3
@@ -307,7 +311,7 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
                     gas: self.web3.utils.toHex(self.chainConfig.gas),
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId

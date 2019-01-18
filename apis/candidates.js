@@ -15,7 +15,6 @@ const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
 
 const gas = config.get('blockchain.gas')
-const gasPrice = config.get('blockchain.gasPrice')
 
 router.get('/', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
@@ -190,6 +189,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
 router.post('/apply', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -242,6 +242,7 @@ router.post('/apply', async function (req, res, next) {
 router.post('/applyBulk', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -291,6 +292,7 @@ router.post('/applyBulk', async function (req, res, next) {
 router.post('/resign', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -315,6 +317,7 @@ router.post('/resign', async function (req, res, next) {
 router.post('/vote', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -338,6 +341,7 @@ router.post('/vote', async function (req, res, next) {
 router.post('/unvote', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)

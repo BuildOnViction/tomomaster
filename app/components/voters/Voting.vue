@@ -185,7 +185,9 @@ export default {
             interval: null,
             balance: 0,
             provider: this.NetworkProvider || store.get('network') || null,
-            votingError: false
+            votingError: false,
+            txFee: 0,
+            gasPrice: null
         }
     },
     validations: {
@@ -205,6 +207,8 @@ export default {
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
+        self.gasPrice = await self.web3.eth.getGasPrice()
+        self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
         try {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
@@ -286,7 +290,7 @@ export default {
                 let txParams = {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
                     gas: self.web3.utils.toHex(self.chainConfig.gas),
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
