@@ -13,61 +13,96 @@ const { check, validationResult, query } = require('express-validator/check')
 const urljoin = require('url-join')
 
 router.get('/:voter/candidates', [
-    check('limit').isInt({ min: 1, max: 200 }).optional().withMessage('Wrong limit')
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-    if (limit > 200) {
-        limit = 200
-    }
+    let skip
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     try {
+        const total = db.Voter.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            voter: (req.params.voter || '').toLowerCase(),
+            capacityNumber: { $ne: 0 }
+        })
+        const sort = {}
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+        } else {
+            sort.capacityNumber = -1
+        }
+
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase(),
             capacityNumber: { $ne: 0 }
-        }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec()
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
+
         let cs = voters.map(v => v.candidate)
+
         let candidates = await db.Candidate.find({
             candidate: { $in: cs }
         }).lean().exec()
+
         voters = voters.map(v => {
             v.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate === v.candidate)
             }) || {}).name || 'Anonymous'
             return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'candidateName'])
         })
-        return res.json(voters)
+        return res.json({
+            items: voters,
+            total: await total
+        })
     } catch (e) {
         return next(e)
     }
 })
 
-router.get('/:voter/rewards', async function (req, res, next) {
+router.get('/:voter/rewards', [
+    query('limit')
+        .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+], async function (req, res, next) {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return next(errors.array())
+        }
+
         const voter = req.params.voter
-        const limit = 100
+        const page = (req.query.page) ? parseInt(req.query.page) : 1
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: voter,
-                limit
+                limit,
+                page: page
             }
         )
-        const cs = rewards.data.map(r => r.validator)
+
+        const cs = rewards.data.items.map(r => r.validator)
         const candidates = await db.Candidate.find({
             candidate: { $in: cs }
         }).lean().exec()
-        const rd = rewards.data.map(r => {
+        const rd = rewards.data.items.map(r => {
             r.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate.toLowerCase() === r.validator.toLowerCase())
             }) || {}).name || r.validator
             return r
         })
-        res.json(rd)
+        res.json({
+            items: rd,
+            total: rewards.data.total
+        })
     } catch (e) {
         return next(e)
     }

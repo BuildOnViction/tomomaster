@@ -52,20 +52,18 @@
                 <div class="col-12">
                     <h3 class="section-title">
                         <i class="tm-flag color-yellow" />
-                        <span>Candidates ({{ totalRows }})</span>
+                        <span>Candidates ({{ activeCandidates }})</span>
                     </h3>
                 </div>
             </div>
             <b-table
                 :items="sortedCandidates"
                 :fields="fields"
-                :current-page="currentPage"
                 :per-page="perPage"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
                 :class="'tomo-table tomo-table--candidates ' + tableCssClass"
                 empty-text="There are no candidates to show"
-                stacked="md" >
+                stacked="md"
+                @sort-changed="sortingChange" >
 
                 <template
                     slot="address"
@@ -78,7 +76,7 @@
                 </template>
 
                 <template
-                    slot="cap"
+                    slot="capacity"
                     slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.cap, 2)) }}
                 </template>
 
@@ -152,7 +150,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'cap',
+                    key: 'capacity',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -172,7 +170,7 @@ export default {
                     sortable: false
                 }
             ],
-            sortBy: 'cap',
+            sortBy: 'capacity',
             sortDesc: true,
             isReady: false,
             account: '',
@@ -187,7 +185,8 @@ export default {
             loading: false,
             hasProposed: false,
             hasResigned: false,
-            isTomonet: false
+            isTomonet: false,
+            activeCandidates: 0
         }
     },
     computed: {
@@ -198,8 +197,9 @@ export default {
         }
     },
     watch: {
-        currentPage: function (val) {
+        currentPage: async function (val) {
             this.currentPage = this.$store.state.currentPage
+            await this.getDataFromApi()
         }
     },
     updated () {},
@@ -228,31 +228,7 @@ export default {
             console.log(error)
         }
 
-        try {
-            self.loading = true
-
-            let candidates = await axios.get('/api/candidates')
-            candidates.data.map(async (candidate, index) => {
-                self.candidates.push({
-                    address: candidate.candidate,
-                    owner: candidate.owner.toLowerCase(),
-                    status: candidate.status,
-                    isMasternode: candidate.isMasternode,
-                    isPenalty: candidate.isPenalty,
-                    name: candidate.name || 'Anonymous',
-                    cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                    latestSignedBlock: candidate.latestSignedBlock
-                })
-            })
-
-            self.totalRows = self.candidates.filter(c => c.status !== 'RESIGNED').length
-
-            self.loading = false
-            self.getTableCssClass()
-        } catch (e) {
-            self.loading = false
-            console.log(e)
-        }
+        self.getDataFromApi()
     },
     mounted () { },
     methods: {
@@ -311,9 +287,52 @@ export default {
             }
             return result
         },
+        async getDataFromApi () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates' + '?' + query)
+                let items = []
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+                self.activeCandidates = candidates.data.activeCandidates
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
         pageChange (page) {
             this.$store.state.currentPage = page
             window.scrollTo(0, 320)
+        },
+        sortingChange (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.getDataFromApi()
         }
     }
 }
