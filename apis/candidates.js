@@ -29,7 +29,7 @@ router.get('/', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     try {
         const total = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress')
@@ -205,7 +205,7 @@ router.get('/:candidate/voters', [
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
 
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -235,7 +235,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
     if (limit > 200) {
         limit = 200
     }
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)
@@ -451,7 +451,7 @@ router.get('/:candidate/:owner/getRewards', [
 
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const page = (req.query.page) ? parseInt(req.query.page) : 0
+        const page = (req.query.page) ? parseInt(req.query.page) : 1
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
 
         const rewards = await axios.post(

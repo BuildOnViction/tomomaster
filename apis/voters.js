@@ -24,7 +24,7 @@ router.get('/:voter/candidates', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     try {
         const total = db.Voter.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -37,16 +37,19 @@ router.get('/:voter/candidates', [
         } else {
             sort.capacityNumber = -1
         }
-        console.log(sort)
+
         let voters = await db.Voter.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase(),
             capacityNumber: { $ne: 0 }
         }).sort(sort).limit(limit).skip(skip).lean().exec()
+
         let cs = voters.map(v => v.candidate)
+
         let candidates = await db.Candidate.find({
             candidate: { $in: cs }
         }).lean().exec()
+
         voters = voters.map(v => {
             v.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate === v.candidate)
@@ -74,7 +77,7 @@ router.get('/:voter/rewards', [
         }
 
         const voter = req.params.voter
-        const page = (req.query.page) ? parseInt(req.query.page) : 0
+        const page = (req.query.page) ? parseInt(req.query.page) : 1
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
 
         const rewards = await axios.post(

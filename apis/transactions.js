@@ -29,7 +29,7 @@ router.get('/voter/:voter', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     try {
         const total = db.Transaction.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -75,7 +75,7 @@ router.get('/candidate/:candidate', [
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
 
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
 
     try {
         const total = db.Transaction.countDocuments({
