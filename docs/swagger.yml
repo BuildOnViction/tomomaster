@@ -18,6 +18,7 @@ tags:
   - name: Transaction
     description: Get transactions of candidate and voter
 schemes:
+  - https
   - http
 consumes:
   - application/json
