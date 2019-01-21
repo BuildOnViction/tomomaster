@@ -8,6 +8,7 @@ const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
 const moment = require('moment')
 const logger = require('./helpers/logger')
+const _ = require('lodash')
 
 process.setMaxListeners(100)
 
@@ -155,6 +156,13 @@ async function updateVoterCap (candidate, voter) {
 async function getCurrentCandidates () {
     try {
         let candidates = await validator.methods.getCandidates().call()
+        let candidatesInDb = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress')
+        }).lean().exec()
+        candidatesInDb = candidatesInDb.map(c => c.candidate)
+        candidates = _.uniqBy(_.concat(candidates, candidatesInDb), (it) => {
+            return it.toLowerCase()
+        })
 
         let map = candidates.map(async (candidate) => {
             candidate = (candidate || '').toLowerCase()
