@@ -115,7 +115,8 @@ export default {
             qrCode: 'text',
             processing: true,
             id: '',
-            provider: this.Networkprovider || store.get('network') || null
+            provider: this.Networkprovider || store.get('network') || null,
+            gasPrice: null
         }
     },
     computed: { },
@@ -145,6 +146,7 @@ export default {
         if (!self.coinbase) {
             self.$router.push({ path: '/' })
         } else {
+            self.gasPrice = await self.web3.eth.getGasPrice()
             let amount = new BigNumber(self.capacity.replace(/,/g, '')).toString(10)
             const data = {
                 action: 'withdraw',
@@ -182,13 +184,19 @@ export default {
                 console.log('==>', blockNumber, index)
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let wd
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -215,6 +223,9 @@ export default {
             } catch (e) {
                 console.log(e)
                 self.loading = false
+                self.$toasted.show('An error occurred while withdrawing, please try again', {
+                    type: 'error'
+                })
             }
         },
         onChangeWithdraw (event) {

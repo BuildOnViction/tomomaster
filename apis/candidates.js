@@ -15,19 +15,46 @@ const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
 
 const gas = config.get('blockchain.gas')
-const gasPrice = config.get('blockchain.gasPrice')
 
-router.get('/', async function (req, res, next) {
-    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-    if (limit > 200) {
-        limit = 200
+router.get('/', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
     }
+
+    let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+    let skip
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     try {
+        const total = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress')
+        })
+        const activeCandidates = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: { $ne: 'RESIGNED' }
+        })
+
+        const sort = {}
+        const collation = {}
+
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+            if (req.query.sortBy === 'capacity') {
+                collation.locale = 'en_US'
+                collation.numericOrdering = true
+            }
+        } else {
+            sort.capacityNumber = -1
+        }
+
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).sort({ capacityNumber: 'desc' }).limit(limit).skip(skip).lean().exec(),
+            }).sort(sort).collation(collation).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
             db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])
@@ -69,8 +96,31 @@ router.get('/', async function (req, res, next) {
         })
         let ret = await Promise.all(map)
 
-        return res.json(ret)
+        return res.json({
+            items: ret,
+            total: await total,
+            activeCandidates: await activeCandidates
+        })
     } catch (e) {
+        return next(e)
+    }
+})
+
+router.post('/listByHash', [
+    check('hashes').exists().withMessage('Missing hashes params')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+    let hashes = req.body.hashes
+    let listHash = hashes.split(',')
+
+    try {
+        let candidates = await db.Candidate.find({ candidate: { $in: listHash } })
+        return res.json(candidates)
+    } catch (e) {
+        logger.warn('Cannot get list candidate by hash. Error %s', e)
         return next(e)
     }
 })
@@ -141,26 +191,50 @@ router.get('/:candidate', async function (req, res, next) {
     return res.json(candidate)
 })
 
-router.get('/:candidate/voters', async function (req, res, next) {
+router.get('/:candidate/voters', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-    if (limit > 200) {
-        limit = 200
+    let skip
+
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+
+    let total = db.Voter.countDocuments({
+        smartContractAddress: config.get('blockchain.validatorAddress'),
+        candidate: (req.params.candidate || '').toLowerCase()
+    })
+
+    const sort = {}
+    if (req.query.sortBy) {
+        sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+    } else {
+        sort.capacityNumber = -1
     }
 
     let voters = await db.Voter.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         candidate: (req.params.candidate || '').toLowerCase()
-    }).limit(limit).skip(skip)
-    return res.json(voters)
+    }).sort(sort).limit(limit).skip(skip)
+    return res.json({
+        items: await voters,
+        total: await total
+    })
 })
-
+// deprecated
 router.get('/:candidate/rewards', async function (req, res, next) {
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
-    const skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+    let skip
     if (limit > 200) {
         limit = 200
     }
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)
@@ -171,6 +245,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
 router.post('/apply', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -223,6 +298,7 @@ router.post('/apply', async function (req, res, next) {
 router.post('/applyBulk', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -272,6 +348,7 @@ router.post('/applyBulk', async function (req, res, next) {
 router.post('/resign', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -296,6 +373,7 @@ router.post('/resign', async function (req, res, next) {
 router.post('/vote', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -319,6 +397,7 @@ router.post('/vote', async function (req, res, next) {
 router.post('/unvote', async function (req, res, next) {
     let key = req.query.key
     let network = config.get('blockchain.rpc')
+    const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
             (key.indexOf(' ') >= 0)
@@ -363,21 +442,36 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
 })
 
 // Get masternode rewards
-router.get('/:candidate/:owner/getRewards', async function (req, res, next) {
+router.get('/:candidate/:owner/getRewards', [
+    query('limit')
+        .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+], async function (req, res, next) {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return next(errors.array())
+        }
+
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const limit = 100
+        const page = (req.query.page) ? parseInt(req.query.page) : 1
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: candidate,
                 limit,
+                page,
                 owner: owner,
                 reason: 'Voter'
             }
         )
-        return res.json(rewards.data)
+        return res.json({
+            items: rewards.data.items,
+            total: rewards.data.total
+        })
     } catch (e) {
         return next(e)
     }

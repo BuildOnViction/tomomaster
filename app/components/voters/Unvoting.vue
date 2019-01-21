@@ -72,8 +72,8 @@
                                     <b-input-group>
                                         <number-input
                                             :class="getValidationClass('unvoteValue')"
-                                            :min="0.1"
-                                            :step="0.1"
+                                            :min="10"
+                                            :step="10"
                                             v-model="unvoteValue"
                                             name="vote-value"/>
                                         <b-input-group-append>
@@ -81,16 +81,19 @@
                                         </b-input-group-append>
                                         <span
                                             v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
-                                            class="text-danger">Required field</span>
+                                            class="text-danger">Required field </span>
                                         <span
-                                            v-if="!isNumeric"
-                                            class="text-danger">Must be number</span>
+                                            v-else-if="!isNumeric"
+                                            class="text-danger">Must be number </span>
+                                        <!-- <span
+                                            v-else-if="isMin"
+                                            class="text-danger">Minimum of unvoting is 100 TOMO </span> -->
                                         <span
-                                            v-if="isMin"
-                                            class="text-danger">Must be greater than 10<sup>-18 TOMO</sup></span>
+                                            v-else-if="isMax"
+                                            class="text-danger">Must be less than {{ voted }} TOMO </span>
                                         <span
-                                            v-if="isMax"
-                                            class="text-danger">Must be less than {{ voted }} TOMO</span>
+                                            v-else-if="!isEnoughTomo"
+                                            class="text-danger">Voted amount left should not less than 100 TOMO </span>
                                     </b-input-group>
                                 </b-form-group>
                                 <div class="buttons text-right">
@@ -209,7 +212,7 @@ export default {
             voter: '',
             candidate: this.$route.params.candidate,
             voted: 0,
-            unvoteValue: '1',
+            unvoteValue: '100',
             loading: false,
             step: 1,
             interval: null,
@@ -218,9 +221,12 @@ export default {
             isMin: false,
             isMax: false,
             isNumeric: true,
-            minValue: new BigNumber(10 ** -18),
+            isEnoughTomo: true,
+            minValue: new BigNumber(100),
             maxValue: new BigNumber(this.voted),
-            converted: null
+            converted: null,
+            txFee: 0,
+            gasPrice: null
         }
     },
     validations () {
@@ -245,6 +251,8 @@ export default {
         let account
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
+        self.gasPrice = await self.web3.eth.getGasPrice()
+        self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
 
         try {
             self.isReady = !!self.web3
@@ -277,13 +285,16 @@ export default {
         validate: function () {
             this.unvoteValue = this.unvoteValue.replace(/,/g, '')
             // check minValue
-            this.isMin = this.validateMinAmount(this.unvoteValue)
+            // this.isMin = this.validateMinAmount(this.unvoteValue)
             // check maxValue
             this.isMax = this.validateMaxAmount(this.unvoteValue)
             // check numeric
             this.isNumeric = this.validateNumeric(this.unvoteValue)
+            // check voted amount left
+            this.isEnoughTomo = this.validateTomoLeft(this.unvoteValue)
+            console.log(this.isEnoughTomo)
 
-            if (this.isNumeric && !this.isMax && !this.isMin) {
+            if (this.isNumeric && !this.isMax && this.isEnoughTomo) {
                 this.$v.$touch()
                 if (!this.$v.$invalid) {
                     this.nextStep()
@@ -307,11 +318,14 @@ export default {
                 let contract = await self.getTomoValidatorInstance()
                 let txParams = {
                     from: account,
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
                     // sign transaction using hardwarewallet before sending to chain
 
@@ -324,6 +338,9 @@ export default {
                     // attach txParams and signature then sendSignedTransaction
                     let nonce = await self.web3.eth.getTransactionCount(account)
                     let dataTx = contract.unvote.request(candidate, unvoteValue).params[0]
+                    if (self.NetworkProvider === 'trezor') {
+                        txParams.value = self.web3.utils.toHex(0)
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -414,7 +431,9 @@ export default {
         },
         validateMinAmount (value) {
             this.converted = new BigNumber(value)
-            if (this.converted.isLessThan(this.minValue)) {
+            this.maxValue = new BigNumber(this.voted)
+            if (this.converted.isLessThan(this.minValue) &&
+                this.converted.isGreaterThanOrEqualTo(this.minValue)) {
                 return true
             }
             return false
@@ -434,6 +453,17 @@ export default {
                 return false
             }
             return true
+        },
+        validateTomoLeft (value) {
+            this.converted = new BigNumber(value) // unvote value
+            this.maxValue = new BigNumber(this.voted)
+            const acceptedValue = this.maxValue.isGreaterThanOrEqualTo(this.converted)
+            const votedValueLeft = this.maxValue.minus(this.converted).isGreaterThanOrEqualTo(this.minValue)
+            const isUnvoteAll = this.converted.isEqualTo(this.maxValue)
+            if (acceptedValue && (votedValueLeft || isUnvoteAll)) {
+                return true
+            }
+            return false
         },
         unvoteAll () {
             this.unvoteValue = this.voted.toString()

@@ -47,7 +47,7 @@
                                 <number-input
                                     :class="getValidationClass('voteValue')"
                                     :min="10"
-                                    :step="1"
+                                    :step="10"
                                     v-model="voteValue"
                                     name="vote-value"/>
                                 <b-input-group-append>
@@ -58,9 +58,9 @@
                                     class="text-danger">Required field</span>
                                 <span
                                     v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                    class="text-danger">Must be greater than 10 TOMO</span>
+                                    class="text-danger">Minimum of voting is 100 TOMO</span>
                                 <span
-                                    v-if="votingError"
+                                    v-else-if="votingError"
                                     class="text-danger">Not enough TOMO</span>
                             </b-input-group>
                         </b-form-group>
@@ -175,7 +175,7 @@ export default {
             isReady: !!this.web3,
             voter: 'Unknown',
             candidate: this.$route.params.candidate,
-            voteValue: '10',
+            voteValue: '100',
             loading: false,
             step: 1,
             message: '',
@@ -185,13 +185,15 @@ export default {
             interval: null,
             balance: 0,
             provider: this.NetworkProvider || store.get('network') || null,
-            votingError: false
+            votingError: false,
+            txFee: 0,
+            gasPrice: null
         }
     },
     validations: {
         voteValue: {
             required,
-            minValue: minValue(10)
+            minValue: minValue(100)
         }
     },
     computed: {
@@ -205,6 +207,8 @@ export default {
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
+        self.gasPrice = await self.web3.eth.getGasPrice()
+        self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
         try {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
@@ -263,7 +267,7 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                if ((new BigNumber(this.voteValue)).isGreaterThan(this.balance)) {
+                if ((new BigNumber(this.voteValue)).isGreaterThanOrEqualTo(this.balance)) {
                     this.votingError = true
                 } else {
                     this.votingError = false
@@ -286,11 +290,14 @@ export default {
                 let txParams = {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
-                    gasPrice: self.web3.utils.toHex(self.chainConfig.gasPrice),
-                    gas: self.web3.utils.toHex(self.chainConfig.gas)
+                    gasPrice: self.web3.utils.toHex(self.gasPrice),
+                    gas: self.web3.utils.toHex(self.chainConfig.gas),
+                    gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
+                    chainId: self.chainConfig.networkId
                 }
                 let rs
-                if (self.NetworkProvider === 'ledger') {
+                if (self.NetworkProvider === 'ledger' ||
+                    self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
                     // sign transaction using hardwarewallet before sending to chain
 

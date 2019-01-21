@@ -1,31 +1,609 @@
 swagger: '2.0'
 info:
+  version: 1.0.0
   title: TomoMaster APIs
   description: Happy to code TomoMaster APIs
-  version: '1.0.0'
+  license:
+    name: Github
+    url: 'https://github.com/tomochain/tomomaster'
+tags:
+  - name: Config
+    description: Get TomoMaster Application Configuration
+  - name: Monitor
+    description: Get information for CPU and Memory charts
+  - name: Candidates
+    description: Get Candidates information
+  - name: Voters
+    description: Get Voter information
+  - name: Transaction
+    description: Get transactions of candidate and voter
 schemes:
+  - https
   - http
-basePath:
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
   /api/config:
     get:
-      summary: Get TomoMaster Application Configuration
-      description: |
-        Get TomoMaster Application Configuration
-      responses:
-        200:
-          description: OK
-        401:
-          description: Unauthorized
-        400:
-          description: Bad Request
-        406:
-          description: Not Acceptable
-        500:
-          description: Server Internal error
       tags:
         - Config
-
-
+      summary: Get TomoMaster Application Configuration
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/config'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '406':
+          description: Not Acceptable
+        '500':
+          description: Server Internal Error
+  /api/monitor:
+    parameters:
+      - name: db
+        in: query
+        required: true
+        description: Database
+        type: string
+      - name: q
+        in: query
+        required: true
+        description: Query
+        type: string
+      - name: epoch
+        in: query
+        required: true
+        description: Epoch
+        type: string
+    get:
+      tags:
+        - Monitor
+      summary: Get information for CPU and Memory charts
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/monitor'
+  /api/candidates:
+    parameters:
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get candidates information
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/candidate'
+        '406':
+          description: Not Acceptable
+  '/api/candidates/{candidate}':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+    get:
+      tags:
+        - Candidates
+      summary: Get candidate's information
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/candidateDetail'
+        '406':
+          description: Not Acceptable
+  '/api/candidates/{candidate}/voters':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get voters who voted for the candidate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/candidateVoter'
+        '406':
+          description: Not Acceptable
+  '/api/candidates/{candidate}/isMasternode':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+    get:
+      tags:
+        - Candidates
+      summary: Masternode checking
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/isMasternode'
+        '406':
+          description: Not Acceptable
+  '/api/candidates/{candidate}/isCandidate':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+    get:
+      tags:
+        - Candidates
+      summary: Candidate checking
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/isCandidate'
+        '406':
+          description: Not Acceptable
+  '/api/candidates/{candidate}/{owner}/getRewards':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: owner
+        in: path
+        type: string
+        description: owner's address
+        required: true
+      - name: limit
+        in: query
+        type: number
+        description: number of records
+        required: false
+      - name: page
+        in: query
+        type: number
+        description: page number
+        required: false
+    get:
+      tags:
+        - Candidates
+      summary: Get reward of candidate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/candidateRewards'
+        '406':
+          description: Not Acceptable
+  '/api/voters/{voter}/candidates':
+    parameters:
+      - name: voter
+        in: path
+        type: string
+        description: voter's address
+        required: true
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+        required: false
+      - name: page
+        in: query
+        description: Page number
+        type: number
+        required: false
+    get:
+      tags:
+        - Voters
+      summary: Get voted candidates
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/voterCandidates'
+        '406':
+          description: Not Acceptable
+  '/api/voters/{voter}/rewards':
+    parameters:
+      - name: voter
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: limit
+        in: query
+        type: number
+        description: number of records
+        required: false
+      - name: page
+        in: query
+        type: number
+        description: page number
+        required: false
+    get:
+      tags:
+        - Voters
+      summary: Get reward of voter
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/voterRewards'
+        '406':
+          description: Not Acceptable
+  '/api/transactions/candidate/{candidate}':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: limit
+        in: query
+        type: number
+        description: number of records
+      - name: page
+        in: query
+        type: number
+        description: page number
+    get:
+      tags:
+        - Transaction
+      summary: Get transactions of a candidate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/txCandidate'
+  '/api/transactions/voter/{voter}':
+    parameters:
+      - name: voter
+        in: path
+        type: string
+        description: voter's address
+        required: true
+      - name: limit
+        in: query
+        type: number
+        description: number of records
+      - name: page
+        in: query
+        type: number
+        description: page number
+    get:
+      tags:
+        - Transaction
+      summary: Get transactions of a voter
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/txVoter'
+definitions:
+  config:
+    properties:
+      blockchain:
+        type: object
+        description: Tomochain's configurations
+        properties:
+          rpc:
+            type: string
+            description: rpc
+          ws:
+            type: string
+            description: websocket
+          epoch:
+            type: number
+            description: Number of blocks for 1 epoch
+            default: 900
+          blockTime:
+            type: number
+            description: Block time
+      explorerUrl:
+        type: string
+        description: Tomoscan's API
+      grafanaUrl:
+        type: string
+        description: Grafana's API
+      GA:
+        type: string
+        description: Google Analytic code
+  monitor:
+    properties:
+      series:
+        type: array
+        description: Chart's information
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name
+              enum:
+                - cpu
+                - memory
+            column:
+              type: array
+              description: columns in db
+              items:
+                type: string
+                description: Name of column
+                example:
+                  - time
+                  - cpu_user
+            values:
+              type: array
+              description: Data of columns
+              items:
+                type: number
+                description: data number of columns
+                example:
+                  - 0
+                  - 1
+      statement_id:
+        type: number
+        description: id
+  candidate:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: '123'
+            candidate: '0x11621900588eca4410c00097a9f59237f34064cd'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            __v: 0
+            capacity: '91540333800000001000000'
+            createdAt: '2018-10-31T03:42:39.375Z'
+            owner: '0x11621900588eca4410c00097a9f59237f34064cd'
+            status: RESIGNED
+            updatedAt: '2019-01-11T09:21:55.028Z'
+            latestSignedBlock: 2917487
+            capacityNumber: 91540.33380000001
+            isMasternode: false
+            isPenalty: false
+      total:
+        type: number
+        description: Total number of candidate
+        example: 100
+      activeCandidates:
+        type: number
+        description: Number of active candidate
+        example: 10
+  candidateDetail:
+    properties:
+      _id:
+        type: string
+        description: id
+        example: '123'
+      candidate:
+        type: string
+        description: candidate's address
+        example: '0x11621900588eca4410c00097a9f59237f34064cd'
+      smartContractAddress:
+        type: string
+        description: smart contract's address
+        example: '0x0000000000000000000000000000000000000088'
+      __v:
+        type: number
+        description: __v
+        example: 0
+      capacity:
+        type: string
+        description: capacity in wei
+        example: '91540333800000001000000'
+      createdAt:
+        type: string
+        description: creation date of candidate
+        example: '2018-10-31T03:42:39.375Z'
+      owner:
+        type: string
+        description: owner's address
+        example: '0x11621900588eca4410c00097a9f59237f34064cd'
+      status:
+        type: string
+        description: candidate's status
+        example: RESIGNED
+      updatedAt:
+        type: string
+        description: update time
+        example: '2019-01-11T09:17:59.535Z'
+      latestSignedBlock:
+        type: string
+        description: latest signed block
+        example: '2917487'
+      capacityNumber:
+        type: number
+        description: capacity number
+        example: 91540.33380000001
+      isMasternode:
+        type: boolean
+        description: is masternode
+        example: false
+      isPenalty:
+        type: boolean
+        description: is penalty
+        example: false
+  candidateRewards:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: 5c19847f0e77307940be9216
+            epoch: 3193
+            startBlock: 2872801
+            endBlock: 2873700
+            address: '0x11621900588eca4410c00097a9f59237f34064cd'
+            validator: '0x11621900588eca4410c00097a9f59237f34064cd'
+            reason: Voter
+            lockBalance: '1000'
+            reward: '8.03540381764608993247'
+            rewardTime: '2018-12-18T23:36:18.000Z'
+            signNumber: 843
+            __v: 0
+            createdAt: '2018-12-18T23:36:31.435Z'
+            updatedAt: '2018-12-18T23:36:31.435Z'
+      total:
+        type: number
+        description: Number of candidate
+        example: 100
+  candidateVoter:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: 5bd924a9aa41b819395d9207
+            candidate: '0x11621900588eca4410c00097a9f59237f34064cd'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            voter: '0xf2cce442c7ab5baf194838081b5f9396330ecfb8'
+            __v: 0
+            capacity: '105000000000000000000'
+            createdAt: '2018-10-31T03:42:33.922Z'
+            updatedAt: '2019-01-05T02:11:31.489Z'
+            capacityNumber: 105
+      total:
+        type: number
+        description: Total number of voters
+        example: 100
+  voterCandidates:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            candidate: '0xfc5571921c6d3672e13b58ea23dea534f2b35fa0'
+            capacity: '10000000000000000000'
+            capacityNumber: 10
+            candidateName: Earth
+      total:
+        type: number
+        description: Total number of rewards
+        example: 100
+  voterRewards:
+    properties:
+      items:
+        type: array
+        description: Voter's reward array
+        items:
+          type: object
+          description: voter's reward
+          example:
+            _id: 5c19847f0e77307940be922a
+            epoch: 3193
+            startBlock: 2872801
+            endBlock: 2873700
+            address: '0x11621900588eca4410c00097a9f59237f34064cd'
+            validator: '0x11621900588eca4410c00097a9f59237f34064cd'
+            reason: MasterNode
+            lockBalance: '1000'
+            reward: '25.97042513863216266174'
+            rewardTime: '2018-12-18T23:36:18.000Z'
+            signNumber: 843
+            __v: 0
+            createdAt: '2018-12-18T23:36:31.580Z'
+            updatedAt: '2018-12-18T23:36:31.580Z'
+            candidateName: '0x11621900588eca4410c00097a9f59237f34064cd'
+      total:
+        type: number
+        description: Number of candidate
+        example: 100
+  isMasternode:
+    type: number
+    enum:
+      - '1'
+      - '0'
+  isCandidate:
+    type: number
+    enum:
+      - '1'
+      - '0'
+  txCandidate:
+    properties:
+      items:
+        type: array
+        description: Candidate's transactions array
+        items:
+          type: object
+          description: Candidate's transactions
+          example:
+            _id: 5c247c545e769d2f2c10ab38
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            tx: '0x0f96e419c89dcf1397a6206959334a4485c5a158a0320cb8a8e98db3b7888141'
+            event: Vote
+            voter: '0xe91dc9746eed1b5971aabd6e1681da1a4d06be8d'
+            owner: ''
+            candidate: '0x11621900588eca4410c00097a9f59237f34064cd'
+            capacity: '11000000000000000000'
+            blockNumber: 2897395
+            createdAt: '2018-12-27T07:16:36.000Z'
+            __v: 0
+      total:
+        type: number
+        description: Number of candidate
+        example: 100
+  txVoter:
+    properties:
+      items:
+        type: array
+        description: Candidate's transactions array
+        items:
+          type: object
+          description: Candidate's transactions
+          example:
+            _id: 5c24a189ff305840a2498bf0
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            tx: '0xf8f2d402c6b1cb5f891b687d69ddcd920e58d9e9fe002857cac0e7ce47998884'
+            event: Unvote
+            voter: '0x487d62d33467c4842c5e54eb370837e4e88bba0f'
+            owner: ''
+            candidate: '0xfc5571921c6d3672e13b58ea23dea534f2b35fa0'
+            capacity: '10000999000000000000000'
+            blockNumber: 763397
+            createdAt: '2018-12-27T09:55:21.000Z'
+            __v: 0
+      total:
+        type: number
+        description: Number of candidate
+        example: 100
