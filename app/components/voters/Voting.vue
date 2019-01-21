@@ -47,7 +47,7 @@
                                 <number-input
                                     :class="getValidationClass('voteValue')"
                                     :min="10"
-                                    :step="1"
+                                    :step="10"
                                     v-model="voteValue"
                                     name="vote-value"/>
                                 <b-input-group-append>
@@ -58,9 +58,9 @@
                                     class="text-danger">Required field</span>
                                 <span
                                     v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                    class="text-danger">Must be greater than 10 TOMO</span>
+                                    class="text-danger">Minimum of voting is 100 TOMO</span>
                                 <span
-                                    v-if="votingError"
+                                    v-else-if="votingError"
                                     class="text-danger">Not enough TOMO</span>
                             </b-input-group>
                         </b-form-group>
@@ -175,7 +175,7 @@ export default {
             isReady: !!this.web3,
             voter: 'Unknown',
             candidate: this.$route.params.candidate,
-            voteValue: '10',
+            voteValue: '100',
             loading: false,
             step: 1,
             message: '',
@@ -193,7 +193,7 @@ export default {
     validations: {
         voteValue: {
             required,
-            minValue: minValue(10)
+            minValue: minValue(100)
         }
     },
     computed: {
@@ -267,7 +267,7 @@ export default {
             this.$v.$touch()
 
             if (!this.$v.$invalid) {
-                if ((new BigNumber(this.voteValue)).isGreaterThan(this.balance)) {
+                if ((new BigNumber(this.voteValue)).isGreaterThanOrEqualTo(this.balance)) {
                     this.votingError = true
                 } else {
                     this.votingError = false
