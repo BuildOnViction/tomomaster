@@ -80,6 +80,11 @@
                                             target="_blank"
                                             href="/terms"><i class="tm-profile mr-1"/>Terms of Service</a>
                                     </li>
+                                    <li class="list-inline-item">
+                                        <a
+                                            target="_blank"
+                                            href="/apidocs"><i class="tm-checklist mr-1"/>API Documentation</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

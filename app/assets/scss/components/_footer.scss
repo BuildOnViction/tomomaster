@@ -21,6 +21,10 @@
     font-size: 18px;
   }
 
+  &__links {
+    margin-top: 1rem;
+  }
+
   @include media-breakpoint-up(md) {
 
     > .container > .row {
