@@ -189,7 +189,7 @@
                     variant="primary">Vote</b-button>
             </div>
         </div>
-        <div
+        <!-- <div
             v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
             class="container section section--hardware">
             <div
@@ -218,7 +218,7 @@
                         data-type="memory" />
                 </div>
             </div>
-        </div>
+        </div> -->
         <div
             :class="'container section section--mnrewards'
             + (rewardLoading ? ' tomo-loading' : '')">
