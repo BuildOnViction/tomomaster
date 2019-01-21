@@ -355,7 +355,8 @@ export default {
             qrCode: 'text',
             id: '',
             interval: '',
-            qrCodeApp: ''
+            qrCodeApp: '',
+            gasPrice: null
         }
     },
     validations: {
@@ -410,6 +411,7 @@ export default {
                         throw Error('Make sure you choose correct tomochain network.')
                     }
                 }
+                self.gasPrice = await self.web3.eth.getGasPrice()
 
                 if (store.get('address') && self.isReady) {
                     account = store.get('address').toLowerCase()
@@ -739,7 +741,7 @@ export default {
             }
         },
         changeView (w, k) {
-            const txFee = new BigNumber(this.chainConfig.gas * this.chainConfig.gasPrice).div(10 ** 18)
+            const txFee = new BigNumber(this.chainConfig.gas * this.gasPrice).div(10 ** 18)
 
             if (this.balance.isGreaterThanOrEqualTo(txFee)) {
                 this.$router.push({ name: 'CandidateWithdraw',
