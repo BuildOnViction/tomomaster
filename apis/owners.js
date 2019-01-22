@@ -17,7 +17,7 @@ router.get('/:owner/withdraws', [
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
 
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let wds = await db.Withdraw.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
         owner: req.params.owner
