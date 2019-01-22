@@ -39,13 +39,12 @@ router.get('/', [
         })
 
         const sort = {}
-        const collation = {}
 
         if (req.query.sortBy) {
             sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
             if (req.query.sortBy === 'capacity') {
-                collation.locale = 'en_US'
-                collation.numericOrdering = true
+                delete sort.capacity
+                sort.capacityNumber = (req.query.sortDesc === 'true') ? -1 : 1
             }
         } else {
             sort.capacityNumber = -1
@@ -54,7 +53,7 @@ router.get('/', [
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).sort(sort).collation(collation).limit(limit).skip(skip).lean().exec(),
+            }).sort(sort).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
             db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])
