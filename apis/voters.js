@@ -24,7 +24,7 @@ router.get('/:voter/candidates', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Voter.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),

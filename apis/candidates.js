@@ -28,7 +28,7 @@ router.get('/', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress')
@@ -203,7 +203,7 @@ router.get('/:candidate/voters', [
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
 
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -233,7 +233,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
     if (limit > 200) {
         limit = 200
     }
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)
