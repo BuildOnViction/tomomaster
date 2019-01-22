@@ -292,7 +292,6 @@ export default {
             this.isNumeric = this.validateNumeric(this.unvoteValue)
             // check voted amount left
             this.isEnoughTomo = this.validateTomoLeft(this.unvoteValue)
-            console.log(this.isEnoughTomo)
 
             if (this.isNumeric && !this.isMax && this.isEnoughTomo) {
                 this.$v.$touch()

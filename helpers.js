@@ -110,7 +110,6 @@ function HDWalletProvider (
 
   // returns the address of the given address_index, first checking the cache
   HDWalletProvider.prototype.getAddress = function (idx) {
-    console.log('getting addresses', this.addresses[0], idx)
     if (!idx) { return this.addresses[0] }
     else { return this.addresses[idx] }
   }
