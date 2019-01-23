@@ -763,14 +763,14 @@ export default {
         getColor (latestSignedBlock, currentBlock) {
             let result
             switch (true) {
-            case latestSignedBlock >= (currentBlock - 20):
+            case latestSignedBlock >= (currentBlock - 100):
                 result = 'cyan'
                 break
-            case latestSignedBlock < (currentBlock - 20) &&
-                latestSignedBlock >= (currentBlock - 100):
+            case latestSignedBlock < (currentBlock - 100) &&
+                latestSignedBlock >= (currentBlock - 200):
                 result = 'yellow'
                 break
-            case latestSignedBlock < (currentBlock - 100):
+            case latestSignedBlock < (currentBlock - 200):
                 result = 'pink'
                 break
             default:
