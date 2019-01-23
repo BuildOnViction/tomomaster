@@ -28,7 +28,7 @@ router.get('/', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress')
@@ -39,13 +39,12 @@ router.get('/', [
         })
 
         const sort = {}
-        const collation = {}
 
         if (req.query.sortBy) {
             sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
             if (req.query.sortBy === 'capacity') {
-                collation.locale = 'en_US'
-                collation.numericOrdering = true
+                delete sort.capacity
+                sort.capacityNumber = (req.query.sortDesc === 'true') ? -1 : 1
             }
         } else {
             sort.capacityNumber = -1
@@ -54,7 +53,7 @@ router.get('/', [
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).sort(sort).collation(collation).limit(limit).skip(skip).lean().exec(),
+            }).sort(sort).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
             db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
         ])
@@ -204,7 +203,7 @@ router.get('/:candidate/voters', [
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
 
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -234,7 +233,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
     if (limit > 200) {
         limit = 200
     }
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     let rewards = await db.MnReward.find({
         address: (req.params.candidate || '').toLowerCase()
     }).sort({ _id: -1 }).limit(limit).skip(skip)

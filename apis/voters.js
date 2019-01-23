@@ -24,7 +24,7 @@ router.get('/:voter/candidates', [
 
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
-    skip = (req.query.page) ? limit * (req.query.page - 1) : 1
+    skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
         const total = db.Voter.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -188,18 +188,19 @@ router.post('/verifyTx', [
                 throw new Error('amount is required')
             }
         }
+
         const checkId = await db.SignTransaction.findOne({ signId: id })
 
         if (!checkId) {
             throw Error('id is not match, wrong qr code')
         }
 
-        if (action !== 'withdraw' && action !== 'resign') {
+        if (action !== 'withdraw') {
             if (!candidate) {
                 throw Error('candidate is required')
+            } else if (checkId.candidate.toLowerCase() !== candidate) {
+                throw Error('candidate is not match')
             }
-        } else if (checkId.candidate.toLowerCase() !== candidate) {
-            throw Error('candidate is not match')
         }
         if (!checkId.status) {
             throw Error('Cannot use a QR code twice')

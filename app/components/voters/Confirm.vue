@@ -10,6 +10,16 @@
                     <i :class="`tm-${icon}`"/>
                     {{ title }}
                 </h4>
+                <p class="md-content">
+                    You have {{ event }}
+                    <span class="color-white">{{ amount }} TOMO</span> for candidate
+                    <router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link> successfully.
+                    <br ><br >
+                    Transaction Hash:
+                    <a
+                        :href="txUrl"
+                        target="_blank">{{ tx }}</a>
+                </p>
                 <p
                     class="md-content"
                     v-html="description"/>
@@ -27,6 +37,7 @@
 <script>
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
+import urljoin from 'url-join'
 export default {
     name: 'App',
     data () {
@@ -37,7 +48,11 @@ export default {
             icon: '',
             title: '',
             description: '',
-            buttonText: ''
+            buttonText: '',
+            event: '',
+            amount: '',
+            candidate: '',
+            txUrl: ''
         }
     },
     computed: {},
@@ -52,7 +67,6 @@ export default {
                 self.$router.push({ path: '/' })
             } else {
                 let transaction = response.data
-                let event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
 
                 self.web3.eth.getTransaction(self.tx, function (err, result) {
                     if (!err) {
@@ -63,15 +77,19 @@ export default {
                     }
 
                     if (self.status === 'success') {
-                        const amount = new BigNumber(transaction.capacity).div(10 ** 18).toString(10)
+                        self.amount = new BigNumber(transaction.capacity).div(10 ** 18).toString(10)
                         self.icon = 'checkmark'
                         self.title = 'Success'
-                        self.description = `You have ${event} 
-                        <span class="color-white">${amount} TOMO</span> for candidate 
-                        <a href="/candidate/${transaction.candidate}">${transaction.candidate}</a> successfully.
-                        <br/><br/>
-                        Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
-                        target="_blank">${self.tx}</a>`
+                        self.event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
+                        self.candidate = transaction.candidate
+                        self.txUrl = urljoin(self.config.explorerUrl, `/txs/${self.tx}`)
+                        // self.description = `You have ${event}
+                        // <span class="color-white">${amount} TOMO</span> for candidate
+                        // <router-link to="/candidate/${transaction.candidate}">${transaction.candidate}</router-link>
+                        // successfully.
+                        // <br/><br/>
+                        // Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
+                        // target="_blank">${self.tx}</a>`
                         self.buttonText = 'View all Candidates'
                     } else {
                         self.icon = 'notice'
