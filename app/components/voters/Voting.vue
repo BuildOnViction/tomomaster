@@ -64,14 +64,17 @@
                                     class="text-danger">Not enough TOMO</span>
                             </b-input-group>
                         </b-form-group>
-                        <div class="buttons text-right">
-                            <b-button
-                                type="button"
-                                variant="secondary"
-                                @click="$router.go(-1)">Cancel</b-button>
-                            <b-button
-                                type="submit"
-                                variant="primary">Next</b-button>
+                        <div>
+                            <div class="float-left">Estimate reward: {{ voteValue }}</div>
+                            <div class="buttons text-right">
+                                <b-button
+                                    type="button"
+                                    variant="secondary"
+                                    @click="$router.go(-1)">Cancel</b-button>
+                                <b-button
+                                    type="submit"
+                                    variant="primary">Next</b-button>
+                            </div>
                         </div>
                     </b-form>
                 </b-card>
@@ -197,9 +200,11 @@ export default {
         }
     },
     computed: {
+        estimatedReward: function () {
+            return this.voteValue
+        }
     },
-    watch: {
-    },
+    watch: {},
     updated () {},
     created: async function () {
         let self = this
