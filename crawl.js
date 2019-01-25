@@ -1,8 +1,8 @@
 'use strict'
 
 const Validator = require('./models/blockchain/validator')
-const BlockSigner = require('./models/blockchain/blockSigner')
 const Web3Ws = require('./models/blockchain/web3ws')
+const web3Rpc = require('./models/blockchain/web3rpc')
 const config = require('config')
 const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
@@ -14,8 +14,6 @@ process.setMaxListeners(100)
 
 var web3 = new Web3Ws()
 var validator = new Validator(web3)
-var blockSigner = new BlockSigner(web3)
-var cpBlockSigner = 0
 var cpValidator = 0
 
 async function watchValidator () {
@@ -254,7 +252,6 @@ async function updatePenalties () {
         logger.error('updatePenalties %s', e)
         web3 = new Web3Ws()
         validator = new Validator(web3)
-        blockSigner = new BlockSigner(web3)
     }
 }
 
@@ -289,43 +286,41 @@ async function updateSigners () {
 }
 
 let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
-async function watchNewBlock () {
-    let b = true
-    while (true) {
-        try {
-            logger.info('Update signers after sleeping 3 seconds')
-            if (b) {
+async function watchNewBlock (n) {
+    try {
+        let blockNumber = await web3.eth.getBlockNumber()
+        n = n || blockNumber
+        if (blockNumber > n) {
+            n = n + 1
+            blockNumber = n
+            logger.info('Watch new block every 1 second blkNumber %s', n)
+            let blk = await web3.eth.getBlock(blockNumber)
+            if (n % 5 === 0) {
                 await updateSigners()
                 await updatePenalties()
             }
-            await updateLatestSignedBlock()
+            await updateLatestSignedBlock(blk)
             await watchValidator()
-            b = !b
-        } catch (e) {
-            logger.error('watchNewBlock %s', e)
         }
-        await sleep(3000)
+    } catch (e) {
+        logger.error('watchNewBlock %s', e)
+        web3 = new Web3Ws()
     }
+    await sleep(1000)
+    return watchNewBlock(n)
 }
 
-async function updateLatestSignedBlock () {
+async function updateLatestSignedBlock (blk) {
     try {
-        let blockNumber = cpBlockSigner || await web3.eth.getBlockNumber()
-        cpBlockSigner = await web3.eth.getBlockNumber()
-
-        logger.info('BlockSigner %s - Listen events from block number %s ...',
-            config.get('blockchain.blockSignerAddress'), blockNumber)
-        return blockSigner.getPastEvents('Sign', {
-            fromBlock: blockNumber,
-            toBlock: 'latest'
-        }).then(async (events) => {
-            let map = events.map(event => {
-                let result = event
-                let signer = result.returnValues._signer
-                let bN = String(result.returnValues._blockNumber)
-                logger.debug('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
-
-                return db.Candidate.updateOne({
+        for (let hash of blk.transactions) {
+            let tx = await web3Rpc.eth.getTransaction(hash)
+            if (tx.to === config.get('blockchain.blockSignerAddress')) {
+                let signer = tx.from
+                let buff = Buffer.from((tx.input || '').substring(2), 'hex')
+                let sbuff = buff.slice(buff.length - 32, buff.length)
+                let bN = (await web3Rpc.eth.getBlock('0x' + sbuff.toString('hex'))).number
+                logger.debug('Sign block %s by signer %s', bN, signer)
+                await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: signer.toLowerCase()
                 }, {
@@ -333,16 +328,8 @@ async function updateLatestSignedBlock () {
                         latestSignedBlock: bN
                     }
                 }, { upsert: false })
-            })
-
-            return Promise.all(map).then(() => {
-                return web3.eth.getBlockNumber(n => {
-                    cpBlockSigner = n
-                })
-            })
-        }).catch(e => {
-            logger.error('updateLatestSignedBlock2 %s', e)
-        })
+            }
+        }
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
     }
