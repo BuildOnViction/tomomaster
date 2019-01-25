@@ -51,8 +51,20 @@
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
-                        <i class="tm-flag color-yellow" />
-                        <span>Candidates ({{ activeCandidates }})</span>
+                        <div class="masternode-bar">
+                            <ul>
+                                <li class="pt-1"><i class="tm-flag color-yellow" /></li>
+                                <li v-if="activeCandidates !== 0"><span
+                                    @click="changeTable('masternodes')">Masternodes ({{ activeCandidates }})</span></li>
+                                <li v-if="slashedMN !== 0"><span
+                                    @click="changeTable('slashed')">Slashed MNs ({{ slashedMN }})</span></li>
+                                <li v-if="totalProposedNodes !== 0"><span
+                                    @click="changeTable('proposed')">Proposed Nodes ({{ totalProposedNodes }})
+                                </span></li>
+                                <li v-if="resignedMN !== 0"><span
+                                    @click="changeTable('resigned')">Resigned Nodes ({{ resignedMN }})</span></li>
+                            </ul>
+                        </div>
                     </h3>
                 </div>
             </div>
@@ -176,7 +188,6 @@ export default {
             account: '',
             voteActive: false,
             voteValue: 1,
-            voteItem: {},
             candidates: [],
             currentPage: this.$store.state.currentPage || 1,
             perPage: 50,
@@ -186,22 +197,15 @@ export default {
             hasProposed: false,
             hasResigned: false,
             isTomonet: false,
-            activeCandidates: 0
+            activeCandidates: 0,
+            resignedMN: 0,
+            slashedMN: 0,
+            totalProposedNodes: 0,
+            currentTable: 'masternodes'
         }
     },
-    computed: {
-        sortedCandidates: function () {
-            return this.candidates.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        }
-    },
-    watch: {
-        currentPage: async function (val) {
-            this.currentPage = this.$store.state.currentPage
-            await this.getDataFromApi()
-        }
-    },
+    computed: {},
+    watch: {},
     updated () {},
     created: async function () {
         let self = this
@@ -229,6 +233,8 @@ export default {
         }
 
         self.getDataFromApi()
+        self.slashedMN = (await axios.get('/api/candidates/totalSlashedMNs')).data.total || 0
+        self.temp = axios.get('/api/candidates/proposedMNs')
     },
     mounted () { },
     methods: {
@@ -301,6 +307,60 @@ export default {
 
                 let candidates = await axios.get('/api/candidates' + '?' + query)
                 let items = []
+
+                const proposeNodes = await self.temp
+                self.totalProposedNodes = proposeNodes.data.total
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.activeCandidates = candidates.data.activeCandidates - await self.totalProposedNodes
+                self.totalRows = candidates.data.activeCandidates
+                self.resignedMN = candidates.data.total -
+                    self.activeCandidates - self.totalProposedNodes
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
+        pageChange (page) {
+            this.$store.state.currentPage = page
+            this.currentPage = page
+            this.loadDataTables(this.currentTable)
+            window.scrollTo(0, 320)
+        },
+        sortingChange (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.loadDataTables(this.currentTable)
+        },
+        async getSlashedMNs () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/slashedMNs' + '?' + query)
+                let items = []
                 candidates.data.items.map(async (candidate, index) => {
                     items.push({
                         address: candidate.candidate,
@@ -316,7 +376,6 @@ export default {
                 self.candidates = items
 
                 self.totalRows = candidates.data.total
-                self.activeCandidates = candidates.data.activeCandidates
 
                 self.loading = false
                 self.getTableCssClass()
@@ -325,14 +384,99 @@ export default {
                 console.log(e)
             }
         },
-        pageChange (page) {
-            this.$store.state.currentPage = page
-            window.scrollTo(0, 320)
+        async getProposedMNs () {
+            const self = this
+            try {
+                self.loading = true
+
+                let candidates = await self.temp
+                let items = []
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
         },
-        sortingChange (obj) {
-            this.sortBy = obj.sortBy
-            this.sortDesc = obj.sortDesc
-            this.getDataFromApi()
+        async getResignedMNs () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/resignedMNs' + '?' + query)
+                let items = []
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
+        changeTable (tableName) {
+            this.currentPage = 1
+            this.$store.state.currentPage = 1
+            if (this.currentTable !== tableName) {
+                this.currentTable = tableName
+                this.loadDataTables(tableName)
+            }
+        },
+        loadDataTables (tableName) {
+            switch (tableName) {
+            case 'masternodes':
+                this.getDataFromApi()
+                break
+            case 'slashed':
+                this.getSlashedMNs()
+                break
+            case 'proposed':
+                this.getProposedMNs()
+                break
+            case 'resigned':
+                this.getResignedMNs()
+                break
+            default:
+                this.getDataFromApi()
+                break
+            }
         }
     }
 }

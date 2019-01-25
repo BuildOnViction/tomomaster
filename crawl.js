@@ -132,6 +132,32 @@ async function updateCandidateInfo (candidate) {
     }
 }
 
+async function updateCandidateSlashed (candidate, blockNumber) {
+    try {
+        let result
+        logger.debug('Update candidate %s slashed at blockNumber %s', candidate, String(blockNumber))
+        if (candidate !== '0x0000000000000000000000000000000000000000') {
+            result = await db.Candidate.updateOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate
+            }, {
+                $set: {
+                    status: 'SLASHED'
+                }
+            }, { upsert: true })
+        } else {
+            result = await db.Candidate.deleteOne({
+                smartContractAddress: validator.address,
+                candidate: candidate
+            })
+        }
+
+        return result
+    } catch (e) {
+        logger.error('updateCandidateSlashed %s', e)
+    }
+}
+
 async function updateVoterCap (candidate, voter) {
     try {
         let capacity = await validator.methods.getVoterCap(candidate, voter).call()
@@ -200,21 +226,25 @@ async function updatePenalties () {
             return false
         }
 
-        await db.Penalty.remove({})
+        // await db.Penalty.remove({})
 
         let getPenalty = async function (blk) {
             let sbuff = Buffer.from((blk.penalties || '').substring(2), 'hex')
             let penalties = []
+            const epoch = (blk.number / config.get('blockchain.epoch')) - 1
             if (sbuff.length > 0) {
                 for (let i = 1; i <= sbuff.length / 20; i++) {
                     let address = sbuff.slice((i - 1) * 20, i * 20)
                     penalties.push('0x' + address.toString('hex'))
+                    await updateCandidateSlashed('0x' + address.toString('hex'), blk.number)
                 }
-                await db.Penalty.create({
+
+                await db.Penalty.update({ blockNumber: blk.number }, {
                     networkId: config.get('blockchain.networkId'),
                     blockNumber: blk.number,
+                    epoch: epoch,
                     penalties: penalties
-                })
+                }, { upsert: true })
             }
             return penalties
         }

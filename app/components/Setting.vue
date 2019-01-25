@@ -407,11 +407,11 @@ export default {
                 if (self.web3) {
                     try {
                         contract = await self.getTomoValidatorInstance()
+                        self.gasPrice = await self.web3.eth.getGasPrice()
                     } catch (error) {
                         throw Error('Make sure you choose correct tomochain network.')
                     }
                 }
-                self.gasPrice = await self.web3.eth.getGasPrice()
 
                 if (store.get('address') && self.isReady) {
                     account = store.get('address').toLowerCase()
@@ -662,16 +662,6 @@ export default {
                 }
                 break
             }
-            // if (event === 'tomowallet') {
-            //     await this.loginByQRCode()
-            //     this.interval = setInterval(async () => {
-            //         await this.getLoginResult()
-            //     }, 3000)
-            // } else {
-            //     if (this.interval) {
-            //         clearInterval(this.interval)
-            //     }
-            // }
         },
         async getAccountInfo (account) {
             const self = this
