@@ -69,7 +69,6 @@ async function run (start) {
     let max = await web3.eth.getBlockNumber()
     let end = ((start + 99) > max) ? max : (start + 99)
 
-    console.log(start, end)
     await watchValidator(start, end)
 
     if (start === end) {
