@@ -277,6 +277,7 @@ async function watchNewBlock (n) {
     } catch (e) {
         logger.error('watchNewBlock %s', e)
         web3 = new Web3Ws()
+        validator = new Validator(web3)
     }
     await sleep(1000)
     return watchNewBlock(n)
