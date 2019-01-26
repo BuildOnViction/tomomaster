@@ -86,6 +86,8 @@ async function watchValidator () {
         }).catch(e => {
             logger.error('watchValidator %s', e)
             cpValidator = blockNumber
+            web3 = new Web3Ws()
+            validator = new Validator(web3)
         })
     } catch (e) {
         logger.error('watchValidator2 %s', e)
