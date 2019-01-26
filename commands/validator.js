@@ -22,21 +22,6 @@ async function watchValidator (from, to) {
             let map = events.map(async (event) => {
                 let result = event
                 logger.debug('Event %s in block %s', result.event, result.blockNumber)
-                if (result.event === 'Withdraw') {
-                    let owner = (result.returnValues._owner || '').toLowerCase()
-                    let capacity = result.returnValues._cap
-                    return db.Withdraw.updateOne({
-                        tx: result.transactionHash
-                    }, {
-                        $set: {
-                            smartContractAddress: config.get('blockchain.validatorAddress'),
-                            blockNumber: result.blockNumber,
-                            tx: result.transactionHash,
-                            owner: owner,
-                            capacity: capacity
-                        }
-                    }, { upsert: true })
-                }
                 let candidate = (result.returnValues._candidate || '').toLowerCase()
                 let voter = (result.returnValues._voter || '').toLowerCase()
                 let owner = (result.returnValues._owner || '').toLowerCase()
@@ -85,11 +70,11 @@ async function run (start) {
     let end = ((start + 99) > max) ? max : (start + 99)
 
     console.log(start, end)
-    await watchValidator(start, end) 
+    await watchValidator(start, end)
 
     if (start === end) {
         logger.info('BlockNumber %s DONE!!!', max)
-        return process.exit(0);
+        return process.exit(0)
     }
 
     return run(end + 1)
