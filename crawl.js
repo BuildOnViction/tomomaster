@@ -291,7 +291,11 @@ async function updateLatestSignedBlock (blk) {
                 let signer = tx.from
                 let buff = Buffer.from((tx.input || '').substring(2), 'hex')
                 let sbuff = buff.slice(buff.length - 32, buff.length)
-                let bN = (await web3Rpc.eth.getBlock('0x' + sbuff.toString('hex'))).number
+                let bN = ((await web3Rpc.eth.getBlock('0x' + sbuff.toString('hex'))) || {}).number
+                if (!bN) {
+                    logger.debug('Bypass signer %s sign %s', signer, '0x' + sbuff.toString('hex'))
+                    continue
+                }
                 logger.debug('Sign block %s by signer %s', bN, signer)
                 await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
