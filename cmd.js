@@ -3,12 +3,21 @@
 const commander = require('commander')
 const db = require('./models/mongodb')
 const _ = require('lodash')
+const cmdValidator = require('./commands/validator')
 const { updatePenalty } = require('./helpers/commands')
 const web3Rpc = require('./models/blockchain/web3rpc')
 
 commander
     .version('0.1.0')
     .description('Candidate Management Commands')
+
+commander
+    .command('validator blockNumber')
+    .alias('v')
+    .description('Re-crawl tx vote/unvote/resign/propose/withdraw')
+    .action(async (blockNumber) => {
+        return cmdValidator.run(parseInt(blockNumber))
+    })
 
 commander
     .command('list')
