@@ -11,14 +11,19 @@ async function updatePenalty (fromBlock = 0, toBlock = null) {
         let checkpoints = []
         // latest block
         let toBlockNumber = toBlock || await web3Rpc.eth.getBlockNumber()
+        logger.info('Getting data from %s to %s', fromBlock, toBlockNumber)
         for (let i = fromBlock; i <= toBlockNumber; i++) {
             if (i % parseInt(config.get('blockchain.epoch')) === 0) {
                 let checkpoint = i - (i % parseInt(config.get('blockchain.epoch')))
+                logger.info('Getting data for checkpoint %s', checkpoint)
                 checkpoints.push(await web3Rpc.eth.getBlock(checkpoint))
             }
         }
+
         if (checkpoints.length === 0) {
             return false
+        } else {
+            logger.info('Done getting data')
         }
 
         let getPenalty = async function (blk) {
@@ -50,11 +55,12 @@ async function updatePenalty (fromBlock = 0, toBlock = null) {
                     checkpoints[i - 3], checkpoints[i - 4]])
             }
         }
+        logger.info('Updating database')
 
         await Promise.all(data.map(blks => blks.map(blk => {
             getPenalty(blk)
         })))
-        logger.infor('Done')
+        logger.info('Done')
         process.exit(1)
     } catch (error) {
         logger.error('update penalty table %s', error)
