@@ -139,7 +139,7 @@ async function updateCandidateSlashed (candidate, blockNumber) {
         if (candidate !== '0x0000000000000000000000000000000000000000') {
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
-                candidate: candidate
+                candidate: candidate.toLowerCase()
             }, {
                 $set: {
                     status: 'SLASHED'
