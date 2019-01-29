@@ -4,7 +4,7 @@ const commander = require('commander')
 const db = require('./models/mongodb')
 const _ = require('lodash')
 const cmdValidator = require('./commands/validator')
-const { updatePenalty } = require('./helpers/commands')
+const { updatePenalty } = require('./commands/penalty')
 const web3Rpc = require('./models/blockchain/web3rpc')
 
 commander

@@ -2,7 +2,7 @@
 
 // const Validator = require('./models/blockchain/validator')
 const web3Rpc = require('../models/blockchain/web3rpc')
-const logger = require('./logger')
+const logger = require('../helpers/logger')
 const config = require('config')
 const db = require('../models/mongodb')
 
