@@ -35,7 +35,7 @@ router.get('/', [
         })
         const activeCandidates = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),
-            status: { $ne: 'RESIGNED' }
+            status: { $nin: ['RESIGNED', 'PROPOSED'] }
         })
 
         const sort = {}
@@ -53,7 +53,7 @@ router.get('/', [
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
-                status: { $ne: 'RESIGNED' }
+                status: { $nin: ['RESIGNED', 'PROPOSED'] }
             }).sort(sort).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' })
         ])
@@ -123,40 +123,13 @@ router.get('/slashedMNs', [
             sort.capacityNumber = -1
         }
 
-        let data = await Promise.all([
-            db.Candidate.find({
-                smartContractAddress: config.get('blockchain.validatorAddress'),
-                status: 'SLASHED'
-            }).sort(sort).limit(limit).skip(skip).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' })
-        ])
-
-        let candidates = data[0]
-        let latestSigners = data[1]
-
-        let signers = (latestSigners || {}).signers || []
-
-        const setS = new Set()
-        for (let i = 0; i < signers.length; i++) {
-            setS.add((signers[i] || '').toLowerCase())
-        }
-
-        let map = candidates.map(async c => {
-            // is masternode
-            if (signers.length === 0) {
-                c.isMasternode = !!c.latestSignedBlock
-            } else {
-                c.isMasternode = setS.has((c.candidate || '').toLowerCase())
-            }
-
-            c.status = (c.isMasternode && c.status !== 'SLASHED') ? 'MASTERNODE' : c.status
-
-            return c
-        })
-        let ret = await Promise.all(map)
+        const candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'SLASHED'
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
 
         return res.json({
-            items: ret,
+            items: candidates,
             total: await total
         })
     } catch (e) {
@@ -179,42 +152,45 @@ router.get('/totalSlashedMNs', async function (req, res, next) {
     }
 })
 
-router.get('/proposedMNs', async function (req, res, next) {
+router.get('/proposedMNs', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+], async function (req, res, next) {
     try {
-        let data = await Promise.all([
-            db.Candidate.find({
-                smartContractAddress: config.get('blockchain.validatorAddress'),
-                status: { $ne: 'RESIGNED' }
-            }).sort({ capacityNumber: -1 }).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' })
-        ])
-
-        let candidates = data[0]
-        let latestSigners = data[1]
-
-        let signers = (latestSigners || {}).signers || []
-
-        const setS = new Set()
-        for (let i = 0; i < signers.length; i++) {
-            setS.add((signers[i] || '').toLowerCase())
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return next(errors.array())
         }
 
-        let map = candidates.filter(c => {
-            // is masternode
-            if (signers.length === 0) {
-                if (!c.latestSignedBlock) {
-                    return c
-                }
-            } else {
-                if (!setS.has((c.candidate || '').toLowerCase()) && c.status !== 'SLASHED') {
-                    return c
-                }
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+        let skip
+        skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+        const sort = {}
+
+        if (req.query.sortBy) {
+            sort[req.query.sortBy] = (req.query.sortDesc === 'true') ? -1 : 1
+            if (req.query.sortBy === 'capacity') {
+                delete sort.capacity
+                sort.capacityNumber = (req.query.sortDesc === 'true') ? -1 : 1
             }
-        })
+        } else {
+            sort.capacityNumber = -1
+        }
+
+        const total = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'PROPOSED'
+        }).lean().exec()
+
+        let candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'PROPOSED'
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
 
         return res.json({
-            items: map,
-            total: map.length
+            items: candidates,
+            total: await total
         })
     } catch (e) {
         return next(e)
@@ -252,38 +228,13 @@ router.get('/resignedMNs', [
             sort.capacityNumber = -1
         }
 
-        let data = await Promise.all([
-            db.Candidate.find({
-                smartContractAddress: config.get('blockchain.validatorAddress'),
-                status: 'RESIGNED'
-            }).sort(sort).limit(limit).skip(skip).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' })
-        ])
-
-        let candidates = data[0]
-        let latestSigners = data[1]
-
-        let signers = (latestSigners || {}).signers || []
-
-        const setS = new Set()
-        for (let i = 0; i < signers.length; i++) {
-            setS.add((signers[i] || '').toLowerCase())
-        }
-
-        let map = candidates.map(async c => {
-            // is masternode
-            if (signers.length === 0) {
-                c.isMasternode = !!c.latestSignedBlock
-            } else {
-                c.isMasternode = setS.has((c.candidate || '').toLowerCase())
-            }
-
-            return c
-        })
-        let ret = await Promise.all(map)
+        const candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'RESIGNED'
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
 
         return res.json({
-            items: ret,
+            items: candidates,
             total: await total
         })
     } catch (e) {

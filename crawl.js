@@ -257,7 +257,7 @@ async function updatePenalties () {
     }
 }
 
-async function updateSigners () {
+async function updateSignersAndCandidate () {
     try {
         let blk = {}
         let latestBlockNumber = await web3.eth.getBlockNumber()
@@ -270,10 +270,20 @@ async function updateSigners () {
         let buff = Buffer.from(blk.extraData.substring(2), 'hex')
         let sbuff = buff.slice(32, buff.length - 65)
         let signers = []
+        let address
         if (sbuff.length > 0) {
             for (let i = 1; i <= sbuff.length / 20; i++) {
-                let address = sbuff.slice((i - 1) * 20, i * 20)
+                address = sbuff.slice((i - 1) * 20, i * 20)
                 signers.push('0x' + address.toString('hex'))
+                // update candidate status
+                await db.Candidate.updateOne({
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    candidate: '0x' + address.toString('hex')
+                }, {
+                    $set: {
+                        status: 'MASTERNODE'
+                    }
+                }, { upsert: true })
             }
             await db.Signer.create({
                 networkId: config.get('blockchain.networkId'),
@@ -283,7 +293,7 @@ async function updateSigners () {
         }
         return signers
     } catch (e) {
-        logger.error('updateSigners %s', e)
+        logger.error('updateSignersAndCandidate %s', e)
     }
 }
 
@@ -298,7 +308,7 @@ async function watchNewBlock (n) {
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
             if (n % 5 === 0) {
-                await updateSigners()
+                await updateSignersAndCandidate()
                 await updatePenalties()
             }
             await updateLatestSignedBlock(blk)
@@ -397,7 +407,7 @@ db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
 }).then(() => {
     return updatePenalties()
 }).then(() => {
-    return updateSigners()
+    return updateSignersAndCandidate()
 }).then(() => {
     return getPastEvent().then(() => {
         watchNewBlock()
