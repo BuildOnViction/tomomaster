@@ -236,7 +236,7 @@ async function updatePenalties () {
                 for (let i = 1; i <= sbuff.length / 20; i++) {
                     let address = sbuff.slice((i - 1) * 20, i * 20)
                     penalties.push('0x' + address.toString('hex'))
-                    await updateCandidateSlashed('0x' + address.toString('hex'), blk.number)
+                    await updateCandidateSlashed('0x' + address.toString('hex').toLowerCase(), blk.number)
                 }
 
                 await db.Penalty.update({ blockNumber: blk.number }, {
@@ -278,7 +278,7 @@ async function updateSignersAndCandidate () {
                 // update candidate status
                 await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
-                    candidate: '0x' + address.toString('hex')
+                    candidate: '0x' + address.toString('hex').toLowerCase()
                 }, {
                     $set: {
                         status: 'MASTERNODE'

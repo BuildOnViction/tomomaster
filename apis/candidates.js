@@ -50,40 +50,13 @@ router.get('/', [
             sort.capacityNumber = -1
         }
 
-        let data = await Promise.all([
-            db.Candidate.find({
-                smartContractAddress: config.get('blockchain.validatorAddress'),
-                status: { $nin: ['RESIGNED', 'PROPOSED'] }
-            }).sort(sort).limit(limit).skip(skip).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' })
-        ])
-
-        let candidates = data[0]
-        let latestSigners = data[1]
-
-        let signers = (latestSigners || {}).signers || []
-
-        const setS = new Set()
-        for (let i = 0; i < signers.length; i++) {
-            setS.add((signers[i] || '').toLowerCase())
-        }
-
-        let map = candidates.map(async c => {
-            // is masternode
-            if (signers.length === 0) {
-                c.isMasternode = !!c.latestSignedBlock
-            } else {
-                c.isMasternode = setS.has((c.candidate || '').toLowerCase())
-            }
-
-            c.status = (c.isMasternode && c.status !== 'SLASHED') ? 'MASTERNODE' : c.status
-
-            return c
-        })
-        let ret = await Promise.all(map)
+        const candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: { $nin: ['RESIGNED', 'PROPOSED'] }
+        }).sort(sort).limit(limit).skip(skip).lean().exec()
 
         return res.json({
-            items: ret,
+            items: candidates,
             total: await total,
             activeCandidates: await activeCandidates || 0
         })
