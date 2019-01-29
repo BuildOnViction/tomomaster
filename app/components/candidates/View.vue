@@ -1,413 +1,425 @@
 <template>
     <div>
-        <div class="container section section--candidate">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-title">
-                        <i class="tm-flag color-yellow" />
-                        <span>{{ candidate.name }}</span>
-
-                        <router-link
-                            v-if="account === candidate.owner"
-                            :to="'/candidate/' + candidate.address + '/update'"
-                            class="edit-link">
-                            <i class="tm-edit ml-2 mr-0" />
-                        </router-link>
-                        <span class="text-truncate section-title__description">{{ candidate.address }}</span>
-                        <ul class="list-inline social-links">
-                            <li
-                                v-for="(value, key) in candidate.socials"
-                                :key="key"
-                                class="list-inline-item social-links__item">
-                                <a
-                                    :href="value"
-                                    class="social-links__link">
-                                    <i :class="'social-links__icon tm-' + key" />
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+        <div
+            v-if="!isCandidate"
+            class="row">
+            <div
+                class="tomo-empty col-12">
+                <i class="tm-notice tomo-empty__icon"/>
+                <p class="tomo-empty__description">This is not a candidate</p>
             </div>
-            <b-card
-                :class="'tomo-card tomo-card--animated tomo-card--candidate'
-                + (loading ? ' tomo-loading' : '')">
-                <div class="row m-md-0">
-                    <div
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info text-truncate">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Owner</span>
-                        </p>
-                        <p class="tomo-info__description color-cyan">
+        </div>
+        <div
+            v-else>
+            <div class="container section section--candidate">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title">
+                            <i class="tm-flag color-yellow" />
+                            <span>{{ candidate.name }}</span>
+
                             <router-link
-                                :to="'/voter/' + candidate.owner"
-                                class="text-truncate">
-                                {{ candidate.owner }}
+                                v-if="account === candidate.owner"
+                                :to="'/candidate/' + candidate.address + '/update'"
+                                class="edit-link">
+                                <i class="tm-edit ml-2 mr-0" />
                             </router-link>
-                        </p>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Latest Signed Block</span>
-                        </p>
-                        <p class="tomo-info__description">
-                            <span
-                                :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
-                                candidate.latestSignedBlock || 0, currentBlock)}`">
-                                {{ formatNumber(candidate.latestSignedBlock) }}
-                            </span>
-                        </p>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Capacity</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--cap"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 3)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.cap)"
-                                ref="tooltip"
-                                target="tomo-info__description--cap">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
-                    <div
-                        v-if="isReady"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-arrow-up tomo-info__icon" />
-                            <span class="tomo-info__text">You voted</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--you-voted"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(candidate.voted)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.voted)"
-                                ref="tooltip"
-                                target="tomo-info__description--you-voted">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.voted, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
-                    <div
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Recent Reward</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--you-rewarded"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatNumber(recentReward)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.rewarded)"
-                                ref="tooltip"
-                                target="tomo-info__description--you-rewarded">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.rewarded, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
-                    <div
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span
-                                class="tomo-info__text">
-                                Status
-                            </span>
-                        </p>
-                        <p
-                            :class="{ 'color-cyan': candidate.status === 'MASTERNODE',
-                                      'color-pink': candidate.status === 'SLASHED',
-                                      'color-pink': candidate.status === 'RESIGNED' }"
-                            class="tomo-info__description">
-                            {{ candidate.status }}
-                        </p>
-                    </div>
-                    <div
-                        v-if="isReady"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Balance</span>
-                        </p>
-                        <p
-                            id="tomo-info__description--balance"
-                            class="tomo-info__description">
-                            {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
-                            <b-tooltip
-                                v-if="checkLongNumber(candidate.balance)"
-                                ref="tooltip"
-                                target="tomo-info__description--balance">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
-                            </b-tooltip>
-                        </p>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">Hardware</span>
-                        </p>
-                        <p class="tomo-info__description">
-                            {{ candidate.hardwareInfo }}
-                        </p>
-                    </div>
-                    <div
-                        v-for="(value, key) in candidate.dataCenterInfo"
-                        :key="key"
-                        class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
-                        <p class="tomo-info__title">
-                            <i class="tm-dot tomo-info__icon" />
-                            <span class="tomo-info__text">{{ key }}</span>
-                        </p>
-                        <p class="tomo-info__description">
-                            {{ value }}
-                        </p>
+                            <span class="text-truncate section-title__description">{{ candidate.address }}</span>
+                            <ul class="list-inline social-links">
+                                <li
+                                    v-for="(value, key) in candidate.socials"
+                                    :key="key"
+                                    class="list-inline-item social-links__item">
+                                    <a
+                                        :href="value"
+                                        class="social-links__link">
+                                        <i :class="'social-links__icon tm-' + key" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </b-card>
-            <div
-                class="buttons text-right">
-                <b-button
-                    v-if="candidate.owner === account && candidate.status !== 'RESIGNED'"
-                    :to="`/resign/${candidate.address}`"
-                    variant="secondary">Resign</b-button>
-                <b-button
-                    v-if="candidate.voted > 0"
-                    :to="`/unvoting/${candidate.address}`"
-                    variant="secondary">Unvote</b-button>
-                <b-button
-                    v-if="candidate.status !== 'RESIGNED' && isTomonet"
-                    :to="`/voting/${candidate.address}`"
-                    variant="primary">Vote</b-button>
-            </div>
-        </div>
-        <!-- <div
-            v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
-            class="container section section--hardware">
-            <div
-                class="row">
+                <b-card
+                    :class="'tomo-card tomo-card--animated tomo-card--candidate'
+                    + (loading ? ' tomo-loading' : '')">
+                    <div class="row m-md-0">
+                        <div
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info text-truncate">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Owner</span>
+                            </p>
+                            <p class="tomo-info__description color-cyan">
+                                <router-link
+                                    :to="'/voter/' + candidate.owner"
+                                    class="text-truncate">
+                                    {{ candidate.owner }}
+                                </router-link>
+                            </p>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Latest Signed Block</span>
+                            </p>
+                            <p class="tomo-info__description">
+                                <span
+                                    :class="`tomo-status-dot float-left mr-2 tomo-status-dot--${getColor(
+                                    candidate.latestSignedBlock || 0, currentBlock)}`">
+                                    {{ formatNumber(candidate.latestSignedBlock) }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Capacity</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--cap"
+                                class="tomo-info__description">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 3)) }}
+                                <b-tooltip
+                                    v-if="checkLongNumber(candidate.cap)"
+                                    ref="tooltip"
+                                    target="tomo-info__description--cap">
+                                    {{ formatCurrencySymbol(formatBigNumber(candidate.cap, 6)) }}
+                                </b-tooltip>
+                            </p>
+                        </div>
+                        <div
+                            v-if="isReady"
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-arrow-up tomo-info__icon" />
+                                <span class="tomo-info__text">You voted</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--you-voted"
+                                class="tomo-info__description">
+                                {{ formatCurrencySymbol(formatNumber(candidate.voted)) }}
+                                <b-tooltip
+                                    v-if="checkLongNumber(candidate.voted)"
+                                    ref="tooltip"
+                                    target="tomo-info__description--you-voted">
+                                    {{ formatCurrencySymbol(formatBigNumber(candidate.voted, 6)) }}
+                                </b-tooltip>
+                            </p>
+                        </div>
+                        <div
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Recent Reward</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--you-rewarded"
+                                class="tomo-info__description">
+                                {{ formatCurrencySymbol(formatNumber(recentReward)) }}
+                                <b-tooltip
+                                    v-if="checkLongNumber(candidate.rewarded)"
+                                    ref="tooltip"
+                                    target="tomo-info__description--you-rewarded">
+                                    {{ formatCurrencySymbol(formatBigNumber(candidate.rewarded, 6)) }}
+                                </b-tooltip>
+                            </p>
+                        </div>
+                        <div
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span
+                                    class="tomo-info__text">
+                                    Status
+                                </span>
+                            </p>
+                            <p
+                                :class="{ 'color-cyan': candidate.status === 'MASTERNODE',
+                                          'color-pink': candidate.status === 'SLASHED',
+                                          'color-pink': candidate.status === 'RESIGNED' }"
+                                class="tomo-info__description">
+                                {{ candidate.status }}
+                            </p>
+                        </div>
+                        <div
+                            v-if="isReady"
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Balance</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--balance"
+                                class="tomo-info__description">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
+                                <b-tooltip
+                                    v-if="checkLongNumber(candidate.balance)"
+                                    ref="tooltip"
+                                    target="tomo-info__description--balance">
+                                    {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
+                                </b-tooltip>
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Hardware</span>
+                            </p>
+                            <p class="tomo-info__description">
+                                {{ candidate.hardwareInfo }}
+                            </p>
+                        </div>
+                        <div
+                            v-for="(value, key) in candidate.dataCenterInfo"
+                            :key="key"
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">{{ key }}</span>
+                            </p>
+                            <p class="tomo-info__description">
+                                {{ value }}
+                            </p>
+                        </div>
+                    </div>
+                </b-card>
                 <div
-                    v-if="loadedCPU"
-                    class="col-12 col-lg-6">
-                    <h3 class="section-title">
-                        <i class="tm-cpu color-pink" />
-                        <span>CPUs</span>
-                    </h3>
-                    <chart
-                        :host="candidate.nodeId"
-                        data-type="cpu"
-                        class="mb-5" />
+                    class="buttons text-right">
+                    <b-button
+                        v-if="candidate.owner === account && candidate.status !== 'RESIGNED'"
+                        :to="`/resign/${candidate.address}`"
+                        variant="secondary">Resign</b-button>
+                    <b-button
+                        v-if="candidate.voted > 0"
+                        :to="`/unvoting/${candidate.address}`"
+                        variant="secondary">Unvote</b-button>
+                    <b-button
+                        v-if="candidate.status !== 'RESIGNED' && isTomonet"
+                        :to="`/voting/${candidate.address}`"
+                        variant="primary">Vote</b-button>
                 </div>
+            </div>
+            <!-- <div
+                v-if="candidate.status !== 'RESIGNED' && candidate.nodeId"
+                class="container section section--hardware">
                 <div
-                    v-if="loadedMEM"
-                    class="col-12 col-lg-6">
-                    <h3 class="section-title">
-                        <i class="tm-memory color-orange" />
-                        <span>Memory</span>
-                    </h3>
-                    <chart
-                        :host="candidate.nodeId"
-                        data-type="memory" />
+                    class="row">
+                    <div
+                        v-if="loadedCPU"
+                        class="col-12 col-lg-6">
+                        <h3 class="section-title">
+                            <i class="tm-cpu color-pink" />
+                            <span>CPUs</span>
+                        </h3>
+                        <chart
+                            :host="candidate.nodeId"
+                            data-type="cpu"
+                            class="mb-5" />
+                    </div>
+                    <div
+                        v-if="loadedMEM"
+                        class="col-12 col-lg-6">
+                        <h3 class="section-title">
+                            <i class="tm-memory color-orange" />
+                            <span>Memory</span>
+                        </h3>
+                        <chart
+                            :host="candidate.nodeId"
+                            data-type="memory" />
+                    </div>
                 </div>
-            </div>
-        </div> -->
-        <div
-            :class="'container section section--mnrewards'
-            + (rewardLoading ? ' tomo-loading' : '')">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-gift color-purple" />
-                        <span>Masternode Rewards</span>
-                        <span class="text-truncate section-title__description">
-                            Estimated Reward for Masternode</span>
-                    </h3>
+            </div> -->
+            <div
+                :class="'container section section--mnrewards'
+                + (rewardLoading ? ' tomo-loading' : '')">
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="section-title">
+                            <i class="tm-gift color-purple" />
+                            <span>Masternode Rewards</span>
+                            <span class="text-truncate section-title__description">
+                                Estimated Reward for Masternode</span>
+                        </h3>
+                    </div>
                 </div>
+                <b-table
+                    :items="mnRewards"
+                    :fields="mnRewardsFields"
+                    :sort-by.sync="mnRewardsSortBy"
+                    :sort-desc.sync="mnRewardsSortDesc"
+                    :per-page="mnRewardsPerPage"
+                    :show-empty="true"
+                    :class="`tomo-table tomo-table--mnrewards${rewardLoading ? ' loading' : ''}`"
+                    empty-text="There are no rewards to show"
+                    stacked="md" >
+
+                    <template
+                        slot="checkpoint"
+                        slot-scope="data">{{ data.item.checkpoint }}
+                    </template>
+
+                    <template
+                        slot="reward"
+                        slot-scope="data">
+                        {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
+                    </template>
+
+                    <template
+                        slot="createdAt"
+                        slot-scope="data">
+                        <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                        <b-tooltip :target="`timestamp__${data.index}`">
+                            {{ data.item.dateTooltip }}
+                        </b-tooltip>
+                    </template>
+
+                </b-table>
+
+                <b-pagination
+                    v-if="mnRewardsTotalRows > 0 && mnRewardsTotalRows > mnRewardsPerPage"
+                    :total-rows="mnRewardsTotalRows"
+                    :per-page="mnRewardsPerPage"
+                    v-model="mnRewardsCurrentPage"
+                    align="center"
+                    class="tomo-pagination"
+                    @change="rewardPageChange" />
             </div>
-            <b-table
-                :items="mnRewards"
-                :fields="mnRewardsFields"
-                :sort-by.sync="mnRewardsSortBy"
-                :sort-desc.sync="mnRewardsSortDesc"
-                :per-page="mnRewardsPerPage"
-                :show-empty="true"
-                :class="`tomo-table tomo-table--mnrewards${rewardLoading ? ' loading' : ''}`"
-                empty-text="There are no rewards to show"
-                stacked="md" >
-
-                <template
-                    slot="checkpoint"
-                    slot-scope="data">{{ data.item.checkpoint }}
-                </template>
-
-                <template
-                    slot="reward"
-                    slot-scope="data">
-                    {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
-                </template>
-
-                <template
-                    slot="createdAt"
-                    slot-scope="data">
-                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
-                    <b-tooltip :target="`timestamp__${data.index}`">
-                        {{ data.item.dateTooltip }}
-                    </b-tooltip>
-                </template>
-
-            </b-table>
-
-            <b-pagination
-                v-if="mnRewardsTotalRows > 0 && mnRewardsTotalRows > mnRewardsPerPage"
-                :total-rows="mnRewardsTotalRows"
-                :per-page="mnRewardsPerPage"
-                v-model="mnRewardsCurrentPage"
-                align="center"
-                class="tomo-pagination"
-                @change="rewardPageChange" />
-        </div>
-        <div
-            :class="'container section section-voters'
-            + (voterLoading ? ' tomo-loading' : '')">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-arrow-up color-pink" />
-                        <span>Voters</span>
-                        <span class="text-truncate section-title__description">
-                            People who voted for this candidate</span>
-                    </h3>
+            <div
+                :class="'container section section-voters'
+                + (voterLoading ? ' tomo-loading' : '')">
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="section-title">
+                            <i class="tm-arrow-up color-pink" />
+                            <span>Voters</span>
+                            <span class="text-truncate section-title__description">
+                                People who voted for this candidate</span>
+                        </h3>
+                    </div>
                 </div>
+                <b-table
+                    :items="voters"
+                    :fields="voterFields"
+                    :per-page="voterPerPage"
+                    :show-empty="true"
+                    :class="`tomo-table tomo-table--voted${voterLoading ? ' loading' : ''}`"
+                    empty-text="There are no voters to show"
+                    stacked="md"
+                    @sort-changed="sortingChangeVoters" >
+
+                    <template
+                        slot="id"
+                        slot-scope="data">{{ data.item.id }}
+                    </template>
+
+                    <template
+                        slot="address"
+                        slot-scope="data">
+                        <router-link
+                            :to="'/voter/' + data.item.address"
+                            class="text-truncate">
+                            {{ data.item.address }}
+                        </router-link>
+                    </template>
+
+                    <template
+                        slot="capacityNumber"
+                        slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    </template>
+                </b-table>
+
+                <b-pagination
+                    v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
+                    :total-rows="voterTotalRows"
+                    :per-page="voterPerPage"
+                    v-model="voterCurrentPage"
+                    align="center"
+                    class="tomo-pagination"
+                    @change="voterPageChange" />
             </div>
-            <b-table
-                :items="voters"
-                :fields="voterFields"
-                :per-page="voterPerPage"
-                :show-empty="true"
-                :class="`tomo-table tomo-table--voted${voterLoading ? ' loading' : ''}`"
-                empty-text="There are no voters to show"
-                stacked="md"
-                @sort-changed="sortingChangeVoters" >
-
-                <template
-                    slot="id"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
-                    slot="address"
-                    slot-scope="data">
-                    <router-link
-                        :to="'/voter/' + data.item.address"
-                        class="text-truncate">
-                        {{ data.item.address }}
-                    </router-link>
-                </template>
-
-                <template
-                    slot="capacityNumber"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
-                </template>
-            </b-table>
-
-            <b-pagination
-                v-if="voterTotalRows > 0 && voterTotalRows > voterPerPage"
-                :total-rows="voterTotalRows"
-                :per-page="voterPerPage"
-                v-model="voterCurrentPage"
-                align="center"
-                class="tomo-pagination"
-                @change="voterPageChange" />
-        </div>
-        <div
-            :class="'container section section--txs'
-            + (txLoading ? ' tomo-loading' : '')">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-time color-purple" />
-                        <span>Transactions</span>
-                        <span class="text-truncate section-title__description">
-                            All transactions of this candidate</span>
-                    </h3>
+            <div
+                :class="'container section section--txs'
+                + (txLoading ? ' tomo-loading' : '')">
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="section-title">
+                            <i class="tm-time color-purple" />
+                            <span>Transactions</span>
+                            <span class="text-truncate section-title__description">
+                                All transactions of this candidate</span>
+                        </h3>
+                    </div>
                 </div>
+                <b-table
+                    :items="transactions"
+                    :fields="txFields"
+                    :per-page="txPerPage"
+                    :show-empty="true"
+                    :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
+                    empty-text="There are no transactions to show"
+                    stacked="md"
+                    @sort-changed="sortingChangeTxes" >
+
+                    <template
+                        slot="id"
+                        slot-scope="data">{{ data.item.id }}
+                    </template>
+
+                    <template
+                        slot="voter"
+                        slot-scope="data">
+                        <router-link
+                            :to="'/voter/' + data.item.voter"
+                            class="text-truncate">
+                            {{ data.item.voter }}
+                        </router-link>
+                    </template>
+
+                    <template
+                        slot="event"
+                        slot-scope="data">
+                        <span :class="'fw-600 ' + getEventClass(data.item.event)">{{ data.item.event }}</span>
+                    </template>
+
+                    <template
+                        slot="capacity"
+                        slot-scope="data">
+                        {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
+                    </template>
+
+                    <template
+                        slot="createdAt"
+                        slot-scope="data">
+                        <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
+                        <b-tooltip :target="`timestamp__${data.index}`">
+                            {{ data.item.dateTooltip }}
+                        </b-tooltip>
+                    </template>
+
+                    <template
+                        slot="action"
+                        slot-scope="data">
+                        <a
+                            v-b-tooltip.hover.right
+                            :href="`${config.explorerUrl}/txs/${data.item.tx}`"
+                            title="View on TomoScan"
+                            target="_blank">
+                            <i class="tm-eye" />
+                            <span>View on TomoScan</span>
+                        </a>
+                    </template>
+                </b-table>
+
+                <b-pagination
+                    v-if="txTotalRows > 0 && txTotalRows > txPerPage"
+                    :total-rows="txTotalRows"
+                    :per-page="txPerPage"
+                    v-model="txCurrentPage"
+                    align="center"
+                    class="tomo-pagination"
+                    @change="txPageChange"/>
             </div>
-            <b-table
-                :items="transactions"
-                :fields="txFields"
-                :per-page="txPerPage"
-                :show-empty="true"
-                :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
-                empty-text="There are no transactions to show"
-                stacked="md"
-                @sort-changed="sortingChangeTxes" >
-
-                <template
-                    slot="id"
-                    slot-scope="data">{{ data.item.id }}
-                </template>
-
-                <template
-                    slot="voter"
-                    slot-scope="data">
-                    <router-link
-                        :to="'/voter/' + data.item.voter"
-                        class="text-truncate">
-                        {{ data.item.voter }}
-                    </router-link>
-                </template>
-
-                <template
-                    slot="event"
-                    slot-scope="data">
-                    <span :class="'fw-600 ' + getEventClass(data.item.event)">{{ data.item.event }}</span>
-                </template>
-
-                <template
-                    slot="capacity"
-                    slot-scope="data">
-                    {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
-                </template>
-
-                <template
-                    slot="createdAt"
-                    slot-scope="data">
-                    <span :id="`timestamp__${data.index}`">{{ data.item.createdAt }}</span>
-                    <b-tooltip :target="`timestamp__${data.index}`">
-                        {{ data.item.dateTooltip }}
-                    </b-tooltip>
-                </template>
-
-                <template
-                    slot="action"
-                    slot-scope="data">
-                    <a
-                        v-b-tooltip.hover.right
-                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
-                        title="View on TomoScan"
-                        target="_blank">
-                        <i class="tm-eye" />
-                        <span>View on TomoScan</span>
-                    </a>
-                </template>
-            </b-table>
-
-            <b-pagination
-                v-if="txTotalRows > 0 && txTotalRows > txPerPage"
-                :total-rows="txTotalRows"
-                :per-page="txPerPage"
-                v-model="txCurrentPage"
-                align="center"
-                class="tomo-pagination"
-                @change="txPageChange"/>
         </div>
     </div>
 </template>
@@ -534,7 +546,8 @@ export default {
             isTomonet: false,
             currentBlock: null,
             loadedCPU: true,
-            loadedMEM: true
+            loadedMEM: true,
+            isCandidate: true
         }
     },
     computed: {
@@ -614,6 +627,7 @@ export default {
 
                 if (c.data) {
                     let data = c.data
+                    self.isCandidate = data.candidate
                     self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                     self.candidate.status = data.status
                     self.candidate.nodeId = data.nodeId
