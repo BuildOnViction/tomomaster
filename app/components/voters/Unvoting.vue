@@ -266,7 +266,14 @@ export default {
 
             let contract = await self.getTomoValidatorInstance()
             let votedCap = await contract.getVoterCap(candidate, account)
-            self.voted = votedCap.div(10 ** 18).toNumber()
+
+            // Get amount of tomo applied
+            const { data } = await axios.get(
+                `/api/transactions/candidate/${this.candidate}/${this.voter}/getPropose`
+            )
+            const proposeValue = new BigNumber(data)
+            // self.voted = votedCap.div(10 ** 18).toNumber()
+            self.voted = votedCap.minus(proposeValue).abs().div(10 ** 18).toNumber()
         } catch (e) {
             console.log(e)
         }

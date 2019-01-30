@@ -108,4 +108,23 @@ router.get('/candidate/:candidate', [
     }
 })
 
+router.get('/candidate/:candidate/:voter/getPropose', async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
+    try {
+        let txs = await db.Transaction.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: (req.params.candidate || '').toLowerCase(),
+            owner: (req.params.voter || '').toLowerCase(),
+            event: 'Propose'
+        }).lean().exec() || {}
+        return res.json(txs.capacity || 0)
+    } catch (e) {
+        return next(e)
+    }
+})
+
 module.exports = router
