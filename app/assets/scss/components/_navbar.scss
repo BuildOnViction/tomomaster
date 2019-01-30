@@ -69,10 +69,10 @@
         cursor: pointer;
 
         &:hover {
-            background-color: #111111;
+            color: #30ddd8 !important;
         }
     }
     a.tab-active {
-        color: #7573a6
+        color: #30ddd8;
     }
 }
