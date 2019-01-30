@@ -689,7 +689,7 @@ export default {
                     items.push({
                         epoch: r.epoch,
                         signNumber: r.signNumber,
-                        reward: new BigNumber(r.reward).toFixed(6),
+                        reward: new BigNumber(r.reward).multipliedBy(0.4).toFixed(6),
                         createdAt: moment(r.rewardTime).fromNow(),
                         dateTooltip: moment(r.rewardTime).format('lll')
                     })
