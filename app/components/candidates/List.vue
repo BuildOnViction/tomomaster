@@ -313,11 +313,10 @@ export default {
                 }
                 const query = self.serializeQuery(params)
 
-                let candidates = await axios.get('/api/candidates' + '?' + query)
+                let candidates = await axios.get('/api/candidates/masternodes' + '?' + query)
                 let items = []
 
                 const proposeNodes = await self.temp
-                self.totalProposedNodes = proposeNodes.data.total
                 candidates.data.items.map(async (candidate, index) => {
                     items.push({
                         address: candidate.candidate,
@@ -332,10 +331,11 @@ export default {
                 })
                 self.candidates = items
 
-                self.activeCandidates = candidates.data.activeCandidates - await self.totalProposedNodes
+                self.activeCandidates = candidates.data.activeCandidates
                 self.totalRows = candidates.data.activeCandidates
                 self.resignedMN = candidates.data.total -
-                    self.activeCandidates - self.totalProposedNodes
+                self.activeCandidates - self.totalProposedNodes
+                self.totalProposedNodes = proposeNodes.data.total
 
                 self.loading = false
                 self.getTableCssClass()
