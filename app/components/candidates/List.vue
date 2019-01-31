@@ -240,9 +240,9 @@ export default {
             console.log(error)
         }
 
-        self.getDataFromApi()
         self.slashedMN = (await axios.get('/api/candidates/totalSlashedMNs')).data.total || 0
         self.temp = axios.get('/api/candidates/proposedMNs')
+        self.getDataFromApi()
     },
     mounted () { },
     methods: {
