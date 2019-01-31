@@ -617,7 +617,6 @@ export default {
                     self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
                     self.candidate.status = data.status
                     self.candidate.nodeId = data.nodeId
-                    self.candidate.monitor = (data.nodeId) ? 'ON' : 'OFF'
                     self.candidate.owner = data.owner
                     self.candidate.cap = new BigNumber(data.capacity).div(10 ** 18).toNumber()
                     self.candidate.rewarded = 0
