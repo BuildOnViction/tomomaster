@@ -241,9 +241,6 @@ export default {
         } catch (error) {
             console.log(error)
         }
-
-        self.slashedMN = (await axios.get('/api/candidates/totalSlashedMNs')).data.total || 0
-        self.temp = axios.get('/api/candidates/proposedMNs')
         self.getDataFromApi()
     },
     mounted () { },
@@ -318,7 +315,6 @@ export default {
                 let candidates = await axios.get('/api/candidates/masternodes' + '?' + query)
                 let items = []
 
-                const proposeNodes = await self.temp
                 candidates.data.items.map(async (candidate, index) => {
                     items.push({
                         address: candidate.candidate,
@@ -335,8 +331,9 @@ export default {
 
                 self.activeCandidates = candidates.data.activeCandidates
                 self.totalRows = candidates.data.activeCandidates
-                self.resignedMN = proposeNodes.data.totalResigned
-                self.totalProposedNodes = proposeNodes.data.total
+                self.resignedMN = candidates.data.totalResigned
+                self.totalProposedNodes = candidates.data.totalProposed
+                self.slashedMN = candidates.data.totalSlashed
 
                 self.loading = false
                 self.getTableCssClass()
@@ -398,7 +395,15 @@ export default {
             try {
                 self.loading = true
 
-                let candidates = await self.temp
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/proposedMNs' + '?' + query)
                 let items = []
                 candidates.data.items.map(async (candidate, index) => {
                     items.push({

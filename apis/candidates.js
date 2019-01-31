@@ -119,13 +119,25 @@ router.get('/masternodes', [
     let skip
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
     try {
-        const total = db.Candidate.countDocuments({
-            smartContractAddress: config.get('blockchain.validatorAddress')
-        })
         const activeCandidates = db.Candidate.countDocuments({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             status: { $nin: ['RESIGNED', 'PROPOSED'] }
         })
+
+        const totalSlashed = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'SLASHED'
+        })
+
+        const totalResigned = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'RESIGNED'
+        }).lean().exec()
+
+        const totalProposed = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'PROPOSED'
+        }).lean().exec()
 
         const sort = {}
 
@@ -146,8 +158,10 @@ router.get('/masternodes', [
 
         return res.json({
             items: candidates,
-            total: await total,
-            activeCandidates: await activeCandidates || 0
+            activeCandidates: await activeCandidates || 0,
+            totalSlashed: await totalSlashed,
+            totalResigned: await totalResigned,
+            totalProposed: await totalProposed
         })
     } catch (e) {
         return next(e)
@@ -199,21 +213,6 @@ router.get('/slashedMNs', [
     }
 })
 
-router.get('/totalSlashedMNs', async function (req, res, next) {
-    try {
-        const total = db.Candidate.countDocuments({
-            smartContractAddress: config.get('blockchain.validatorAddress'),
-            status: 'SLASHED'
-        })
-
-        return res.json({
-            total: await total
-        })
-    } catch (e) {
-        return next(e)
-    }
-})
-
 router.get('/proposedMNs', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
@@ -245,11 +244,6 @@ router.get('/proposedMNs', [
             status: 'PROPOSED'
         }).lean().exec()
 
-        const totalResigned = db.Candidate.countDocuments({
-            smartContractAddress: config.get('blockchain.validatorAddress'),
-            status: 'RESIGNED'
-        }).lean().exec()
-
         let candidates = await db.Candidate.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             status: 'PROPOSED'
@@ -257,8 +251,7 @@ router.get('/proposedMNs', [
 
         return res.json({
             items: candidates,
-            total: await total,
-            totalResigned: await totalResigned
+            total: await total
         })
     } catch (e) {
         return next(e)
