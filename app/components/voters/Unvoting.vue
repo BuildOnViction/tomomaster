@@ -266,7 +266,7 @@ export default {
 
             let contract = await self.getTomoValidatorInstance()
             let votedCap = await contract.getVoterCap(candidate, account)
-            self.voted = votedCap.div(10 ** 18).toNumber()
+            self.voted = votedCap.div(10 ** 18).toString(10)
         } catch (e) {
             console.log(e)
         }
