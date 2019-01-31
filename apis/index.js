@@ -8,7 +8,6 @@ router.use('/api/owners', require('./owners'))
 router.use('/api/config', require('./config'))
 router.use('/api/signers', require('./signers'))
 router.use('/api/transactions', require('./transactions'))
-router.use('/api/monitor', require('./grafana'))
 router.use('/api/search', require('./search'))
 router.use('/api/auth', require('./auth'))
 

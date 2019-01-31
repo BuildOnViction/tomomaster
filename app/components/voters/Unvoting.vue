@@ -273,7 +273,7 @@ export default {
             )
             const proposeValue = new BigNumber(data)
             // self.voted = votedCap.div(10 ** 18).toNumber()
-            self.voted = votedCap.minus(proposeValue).abs().div(10 ** 18).toNumber()
+            self.voted = votedCap.minus(proposeValue).abs().div(10 ** 18).toString(10)
         } catch (e) {
             console.log(e)
         }
