@@ -43,32 +43,6 @@ paths:
           description: Not Acceptable
         '500':
           description: Server Internal Error
-  /api/monitor:
-    parameters:
-      - name: db
-        in: query
-        required: true
-        description: Database
-        type: string
-      - name: q
-        in: query
-        required: true
-        description: Query
-        type: string
-      - name: epoch
-        in: query
-        required: true
-        description: Epoch
-        type: string
-    get:
-      tags:
-        - Monitor
-      summary: Get information for CPU and Memory charts
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/monitor'
   /api/candidates:
     parameters:
       - name: limit
@@ -393,47 +367,9 @@ definitions:
       explorerUrl:
         type: string
         description: Tomoscan's API
-      grafanaUrl:
-        type: string
-        description: Grafana's API
       GA:
         type: string
         description: Google Analytic code
-  monitor:
-    properties:
-      series:
-        type: array
-        description: Chart's information
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-              description: Name
-              enum:
-                - cpu
-                - memory
-            column:
-              type: array
-              description: columns in db
-              items:
-                type: string
-                description: Name of column
-                example:
-                  - time
-                  - cpu_user
-            values:
-              type: array
-              description: Data of columns
-              items:
-                type: number
-                description: data number of columns
-                example:
-                  - 0
-                  - 1
-      statement_id:
-        type: number
-        description: id
   candidate:
     properties:
       items:
