@@ -103,6 +103,11 @@ async function updateCandidateInfo (candidate) {
         let result
         logger.debug('Update candidate %s capacity %s %s', candidate, String(capacity), status)
         if (candidate !== '0x0000000000000000000000000000000000000000') {
+            // check current status
+            const candateInDB = await db.Candidate.findOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate
+            }) || {}
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
@@ -112,7 +117,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
-                    status: (status) ? 'PROPOSED' : 'RESIGNED',
+                    status: (status) ? (candateInDB.status ? candateInDB.status : 'PROPOSED') : 'RESIGNED',
                     owner: owner
                 },
                 $setOnInsert: {
@@ -308,6 +313,8 @@ async function watchNewBlock (n) {
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
             if (n % 5 === 0) {
+                // reset status
+                await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
                 await updateSignersAndCandidate()
                 await updatePenalties()
             }
@@ -401,10 +408,7 @@ async function getPastEvent () {
     })
 }
 
-// Reset candidate status before crawling
-db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
-    return getCurrentCandidates()
-}).then(() => {
+getCurrentCandidates().then(() => {
     return updatePenalties()
 }).then(() => {
     return updateSignersAndCandidate()

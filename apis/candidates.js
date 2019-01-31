@@ -245,6 +245,11 @@ router.get('/proposedMNs', [
             status: 'PROPOSED'
         }).lean().exec()
 
+        const totalResigned = db.Candidate.countDocuments({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            status: 'RESIGNED'
+        }).lean().exec()
+
         let candidates = await db.Candidate.find({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             status: 'PROPOSED'
@@ -252,7 +257,8 @@ router.get('/proposedMNs', [
 
         return res.json({
             items: candidates,
-            total: await total
+            total: await total,
+            totalResigned: await totalResigned
         })
     } catch (e) {
         return next(e)

@@ -41,13 +41,7 @@
             </div>
         </div>
 
-        <div
-            v-if="candidates.length <= 0"
-            class="tomo-loading"/>
-
-        <div
-            v-else
-            class="container">
+        <div class="container">
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
@@ -67,7 +61,7 @@
                                 v-if="totalProposedNodes !== 0"
                                 :class="currentTable === 'proposed' ? 'tab-active' : ''"
                                 @click="changeTable('proposed')">Proposed Nodes ({{ totalProposedNodes }})</a>
-                            <span>|</span>
+                            <span v-if="resignedMN !== 0">|</span>
                             <a
                                 v-if="resignedMN !== 0"
                                 :class="currentTable === 'resigned' ? 'tab-active' : ''"
@@ -76,6 +70,14 @@
                     </h3>
                 </div>
             </div>
+        </div>
+
+        <div
+            v-if="candidates.length <= 0"
+            class="tomo-loading"/>
+        <div
+            v-else
+            class="container">
             <b-table
                 :items="candidates"
                 :fields="fields"
@@ -333,8 +335,7 @@ export default {
 
                 self.activeCandidates = candidates.data.activeCandidates
                 self.totalRows = candidates.data.activeCandidates
-                self.resignedMN = candidates.data.total -
-                self.activeCandidates - self.totalProposedNodes
+                self.resignedMN = proposeNodes.data.totalResigned
                 self.totalProposedNodes = proposeNodes.data.total
 
                 self.loading = false
