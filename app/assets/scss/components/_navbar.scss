@@ -60,3 +60,19 @@
         transform: rotate(45deg);
     }
 }
+
+.masternode-bar {
+    a {
+        text-align: center;
+        padding: 7px;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover {
+            color: #30ddd8 !important;
+        }
+    }
+    a.tab-active {
+        color: #7573a6;
+    }
+}

@@ -18,8 +18,8 @@ tags:
   - name: Transaction
     description: Get transactions of candidate and voter
 schemes:
-  - https
   - http
+  - https
 consumes:
   - application/json
 produces:
@@ -62,6 +62,69 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/candidate'
+        '406':
+          description: Not Acceptable
+  /api/candidates/slashedMNs:
+    parameters:
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get slashed Masternodes
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/slashedMN'
+        '406':
+          description: Not Acceptable
+  /api/candidates/proposedMNs:
+    parameters:
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get proposed Masternodes
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/proposedMN'
+        '406':
+          description: Not Acceptable
+  /api/candidates/resignedMNs:
+    parameters:
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get resigned Masternodes
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/resignedMN'
         '406':
           description: Not Acceptable
   '/api/candidates/{candidate}':
@@ -543,3 +606,78 @@ definitions:
         type: number
         description: Number of candidate
         example: 100
+  slashedMN:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: 5c4006b47ff073e7961fabd5
+            candidate: '0x1c5a1cb41c920c2532cbb77be5845b258eca32f3'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            __v: 0
+            capacity: '114213709385390179602070'
+            capacityNumber: 114213.70938539018
+            createdAt: '2019-01-17T04:38:12.051Z'
+            nodeId: 1c5a1cb41c920c2532cbb77be5845b258eca32f3
+            owner: '0xe60f54049759a11d764756ece4d27815e990d92f'
+            status: SLASHED
+            updatedAt: '2019-01-29T10:38:18.268Z'
+            latestSignedBlock: 1220265
+      total:
+        type: number
+        description: Total number of candidate
+        example: 1
+  proposedMN:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: 5c4006b47ff073e7961fabd5
+            candidate: '0x1c5a1cb41c920c2532cbb77be5845b258eca32f3'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            __v: 0
+            capacity: '114213709385390179602070'
+            capacityNumber: 114213.70938539018
+            createdAt: '2019-01-17T04:38:12.051Z'
+            nodeId: 1c5a1cb41c920c2532cbb77be5845b258eca32f3
+            owner: '0xe60f54049759a11d764756ece4d27815e990d92f'
+            status: PROPOSED
+            updatedAt: '2019-01-29T10:38:18.268Z'
+            latestSignedBlock: 1220265
+      total:
+        type: number
+        description: Total number of candidate
+        example: 1
+  resignedMN:
+    properties:
+      items:
+        type: array
+        description: Candidate's data
+        items:
+          type: object
+          description: candidate's information
+          example:
+            _id: 5c4006b37ff073e7961fab14
+            candidate: '0x7a3b86261cd2042a3190c81dd37d0a12e0397daf'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            __v: 0
+            capacity: '40508760000000000000000'
+            capacityNumber: 40508.76
+            createdAt: '2019-01-17T04:38:11.949Z'
+            nodeId: 7a3b86261cd2042a3190c81dd37d0a12e0397daf
+            owner: '0xbff690303287ce327c319f575c7671c3ad626de4'
+            status: RESIGNED
+            updatedAt: '2019-01-29T10:11:19.464Z'
+            latestSignedBlock: 957442
+      total:
+        type: number
+        description: Total number of candidate
+        example: 1

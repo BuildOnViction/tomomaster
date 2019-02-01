@@ -103,6 +103,11 @@ async function updateCandidateInfo (candidate) {
         let result
         logger.debug('Update candidate %s capacity %s %s', candidate, String(capacity), status)
         if (candidate !== '0x0000000000000000000000000000000000000000') {
+            // check current status
+            const candateInDB = await db.Candidate.findOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate
+            }) || {}
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
@@ -112,7 +117,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
-                    status: (status) ? 'PROPOSED' : 'RESIGNED',
+                    status: (status) ? (candateInDB.status ? candateInDB.status : 'PROPOSED') : 'RESIGNED',
                     owner: owner
                 },
                 $setOnInsert: {
@@ -129,6 +134,32 @@ async function updateCandidateInfo (candidate) {
         return result
     } catch (e) {
         logger.error('updateCandidateInfo %s', e)
+    }
+}
+
+async function updateCandidateSlashed (candidate, blockNumber) {
+    try {
+        let result
+        logger.debug('Update candidate %s slashed at blockNumber %s', candidate, String(blockNumber))
+        if (candidate !== '0x0000000000000000000000000000000000000000') {
+            result = await db.Candidate.updateOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate.toLowerCase()
+            }, {
+                $set: {
+                    status: 'SLASHED'
+                }
+            }, { upsert: true })
+        } else {
+            result = await db.Candidate.deleteOne({
+                smartContractAddress: validator.address,
+                candidate: candidate
+            })
+        }
+
+        return result
+    } catch (e) {
+        logger.error('updateCandidateSlashed %s', e)
     }
 }
 
@@ -200,21 +231,25 @@ async function updatePenalties () {
             return false
         }
 
-        await db.Penalty.remove({})
+        // await db.Penalty.remove({})
 
         let getPenalty = async function (blk) {
             let sbuff = Buffer.from((blk.penalties || '').substring(2), 'hex')
             let penalties = []
+            const epoch = (blk.number / config.get('blockchain.epoch')) - 1
             if (sbuff.length > 0) {
                 for (let i = 1; i <= sbuff.length / 20; i++) {
                     let address = sbuff.slice((i - 1) * 20, i * 20)
                     penalties.push('0x' + address.toString('hex'))
+                    await updateCandidateSlashed('0x' + address.toString('hex').toLowerCase(), blk.number)
                 }
-                await db.Penalty.create({
+
+                await db.Penalty.update({ blockNumber: blk.number }, {
                     networkId: config.get('blockchain.networkId'),
                     blockNumber: blk.number,
+                    epoch: epoch,
                     penalties: penalties
-                })
+                }, { upsert: true })
             }
             return penalties
         }
@@ -227,7 +262,7 @@ async function updatePenalties () {
     }
 }
 
-async function updateSigners () {
+async function updateSignersAndCandidate () {
     try {
         let blk = {}
         let latestBlockNumber = await web3.eth.getBlockNumber()
@@ -240,10 +275,20 @@ async function updateSigners () {
         let buff = Buffer.from(blk.extraData.substring(2), 'hex')
         let sbuff = buff.slice(32, buff.length - 65)
         let signers = []
+        let address
         if (sbuff.length > 0) {
             for (let i = 1; i <= sbuff.length / 20; i++) {
-                let address = sbuff.slice((i - 1) * 20, i * 20)
+                address = sbuff.slice((i - 1) * 20, i * 20)
                 signers.push('0x' + address.toString('hex'))
+                // update candidate status
+                await db.Candidate.updateOne({
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    candidate: '0x' + address.toString('hex').toLowerCase()
+                }, {
+                    $set: {
+                        status: 'MASTERNODE'
+                    }
+                }, { upsert: true })
             }
             await db.Signer.create({
                 networkId: config.get('blockchain.networkId'),
@@ -253,7 +298,7 @@ async function updateSigners () {
         }
         return signers
     } catch (e) {
-        logger.error('updateSigners %s', e)
+        logger.error('updateSignersAndCandidate %s', e)
     }
 }
 
@@ -268,7 +313,9 @@ async function watchNewBlock (n) {
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
             if (n % 5 === 0) {
-                await updateSigners()
+                // reset status
+                await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
+                await updateSignersAndCandidate()
                 await updatePenalties()
             }
             await updateLatestSignedBlock(blk)
@@ -361,13 +408,10 @@ async function getPastEvent () {
     })
 }
 
-// Reset candidate status before crawling
-db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
-    return getCurrentCandidates()
-}).then(() => {
+getCurrentCandidates().then(() => {
     return updatePenalties()
 }).then(() => {
-    return updateSigners()
+    return updateSignersAndCandidate()
 }).then(() => {
     return getPastEvent().then(() => {
         watchNewBlock()
