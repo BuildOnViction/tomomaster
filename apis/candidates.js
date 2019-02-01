@@ -13,6 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
+const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -467,6 +468,15 @@ router.get('/:candidate/:owner/getRewards', [
                 reason: 'Voter'
             }
         )
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+        rewards.data.items.map(async i => {
+            const totalSigners = await axios.get(
+                urljoin(config.get('tomoscanUrl'), `api/epochs/${i.epoch}/totalSigners`)
+            )
+            if (totalSigners.data.total) {
+                i.masternodeReward = totalReward.multipliedBy(i.signNumber).dividedBy(totalSigners.data.total)
+            } else i.masternodeReward = 0
+        })
         return res.json({
             items: rewards.data.items,
             total: rewards.data.total
