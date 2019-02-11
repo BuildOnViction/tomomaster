@@ -94,6 +94,11 @@
                                         <span
                                             v-else-if="!isEnoughTomo"
                                             class="text-danger">Voted amount left should not less than 100 TOMO </span>
+                                        <span
+                                            v-else-if="isOwner"
+                                            class="text-warning">
+                                            Warning: You candidate must have at least 50K TOMO staking
+                                        </span>
                                     </b-input-group>
                                 </b-form-group>
                                 <div class="buttons text-right">
@@ -226,7 +231,8 @@ export default {
             maxValue: new BigNumber(this.voted),
             converted: null,
             txFee: 0,
-            gasPrice: null
+            gasPrice: null,
+            isOwner: false
         }
     },
     validations () {
@@ -266,6 +272,7 @@ export default {
 
             let contract = await self.getTomoValidatorInstance()
             let votedCap = await contract.getVoterCap(candidate, account)
+
             self.voted = votedCap.div(10 ** 18).toString(10)
         } catch (e) {
             console.log(e)
@@ -464,8 +471,15 @@ export default {
             }
             return false
         },
-        unvoteAll () {
-            this.unvoteValue = this.voted.toString()
+        async unvoteAll () {
+            const isOwner = await axios.get(`/api/candidates/${this.candidate}/${this.voter}/isOwner`)
+
+            if (isOwner.data) {
+                if (this.voted.isGreaterThan(new BigNumber(50000))) {
+                    this.unvoteValue = this.voted.minus(new BigNumber(50000)).toString(10)
+                    this.isOwner = true
+                }
+            } else this.unvoteValue = this.voted.toString(10)
         }
     }
 }

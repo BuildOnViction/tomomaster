@@ -856,4 +856,23 @@ router.get('/:candidate/getSignature', [
     }
 })
 
+router.get('/:candidate/:owner/isOwner', async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+    try {
+        const isOwner = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            owner: (req.params.owner || '').toLowerCase(),
+            candidate: (req.params.candidate || '').toLowerCase()
+        })
+        if (isOwner) {
+            return res.send(true)
+        } else return res.send(false)
+    } catch (e) {
+        next(e)
+    }
+})
+
 module.exports = router
