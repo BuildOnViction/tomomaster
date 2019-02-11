@@ -82,3 +82,35 @@
         }
     }
 }
+
+.autocomplete {
+    position: relative;
+  }
+  
+  .autocomplete-results {
+    position: absolute;
+    list-style: none;
+    margin: 0;
+    overflow: auto;
+    width: 400px;
+    max-height: 150px;
+    padding: 5px;
+    margin-top: 5 px;
+    z-index: 9;
+    border-radius: 5 px;
+    background: rgb(64, 64, 106);
+    box-shadow: rgb(64, 64, 106) 0 px 0 px 5 px;
+  }
+  
+  .autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+  }
+  
+  .autocomplete-result.is-active,
+  .autocomplete-result:hover {
+    background-color: #4aae9b;
+    color: white;
+  }
