@@ -475,8 +475,9 @@ export default {
             const isOwner = await axios.get(`/api/candidates/${this.candidate}/${this.voter}/isOwner`)
 
             if (isOwner.data) {
-                if (this.voted.isGreaterThan(new BigNumber(50000))) {
-                    this.unvoteValue = this.voted.minus(new BigNumber(50000)).toString(10)
+                let voted = new BigNumber(this.voted)
+                if (voted.isGreaterThan(new BigNumber(50000))) {
+                    this.unvoteValue = voted.minus(new BigNumber(50000)).toString(10)
                     this.isOwner = true
                 }
             } else this.unvoteValue = this.voted.toString(10)
