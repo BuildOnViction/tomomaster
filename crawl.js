@@ -108,6 +108,10 @@ async function updateCandidateInfo (candidate) {
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
             }) || {}
+
+            status = (status)
+                ? ((candateInDB.status === 'RESIGNED') ? 'PROPOSED' : (candateInDB.status || 'PROPOSED'))
+                : 'RESIGNED'
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
@@ -117,7 +121,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
-                    status: (status) ? (candateInDB.status ? candateInDB.status : 'PROPOSED') : 'RESIGNED',
+                    status: status,
                     owner: owner
                 },
                 $setOnInsert: {
