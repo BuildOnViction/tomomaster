@@ -194,21 +194,21 @@ export default {
 
             if (regexpAddr.test(search)) {
                 axios.get(`/api/search/${search}`)
-                .then((response) => {
-                    const data = response.data
-                    if (Object.keys(data.candidate).length > 0) {
-                        to = { path: `/candidate/${data.candidate.candidate}` }
-                    } else if (Object.keys(data.voter).length > 0) {
-                        to = { path: `/voter/${search}` }
-                    } else {
-                        this.$toasted.show('Not found')
-                    }
-                    if (!to) {
-                        return false
-                    }
-                    this.search = ''
-                    return this.$router.push(to)
-                }).catch(e => console.log(e))
+                    .then((response) => {
+                        const data = response.data
+                        if (Object.keys(data.candidate).length > 0) {
+                            to = { path: `/candidate/${data.candidate.candidate}` }
+                        } else if (Object.keys(data.voter).length > 0) {
+                            to = { path: `/voter/${search}` }
+                        } else {
+                            this.$toasted.show('Not found')
+                        }
+                        if (!to) {
+                            return false
+                        }
+                        this.search = ''
+                        return this.$router.push(to)
+                    }).catch(e => console.log(e))
             }
         },
         goPage: function (s) {
