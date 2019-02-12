@@ -155,7 +155,7 @@ export default {
             search: null,
             isTomonet: false,
             version: pkg.version,
-            items: ['Apple', 'Banana', 'Orange', 'Mango', 'Pear', 'Peach', 'Grape', 'Tangerine', 'Pineapple']
+            items: []
         }
     },
     async updated () {
@@ -187,10 +187,13 @@ export default {
     methods: {
         searchCandidate (e) {
             e.preventDefault()
+            const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
 
             let to = null
             let search = (this.search || '').trim()
-            axios.get(`/api/search/${search}`)
+
+            if (regexpAddr.test(search)) {
+                axios.get(`/api/search/${search}`)
                 .then((response) => {
                     const data = response.data
                     if (Object.keys(data.candidate).length > 0) {
@@ -206,6 +209,7 @@ export default {
                     this.search = ''
                     return this.$router.push(to)
                 }).catch(e => console.log(e))
+            }
         },
         goPage: function (s) {
             this.$router.push({ path: `/candidate/${s}` })

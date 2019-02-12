@@ -69,7 +69,9 @@ export default {
             } else {
                 // Let's  our flat array
                 this.filterResults()
-                this.isOpen = true
+                if (this.results.length > 0) {
+                    this.isOpen = true
+                }
             }
         },
 
@@ -98,12 +100,15 @@ export default {
         },
         onEnter () {
             const result = this.results[this.arrowCounter]
-            this.search = ''
-            this.isOpen = false
-            this.arrowCounter = -1
-            this.$router.push({
-                path: `/candidate/${result.address}`
-            })
+            console.log(result)
+            if (result) {
+                this.search = ''
+                this.isOpen = false
+                this.arrowCounter = -1
+                this.$router.push({
+                    path: `/candidate/${result.address}`
+                })
+            }
         },
         handleClickOutside (evt) {
             if (!this.$el.contains(evt.target)) {
@@ -112,5 +117,5 @@ export default {
             }
         }
     }
-  }
+}
 </script>
