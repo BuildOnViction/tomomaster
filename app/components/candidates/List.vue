@@ -44,7 +44,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <h3 class="section-title">
+                    <h3 class="section-title--masternodes">
                         <div class="masternode-bar">
                             <i class="tm-flag color-yellow" />
                             <a
