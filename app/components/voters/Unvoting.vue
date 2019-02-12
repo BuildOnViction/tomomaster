@@ -1,8 +1,11 @@
 <template>
-    <div>
+    <div
+        v-if="loading"
+        class="tomo-loading" />
+    <div v-else>
         <div class="container">
             <div
-                v-if="!voted"
+                v-if="voted === 0"
                 class="row">
                 <div
                     class="tomo-empty col-12">
@@ -14,7 +17,7 @@
                 </div>
             </div>
             <div
-                v-if="voted">
+                v-else>
                 <div
                     v-if="step === 1">
                     <b-row
@@ -75,7 +78,8 @@
                                             :min="10"
                                             :step="10"
                                             v-model="unvoteValue"
-                                            name="vote-value"/>
+                                            name="vote-value"
+                                            @input="onChange"/>
                                         <b-input-group-append>
                                             <i class="tm-tomo" />
                                         </b-input-group-append>
@@ -94,11 +98,6 @@
                                         <span
                                             v-else-if="!isEnoughTomo"
                                             class="text-danger">Voted amount left should not less than 100 TOMO </span>
-                                        <span
-                                            v-else-if="isOwner"
-                                            class="text-warning">
-                                            Warning: You candidate must have at least 50K TOMO staking
-                                        </span>
                                     </b-input-group>
                                 </b-form-group>
                                 <div class="buttons text-right">
@@ -110,6 +109,7 @@
                                         type="submit"
                                         variant="primary">Submit</b-button> -->
                                     <b-button
+                                        id="nextBtn"
                                         type="submit"
                                         variant="primary">Next</b-button>
                                 </div>
@@ -255,10 +255,13 @@ export default {
         let self = this
         let candidate = self.candidate
         let account
+        self.loading = true
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.gasPrice = await self.web3.eth.getGasPrice()
         self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
+
+        const isOwner = axios.get(`/api/candidates/${this.candidate}/${this.voter}/isOwner`)
 
         try {
             self.isReady = !!self.web3
@@ -274,6 +277,8 @@ export default {
             let votedCap = await contract.getVoterCap(candidate, account)
 
             self.voted = votedCap.div(10 ** 18).toString(10)
+            self.isOwner = Boolean(await isOwner.data)
+            self.loading = false
         } catch (e) {
             console.log(e)
         }
@@ -472,15 +477,33 @@ export default {
             return false
         },
         async unvoteAll () {
-            const isOwner = await axios.get(`/api/candidates/${this.candidate}/${this.voter}/isOwner`)
-
-            if (isOwner.data) {
+            if (this.isOwner) {
                 let voted = new BigNumber(this.voted)
                 if (voted.isGreaterThan(new BigNumber(50000))) {
                     this.unvoteValue = voted.minus(new BigNumber(50000)).toString(10)
-                    this.isOwner = true
                 }
             } else this.unvoteValue = this.voted.toString(10)
+        },
+        onChange (unvoteValue) {
+            // reset
+            this.isMin = false
+            this.isMax = false
+            this.isNumeric = true
+            this.isEnoughTomo = true
+            this.isOwner = false
+            // check maxValue
+            this.isMax = this.validateMaxAmount(unvoteValue)
+            // check numeric
+            this.isNumeric = this.validateNumeric(unvoteValue)
+            // check voted amount left
+            this.isEnoughTomo = this.validateTomoLeft(unvoteValue)
+            const btn = document.getElementById('nextBtn')
+
+            if (!this.isNumeric || this.isMax || !this.isEnoughTomo) {
+                btn.disabled = true
+            } else {
+                btn.disabled = false
+            }
         }
     }
 }
