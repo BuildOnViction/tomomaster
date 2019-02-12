@@ -196,7 +196,7 @@ export default {
                     const data = {
                         voter: self.account,
                         candidate: self.coinbase,
-                        amount: self.voteValue,
+                        amount: self.voteValue || 0,
                         action: 'resign'
                     }
                     // call api to generate qr code
