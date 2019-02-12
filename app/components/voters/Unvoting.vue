@@ -94,7 +94,8 @@
                                             class="text-danger">Minimum of unvoting is 100 TOMO </span> -->
                                         <span
                                             v-else-if="isMax"
-                                            class="text-danger">Must be less than {{ voted }} TOMO </span>
+                                            class="text-danger">
+                                            Must be less than {{ maxValue.toString(10) }} TOMO </span>
                                         <span
                                             v-else-if="!isEnoughTomo"
                                             class="text-danger">Voted amount left should not less than 100 TOMO </span>
@@ -261,8 +262,6 @@ export default {
         self.gasPrice = await self.web3.eth.getGasPrice()
         self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)
 
-        const isOwner = axios.get(`/api/candidates/${this.candidate}/${this.voter}/isOwner`)
-
         try {
             self.isReady = !!self.web3
             if (store.get('address')) {
@@ -273,11 +272,14 @@ export default {
             }
             self.voter = account
 
+            const isOwnerPromise = axios.get(`/api/candidates/${candidate}/${self.voter}/isOwner`)
+
             let contract = await self.getTomoValidatorInstance()
             let votedCap = await contract.getVoterCap(candidate, account)
 
             self.voted = votedCap.div(10 ** 18).toString(10)
-            self.isOwner = Boolean(await isOwner.data)
+            const isOwner = (await isOwnerPromise).data || false
+            self.isOwner = Boolean(isOwner)
             self.loading = false
         } catch (e) {
             console.log(e)
@@ -451,7 +453,8 @@ export default {
         },
         validateMaxAmount (value) {
             this.converted = new BigNumber(value)
-            this.maxValue = new BigNumber(this.voted)
+            const votedValue = new BigNumber(this.voted)
+            this.maxValue = (this.isOwner) ? votedValue.minus(new BigNumber(50000)) : votedValue
             if (this.converted.isGreaterThan(this.maxValue)) {
                 return true
             }
@@ -490,7 +493,6 @@ export default {
             this.isMax = false
             this.isNumeric = true
             this.isEnoughTomo = true
-            this.isOwner = false
             // check maxValue
             this.isMax = this.validateMaxAmount(unvoteValue)
             // check numeric
