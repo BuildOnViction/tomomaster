@@ -95,7 +95,7 @@
                                         <span
                                             v-else-if="isMax"
                                             class="text-danger">
-                                            Must be less than {{ maxValue.toString(10) }} TOMO </span>
+                                            Must be less than {{ limitedUnvote }} TOMO </span>
                                         <span
                                             v-else-if="!isEnoughTomo"
                                             class="text-danger">Voted amount left should not less than 100 TOMO </span>
@@ -233,7 +233,8 @@ export default {
             converted: null,
             txFee: 0,
             gasPrice: null,
-            isOwner: false
+            isOwner: false,
+            limitedUnvote: 0
         }
     },
     validations () {
@@ -455,6 +456,7 @@ export default {
             this.converted = new BigNumber(value)
             const votedValue = new BigNumber(this.voted)
             this.maxValue = (this.isOwner) ? votedValue.minus(new BigNumber(50000)) : votedValue
+            this.limitedUnvote = this.maxValue.toString(10)
             if (this.converted.isGreaterThan(this.maxValue)) {
                 return true
             }
