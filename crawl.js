@@ -109,7 +109,9 @@ async function updateCandidateInfo (candidate) {
                 candidate: candidate
             }) || {}
 
-            status = (status) ? : ((candateInDB.status === 'RESIGNED') ? 'PROPOSED' : candateInDB.status) : 'RESIGNED'
+            status = (status)
+                ? ((candateInDB.status === 'RESIGNED') ? 'PROPOSED' : (candateInDB.status || 'PROPOSED'))
+                : 'RESIGNED'
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
