@@ -1,12 +1,12 @@
 {
     "name": "tomomaster",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "TomoChain Governance DApp",
     "main": "elect.js",
     "scripts": {
         "lint": "eslint --cache ./ --ext .vue --ext .js",
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
-        "nodemon": "./node_modules/.bin/nodemon index.js --watch docs/swagger.yml",
+        "nodemon": "./node_modules/.bin/nodemon index.js",
         "crawl-dev": "./node_modules/.bin/nodemon ./crawl.js",
         "server-dev": "npm run nodemon",
         "client-dev": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",

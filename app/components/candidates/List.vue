@@ -41,21 +41,43 @@
             </div>
         </div>
 
-        <div
-            v-if="candidates.length <= 0"
-            class="tomo-loading"/>
-
-        <div
-            v-else
-            class="container">
+        <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <h3 class="section-title">
-                        <i class="tm-flag color-yellow" />
-                        <span>Candidates ({{ activeCandidates }})</span>
+                    <h3 class="section-title--masternodes">
+                        <div class="masternode-bar">
+                            <i class="tm-flag color-yellow" />
+                            <a
+                                v-if="activeCandidates !== 0"
+                                :class="currentTable === 'masternodes' ? 'tab-active' : ''"
+                                @click="changeTable('masternodes')">Masternodes ({{ activeCandidates }})</a>
+                            <span v-if="slashedMN !== 0">|</span>
+                            <a
+                                v-if="slashedMN !== 0"
+                                :class="currentTable === 'slashed' ? 'tab-active' : ''"
+                                @click="changeTable('slashed')">Slashed MNs ({{ slashedMN }})</a>
+                            <span v-if="totalProposedNodes !== 0">|</span>
+                            <a
+                                v-if="totalProposedNodes !== 0"
+                                :class="currentTable === 'proposed' ? 'tab-active' : ''"
+                                @click="changeTable('proposed')">Proposed Nodes ({{ totalProposedNodes }})</a>
+                            <span v-if="resignedMN !== 0">|</span>
+                            <a
+                                v-if="resignedMN !== 0"
+                                :class="currentTable === 'resigned' ? 'tab-active' : ''"
+                                @click="changeTable('resigned')">Resigned Nodes ({{ resignedMN }})</a>
+                        </div>
                     </h3>
                 </div>
             </div>
+        </div>
+
+        <div
+            v-if="candidates.length <= 0"
+            class="tomo-loading"/>
+        <div
+            v-else
+            class="container">
             <b-table
                 :items="candidates"
                 :fields="fields"
@@ -176,7 +198,6 @@ export default {
             account: '',
             voteActive: false,
             voteValue: 1,
-            voteItem: {},
             candidates: [],
             currentPage: this.$store.state.currentPage || 1,
             perPage: 50,
@@ -186,22 +207,15 @@ export default {
             hasProposed: false,
             hasResigned: false,
             isTomonet: false,
-            activeCandidates: 0
+            activeCandidates: 0,
+            resignedMN: 0,
+            slashedMN: 0,
+            totalProposedNodes: 0,
+            currentTable: 'masternodes'
         }
     },
-    computed: {
-        sortedCandidates: function () {
-            return this.candidates.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        }
-    },
-    watch: {
-        currentPage: async function (val) {
-            this.currentPage = this.$store.state.currentPage
-            await this.getDataFromApi()
-        }
-    },
+    computed: {},
+    watch: {},
     updated () {},
     created: async function () {
         let self = this
@@ -227,7 +241,6 @@ export default {
         } catch (error) {
             console.log(error)
         }
-
         self.getDataFromApi()
     },
     mounted () { },
@@ -299,7 +312,60 @@ export default {
                 }
                 const query = self.serializeQuery(params)
 
-                let candidates = await axios.get('/api/candidates' + '?' + query)
+                let candidates = await axios.get('/api/candidates/masternodes' + '?' + query)
+                let items = []
+
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.activeCandidates = candidates.data.activeCandidates
+                self.totalRows = candidates.data.activeCandidates
+                self.resignedMN = candidates.data.totalResigned
+                self.totalProposedNodes = candidates.data.totalProposed
+                self.slashedMN = candidates.data.totalSlashed
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
+        pageChange (page) {
+            this.$store.state.currentPage = page
+            this.currentPage = page
+            this.loadDataTables(this.currentTable)
+            window.scrollTo(0, 320)
+        },
+        sortingChange (obj) {
+            this.sortBy = obj.sortBy
+            this.sortDesc = obj.sortDesc
+            this.loadDataTables(this.currentTable)
+        },
+        async getSlashedMNs () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/slashedMNs' + '?' + query)
                 let items = []
                 candidates.data.items.map(async (candidate, index) => {
                     items.push({
@@ -316,7 +382,6 @@ export default {
                 self.candidates = items
 
                 self.totalRows = candidates.data.total
-                self.activeCandidates = candidates.data.activeCandidates
 
                 self.loading = false
                 self.getTableCssClass()
@@ -325,14 +390,107 @@ export default {
                 console.log(e)
             }
         },
-        pageChange (page) {
-            this.$store.state.currentPage = page
-            window.scrollTo(0, 320)
+        async getProposedMNs () {
+            const self = this
+            try {
+                self.loading = true
+
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/proposedMNs' + '?' + query)
+                let items = []
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
         },
-        sortingChange (obj) {
-            this.sortBy = obj.sortBy
-            this.sortDesc = obj.sortDesc
-            this.getDataFromApi()
+        async getResignedMNs () {
+            const self = this
+            try {
+                self.loading = true
+                const params = {
+                    page: self.currentPage,
+                    limit: self.perPage,
+                    sortBy: self.sortBy,
+                    sortDesc: self.sortDesc
+                }
+                const query = self.serializeQuery(params)
+
+                let candidates = await axios.get('/api/candidates/resignedMNs' + '?' + query)
+                let items = []
+                candidates.data.items.map(async (candidate, index) => {
+                    items.push({
+                        address: candidate.candidate,
+                        owner: candidate.owner.toLowerCase(),
+                        status: candidate.status,
+                        isMasternode: candidate.isMasternode,
+                        isPenalty: candidate.isPenalty,
+                        name: candidate.name || 'Anonymous',
+                        cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
+                        latestSignedBlock: candidate.latestSignedBlock
+                    })
+                })
+                self.candidates = items
+
+                self.totalRows = candidates.data.total
+
+                self.loading = false
+                self.getTableCssClass()
+            } catch (e) {
+                self.loading = false
+                console.log(e)
+            }
+        },
+        changeTable (tableName) {
+            this.currentPage = 1
+            this.$store.state.currentPage = 1
+            if (this.currentTable !== tableName) {
+                this.currentTable = tableName
+                this.loadDataTables(tableName)
+            }
+        },
+        loadDataTables (tableName) {
+            switch (tableName) {
+            case 'masternodes':
+                this.getDataFromApi()
+                break
+            case 'slashed':
+                this.getSlashedMNs()
+                break
+            case 'proposed':
+                this.getProposedMNs()
+                break
+            case 'resigned':
+                this.getResignedMNs()
+                break
+            default:
+                this.getDataFromApi()
+                break
+            }
         }
     }
 }

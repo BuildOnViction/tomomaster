@@ -9,6 +9,5 @@
     "baseUrl": "https://master.testnet.tomochain.com/",
     "db": {
         "uri" : "mongodb://tomomaster_db:27017/governance"
-    },
-    "grafanaUrl": "https://grafana.testnet.tomochain.com"
+    }
 }

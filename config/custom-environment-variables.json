@@ -9,7 +9,6 @@
       "networkId": "BC_NETWORK_ID"
   },
   "explorerUrl": "TOMOSCAN_SITE_URL",
-  "grafanaUrl": "GRAFANA_URL",
   "tomoscanUrl": "TOMOSCAN_API_URL",
   "baseUrl": "BASE_URL",
   "db": {
