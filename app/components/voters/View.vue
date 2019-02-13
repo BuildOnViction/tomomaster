@@ -90,8 +90,14 @@
                 </template>
 
                 <template
-                    slot="capacityNumber"
-                    slot-scope="data">{{ formatCurrencySymbol(formatNumber(data.item.cap)) }}
+                    slot="capacity"
+                    slot-scope="data">
+                    {{ isNaN(data.item.capacity) ? '---' : formatCurrencySymbol(data.item.capacity) }}
+                </template>
+
+                <template
+                    slot="totalCapacity"
+                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.totalCapacity, 3)) }}
                 </template>
             </b-table>
 
@@ -271,12 +277,17 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'capacityNumber',
+                    key: 'capacity',
+                    label: 'Voted Capacity',
+                    sortable: true
+                },
+                {
+                    key: 'totalCapacity',
                     label: 'Capacity',
                     sortable: true
                 }
             ],
-            sortBy: 'capacityNumber',
+            sortBy: 'capacity',
             sortDesc: true,
             isReady: !!this.web3,
             voter: this.$route.params.address.toLowerCase(),
@@ -357,13 +368,7 @@ export default {
             txSortDesc: true
         }
     },
-    computed: {
-        sortedCandidates: function () {
-            return this.candidates.slice().sort(function (a, b) {
-                return b.cap - a.cap
-            })
-        }
-    },
+    computed: { },
     watch: {
         $route (to, from) {
             this.voter = to.params.address.toLowerCase()
@@ -412,7 +417,8 @@ export default {
                     items.push({
                         address: c.candidate,
                         name: c.candidateName,
-                        cap: new BigNumber(c.capacity).div(10 ** 18).toNumber()
+                        capacity: new BigNumber(c.capacity).div(10 ** 18).toNumber(),
+                        totalCapacity: new BigNumber(c.totalCapacity).div(10 ** 18).toNumber()
                     })
                     self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
                 })
@@ -530,6 +536,11 @@ export default {
             }
         },
         sortingChangeCandidate (obj) {
+            if (obj.sortBy === 'totalCapacity') {
+                return this.candidates.slice().sort(function (a, b) {
+                    return b.totalCapacity - a.totaCapacity
+                })
+            }
             this.sortBy = obj.sortBy
             this.sortDesc = obj.sortDesc
             this.getCandidates()
