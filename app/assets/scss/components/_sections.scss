@@ -23,6 +23,27 @@
     }
 }
 
+.section-title--masternodes {
+    font-size: 20px;
+    font-weight: 200;
+    color: #7573a6;
+    text-align: left;
+    line-height: 1.2;
+    margin-bottom: 40px;
+
+    i[class^="tm-"] {
+        font-size: 17px;
+        margin-right: 10px;
+    }
+
+    &__description {
+        font-size: 16px;
+        display: block;
+        color: $color-text;
+        margin-top: 10px;
+    }
+}
+
 .section--status,
 .section--voter {
     margin-bottom: 30px;
