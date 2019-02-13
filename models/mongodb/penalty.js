@@ -9,7 +9,8 @@ var Penalty = new Schema({
     penalties: [{
         type: String,
         index: true
-    }]
+    }],
+    epoch: { type: Number, index: true }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Penalty', Penalty)

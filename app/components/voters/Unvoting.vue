@@ -1,8 +1,11 @@
 <template>
-    <div>
+    <div
+        v-if="loading"
+        class="tomo-loading" />
+    <div v-else>
         <div class="container">
             <div
-                v-if="!voted"
+                v-if="voted === 0"
                 class="row">
                 <div
                     class="tomo-empty col-12">
@@ -14,7 +17,7 @@
                 </div>
             </div>
             <div
-                v-if="voted">
+                v-else>
                 <div
                     v-if="step === 1">
                     <b-row
@@ -75,7 +78,8 @@
                                             :min="10"
                                             :step="10"
                                             v-model="unvoteValue"
-                                            name="vote-value"/>
+                                            name="vote-value"
+                                            @input="onChange"/>
                                         <b-input-group-append>
                                             <i class="tm-tomo" />
                                         </b-input-group-append>
@@ -90,7 +94,8 @@
                                             class="text-danger">Minimum of unvoting is 100 TOMO </span> -->
                                         <span
                                             v-else-if="isMax"
-                                            class="text-danger">Must be less than {{ voted }} TOMO </span>
+                                            class="text-danger">
+                                            Must be less than {{ limitedUnvote }} TOMO </span>
                                         <span
                                             v-else-if="!isEnoughTomo"
                                             class="text-danger">Voted amount left should not less than 100 TOMO </span>
@@ -105,6 +110,7 @@
                                         type="submit"
                                         variant="primary">Submit</b-button> -->
                                     <b-button
+                                        id="nextBtn"
                                         type="submit"
                                         variant="primary">Next</b-button>
                                 </div>
@@ -226,7 +232,9 @@ export default {
             maxValue: new BigNumber(this.voted),
             converted: null,
             txFee: 0,
-            gasPrice: null
+            gasPrice: null,
+            isOwner: false,
+            limitedUnvote: 0
         }
     },
     validations () {
@@ -249,6 +257,7 @@ export default {
         let self = this
         let candidate = self.candidate
         let account
+        self.loading = true
         self.config = await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.gasPrice = await self.web3.eth.getGasPrice()
@@ -264,9 +273,15 @@ export default {
             }
             self.voter = account
 
+            const isOwnerPromise = axios.get(`/api/candidates/${candidate}/${self.voter}/isOwner`)
+
             let contract = await self.getTomoValidatorInstance()
             let votedCap = await contract.getVoterCap(candidate, account)
-            self.voted = votedCap.div(10 ** 18).toNumber()
+
+            self.voted = votedCap.div(10 ** 18).toString(10)
+            const isOwner = (await isOwnerPromise).data || false
+            self.isOwner = Boolean(isOwner)
+            self.loading = false
         } catch (e) {
             console.log(e)
         }
@@ -439,7 +454,9 @@ export default {
         },
         validateMaxAmount (value) {
             this.converted = new BigNumber(value)
-            this.maxValue = new BigNumber(this.voted)
+            const votedValue = new BigNumber(this.voted)
+            this.maxValue = (this.isOwner) ? votedValue.minus(new BigNumber(50000)) : votedValue
+            this.limitedUnvote = this.maxValue.toString(10)
             if (this.converted.isGreaterThan(this.maxValue)) {
                 return true
             }
@@ -464,8 +481,33 @@ export default {
             }
             return false
         },
-        unvoteAll () {
-            this.unvoteValue = this.voted.toString()
+        async unvoteAll () {
+            if (this.isOwner) {
+                let voted = new BigNumber(this.voted)
+                if (voted.isGreaterThan(new BigNumber(50000))) {
+                    this.unvoteValue = voted.minus(new BigNumber(50000)).toString(10)
+                }
+            } else this.unvoteValue = this.voted.toString(10)
+        },
+        onChange (unvoteValue) {
+            // reset
+            this.isMin = false
+            this.isMax = false
+            this.isNumeric = true
+            this.isEnoughTomo = true
+            // check maxValue
+            this.isMax = this.validateMaxAmount(unvoteValue)
+            // check numeric
+            this.isNumeric = this.validateNumeric(unvoteValue)
+            // check voted amount left
+            this.isEnoughTomo = this.validateTomoLeft(unvoteValue)
+            const btn = document.getElementById('nextBtn')
+
+            if (!this.isNumeric || this.isMax || !this.isEnoughTomo) {
+                btn.disabled = true
+            } else {
+                btn.disabled = false
+            }
         }
     }
 }

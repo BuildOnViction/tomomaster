@@ -1,8 +1,8 @@
 'use strict'
 
 const Validator = require('./models/blockchain/validator')
-const BlockSigner = require('./models/blockchain/blockSigner')
 const Web3Ws = require('./models/blockchain/web3ws')
+const web3Rpc = require('./models/blockchain/web3rpc')
 const config = require('config')
 const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
@@ -14,8 +14,6 @@ process.setMaxListeners(100)
 
 var web3 = new Web3Ws()
 var validator = new Validator(web3)
-var blockSigner = new BlockSigner(web3)
-var cpBlockSigner = 0
 var cpValidator = 0
 
 async function watchValidator () {
@@ -88,6 +86,8 @@ async function watchValidator () {
         }).catch(e => {
             logger.error('watchValidator %s', e)
             cpValidator = blockNumber
+            web3 = new Web3Ws()
+            validator = new Validator(web3)
         })
     } catch (e) {
         logger.error('watchValidator2 %s', e)
@@ -103,6 +103,15 @@ async function updateCandidateInfo (candidate) {
         let result
         logger.debug('Update candidate %s capacity %s %s', candidate, String(capacity), status)
         if (candidate !== '0x0000000000000000000000000000000000000000') {
+            // check current status
+            const candateInDB = await db.Candidate.findOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate
+            }) || {}
+
+            status = (status)
+                ? ((candateInDB.status === 'RESIGNED') ? 'PROPOSED' : (candateInDB.status || 'PROPOSED'))
+                : 'RESIGNED'
             result = await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate
@@ -112,7 +121,7 @@ async function updateCandidateInfo (candidate) {
                     candidate: candidate,
                     capacity: String(capacity),
                     capacityNumber: (new BigNumber(capacity)).div(1e18).toString(10),
-                    status: (status) ? 'PROPOSED' : 'RESIGNED',
+                    status: status,
                     owner: owner
                 },
                 $setOnInsert: {
@@ -129,6 +138,32 @@ async function updateCandidateInfo (candidate) {
         return result
     } catch (e) {
         logger.error('updateCandidateInfo %s', e)
+    }
+}
+
+async function updateCandidateSlashed (candidate, blockNumber) {
+    try {
+        let result
+        logger.debug('Update candidate %s slashed at blockNumber %s', candidate, String(blockNumber))
+        if (candidate !== '0x0000000000000000000000000000000000000000') {
+            result = await db.Candidate.updateOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: candidate.toLowerCase()
+            }, {
+                $set: {
+                    status: 'SLASHED'
+                }
+            }, { upsert: true })
+        } else {
+            result = await db.Candidate.deleteOne({
+                smartContractAddress: validator.address,
+                candidate: candidate
+            })
+        }
+
+        return result
+    } catch (e) {
+        logger.error('updateCandidateSlashed %s', e)
     }
 }
 
@@ -200,21 +235,25 @@ async function updatePenalties () {
             return false
         }
 
-        await db.Penalty.remove({})
+        // await db.Penalty.remove({})
 
         let getPenalty = async function (blk) {
             let sbuff = Buffer.from((blk.penalties || '').substring(2), 'hex')
             let penalties = []
+            const epoch = (blk.number / config.get('blockchain.epoch')) - 1
             if (sbuff.length > 0) {
                 for (let i = 1; i <= sbuff.length / 20; i++) {
                     let address = sbuff.slice((i - 1) * 20, i * 20)
                     penalties.push('0x' + address.toString('hex'))
+                    await updateCandidateSlashed('0x' + address.toString('hex').toLowerCase(), blk.number)
                 }
-                await db.Penalty.create({
+
+                await db.Penalty.update({ blockNumber: blk.number }, {
                     networkId: config.get('blockchain.networkId'),
                     blockNumber: blk.number,
+                    epoch: epoch,
                     penalties: penalties
-                })
+                }, { upsert: true })
             }
             return penalties
         }
@@ -224,11 +263,10 @@ async function updatePenalties () {
         logger.error('updatePenalties %s', e)
         web3 = new Web3Ws()
         validator = new Validator(web3)
-        blockSigner = new BlockSigner(web3)
     }
 }
 
-async function updateSigners () {
+async function updateSignersAndCandidate () {
     try {
         let blk = {}
         let latestBlockNumber = await web3.eth.getBlockNumber()
@@ -241,10 +279,20 @@ async function updateSigners () {
         let buff = Buffer.from(blk.extraData.substring(2), 'hex')
         let sbuff = buff.slice(32, buff.length - 65)
         let signers = []
+        let address
         if (sbuff.length > 0) {
             for (let i = 1; i <= sbuff.length / 20; i++) {
-                let address = sbuff.slice((i - 1) * 20, i * 20)
+                address = sbuff.slice((i - 1) * 20, i * 20)
                 signers.push('0x' + address.toString('hex'))
+                // update candidate status
+                await db.Candidate.updateOne({
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    candidate: '0x' + address.toString('hex').toLowerCase()
+                }, {
+                    $set: {
+                        status: 'MASTERNODE'
+                    }
+                }, { upsert: true })
             }
             await db.Signer.create({
                 networkId: config.get('blockchain.networkId'),
@@ -254,48 +302,53 @@ async function updateSigners () {
         }
         return signers
     } catch (e) {
-        logger.error('updateSigners %s', e)
+        logger.error('updateSignersAndCandidate %s', e)
     }
 }
 
 let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
-async function watchNewBlock () {
-    let b = true
-    while (true) {
-        try {
-            logger.info('Update signers after sleeping 3 seconds')
-            if (b) {
-                await updateSigners()
+async function watchNewBlock (n) {
+    try {
+        let blockNumber = await web3.eth.getBlockNumber()
+        n = n || blockNumber
+        if (blockNumber > n) {
+            n = n + 1
+            blockNumber = n
+            logger.info('Watch new block every 1 second blkNumber %s', n)
+            let blk = await web3.eth.getBlock(blockNumber)
+            if (n % 5 === 0) {
+                // reset status
+                await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
+                await updateSignersAndCandidate()
                 await updatePenalties()
             }
-            await updateLatestSignedBlock()
+            await updateLatestSignedBlock(blk)
             await watchValidator()
-            b = !b
-        } catch (e) {
-            logger.error('watchNewBlock %s', e)
         }
-        await sleep(3000)
+    } catch (e) {
+        logger.error('watchNewBlock %s', e)
+        web3 = new Web3Ws()
+        validator = new Validator(web3)
     }
+    await sleep(1000)
+    return watchNewBlock(n)
 }
 
-async function updateLatestSignedBlock () {
+async function updateLatestSignedBlock (blk) {
     try {
-        let blockNumber = cpBlockSigner || await web3.eth.getBlockNumber()
-        cpBlockSigner = await web3.eth.getBlockNumber()
-
-        logger.info('BlockSigner %s - Listen events from block number %s ...',
-            config.get('blockchain.blockSignerAddress'), blockNumber)
-        return blockSigner.getPastEvents('Sign', {
-            fromBlock: blockNumber,
-            toBlock: 'latest'
-        }).then(async (events) => {
-            let map = events.map(event => {
-                let result = event
-                let signer = result.returnValues._signer
-                let bN = String(result.returnValues._blockNumber)
-                logger.debug('%s sign block %s with tx %s', signer, result.blockNumber, result.transactionHash)
-
-                return db.Candidate.updateOne({
+        for (let hash of blk.transactions) {
+            let tx = await web3Rpc.eth.getTransaction(hash)
+            if (tx.to === config.get('blockchain.blockSignerAddress')) {
+                let signer = tx.from
+                let buff = Buffer.from((tx.input || '').substring(2), 'hex')
+                let sbuff = buff.slice(buff.length - 32, buff.length)
+                let bN = ((await web3Rpc.eth.getBlock('0x' + sbuff.toString('hex'))) || {}).number
+                if (!bN) {
+                    logger.debug('Bypass signer %s sign %s', signer, '0x' + sbuff.toString('hex'))
+                    continue
+                }
+                logger.debug('Sign block %s by signer %s', bN, signer)
+                await db.Candidate.updateOne({
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: signer.toLowerCase()
                 }, {
@@ -303,16 +356,8 @@ async function updateLatestSignedBlock () {
                         latestSignedBlock: bN
                     }
                 }, { upsert: false })
-            })
-
-            return Promise.all(map).then(() => {
-                return web3.eth.getBlockNumber(n => {
-                    cpBlockSigner = n
-                })
-            })
-        }).catch(e => {
-            logger.error('updateLatestSignedBlock2 %s', e)
-        })
+            }
+        }
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
     }
@@ -367,13 +412,10 @@ async function getPastEvent () {
     })
 }
 
-// Reset candidate status before crawling
-db.Candidate.updateMany({}, { $set: { status: 'RESIGNED' } }).then(() => {
-    return getCurrentCandidates()
-}).then(() => {
+getCurrentCandidates().then(() => {
     return updatePenalties()
 }).then(() => {
-    return updateSigners()
+    return updateSignersAndCandidate()
 }).then(() => {
     return getPastEvent().then(() => {
         watchNewBlock()

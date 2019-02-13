@@ -3,10 +3,21 @@
 const commander = require('commander')
 const db = require('./models/mongodb')
 const _ = require('lodash')
+const cmdValidator = require('./commands/validator')
+const { updatePenalty } = require('./commands/penalty')
+const web3Rpc = require('./models/blockchain/web3rpc')
 
 commander
     .version('0.1.0')
     .description('Candidate Management Commands')
+
+commander
+    .command('validator blockNumber')
+    .alias('v')
+    .description('Re-crawl tx vote/unvote/resign/propose/withdraw')
+    .action(async (blockNumber) => {
+        return cmdValidator.run(parseInt(blockNumber))
+    })
 
 commander
     .command('list')
@@ -70,6 +81,24 @@ commander
             $set: set
         })
         console.log(u)
+        process.exit()
+    })
+
+commander
+    .command('update-penalty')
+    .alias('up')
+    .description('Update penalty table')
+    .action(async () => {
+        let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
+        const num1To = parseInt(latestBlockNumber / 3) - 1
+        const num2From = latestBlockNumber + 1
+        const num2To = parseInt(latestBlockNumber / 3) * 2
+        const num3From = (parseInt(latestBlockNumber / 3) * 2) + 1
+        await Promise.all([
+            updatePenalty(0, num1To),
+            updatePenalty(num2From, num2To),
+            updatePenalty(num3From, latestBlockNumber)
+        ])
         process.exit()
     })
 

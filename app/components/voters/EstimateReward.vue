@@ -9,6 +9,10 @@ export default {
         value: {
             type: String,
             default: ''
+        },
+        candidate: {
+            type: String,
+            default: ''
         }
     },
     created () {

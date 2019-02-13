@@ -65,7 +65,9 @@
                             </b-input-group>
                         </b-form-group>
                         <div>
-                            <div class="float-left">Estimate reward: {{ voteValue }}</div>
+                            <div class="float-left">
+                                <estimate-reward :value="voteValue"/>
+                            </div>
                             <div class="buttons text-right">
                                 <b-button
                                     type="button"
@@ -165,12 +167,14 @@ import NumberInput from '../NumberInput.vue'
 import BigNumber from 'bignumber.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
+import EstimateReward from './EstimateReward.vue'
 
 export default {
     name: 'App',
     components: {
         NumberInput,
-        VueQrcode
+        VueQrcode,
+        EstimateReward
     },
     mixins: [validationMixin],
     data () {

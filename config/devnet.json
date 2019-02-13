@@ -9,7 +9,5 @@
     "baseUrl": "https://master.devnet.tomochain.com",
     "db": {
         "uri" : "mongodb://tomomaster_db:27017/governance"
-    },
-    "grafanaUrl": "https://grafana.testnet.tomochain.com",
-    "grafanaApiKey": "eyJrIjoiVlhBUUo2SnRxek50VGdtMmlMZlo2ZlZYaTNKaGpXMjciLCJuIjoidG9tb21hc3RlcjIiLCJpZCI6MX0="
+    }
 }
