@@ -90,14 +90,14 @@
                 </template>
 
                 <template
-                    slot="votedCapacity"
+                    slot="capacity"
                     slot-scope="data">
-                    {{ isNaN(data.item.votedCapacity) ? '---' : formatCurrencySymbol(data.item.votedCapacity) }}
+                    {{ isNaN(data.item.capacity) ? '---' : formatCurrencySymbol(data.item.capacity) }}
                 </template>
 
                 <template
-                    slot="capacity"
-                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.capacity, 3)) }}
+                    slot="totalCapacity"
+                    slot-scope="data">{{ formatCurrencySymbol(formatBigNumber(data.item.totalCapacity, 3)) }}
                 </template>
             </b-table>
 
@@ -277,17 +277,17 @@ export default {
                     sortable: false
                 },
                 {
-                    key: 'votedCapacity',
+                    key: 'capacity',
                     label: 'Voted Capacity',
                     sortable: true
                 },
                 {
-                    key: 'capacity',
+                    key: 'totalCapacity',
                     label: 'Capacity',
                     sortable: true
                 }
             ],
-            sortBy: 'votedCapacity',
+            sortBy: 'capacity',
             sortDesc: true,
             isReady: !!this.web3,
             voter: this.$route.params.address.toLowerCase(),
@@ -418,7 +418,7 @@ export default {
                         address: c.candidate,
                         name: c.candidateName,
                         capacity: new BigNumber(c.capacity).div(10 ** 18).toNumber(),
-                        votedCapacity: new BigNumber(c.votedCapacity).div(10 ** 18).toNumber()
+                        totalCapacity: new BigNumber(c.totalCapacity).div(10 ** 18).toNumber()
                     })
                     self.totalVoted += new BigNumber(c.capacity).div(10 ** 18).toNumber()
                 })
@@ -536,9 +536,9 @@ export default {
             }
         },
         sortingChangeCandidate (obj) {
-            if (obj.sortBy === 'capacity') {
+            if (obj.sortBy === 'totalCapacity') {
                 return this.candidates.slice().sort(function (a, b) {
-                    return b.capacity - a.capacity
+                    return b.totalCapacity - a.totaCapacity
                 })
             }
             this.sortBy = obj.sortBy
