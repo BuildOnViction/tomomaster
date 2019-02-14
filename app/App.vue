@@ -8,16 +8,13 @@
                     </b-navbar-brand>
 
                     <b-nav-form class="search-form">
-                        <!-- <b-form-input
+                        <b-form-input
                             v-model="search"
                             type="text"
                             autocomplete="off"
                             placeholder="Search Candidate / Voter address ..."
                             @keyup.enter="searchCandidate"
-                        /> -->
-                        <auto-complete
-                            v-model="search"
-                            :items="items"/>
+                        />
                         <b-button
                             variant="outline-success"
                             type="submit"
@@ -141,12 +138,8 @@
 import axios from 'axios'
 import store from 'store'
 import pkg from '../package.json'
-import AutoComplete from './components/AutoComplete.vue'
 export default {
     name: 'App',
-    components: {
-        AutoComplete
-    },
     data () {
         return {
             isReady: !!this.web3,
@@ -154,8 +147,7 @@ export default {
             selectedCandidate: null,
             search: null,
             isTomonet: false,
-            version: pkg.version,
-            items: []
+            version: pkg.version
         }
     },
     async updated () {
@@ -171,15 +163,6 @@ export default {
             self.$bus.$on('logged', async () => {
                 await self.checkNetworkAndLogin()
             })
-            const candidates = await axios.get('/api/candidates')
-            const map = candidates.data.items.map((c) => {
-                return {
-                    name: c.name ? c.name : 'Anonymous Candidate',
-                    address: c.candidate
-                }
-            })
-            const mapping = await Promise.all(map)
-            self.items = mapping
         } catch (e) {
             console.log(e)
         }
@@ -187,29 +170,25 @@ export default {
     methods: {
         searchCandidate (e) {
             e.preventDefault()
-            const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
 
             let to = null
             let search = (this.search || '').trim()
-
-            if (regexpAddr.test(search)) {
-                axios.get(`/api/search/${search}`)
-                    .then((response) => {
-                        const data = response.data
-                        if (Object.keys(data.candidate).length > 0) {
-                            to = { path: `/candidate/${data.candidate.candidate}` }
-                        } else if (Object.keys(data.voter).length > 0) {
-                            to = { path: `/voter/${search}` }
-                        } else {
-                            this.$toasted.show('Not found')
-                        }
-                        if (!to) {
-                            return false
-                        }
-                        this.search = ''
-                        return this.$router.push(to)
-                    }).catch(e => console.log(e))
-            }
+            axios.get(`/api/search/${search}`)
+                .then((response) => {
+                    const data = response.data
+                    if (Object.keys(data.candidate).length > 0) {
+                        to = { path: `/candidate/${data.candidate.candidate}` }
+                    } else if (Object.keys(data.voter).length > 0) {
+                        to = { path: `/voter/${search}` }
+                    } else {
+                        this.$toasted.show('Not found')
+                    }
+                    if (!to) {
+                        return false
+                    }
+                    this.search = ''
+                    return this.$router.push(to)
+                }).catch(e => console.log(e))
         },
         goPage: function (s) {
             this.$router.push({ path: `/candidate/${s}` })
