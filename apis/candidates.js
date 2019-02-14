@@ -357,6 +357,10 @@ router.get('/:candidate', async function (req, res, next) {
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
     let latestPenalties = await db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
+    // Get slashed times in last 48 epochs
+    const slashedHistory = db.Penalty.countDocuments({
+        penalties: { $elemMatch: { $in: [address] } }
+    }).sort({ epoch: -1 }).limit(48).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
     let penalties = []
@@ -384,6 +388,7 @@ router.get('/:candidate', async function (req, res, next) {
 
     candidate.status = (candidate.isMasternode) ? 'MASTERNODE' : candidate.status
     candidate.status = (candidate.isPenalty) ? 'SLASHED' : candidate.status
+    candidate.slashedTimes = await slashedHistory
 
     return res.json(candidate)
 })
