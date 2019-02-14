@@ -661,7 +661,7 @@ export default {
                         location: (data.dataCenter || {}).location || 'N/A'
                     }
                     self.candidate.socials = data.socials
-                     self.candidate.slashedTimes = data.slashedTimes
+                    self.candidate.slashedTimes = data.slashedTimes
                 }
 
                 if (self.web3) {
