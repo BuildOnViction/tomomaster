@@ -182,6 +182,24 @@
                                 {{ value }}
                             </p>
                         </div>
+                        <div
+                            v-if="isReady"
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Slash history</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--slashed"
+                                class="tomo-info__description">
+                                {{ candidate.slashedTimes }}
+                                <b-tooltip
+                                    ref="tooltip"
+                                    target="tomo-info__description--slashed">
+                                    Slashed times in latest 48 epochs
+                                </b-tooltip>
+                            </p>
+                        </div>
                     </div>
                 </b-card>
                 <div
@@ -459,7 +477,8 @@ export default {
                 hardwareInfo: '',
                 dataCenterInfo: {},
                 socials: {},
-                voted: 0
+                voted: 0,
+                slashedTimes: 0
             },
             mnRewardsFields: [
                 {
@@ -642,6 +661,7 @@ export default {
                         location: (data.dataCenter || {}).location || 'N/A'
                     }
                     self.candidate.socials = data.socials
+                     self.candidate.slashedTimes = data.slashedTimes
                 }
 
                 if (self.web3) {
