@@ -1,5 +1,5 @@
 <template>
-    <div class="autocomplete search-form">
+    <div class="autocomplete">
         <input
             v-model="search"
             type="text"
@@ -10,6 +10,7 @@
             @keydown.up="onArrowUp"
             @keydown.enter="onEnter" >
         <ul
+            v-if="results.length > 0"
             v-show="isOpen"
             id="autocomplete-results"
             class="autocomplete-results">
@@ -77,9 +78,15 @@ export default {
 
         filterResults () {
             // first uncapitalize all the things
-            this.results = this.items.filter((item) => {
-                return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-            })
+            let count = 0
+            if (this.search !== '') {
+                this.results = this.items.filter((item) => {
+                    count++
+                    if (count <= 5) {
+                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                    }
+                })
+            }
         },
         setResult (result) {
             this.search = ''
