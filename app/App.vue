@@ -32,12 +32,19 @@
                             id="btn-become-candidate"
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
+                        <a
+                            id="btn-setting"
+                            href="#">
+                            <div>
+                                <i class="tm-bell ml-1 icon-2x"/>
+                            </div>
+                        </a>
 
                         <router-link
                             v-if="isTomonet"
                             id="btn-setting"
                             to="/setting">
-                            <i class="tm-cog ml-2" />
+                            <i class="tm-cog ml-1 icon-2x" />
                         </router-link>
 
                         <!-- <router-link
