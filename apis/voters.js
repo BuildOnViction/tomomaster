@@ -323,51 +323,57 @@ router.get('/getScanningResult', [
     }
 })
 
-router.post('/calculatingReward', [], async (req, res, next) => {
-    // candidate
-    const address = (req.body.candidate || '').toLowerCase()
-    // amount
-    const amount = new BigNumber(parseInt(req.body.amount) || 0)
+router.get('/calculatingReward', [], async (req, res, next) => {
+    try {
+        // candidate
+        const address = (req.query.candidate || '').toLowerCase()
+        // amount
+        const amount = new BigNumber(req.query.amount || 0)
 
-    const latestBlockNumber = await web3.eth.getBlockNumber()
-    const lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-    const lastEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch')) - 1
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        const lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        const lastEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch')) - 1
 
-    // search candidate
-    const candidate = await db.Candidate.findOne({
-        smartContractAddress: config.get('blockchain.validatorAddress'),
-        candidate: address
-    })
+        // search candidate
+        const candidate = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: address
+        })
 
-    // get latest reward
-    const rewards = await axios.post(
-        urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
-        {
-            address: address,
-            limit: 1,
-            page: 1,
-            owner: candidate.owner,
-            reason: 'Voter'
+        // get latest reward
+        const rewards = await axios.post(
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            {
+                address: address,
+                limit: 1,
+                page: 1,
+                owner: candidate.owner,
+                reason: 'Voter'
+            }
+        )
+        let signNumber
+        if (rewards.data.items.length > 0) {
+            signNumber = rewards.data.items[0].signNumber
         }
-    )
-    let signNumber
-    if (rewards.data.items.length > 0) {
-        signNumber = rewards.data.items[0].signNumber
+        signNumber = 0
+        const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+        // get total signers in latest epoch
+        const totalSigners = await axios.post(
+            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${lastEpoch}`)
+        )
+
+        if (totalSigners.data && totalSigners.data.totalSignNumber) {
+            // calculate devided reward
+            const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
+            // calculate voter reward
+            const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
+            res.send(estimateReward.toString(10))
+        }
+        res.send('N/A')
+    } catch (error) {
+        next(error)
     }
-    signNumber = 0
-    const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
-    const totalReward = new BigNumber(config.get('blockchain.reward'))
-    // get total signers in latest epoch
-    // Need to wait updating from tomoscan
-    const totalSigners = await axios.post(
-        urljoin(config.get('tomoscanUrl'), `api/expose/signNumber/${lastEpoch}`)
-    )
-    console.log(totalSigners.data)
-    // calculate devided reward
-    const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.signNumber)
-    // calculate voter reward
-    const voterReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount))
-    return voterReward.toString(10)
 })
 
 module.exports = router

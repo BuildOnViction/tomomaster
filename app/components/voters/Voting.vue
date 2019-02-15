@@ -66,7 +66,9 @@
                         </b-form-group>
                         <div>
                             <div class="float-left">
-                                <estimate-reward :value="voteValue"/>
+                                <estimate-reward
+                                    :value="voteValue"
+                                    :candidate="candidate"/>
                             </div>
                             <div class="buttons text-right">
                                 <b-button

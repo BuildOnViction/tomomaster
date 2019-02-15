@@ -1,9 +1,10 @@
 <template>
     <div class="float-left">
-        Estimate reward: {{ value }}
+        Estimate reward: {{ estimatedReward }}
     </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
     props: {
         value: {
@@ -15,8 +16,33 @@ export default {
             default: ''
         }
     },
-    created () {
-        console.log(this.value)
+    data: () => {
+        return {
+            estimatedReward: 'N/A'
+        }
+    },
+    watch: {
+        value: async function (newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.calculateRewards()
+            }
+        }
+    },
+    async created () {
+        await this.calculateRewards()
+    },
+    methods: {
+        async calculateRewards () {
+            const self = this
+            const params = {
+                candidate: self.candidate,
+                amount: self.amount
+            }
+            const query = self.serializeQuery(params)
+            const { data } = await axios.get('/api/voters/calculatingReward' + '?' + query)
+
+            self.estimatedReward = data
+        }
     }
 }
 </script>
