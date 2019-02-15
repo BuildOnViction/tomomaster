@@ -667,16 +667,17 @@ router.get('/:candidate/:owner/getRewards', [
             }
         )
         const totalReward = new BigNumber(config.get('blockchain.reward'))
-        rewards.data.items.map(async i => {
+        const map = rewards.data.items.map(async i => {
             const totalSigners = await axios.get(
-                urljoin(config.get('tomoscanUrl'), `api/expose/signNumber/${i.epoch}`)
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${i.epoch}`)
             )
             if (totalSigners.data.signNumber) {
                 i.masternodeReward = totalReward.multipliedBy(i.signNumber).dividedBy(totalSigners.data.signNumber)
             } else i.masternodeReward = 0
         })
+        const items = await Promise.all(map)
         return res.json({
-            items: rewards.data.items,
+            items: items,
             total: rewards.data.total
         })
     } catch (e) {
