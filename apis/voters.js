@@ -57,7 +57,10 @@ router.get('/:voter/candidates', [
             v.totalCapacity = (_.findLast(candidates, (c) => {
                 return (c.candidate === v.candidate)
             }) || {}).capacity
-            return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'totalCapacity', 'candidateName'])
+            v.status = (_.findLast(candidates, (c) => {
+                return (c.candidate === v.candidate)
+            }) || {}).status
+            return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'totalCapacity', 'candidateName', 'status'])
         })
         return res.json({
             items: voters,
