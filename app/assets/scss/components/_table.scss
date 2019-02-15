@@ -90,7 +90,9 @@
       }
   
       @include media-breakpoint-up(md) {
-        grid-template-columns: 50% 50%;
+        display: grid !important;
+        grid-template-columns: 100%;
+        grid-column-gap: 15px;
       }
   
       @include media-breakpoint-up(lg) {
