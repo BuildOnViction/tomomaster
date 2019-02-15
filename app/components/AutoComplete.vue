@@ -20,7 +20,13 @@
                 :class="{ 'is-active': i === arrowCounter }"
                 class="autocomplete-result"
                 @click="setResult(result)">
-                {{ result.name }}
+                <p
+                    class="tomo-list__text">
+                    <span>
+                        {{ result.name }}
+                    </span>
+                    <span class="tomo-auto__small">{{ result.address }}</span>
+                </p>
             </li>
         </ul>
     </div>
