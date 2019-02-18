@@ -151,6 +151,7 @@
     .tomo-list__text .tomo-auto__small {
          line-height: 10px;
          font-size: 11px;
+         padding-bottom: 8px;
     }
 }
   
@@ -158,5 +159,9 @@
   .autocomplete-result:hover {
     background-color: #7573a6;
     color: white;
+
+    .tomo-list__text .tomo-auto__small {
+        color: white;
+    }
   }
   
