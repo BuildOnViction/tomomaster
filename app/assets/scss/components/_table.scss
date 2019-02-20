@@ -88,7 +88,10 @@
         grid-template-columns: 100%;
         grid-column-gap: 15px;
       }
-  
+      @include media-breakpoint-between(sm,md) {
+            grid-column-gap: 20px;
+            margin-right: 20px;
+      }
       @include media-breakpoint-up(md) {
         grid-template-columns: 50% 50%;
       }
