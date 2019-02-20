@@ -32,20 +32,27 @@
                             id="btn-become-candidate"
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
-                        <a
-                            id="btn-setting"
-                            href="#">
-                            <div>
-                                <i class="tm-bell ml-1 icon-2x"/>
-                            </div>
-                        </a>
 
-                        <router-link
+                        <!-- <router-link
                             v-if="isTomonet"
                             id="btn-setting"
                             to="/setting">
                             <i class="tm-cog ml-1 icon-2x" />
-                        </router-link>
+                        </router-link> -->
+
+                        <b-dropdown
+                            id="ddown-dropup"
+                            class="dd-setting"
+                            no-caret="true"
+                            variant="primary">
+                            <template
+                                slot="button-content">
+                                <i class="tm-cog ml-1 icon-2x" />
+                            </template>
+                            <b-dropdown-item href="#">Action</b-dropdown-item>
+                            <b-dropdown-item href="#">Another action</b-dropdown-item>
+                            <b-dropdown-item href="#">Something else here</b-dropdown-item>
+                        </b-dropdown>
 
                         <!-- <router-link
                         v-if="isTomonet"
