@@ -88,11 +88,12 @@
         grid-template-columns: 100%;
         grid-column-gap: 15px;
       }
-  
+      @include media-breakpoint-between(sm,md) {
+            grid-column-gap: 20px;
+            margin-right: 20px;
+      }
       @include media-breakpoint-up(md) {
-        display: grid !important;
-        grid-template-columns: 100%;
-        grid-column-gap: 15px;
+        grid-template-columns: 50% 50%;
       }
   
       @include media-breakpoint-up(lg) {
