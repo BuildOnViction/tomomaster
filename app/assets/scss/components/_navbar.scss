@@ -64,12 +64,27 @@
 .dd-setting {
     font-size: 0;
     width: 20px;
+
+    i {
+        display: inline-block;
+        font-size: 18px;
+        color: #678be0;
+
+        @extend %transit;
+    }
+
+    &:hover i {
+        color: $color-link !important;
+        transform: rotate(45deg);
+    }
     button {
         background: none;
         border: none;
         padding: 0;
-        background-color: none;
-        border-color: none;
+        &:hover {
+            background-color: none;
+            border-color: none;
+        }
     }
 }
 
@@ -86,4 +101,27 @@
     a.tab-active {
         color: #30ddd8;
     }
+}
+
+.dd-address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 15rem;
+
+    &:after {
+        position: absolute;
+        left: 100%;
+        top: 0;
+    }
+
+    @include media-breakpoint-only(sm) {
+        .text-truncate {
+            max-width: 15rem;
+        }
+    }
+}
+// add more to vue dropdown bootstrap
+.dropdown-menu {
+    margin-top: 17px;
 }
