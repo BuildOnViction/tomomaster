@@ -84,7 +84,7 @@
                 :per-page="perPage"
                 :class="'tomo-table tomo-table--candidates ' + tableCssClass"
                 empty-text="There are no candidates to show"
-                stacked="md"
+                stacked="lg"
                 @sort-changed="sortingChange" >
 
                 <template
@@ -137,7 +137,6 @@
                         @click="onRowClick(data.item.address)">Vote</b-button>
                 </template>
             </b-table>
-
             <b-pagination
                 v-if="totalRows > 0 && totalRows > perPage"
                 :total-rows="totalRows"
