@@ -248,7 +248,7 @@ async function updatePenalties () {
                     await updateCandidateSlashed('0x' + address.toString('hex').toLowerCase(), blk.number)
                 }
 
-                await db.Penalty.update({ blockNumber: blk.number }, {
+                await db.Penalty.update({ epoch: epoch }, {
                     networkId: config.get('blockchain.networkId'),
                     blockNumber: blk.number,
                     epoch: epoch,

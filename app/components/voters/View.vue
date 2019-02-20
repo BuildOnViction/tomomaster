@@ -277,6 +277,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'status',
+                    label: 'Status',
+                    sortable: false
+                },
+                {
                     key: 'capacity',
                     label: 'Voted Capacity',
                     sortable: true
@@ -417,6 +422,7 @@ export default {
                     items.push({
                         address: c.candidate,
                         name: c.candidateName,
+                        status: c.status,
                         capacity: new BigNumber(c.capacity).div(10 ** 18).toNumber(),
                         totalCapacity: new BigNumber(c.totalCapacity).div(10 ** 18).toNumber()
                     })
