@@ -386,8 +386,6 @@ router.get('/:candidate', async function (req, res, next) {
 
     candidate.isPenalty = setP.has((candidate.candidate || '').toLowerCase())
 
-    candidate.status = (candidate.isMasternode) ? 'MASTERNODE' : candidate.status
-    candidate.status = (candidate.isPenalty) ? 'SLASHED' : candidate.status
     candidate.slashedTimes = await slashedHistory
 
     return res.json(candidate)
