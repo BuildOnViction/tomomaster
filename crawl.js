@@ -336,7 +336,7 @@ async function watchNewBlock (n) {
 
 async function updateLatestSignedBlock (blk) {
     try {
-        for (let hash of blk.transactions) {
+        for (let hash of ((blk || {}).transactions || [])) {
             let tx = await web3Rpc.eth.getTransaction(hash)
             if (tx.to === config.get('blockchain.blockSignerAddress')) {
                 let signer = tx.from
