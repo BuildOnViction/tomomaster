@@ -358,10 +358,11 @@ router.get('/:candidate', async function (req, res, next) {
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
     let latestPenalties = await db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
-    // Get slashed times in last 48 epochs
+    // Get slashed times in a week
+    const epochsPerWeek = 336
     const slashedHistory = db.Penalty.countDocuments({
         penalties: { $elemMatch: { $in: [address] } }
-    }).sort({ epoch: -1 }).limit(48).lean().exec() || 0
+    }).sort({ epoch: -1 }).limit(epochsPerWeek).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
     let penalties = []
