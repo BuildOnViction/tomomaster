@@ -56,7 +56,7 @@ router.get('/', [
                 smartContractAddress: config.get('blockchain.validatorAddress')
             }).sort(sort).limit(limit).skip(skip).lean().exec(),
             db.Signer.findOne({}).sort({ _id: 'desc' }),
-            db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
+            db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
         ])
 
         let candidates = data[0]
@@ -357,7 +357,11 @@ router.get('/:candidate', async function (req, res, next) {
     }).lean().exec() || {})
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
-    let latestPenalties = await db.Penalty.find({}).sort({ blockNumber: 'desc' }).lean().exec()
+    let latestPenalties = await db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
+    // Get slashed times in last 48 epochs
+    const slashedHistory = db.Penalty.countDocuments({
+        penalties: { $elemMatch: { $in: [address] } }
+    }).sort({ epoch: -1 }).limit(48).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
     let penalties = []
@@ -385,6 +389,7 @@ router.get('/:candidate', async function (req, res, next) {
 
     candidate.status = (candidate.isMasternode) ? 'MASTERNODE' : candidate.status
     candidate.status = (candidate.isPenalty) ? 'SLASHED' : candidate.status
+    candidate.slashedTimes = await slashedHistory
 
     return res.json(candidate)
 })
@@ -883,6 +888,24 @@ router.get('/:candidate/:owner/isOwner', async (req, res, next) => {
         } else return res.send(false)
     } catch (e) {
         next(e)
+    }
+})
+
+router.get('/slashed/:epoch', [
+    check('epoch').isLength({ min: 1 }).exists().withMessage('Epoch is required')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+
+    try {
+        let epoch = req.params.epoch
+        const penalty = db.Penalty.findOne({ epoch: epoch })
+
+        return res.json(penalty)
+    } catch (e) {
+        return next(e)
     }
 })
 
