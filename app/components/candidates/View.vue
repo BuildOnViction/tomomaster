@@ -321,7 +321,7 @@
                     :fields="voterFields"
                     :per-page="voterPerPage"
                     :show-empty="true"
-                    :class="`tomo-table tomo-table--voted${voterLoading ? ' loading' : ''}`"
+                    :class="`tomo-table tomo-table--voter${voterLoading ? ' loading' : ''}`"
                     empty-text="There are no voters to show"
                     stacked="md"
                     @sort-changed="sortingChangeVoters" >
