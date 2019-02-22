@@ -306,6 +306,39 @@ async function updateSignersAndCandidate () {
     }
 }
 
+async function updateStatusHistory () {
+    try {
+        const penalties = []
+        const masternodes = []
+        const proposes = []
+
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+
+        const epoch = parseInt(latestBlockNumber / config.get('blockchain.epoch')) - 1
+
+        const slashPromise = db.Candidate.find({ status: 'SLASHED' })
+        const MNPromise = db.Candidate.find({ status: 'MASTERNODE' })
+        const ProposePromise = db.Candidate.find({ status: 'PROPOSED' })
+
+        const slash = await slashPromise
+        slash.map(s => penalties.push(s.candidate))
+        const masternode = await MNPromise
+        masternode.map(m => masternodes.push(m.candidate))
+        const propose = await ProposePromise
+        propose.map(p => proposes.push(p.candidate))
+        // insert Status table
+
+        await db.Status.findOneAndUpdate({ epoch: epoch }, {
+            epoch: epoch,
+            masternodes: masternodes,
+            penalties: penalties,
+            proposes: proposes
+        }, { upsert: true })
+    } catch (e) {
+        logger.error('updateStatusHistory %s', e)
+    }
+}
+
 let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock (n) {
     try {
@@ -321,6 +354,7 @@ async function watchNewBlock (n) {
                 await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
                 await updateSignersAndCandidate()
                 await updatePenalties()
+                await updateStatusHistory()
             }
             await updateLatestSignedBlock(blk)
             await watchValidator()
