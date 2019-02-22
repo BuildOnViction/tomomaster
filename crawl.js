@@ -313,12 +313,14 @@ async function updateStatusHistory () {
         const proposes = []
 
         const latestBlockNumber = await web3.eth.getBlockNumber()
+        const blockCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
 
         const epoch = parseInt(latestBlockNumber / config.get('blockchain.epoch')) - 1
 
         const slashPromise = db.Candidate.find({ status: 'SLASHED' })
         const MNPromise = db.Candidate.find({ status: 'MASTERNODE' })
         const ProposePromise = db.Candidate.find({ status: 'PROPOSED' })
+        const blockDataPromise = web3.eth.getBlock(blockCheckpoint)
 
         const slash = await slashPromise
         slash.map(s => penalties.push(s.candidate))
@@ -326,13 +328,15 @@ async function updateStatusHistory () {
         masternode.map(m => masternodes.push(m.candidate))
         const propose = await ProposePromise
         propose.map(p => proposes.push(p.candidate))
+        const blockData = await blockDataPromise
         // insert Status table
 
         await db.Status.findOneAndUpdate({ epoch: epoch }, {
             epoch: epoch,
             masternodes: masternodes,
             penalties: penalties,
-            proposes: proposes
+            proposes: proposes,
+            createdAt: moment.unix(blockData.timestamp).utc()
         }, { upsert: true })
     } catch (e) {
         logger.error('updateStatusHistory %s', e)
