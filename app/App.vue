@@ -36,12 +36,39 @@
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
 
-                        <router-link
+                        <!-- <router-link
                             v-if="isTomonet"
                             id="btn-setting"
                             to="/setting">
-                            <i class="tm-cog ml-2" />
-                        </router-link>
+                            <i class="tm-cog ml-1 icon-2x" />
+                        </router-link> -->
+
+                        <b-dropdown
+                            v-if="isTomonet"
+                            class="dd-setting"
+                            right
+                            offset="25"
+                            no-caret="true"
+                            variant="primary">
+                            <template
+                                slot="button-content">
+                                <i class="tm-cog ml-1 icon-2x" />
+                            </template>
+                            <b-dropdown-item
+                                :to="`/voter/${account}`"
+                                class="dd-address">
+                                {{ account }}
+                            </b-dropdown-item>
+                            <b-dropdown-divider />
+                            <b-dropdown-item
+                                target="_bank"
+                                href="https://bit.ly/2B6p29o">Help</b-dropdown-item>
+                            <b-dropdown-item to="/setting">Setting</b-dropdown-item>
+                            <b-dropdown-divider />
+                            <b-dropdown-item
+                                href="/"
+                                @click="signOut">Sign out</b-dropdown-item>
+                        </b-dropdown>
 
                         <!-- <router-link
                         v-if="isTomonet"
@@ -155,6 +182,7 @@ export default {
             search: null,
             isTomonet: false,
             version: pkg.version,
+            account: '',
             items: []
         }
     },
@@ -216,20 +244,27 @@ export default {
         async checkNetworkAndLogin () {
             let self = this
             setTimeout(async () => {
-                let account
                 try {
                     const contract = await self.getTomoValidatorInstance()
                     if (store.get('address')) {
-                        account = store.get('address').toLowerCase()
+                        self.account = store.get('address').toLowerCase()
                     } else {
-                        account = this.$store.state.walletLoggedIn
+                        self.account = this.$store.state.walletLoggedIn
                             ? this.$store.state.walletLoggedIn : await self.getAccount()
                     }
-                    if (account && contract) {
+                    if (self.account && contract) {
                         self.isTomonet = true
                     }
                 } catch (error) {}
             }, 0)
+        },
+        signOut () {
+            store.clearAll()
+            this.$store.state.walletLoggedIn = null
+
+            this.$router.go({
+                path: '/'
+            })
         }
     }
 }
