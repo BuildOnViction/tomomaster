@@ -672,14 +672,32 @@ router.get('/:candidate/:owner/getRewards', [
                 reason: 'Voter'
             }
         )
+
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         const map = rewards.data.items.map(async i => {
-            const totalSigners = await axios.get(
-                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${i.epoch}`)
-            )
-            if (totalSigners.data.signNumber) {
-                i.masternodeReward = totalReward.multipliedBy(i.signNumber).dividedBy(totalSigners.data.signNumber)
-            } else i.masternodeReward = 0
+            // have reward
+            if (i.reward > 0) {
+                const totalSigners = await axios.get(
+                    urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${i.epoch}`)
+                )
+                if (totalSigners.data.signNumber) {
+                    i.masternodeReward = totalReward.multipliedBy(i.signNumber)
+                        .dividedBy(totalSigners.data.signNumber) || 0
+                    i.status = 'MASTERNODE'
+                }
+            } else {
+                // check in status history table
+                // const checkStatus = await db.Status.findOne({ epoch: i.epoch }) || {}
+                // if (checkStatus) {
+                //     i.rewardTime = i.createdAt
+                //     if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
+                //     if (checkStatus.proposes.indexOf(candidate) > -1) i.status = 'PROPOSED'
+                //     if (checkStatus.masternodes.indexOf(candidate) > -1) i.status = 'MASTERNODE'
+                //     i.status = 'MASTERNODE'
+                // } else i.status = 'N/A'
+                i.masternodeReward = 0
+            }
+            return i
         })
         const items = await Promise.all(map)
         return res.json({

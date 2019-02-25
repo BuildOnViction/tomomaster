@@ -237,7 +237,7 @@
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="tm-gift color-purple" />
-                            <span>Masternode Rewards</span>
+                            <span>Masternode Rewards and Statues</span>
                             <!-- <span class="text-truncate section-title__description">
                                 Estimated Reward for Masternode</span> -->
                             <span class="text-truncate section-title__description">
@@ -476,6 +476,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'status',
+                    label: 'Status',
+                    sortable: false
+                },
+                {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
@@ -693,8 +698,9 @@ export default {
                         epoch: r.epoch,
                         signNumber: r.signNumber,
                         reward: new BigNumber(r.masternodeReward).toFixed(6),
-                        createdAt: moment(r.rewardTime).fromNow(),
-                        dateTooltip: moment(r.rewardTime).format('lll')
+                        createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
+                        dateTooltip: moment(r.rewardTime).format('lll'),
+                        status: r.status
                     })
                 })
                 self.mnRewards = items
