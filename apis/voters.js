@@ -368,11 +368,11 @@ router.get('/calculatingReward', [], async (req, res, next) => {
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
             // calculate voter reward
             const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
-            res.send(estimateReward.toString(10))
+            return res.send(estimateReward.toString(10))
         }
-        res.send('N/A')
+        return res.send('N/A')
     } catch (error) {
-        next(error)
+        return next(error)
     }
 })
 
