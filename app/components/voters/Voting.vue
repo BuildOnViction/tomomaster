@@ -64,14 +64,21 @@
                                     class="text-danger">Not enough TOMO</span>
                             </b-input-group>
                         </b-form-group>
-                        <div class="buttons text-right">
-                            <b-button
-                                type="button"
-                                variant="secondary"
-                                @click="$router.go(-1)">Cancel</b-button>
-                            <b-button
-                                type="submit"
-                                variant="primary">Next</b-button>
+                        <div>
+                            <div class="float-left">
+                                <estimate-reward
+                                    :value="voteValue"
+                                    :candidate="candidate"/>
+                            </div>
+                            <div class="buttons text-right">
+                                <b-button
+                                    type="button"
+                                    variant="secondary"
+                                    @click="$router.go(-1)">Cancel</b-button>
+                                <b-button
+                                    type="submit"
+                                    variant="primary">Next</b-button>
+                            </div>
                         </div>
                     </b-form>
                 </b-card>
@@ -162,12 +169,14 @@ import NumberInput from '../NumberInput.vue'
 import BigNumber from 'bignumber.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
+import EstimateReward from './EstimateReward.vue'
 
 export default {
     name: 'App',
     components: {
         NumberInput,
-        VueQrcode
+        VueQrcode,
+        EstimateReward
     },
     mixins: [validationMixin],
     data () {
@@ -197,9 +206,11 @@ export default {
         }
     },
     computed: {
+        estimatedReward: function () {
+            return this.voteValue
+        }
     },
-    watch: {
-    },
+    watch: {},
     updated () {},
     created: async function () {
         let self = this

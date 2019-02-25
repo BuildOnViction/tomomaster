@@ -324,7 +324,59 @@ router.get('/getScanningResult', [
         console.log(e)
         return res.status(500).send(e)
     }
-}
-)
+})
+
+router.get('/calculatingReward', [], async (req, res, next) => {
+    try {
+        // candidate
+        const address = (req.query.candidate || '').toLowerCase()
+        // amount
+        const amount = new BigNumber(req.query.amount || 0)
+
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        const lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        const lastEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch')) - 1
+
+        // search candidate
+        const candidate = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: address
+        })
+
+        // get latest reward
+        const rewards = await axios.post(
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            {
+                address: address,
+                limit: 1,
+                page: 1,
+                owner: candidate.owner,
+                reason: 'Voter'
+            }
+        )
+        let signNumber
+        if (rewards.data.items.length > 0) {
+            signNumber = rewards.data.items[0].signNumber
+        }
+        signNumber = 0
+        const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+        // get total signers in latest epoch
+        const totalSigners = await axios.post(
+            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${lastEpoch}`)
+        )
+
+        if (totalSigners.data && totalSigners.data.totalSignNumber) {
+            // calculate devided reward
+            const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
+            // calculate voter reward
+            const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
+            return res.send(estimateReward.toString(10))
+        }
+        return res.send('N/A')
+    } catch (error) {
+        return next(error)
+    }
+})
 
 module.exports = router
