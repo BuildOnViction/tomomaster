@@ -7,13 +7,18 @@ const config = require('config')
 // const moment = require('moment')
 const db = require('../models/mongodb')
 
-async function updateStatues () {
+async function updateStatues (fromEpoch = 0, toEpoch = null) {
     try {
-        // get latest epoch
-        const latestBlock = await web3Rpc.eth.getBlockNumber()
-        const latestEpoch = parseInt(latestBlock / config.get('blockchain.epoch')) - 1
+        let toEpochNumber
+        if (toEpoch) {
+            toEpochNumber = toEpoch
+        } else {
+            // get latest epoch
+            const latestBlock = await web3Rpc.eth.getBlockNumber()
+            toEpochNumber = parseInt(latestBlock / config.get('blockchain.epoch')) - 1
+        }
         // loop from 0 to latest epoch
-        for (let i = 0; i < latestEpoch; i++) {
+        for (let i = fromEpoch; i < toEpochNumber; i++) {
             await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
 
             const blockNumber = (i + 1) * config.get('blockchain.epoch')
@@ -44,10 +49,6 @@ async function updateStatues () {
             // check last epoch to see if masternode is slashed
             await updatePenalty(blk)
             const epoch = parseInt(blockNumber / config.get('blockchain.epoch')) - 1
-            if (epoch === 615) {
-                const c = await db.Candidate.find({ status: 'PROPOSED' })
-                console.log('checking', c)
-            }
             console.log('Done update candidate penalty')
             await updateStatusHistory(blockNumber)
             console.log('Done update status')
@@ -59,7 +60,6 @@ async function updateStatues () {
 
 async function updateStatusHistory (blk) {
     try {
-        console.log('is this run first????')
         const penalties = []
         const masternodes = []
         const proposes = []
@@ -81,12 +81,8 @@ async function updateStatusHistory (blk) {
         const propose = await ProposePromise
         propose.map(p => proposes.push(p.candidate))
         const blockData = await blockDataPromise
-        // insert Status table
-        if (epoch === 615) {
-            const c = await db.Candidate.find({ status: 'SLASHED' })
-            console.log('history', c)
-        }
 
+        // insert Status table
         await db.Status.findOneAndUpdate({ epoch: epoch }, {
             epoch: epoch,
             masternodes: masternodes,
@@ -123,19 +119,8 @@ async function updatePenalty (blk) {
 
         const lastEpoch = currentEpoch - 1
         const lastEpochData = await db.Status.findOne({ epoch: lastEpoch })
-        if (lastEpoch === 615) {
-            console.log(`
-            
-            
-            HERERERER
-            currrent: ${currentEpoch}
-            last: ${lastEpoch}
-            
-            ${lastEpochData}`)
-        }
+
         if (lastEpochData) {
-            console.log(11111111111111)
-            console.log(currentEpoch)
             // update candidate again
             for (let i = 0; i < lastEpochData.penalties.length; i++) {
                 await db.Candidate.updateOne({
