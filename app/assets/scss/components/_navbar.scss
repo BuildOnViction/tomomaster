@@ -21,6 +21,10 @@
     text-align: right;
     margin-top: 10px;
     margin-bottom: 7px;
+    button {
+        display: inline-flex;
+        vertical-align: middle;
+    }
 
     > a {
         display: inline-block;
@@ -86,7 +90,7 @@
         border: none;
         padding: 0;
         &:hover {
-            background-color: none;
+            background: none;
             border-color: none;
         }
     }
