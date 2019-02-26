@@ -644,15 +644,15 @@ router.get('/:candidate/:owner/getRewards', [
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         const map = rewards.data.items.map(async i => {
             // have reward
-            if (i.reward > 0) {
-                const totalSigners = await axios.get(
+            if (parseFloat(i.reward) > 0) {
+                const totalSigners = await axios.post(
                     urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${i.epoch}`)
                 )
                 if (totalSigners.data.signNumber) {
                     i.masternodeReward = totalReward.multipliedBy(i.signNumber)
                         .dividedBy(totalSigners.data.signNumber) || 0
                     i.status = 'MASTERNODE'
-                }
+                } else i.masternodeReward = i.reward
             } else {
                 // check in status history table
                 const checkStatus = await db.Status.findOne({ epoch: i.epoch })
