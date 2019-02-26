@@ -435,6 +435,26 @@
     }
 }
 
+.tomo-table--voter {
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 100%;
+        }
+
+        thead tr,
+        tbody tr {
+            grid-template-columns: auto 30%;
+        }
+
+        th[aria-colindex="3"],
+        td[aria-colindex="3"] {
+            text-align: inherit;
+        }
+    }
+}
+
 .tomo-table--transactions {
 
     td[aria-colindex="5"] {

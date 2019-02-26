@@ -53,44 +53,14 @@ router.get('/', [
         let data = await Promise.all([
             db.Candidate.find({
                 smartContractAddress: config.get('blockchain.validatorAddress')
-            }).sort(sort).limit(limit).skip(skip).lean().exec(),
-            db.Signer.findOne({}).sort({ _id: 'desc' }),
-            db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
+            }).sort(sort).limit(limit).skip(skip).lean().exec()
         ])
 
         let candidates = data[0]
-        let latestSigners = data[1]
-        let latestPenalties = data[2]
-
-        let signers = (latestSigners || {}).signers || []
-        let penalties = []
-        latestPenalties.forEach(p => {
-            penalties = _.concat(penalties, (p || {}).penalties || [])
-        })
-
-        const setS = new Set()
-        for (let i = 0; i < signers.length; i++) {
-            setS.add((signers[i] || '').toLowerCase())
-        }
-
-        const setP = new Set()
-        for (let i = 0; i < penalties.length; i++) {
-            setP.add((penalties[i] || '').toLowerCase())
-        }
 
         let map = candidates.map(async c => {
             // is masternode
-            if (signers.length === 0) {
-                c.isMasternode = !!c.latestSignedBlock
-            } else {
-                c.isMasternode = setS.has((c.candidate || '').toLowerCase())
-            }
-            // is penalty
-            c.isPenalty = setP.has((c.candidate || '').toLowerCase())
-
-            c.status = (c.isMasternode) ? 'MASTERNODE' : c.status
-            c.status = (c.isPenalty) ? 'SLASHED' : c.status
-
+            c.isMasternode = (c.status === 'MASTERNODE' || c.status === 'SLASHED')
             return c
         })
         let ret = await Promise.all(map)
@@ -386,8 +356,6 @@ router.get('/:candidate', async function (req, res, next) {
 
     candidate.isPenalty = setP.has((candidate.candidate || '').toLowerCase())
 
-    candidate.status = (candidate.isMasternode) ? 'MASTERNODE' : candidate.status
-    candidate.status = (candidate.isPenalty) ? 'SLASHED' : candidate.status
     candidate.slashedTimes = await slashedHistory
 
     return res.json(candidate)

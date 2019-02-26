@@ -84,14 +84,11 @@ export default {
 
         filterResults () {
             // first uncapitalize all the things
-            let count = 0
             if (this.search !== '') {
                 this.results = this.items.filter((item) => {
-                    count++
-                    if (count <= 5) {
-                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-                    }
+                    return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
                 })
+                this.results = this.results.slice(0, 5)
             }
         },
         setResult (result) {
