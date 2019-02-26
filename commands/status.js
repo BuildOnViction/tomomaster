@@ -22,7 +22,7 @@ async function updateStatues (fromEpoch = 0, toEpoch = null) {
             await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
 
             const blockNumber = (i + 1) * config.get('blockchain.epoch')
-            console.log('Reading block ', blockNumber)
+            console.log('Reading epoch ', i)
             const blk = await web3Rpc.eth.getBlock(blockNumber)
 
             // update candidate table
@@ -48,7 +48,6 @@ async function updateStatues (fromEpoch = 0, toEpoch = null) {
             // update penalties
             // check last epoch to see if masternode is slashed
             await updatePenalty(blk)
-            const epoch = parseInt(blockNumber / config.get('blockchain.epoch')) - 1
             console.log('Done update candidate penalty')
             await updateStatusHistory(blockNumber)
             console.log('Done update status')

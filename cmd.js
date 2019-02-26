@@ -7,7 +7,6 @@ const cmdValidator = require('./commands/validator')
 const { updatePenalty } = require('./commands/penalty')
 const { updateStatues } = require('./commands/status')
 const web3Rpc = require('./models/blockchain/web3rpc')
-const config = require('config')
 
 commander
     .version('0.1.0')
@@ -109,17 +108,6 @@ commander
     .alias('up')
     .description('Update status table')
     .action(async () => {
-        let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
-        const latestEpoch = parseInt(latestBlockNumber / config.get('blockchain.epoch')) - 1 - 2
-        const num1To = parseInt(latestEpoch / 3) - 1
-        const num2From = latestEpoch + 1
-        const num2To = parseInt(latestEpoch / 3) * 2
-        const num3From = (parseInt(latestEpoch / 3) * 2) + 1
-        await Promise.all([
-            updateStatues(0, num1To),
-            updateStatues(num2From, num2To),
-            updateStatues(num3From, latestEpoch)
-        ])
         await updateStatues()
         process.exit()
     })
