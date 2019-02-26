@@ -358,7 +358,7 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         if (rewards.data.items.length > 0) {
             signNumber = rewards.data.items[0].signNumber
         }
-        console.log(rewards.data)
+
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         // get total signers in latest epoch
@@ -369,7 +369,7 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         if (totalSigners.data && totalSigners.data.totalSignNumber) {
             // calculate devided reward
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
-            console.log(masternodeReward)
+
             // calculate voter reward
             const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
             return res.send(estimateReward.toString(10))
