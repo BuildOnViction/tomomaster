@@ -655,14 +655,13 @@ router.get('/:candidate/:owner/getRewards', [
                 }
             } else {
                 // check in status history table
-                // const checkStatus = await db.Status.findOne({ epoch: i.epoch }) || {}
-                // if (checkStatus) {
-                //     i.rewardTime = i.createdAt
-                //     if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
-                //     if (checkStatus.proposes.indexOf(candidate) > -1) i.status = 'PROPOSED'
-                //     if (checkStatus.masternodes.indexOf(candidate) > -1) i.status = 'MASTERNODE'
-                //     i.status = 'MASTERNODE'
-                // } else i.status = 'N/A'
+                const checkStatus = await db.Status.findOne({ epoch: i.epoch }) || {}
+                if (checkStatus) {
+                    i.rewardTime = i.createdAt
+                    if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
+                    if (checkStatus.proposes.indexOf(candidate) > -1) i.status = 'PROPOSED'
+                    if (checkStatus.masternodes.indexOf(candidate) > -1) i.status = 'MASTERNODE'
+                } else i.status = 'N/A'
                 i.masternodeReward = 0
             }
             return i

@@ -48,7 +48,7 @@
                             class="dd-setting"
                             right
                             offset="25"
-                            no-caret="true"
+                            no-caret
                             variant="primary">
                             <template
                                 slot="button-content">
