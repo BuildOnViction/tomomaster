@@ -48,11 +48,11 @@
                             class="dd-setting"
                             right
                             offset="25"
-                            no-caret="true"
+                            no-caret
                             variant="primary">
                             <template
                                 slot="button-content">
-                                <i class="tm-cog ml-1 icon-2x" />
+                                <i class="tm-cog ml-2 icon-2x" />
                             </template>
                             <b-dropdown-item
                                 :to="`/voter/${account}`"
