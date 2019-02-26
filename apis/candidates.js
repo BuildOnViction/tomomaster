@@ -655,7 +655,7 @@ router.get('/:candidate/:owner/getRewards', [
                 }
             } else {
                 // check in status history table
-                const checkStatus = await db.Status.findOne({ epoch: i.epoch }) || {}
+                const checkStatus = await db.Status.findOne({ epoch: i.epoch })
                 if (checkStatus) {
                     i.rewardTime = i.createdAt
                     if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
