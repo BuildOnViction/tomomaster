@@ -5,7 +5,7 @@ const db = require('./models/mongodb')
 const _ = require('lodash')
 const cmdValidator = require('./commands/validator')
 const { updatePenalty } = require('./commands/penalty')
-const { updateStatues } = require('./commands/status')
+const { updateStatus } = require('./commands/status')
 const web3Rpc = require('./models/blockchain/web3rpc')
 
 commander
@@ -108,7 +108,7 @@ commander
     .alias('up')
     .description('Update status table')
     .action(async () => {
-        await updateStatues()
+        await updateStatus()
         process.exit()
     })
 
