@@ -76,7 +76,7 @@ async function updateStatus () {
                 masternodes: signers,
                 penalties: penalties,
                 proposes: proposes,
-                created_at: moment.unix(block.timestamp).utc()
+                blockCreatedAt: moment.unix(block.timestamp).utc()
             }, { upsert: true })
         }
         logger.info('Done')
