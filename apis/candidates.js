@@ -627,51 +627,107 @@ router.get('/:candidate/:owner/getRewards', [
 
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const page = (req.query.page) ? parseInt(req.query.page) : 1
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        let skip
+        skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
-        const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'),
-            {
-                address: candidate,
-                limit,
-                page,
-                owner: owner,
-                reason: 'Voter'
-            }
-        )
-
-        const totalReward = new BigNumber(config.get('blockchain.reward'))
-        const map = rewards.data.items.map(async i => {
-            // have reward
-            if (parseFloat(i.reward) > 0) {
-                const totalSigners = await axios.post(
-                    urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${i.epoch}`)
-                )
-                if (totalSigners.data.signNumber) {
-                    i.masternodeReward = totalReward.multipliedBy(i.signNumber)
-                        .dividedBy(totalSigners.data.signNumber) || 0
-                    i.status = 'MASTERNODE'
-                } else i.masternodeReward = i.reward
-            } else {
-                // check in status history table
-                const checkStatus = await db.Status.findOne({ epoch: i.epoch })
-                if (checkStatus) {
-                    if (i.epoch === 798) {
-                    }
-                    i.rewardTime = checkStatus.created_at
-                    if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
-                    if (checkStatus.proposes.indexOf(candidate) > -1) i.status = 'PROPOSED'
-                    if (checkStatus.masternodes.indexOf(candidate) > -1) i.status = 'MASTERNODE'
-                } else i.status = 'N/A'
-                i.masternodeReward = 0
-            }
-            return i
+        const masternodeTimes = db.Status.countDocuments({
+            masternodes: { $elemMatch: { $in: [candidate] } }
         })
-        const items = await Promise.all(map)
+        const penaltyTimes = db.Status.countDocuments({
+            penalties: { $elemMatch: { $in: [candidate] } }
+        })
+        const proposeTimes = db.Status.countDocuments({
+            proposes: { $elemMatch: { $in: [candidate] } }
+        })
+
+        // --> total pages
+
+        // list epoch
+        const masternode = db.Status.find({
+            masternodes: { $elemMatch: { $in: [candidate] } }
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+        const penalty = db.Status.find({
+            penalties: { $elemMatch: { $in: [candidate] } }
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+        const propose = db.Status.find({
+            proposes: { $elemMatch: { $in: [candidate] } }
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+        // build rewardData
+        const masternodes = await masternode
+        let MNArr
+        if (masternodes) {
+            MNArr = await Promise.all(masternodes.map(async (m) => {
+                const rewards = await axios.post(
+                    urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'),
+                    {
+                        address: candidate,
+                        owner: owner,
+                        reason: 'Voter',
+                        epoch: m.epoch
+                    }
+                )
+                if (rewards.data) {
+                    const result = rewards.data
+                    const totalReward = new BigNumber(config.get('blockchain.reward'))
+                    const totalSigners = await axios.post(
+                        urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${m.epoch}`)
+                    )
+                    if (totalSigners.data.signNumber) {
+                        result.masternodeReward = totalReward.multipliedBy(result.signNumber)
+                            .dividedBy(totalSigners.data.signNumber) || 0
+                    } else result.masternodeReward = result.reward
+                    result.status = 'MASTERNODE'
+                    return result
+                } else {
+                    return {
+                        epoch: m.epoch,
+                        masternodeReward: 0,
+                        signNumber: 0,
+                        status: 'MASTERNODE',
+                        rewardTime: m.blockCreatedAt
+                    }
+                }
+            }))
+        }
+        let penArr
+        const penalties = await penalty
+        if (penalties) {
+            penArr = await Promise.all(penalties.map(p => {
+                return {
+                    epoch: p.epoch,
+                    masternodeReward: 0,
+                    rewardTime: p.blockCreatedAt,
+                    signNumber: 0,
+                    status: 'SLASHED'
+                }
+            }))
+        }
+        let proposeArr
+        const proposes = await propose
+        if (proposes) {
+            proposeArr = await Promise.all(proposes.map(p => {
+                return {
+                    epoch: p.epoch,
+                    reward: 0,
+                    rewardTime: p.blockCreatedAt,
+                    signNumber: 0,
+                    status: 'PROPOSED'
+                }
+            }))
+        }
+
+        // merge
+        let items = []
+        if (proposeArr.length > 0) items = items.concat(proposeArr)
+        if (penArr.length > 0) items = items.concat(penArr)
+        if (MNArr.length > 0) items = items.concat(MNArr)
+
+        items = items.sort((a, b) => b.epoch - a.epoch)
+
         return res.json({
-            items: items,
-            total: rewards.data.total
+            items: items.slice(0, limit),
+            total: (await masternodeTimes || 0) + (await penaltyTimes || 0) + (await proposeTimes || 0)
         })
     } catch (e) {
         return next(e)

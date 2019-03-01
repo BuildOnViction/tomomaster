@@ -14,7 +14,7 @@ var Status = new Schema({
         type: String
     }],
     epoch: { type: Number, index: true },
-    created_at: { type: Date }
+    blockCreatedAt: { type: Date }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Status', Status)

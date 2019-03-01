@@ -336,7 +336,7 @@ async function updateStatusHistory () {
             masternodes: masternodes,
             penalties: penalties,
             proposes: proposes,
-            createdAt: moment.unix(blockData.timestamp).utc()
+            blockCreatedAt: moment.unix(blockData.timestamp).utc()
         }, { upsert: true })
     } catch (e) {
         logger.error('updateStatusHistory %s', e)
