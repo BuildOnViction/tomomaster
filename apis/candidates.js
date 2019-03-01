@@ -658,7 +658,6 @@ router.get('/:candidate/:owner/getRewards', [
                 const checkStatus = await db.Status.findOne({ epoch: i.epoch })
                 if (checkStatus) {
                     if (i.epoch === 798) {
-                        console.log(checkStatus.created_at)
                     }
                     i.rewardTime = checkStatus.created_at
                     if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
