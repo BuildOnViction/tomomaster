@@ -631,7 +631,7 @@ router.get('/:candidate/:owner/getRewards', [
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
 
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'),
             {
                 address: candidate,
                 limit,
@@ -657,7 +657,10 @@ router.get('/:candidate/:owner/getRewards', [
                 // check in status history table
                 const checkStatus = await db.Status.findOne({ epoch: i.epoch })
                 if (checkStatus) {
-                    i.rewardTime = i.createdAt
+                    if (i.epoch === 798) {
+                        console.log(checkStatus.created_at)
+                    }
+                    i.rewardTime = checkStatus.created_at
                     if (checkStatus.penalties.indexOf(candidate) > -1) i.status = 'SLASHED'
                     if (checkStatus.proposes.indexOf(candidate) > -1) i.status = 'PROPOSED'
                     if (checkStatus.masternodes.indexOf(candidate) > -1) i.status = 'MASTERNODE'
