@@ -12,6 +12,7 @@ async function updateStatus () {
         const set = new Set()
         let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
         const toEpoch = (latestBlockNumber / config.get('blockchain.epoch'))
+        await db.Status.remove({})
         for (let i = 1; i <= toEpoch; i++) {
             let proposes = [] // list of proposed nodes
             const endBlock = i * config.get('blockchain.epoch')
@@ -20,8 +21,8 @@ async function updateStatus () {
                 fromBlock: startBlock,
                 toBlock: endBlock
             })
-            let signers// list of masternode
-            let penalties// list of slashed masternodes
+            let signers = []// list of masternode
+            let penalties = []// list of slashed masternodes
             const map = events.map(async (event) => {
                 if (event.event === 'Propose') {
                     proposes.push(event.returnValues._candidate.toLowerCase())
@@ -38,7 +39,7 @@ async function updateStatus () {
             }
 
             const blks = []
-            for (let j = 0; j <= 5; j++) {
+            for (let j = 1; j <= 5; j++) {
                 let checkpoint = endBlock - (j * 900)
                 if (checkpoint > 0) {
                     blks.push(await web3Rpc.eth.getBlock(checkpoint))
@@ -47,13 +48,6 @@ async function updateStatus () {
             if (blks.length > 0) {
                 penalties = await getPenalties(blks)
             }
-
-            // filter slashed masternodes
-            signers = signers.filter(s => {
-                if (penalties.indexOf(s) < 0) {
-                    return s
-                }
-            })
 
             // filter propose nodes (out of top 150)
             // not in penalties, signers, proposes
@@ -65,11 +59,12 @@ async function updateStatus () {
             })
             await Promise.all(map2)
 
-            logger.info('epoch: %s', i)
-            logger.info('proposes: %s', proposes)
-            logger.info('total candidates: %s', set.size)
-            logger.info('penalties - slash: %s', penalties.length)
-            logger.info('signers - masternodes: %s', signers.length)
+            logger.info(`
+            epoch: ${i}
+            proposes: ${proposes}
+            total candidates: ${set.size}
+            penalties - slash: ${penalties.length}
+            signers - masternodes: ${signers.length}`)
             const block = await web3Rpc.eth.getBlock(i * config.get('blockchain.epoch'))
             await db.Status.updateOne({ epoch: i }, {
                 epoch: i,
