@@ -331,7 +331,7 @@ async function updateStatusHistory () {
         const blockData = await blockDataPromise
         // insert Status table
 
-        await db.Status.findOneAndUpdate({ epoch: epoch }, {
+        await db.Status.updateOne({ epoch: epoch }, {
             epoch: epoch,
             masternodes: masternodes,
             penalties: penalties,

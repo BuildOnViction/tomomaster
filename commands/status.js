@@ -11,8 +11,8 @@ async function updateStatus () {
     try {
         const set = new Set()
         let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
-        const toEpoch = (latestBlockNumber / config.get('blockchain.epoch')) - 1
-        for (let i = 1; i < toEpoch; i++) {
+        const toEpoch = (latestBlockNumber / config.get('blockchain.epoch'))
+        for (let i = 1; i <= toEpoch; i++) {
             let proposes = [] // list of proposed nodes
             const endBlock = i * config.get('blockchain.epoch')
             const startBlock = endBlock - config.get('blockchain.epoch') + 1
@@ -58,11 +58,12 @@ async function updateStatus () {
             // filter propose nodes (out of top 150)
             // not in penalties, signers, proposes
             const canArr = [...set]
-            canArr.map(c => {
+            const map2 = canArr.map(c => {
                 if (penalties.indexOf(c) < 0 && signers.indexOf(c) < 0 && proposes.indexOf(c) < 0) {
                     proposes.push(c)
                 }
             })
+            await Promise.all(map2)
 
             logger.info('epoch: %s', i)
             logger.info('proposes: %s', proposes)
@@ -70,7 +71,7 @@ async function updateStatus () {
             logger.info('penalties - slash: %s', penalties.length)
             logger.info('signers - masternodes: %s', signers.length)
             const block = await web3Rpc.eth.getBlock(i * config.get('blockchain.epoch'))
-            await db.Status.findOneAndUpdate({ epoch: i }, {
+            await db.Status.updateOne({ epoch: i }, {
                 epoch: i,
                 masternodes: signers,
                 penalties: penalties,
