@@ -214,10 +214,13 @@
                             :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
                             @click="withdraw(w.blockNumber, k)">Withdraw</b-button> -->
-                        <b-button
-                            :disabled="w.blockNumber > chainConfig.blockNumber"
-                            variant="primary"
-                            @click="changeView(w, k)">Withdraw</b-button>
+                        <div class="tomo-list__text">
+                            <b-button
+                                :disabled="w.blockNumber > chainConfig.blockNumber"
+                                class="float-right"
+                                variant="primary"
+                                @click="changeView(w, k)">Withdraw</b-button>
+                        </div>
                     </li>
                 </ul>
                 <ul
@@ -236,6 +239,7 @@
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
                         </div>
+                        <p class="tomo-list__text"/>
                     </li>
                 </ul>
             </b-card>

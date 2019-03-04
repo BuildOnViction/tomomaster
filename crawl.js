@@ -306,38 +306,51 @@ async function updateSignersAndCandidate () {
     }
 }
 
-async function updateStatusHistory () {
+async function updateStatusHistory (block) {
     try {
-        const penalties = []
-        const masternodes = []
-        const proposes = []
+        const blockCheckpoint = block - (block % parseInt(config.get('blockchain.epoch')))
 
-        const latestBlockNumber = await web3.eth.getBlockNumber()
-        const blockCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-
-        const epoch = parseInt(latestBlockNumber / config.get('blockchain.epoch')) - 1
+        const epoch = parseInt(block / config.get('blockchain.epoch')) - 1
 
         const slashPromise = db.Candidate.find({ status: 'SLASHED' })
         const MNPromise = db.Candidate.find({ status: 'MASTERNODE' })
         const ProposePromise = db.Candidate.find({ status: 'PROPOSED' })
         const blockDataPromise = web3.eth.getBlock(blockCheckpoint)
 
-        const slash = await slashPromise
-        slash.map(s => penalties.push(s.candidate))
-        const masternode = await MNPromise
-        masternode.map(m => masternodes.push(m.candidate))
-        const propose = await ProposePromise
-        propose.map(p => proposes.push(p.candidate))
         const blockData = await blockDataPromise
-        // insert Status table
 
-        await db.Status.findOneAndUpdate({ epoch: epoch }, {
-            epoch: epoch,
-            masternodes: masternodes,
-            penalties: penalties,
-            proposes: proposes,
-            blockCreatedAt: moment.unix(blockData.timestamp).utc()
-        }, { upsert: true })
+        const slash = await slashPromise
+        const a = slash.map(async (s) => {
+            await db.Status.updateOne({ candidate: s.candidate }, {
+                epoch: epoch,
+                candidate: s.candidate,
+                status: 'SLASHED',
+                epochCreatedAt: moment.unix(blockData.timestamp).utc()
+            }, { upsert: true })
+        })
+
+        const masternode = await MNPromise
+        const b = masternode.map(async (m) => {
+            await db.Status.updateOne({ candidate: m.candidate }, {
+                epoch: epoch,
+                candidate: m.candidate,
+                status: 'MASTERNODE',
+                epochCreatedAt: moment.unix(blockData.timestamp).utc()
+            }, { upsert: true })
+        })
+
+        const propose = await ProposePromise
+        const c = propose.map(async (p) => {
+            await db.Status.updateOne({ candidate: p.candidate }, {
+                epoch: epoch,
+                candidate: p.candidate,
+                status: 'PROPOSED',
+                epochCreatedAt: moment.unix(blockData.timestamp).utc()
+            }, { upsert: true })
+        })
+
+        // insert Status table
+        await Promise.all([a, b, c])
     } catch (e) {
         logger.error('updateStatusHistory %s', e)
     }
@@ -358,7 +371,7 @@ async function watchNewBlock (n) {
                 await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
                 await updateSignersAndCandidate()
                 await updatePenalties()
-                await updateStatusHistory()
+                await updateStatusHistory(blk.number)
             }
             await updateLatestSignedBlock(blk)
             await watchValidator()
