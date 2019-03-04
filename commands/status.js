@@ -11,7 +11,8 @@ async function updateStatus () {
     try {
         const set = new Set()
         let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
-        const toEpoch = (latestBlockNumber / config.get('blockchain.epoch'))
+        const toEpoch = parseInt((latestBlockNumber / config.get('blockchain.epoch')))
+        logger.info('Total epochs: %s', toEpoch)
         await db.Status.remove({})
         for (let i = 1; i <= toEpoch; i++) {
             let proposes = [] // list of proposed nodes
@@ -66,13 +67,39 @@ async function updateStatus () {
             penalties - slash: ${penalties.length}
             signers - masternodes: ${signers.length}`)
             const block = await web3Rpc.eth.getBlock(i * config.get('blockchain.epoch'))
-            await db.Status.updateOne({ epoch: i }, {
-                epoch: i,
-                masternodes: signers,
-                penalties: penalties,
-                proposes: proposes,
-                blockCreatedAt: moment.unix(block.timestamp).utc()
-            }, { upsert: true })
+            const epochCreatedAt = moment.unix(block.timestamp).utc()
+
+            const a = signers.map(async m => {
+                await db.Status.updateOne({ epoch: i, candidate: m },
+                    {
+                        epoch: i,
+                        candidate: m,
+                        status: 'MASTERNODE',
+                        epochCreatedAt: epochCreatedAt
+                    },
+                    { upsert: true })
+            })
+            const b = penalties.map(async m => {
+                await db.Status.updateOne({ epoch: i, candidate: m },
+                    {
+                        epoch: i,
+                        candidate: m,
+                        status: 'SLASHED',
+                        epochCreatedAt: epochCreatedAt
+                    },
+                    { upsert: true })
+            })
+            const c = proposes.map(async m => {
+                await db.Status.updateOne({ epoch: i, candidate: m },
+                    {
+                        epoch: i,
+                        candidate: m,
+                        status: 'PROPOSED',
+                        epochCreatedAt: epochCreatedAt
+                    },
+                    { upsert: true })
+            })
+            await Promise.all([b, c, a])
         }
         logger.info('Done')
     } catch (error) {
