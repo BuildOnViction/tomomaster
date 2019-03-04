@@ -4,17 +4,10 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var Status = new Schema({
-    penalties: [{
-        type: String
-    }],
-    masternodes: [{
-        type: String
-    }],
-    proposes: [{
-        type: String
-    }],
+    status: { type: String },
+    candidate: { type: String, index: true },
     epoch: { type: Number, index: true },
-    blockCreatedAt: { type: Date }
+    epochCreatedAt: { type: Date }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Status', Status)

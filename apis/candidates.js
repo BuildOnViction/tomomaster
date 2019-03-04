@@ -631,103 +631,52 @@ router.get('/:candidate/:owner/getRewards', [
         let skip
         skip = (req.query.page) ? limit * (req.query.page - 1) : 0
 
-        const masternodeTimes = db.Status.countDocuments({
-            masternodes: { $elemMatch: { $in: [candidate] } }
-        })
-        const penaltyTimes = db.Status.countDocuments({
-            penalties: { $elemMatch: { $in: [candidate] } }
-        })
-        const proposeTimes = db.Status.countDocuments({
-            proposes: { $elemMatch: { $in: [candidate] } }
+        const total = db.Status.countDocuments({
+            candidate: candidate
         })
 
-        // --> total pages
+        const epochData = await db.Status.find({
+            candidate: candidate
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
 
-        // list epoch
-        const masternode = db.Status.find({
-            masternodes: { $elemMatch: { $in: [candidate] } }
-        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
-        const penalty = db.Status.find({
-            penalties: { $elemMatch: { $in: [candidate] } }
-        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
-        const propose = db.Status.find({
-            proposes: { $elemMatch: { $in: [candidate] } }
-        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
-        // build rewardData
-        const masternodes = await masternode
-        let MNArr
-        if (masternodes) {
-            MNArr = await Promise.all(masternodes.map(async (m) => {
+        const map = epochData.map(async (e) => {
+            if (e.status !== 'MASTERNODE') {
+                e.masternodeReward = 0
+                e.rewardTime = e.epochCreatedAt
+                e.signNumber = 0
+            } else {
                 const rewards = await axios.post(
-                    urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'),
-                    {
+                    urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'), {
                         address: candidate,
                         owner: owner,
                         reason: 'Voter',
-                        epoch: m.epoch
-                    }
-                )
+                        epoch: e.epoch
+                    })
                 if (rewards.data) {
+                    e = Object.assign(rewards.data, e)
                     const result = rewards.data
                     const totalReward = new BigNumber(config.get('blockchain.reward'))
                     const totalSigners = await axios.post(
-                        urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${m.epoch}`)
+                        urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${e.epoch}`)
                     )
                     if (totalSigners.data.signNumber) {
-                        result.masternodeReward = totalReward.multipliedBy(result.signNumber)
+                        e.masternodeReward = totalReward.multipliedBy(result.signNumber)
                             .dividedBy(totalSigners.data.signNumber) || 0
-                    } else result.masternodeReward = result.reward
-                    result.status = 'MASTERNODE'
-                    return result
-                } else {
-                    return {
-                        epoch: m.epoch,
-                        masternodeReward: 0,
-                        signNumber: 0,
-                        status: 'MASTERNODE',
-                        rewardTime: m.blockCreatedAt
+                    } else {
+                        e.masternodeReward = result.reward
                     }
+                } else {
+                    e.masternodeReward = 0
+                    e.signNumber = 0
+                    e.rewardTime = e.epochCreatedAt
                 }
-            }))
-        }
-        let penArr
-        const penalties = await penalty
-        if (penalties) {
-            penArr = await Promise.all(penalties.map(p => {
-                return {
-                    epoch: p.epoch,
-                    masternodeReward: 0,
-                    rewardTime: p.blockCreatedAt,
-                    signNumber: 0,
-                    status: 'SLASHED'
-                }
-            }))
-        }
-        let proposeArr
-        const proposes = await propose
-        if (proposes) {
-            proposeArr = await Promise.all(proposes.map(p => {
-                return {
-                    epoch: p.epoch,
-                    reward: 0,
-                    rewardTime: p.blockCreatedAt,
-                    signNumber: 0,
-                    status: 'PROPOSED'
-                }
-            }))
-        }
-
-        // merge
-        let items = []
-        if (proposeArr.length > 0) items = items.concat(proposeArr)
-        if (penArr.length > 0) items = items.concat(penArr)
-        if (MNArr.length > 0) items = items.concat(MNArr)
-
-        items = items.sort((a, b) => b.epoch - a.epoch)
-
+            }
+            return e
+        })
+        const result = await Promise.all(map)
         return res.json({
-            items: items.slice(0, limit),
-            total: (await masternodeTimes || 0) + (await penaltyTimes || 0) + (await proposeTimes || 0)
+            items: result,
+            total: await total
         })
     } catch (e) {
         return next(e)
