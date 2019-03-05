@@ -628,8 +628,9 @@ router.get('/:candidate/:owner/getRewards', [
         const candidate = req.params.candidate
         const owner = req.params.owner
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        const page = parseInt(req.query.page) || 1
         let skip
-        skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+        skip = (page) ? limit * (page - 1) : 0
 
         const total = db.Status.countDocuments({
             candidate: candidate
@@ -639,43 +640,66 @@ router.get('/:candidate/:owner/getRewards', [
             candidate: candidate
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
 
-        const map = epochData.map(async (e) => {
-            if (e.status !== 'MASTERNODE') {
-                e.masternodeReward = 0
-                e.rewardTime = e.epochCreatedAt
-                e.signNumber = 0
-            } else {
-                const rewards = await axios.post(
-                    urljoin(config.get('tomoscanUrl'), 'api/expose/rewardsByEpoch'), {
-                        address: candidate,
-                        owner: owner,
-                        reason: 'Voter',
-                        epoch: e.epoch
-                    })
-                if (rewards.data) {
-                    e = Object.assign(rewards.data, e)
-                    const result = rewards.data
-                    const totalReward = new BigNumber(config.get('blockchain.reward'))
-                    const totalSigners = await axios.post(
-                        urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${e.epoch}`)
-                    )
-                    if (totalSigners.data.signNumber) {
-                        e.masternodeReward = totalReward.multipliedBy(result.signNumber)
-                            .dividedBy(totalSigners.data.signNumber) || 0
+        // get reward for page x limit y
+
+        const rewards = await axios.post(
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            {
+                address: candidate,
+                owner: owner,
+                reason: 'Voter',
+                page: Math.ceil(page / 5),
+                limit: 50
+            }
+        )
+        const a = []
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+
+        let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
+        if (rewards.data && rewards.data.items.length > 0) {
+            const rwData = rewards.data.items
+            for (let i = 0; i < masternodes.length; i++) {
+                for (let j = 0; j < rwData.length; j++) {
+                    if (masternodes[i].epoch === rwData[j].epoch) {
+                        const totalSigners = await axios.post(
+                            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${masternodes[i].epoch}`)
+                        )
+                        const tmp = Object.assign(rwData[j], masternodes[i])
+                        if (totalSigners.data.signNumber) {
+                            tmp.masternodeReward = totalReward.multipliedBy(rwData[j].signNumber)
+                                .dividedBy(totalSigners.data.signNumber) || 0
+                        } else {
+                            tmp.masternodeReward = rwData[j].reward
+                        }
+                        a.push(tmp)
                     } else {
-                        e.masternodeReward = result.reward
+                        masternodes[i].masternodeReward = 0
+                        masternodes[i].signNumber = 0
+                        masternodes[i].rewardTime = masternodes[i].epochCreatedAt
                     }
-                } else {
-                    e.masternodeReward = 0
-                    e.signNumber = 0
-                    e.rewardTime = e.epochCreatedAt
                 }
             }
-            return e
-        })
-        const result = await Promise.all(map)
+        } else {
+            masternodes = masternodes.map(m => {
+                m.masternodeReward = 0
+                m.signNumber = 0
+                m.rewardTime = m.epochCreatedAt
+                return m
+            })
+        }
+
+        let noRewardEpochs = epochData.filter(e => e.status !== 'MASTERNODE')
+
+        if (noRewardEpochs.length > 0) {
+            noRewardEpochs = noRewardEpochs.map(n => {
+                n.masternodeReward = 0
+                n.rewardTime = n.epochCreatedAt
+                n.signNumber = 0
+                return n
+            })
+        }
         return res.json({
-            items: result,
+            items: masternodes.concat(noRewardEpochs),
             total: await total
         })
     } catch (e) {
