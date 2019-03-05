@@ -321,7 +321,7 @@ async function updateStatusHistory (block) {
 
         const slash = await slashPromise
         const a = slash.map(async (s) => {
-            await db.Status.updateOne({ candidate: s.candidate }, {
+            await db.Status.updateOne({ epoch: epoch, candidate: s.candidate }, {
                 epoch: epoch,
                 candidate: s.candidate,
                 status: 'SLASHED',
@@ -331,7 +331,7 @@ async function updateStatusHistory (block) {
 
         const masternode = await MNPromise
         const b = masternode.map(async (m) => {
-            await db.Status.updateOne({ candidate: m.candidate }, {
+            await db.Status.updateOne({ epoch: epoch, candidate: m.candidate }, {
                 epoch: epoch,
                 candidate: m.candidate,
                 status: 'MASTERNODE',
@@ -341,7 +341,7 @@ async function updateStatusHistory (block) {
 
         const propose = await ProposePromise
         const c = propose.map(async (p) => {
-            await db.Status.updateOne({ candidate: p.candidate }, {
+            await db.Status.updateOne({ epoch: epoch, candidate: p.candidate }, {
                 epoch: epoch,
                 candidate: p.candidate,
                 status: 'PROPOSED',
