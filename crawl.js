@@ -308,6 +308,7 @@ async function updateSignersAndCandidate () {
 
 async function updateStatusHistory (block) {
     try {
+        logger.info('Update candidate status at block %s', block)
         const blockCheckpoint = block - (block % parseInt(config.get('blockchain.epoch')))
 
         const epoch = parseInt(block / config.get('blockchain.epoch')) - 1
