@@ -13,7 +13,6 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
-const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -631,6 +630,7 @@ router.get('/:candidate/:owner/getRewards', [
         const page = parseInt(req.query.page) || 1
         let skip
         skip = (page) ? limit * (page - 1) : 0
+        let masternodesRW = []
 
         const total = db.Status.countDocuments({
             candidate: candidate
@@ -640,51 +640,30 @@ router.get('/:candidate/:owner/getRewards', [
             candidate: candidate
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
 
-        // get reward for page x limit y
-
+        let masternodesEpochs = epochData.map(e => {
+            if (e.status === 'MASTERNODE') {
+                return e.epoch
+            }
+        })
+        let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
             {
                 address: candidate,
                 owner: owner,
                 reason: 'Voter',
-                page: Math.ceil(page / 5),
-                limit: 50
+                epoch: masternodesEpochs
             }
         )
-        const a = []
-        const totalReward = new BigNumber(config.get('blockchain.reward'))
 
-        let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
-        if (rewards.data && rewards.data.items.length > 0) {
-            const rwData = rewards.data.items
-            for (let i = 0; i < masternodes.length; i++) {
-                for (let j = 0; j < rwData.length; j++) {
-                    if (masternodes[i].epoch === rwData[j].epoch) {
-                        const totalSigners = await axios.post(
-                            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${masternodes[i].epoch}`)
-                        )
-                        const tmp = Object.assign(rwData[j], masternodes[i])
-                        if (totalSigners.data.signNumber) {
-                            tmp.masternodeReward = totalReward.multipliedBy(rwData[j].signNumber)
-                                .dividedBy(totalSigners.data.signNumber) || 0
-                        } else {
-                            tmp.masternodeReward = rwData[j].reward
-                        }
-                        a.push(tmp)
-                    } else {
-                        masternodes[i].masternodeReward = 0
-                        masternodes[i].signNumber = 0
-                        masternodes[i].rewardTime = masternodes[i].epochCreatedAt
-                    }
+        if (rewards.data && rewards.data.length > 0) {
+            const rwData = rewards.data
+            masternodesRW = rwData.map((r) => {
+                r.status = 'MASTERNODE'
+                if (!r.reward) {
+                    r.rewardTime = masternodes.find(m => m.epoch === r.epoch).epochCreatedAt || ''
                 }
-            }
-        } else {
-            masternodes = masternodes.map(m => {
-                m.masternodeReward = 0
-                m.signNumber = 0
-                m.rewardTime = m.epochCreatedAt
-                return m
+                return r
             })
         }
 
@@ -699,7 +678,7 @@ router.get('/:candidate/:owner/getRewards', [
             })
         }
         return res.json({
-            items: masternodes.concat(noRewardEpochs),
+            items: masternodesRW.concat(noRewardEpochs),
             total: await total
         })
     } catch (e) {
