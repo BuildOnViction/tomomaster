@@ -24,7 +24,8 @@ async function updateStatus () {
             })
             let signers = []// list of masternode
             let penalties = []// list of slashed masternodes
-            const map = events.map(async (event) => {
+            for (let i = 0; i < events.length; i++) {
+                const event = events[i]
                 if (event.event === 'Propose') {
                     proposes.push(event.returnValues._candidate.toLowerCase())
                     set.add(event.returnValues._candidate.toLowerCase())
@@ -32,8 +33,8 @@ async function updateStatus () {
                 if (event.event === 'Resign') {
                     set.delete(event.returnValues._candidate.toLowerCase())
                 }
-            })
-            await Promise.all(map)
+            }
+
             signers = await getSigners(i)
             if (i - 1 === 0) {
                 signers.map(s => set.add(s))
@@ -47,7 +48,7 @@ async function updateStatus () {
                 }
             }
             if (blks.length > 0) {
-                penalties = await getPenalties(blks)
+                penalties = getPenalties(blks)
             }
 
             // filter propose nodes (out of top 150)
@@ -70,34 +71,34 @@ async function updateStatus () {
             const epochCreatedAt = moment.unix(block.timestamp).utc()
 
             const a = signers.map(async m => {
-                await db.Status.updateOne({ epoch: i, candidate: m },
+                db.Status.updateOne({ epoch: i, candidate: m },
                     {
                         epoch: i,
                         candidate: m,
                         status: 'MASTERNODE',
                         epochCreatedAt: epochCreatedAt
                     },
-                    { upsert: true })
+                    { upsert: true }).then(() => { return true }).catch(e => console.log(e))
             })
             const b = penalties.map(async m => {
-                await db.Status.updateOne({ epoch: i, candidate: m },
+                db.Status.updateOne({ epoch: i, candidate: m },
                     {
                         epoch: i,
                         candidate: m,
                         status: 'SLASHED',
                         epochCreatedAt: epochCreatedAt
                     },
-                    { upsert: true })
+                    { upsert: true }).then(() => { return true }).catch(e => console.log(e))
             })
             const c = proposes.map(async m => {
-                await db.Status.updateOne({ epoch: i, candidate: m },
+                db.Status.updateOne({ epoch: i, candidate: m },
                     {
                         epoch: i,
                         candidate: m,
                         status: 'PROPOSED',
                         epochCreatedAt: epochCreatedAt
                     },
-                    { upsert: true })
+                    { upsert: true }).then(() => { return true }).catch(e => console.log(e))
             })
             await Promise.all([b, c, a])
         }
@@ -107,10 +108,10 @@ async function updateStatus () {
     }
 }
 
-async function getPenalties (blks) {
+function getPenalties (blks) {
     const penalties = []
     for (let i = 0; i < blks.length; i++) {
-        let pbuff = await Buffer.from((blks[i].penalties || '').substring(2), 'hex')
+        let pbuff = Buffer.from((blks[i].penalties || '').substring(2), 'hex')
 
         if (pbuff.length > 0) {
             for (let i = 1; i <= pbuff.length / 20; i++) {
