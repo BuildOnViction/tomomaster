@@ -64,7 +64,7 @@
         "request": "^2.88.0",
         "store": "^2.0.12",
         "swagger-ui-express": "^4.0.2",
-        "trezor-connect": "^6.0.2",
+        "trezor-connect": "^7.0.1",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",
         "url-join": "^4.0.0",
