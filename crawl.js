@@ -294,11 +294,12 @@ async function updateSignersAndCandidate () {
                     }
                 }, { upsert: true })
             }
-            await db.Signer.create({
-                networkId: config.get('blockchain.networkId'),
-                blockNumber: blk.number,
-                signers: signers
-            })
+            await db.Signer.updateOne({ blockNumber: blk.number },
+                {
+                    networkId: config.get('blockchain.networkId'),
+                    blockNumber: blk.number,
+                    signers: signers
+                }, { upsert: true })
         }
         return signers
     } catch (e) {
