@@ -368,7 +368,7 @@ async function watchNewBlock (n) {
             blockNumber = n
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
-            if (n % 5 === 0) {
+            if (n % config.get('blockchain.epoch') === 0) {
                 // reset status
                 await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
                 await updateSignersAndCandidate()
