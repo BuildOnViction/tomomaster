@@ -171,6 +171,10 @@ Vue.prototype.loadMultipleLedgerWallets = async function (offset, limit) {
 
 Vue.prototype.unlockTrezor = async () => {
     try {
+        await TrezorConnect.manifest({
+            email: 'admin@tomochain.com',
+            appUrl: 'https://master.tomochain.com'
+        })
         const result = await TrezorConnect.getPublicKey({
             path: localStorage.get('hdDerivationPath')
         })
