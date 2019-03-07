@@ -7,14 +7,35 @@ const logger = require('../helpers/logger')
 const db = require('../models/mongodb')
 var validator = new Validator(web3Rpc)
 
-async function updateStatus () {
+async function updateStatus (fromEpoch, toEpoch) {
     try {
         const set = new Set()
-        let latestBlockNumber = await web3Rpc.eth.getBlockNumber()
-        const toEpoch = parseInt((latestBlockNumber / config.get('blockchain.epoch')))
-        logger.info('Total epochs: %s', toEpoch)
-        await db.Status.remove({})
-        for (let i = 1; i <= toEpoch; i++) {
+        if (!toEpoch) {
+            const latestBlockNumber = await web3Rpc.eth.getBlockNumber()
+            toEpoch = parseInt((latestBlockNumber / config.get('blockchain.epoch')))
+        }
+        // not start from every first epoch
+        if (fromEpoch && fromEpoch > 1) {
+            const check = await db.Status.findOne({
+                epoch: fromEpoch - 1
+            })
+            if (check) {
+                const candidates = await db.Status.find({
+                    epoch: fromEpoch - 1,
+                    status: 'MASTERNODE'
+                })
+                candidates.map(m => {
+                    set.add(m.candidate)
+                })
+            } else {
+                throw Error('Should crawl from further, input epoch does not exist')
+            }
+        } else {
+            fromEpoch = 1
+            await db.Status.remove({})
+        }
+        logger.info('Crawling from %s to %s', fromEpoch, toEpoch)
+        for (let i = fromEpoch; i <= toEpoch; i++) {
             let proposes = [] // list of proposed nodes
             const endBlock = i * config.get('blockchain.epoch')
             const startBlock = endBlock - config.get('blockchain.epoch') + 1

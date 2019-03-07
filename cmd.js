@@ -107,8 +107,14 @@ commander
     .command('update-status')
     .alias('up')
     .description('Update status table')
-    .action(async () => {
-        await updateStatus()
+    .description('WARNING')
+    .description('From epoch should exist in the status table first')
+    .option('-f, --fromEpoch <fromEpoch>', 'To epoch')
+    .option('-t, --toEpoch <toEpoch>', 'To epoch')
+    .action(async (input) => {
+        const fromEpoch = input.fromEpoch || null
+        const toEpoch = input.toEpoch || null
+        await updateStatus(fromEpoch, toEpoch)
         process.exit()
     })
 
