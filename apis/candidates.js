@@ -659,9 +659,10 @@ router.get('/:candidate/:owner/getRewards', [
         if (rewards.data && rewards.data.length > 0) {
             const rwData = rewards.data
             masternodesRW = rwData.map((r) => {
+                const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
                 if (!r.reward) {
-                    r.rewardTime = masternodes.find(m => m.epoch === r.epoch).epochCreatedAt || ''
+                    r.rewardTime = mn.epochCreatedAt || ''
                 }
                 return r
             })
