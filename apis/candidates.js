@@ -327,10 +327,11 @@ router.get('/:candidate', async function (req, res, next) {
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
     let latestPenalties = await db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
-    // Get slashed times in last 48 epochs
+    // Get slashed times in a week
+    const epochsPerWeek = 336
     const slashedHistory = db.Penalty.countDocuments({
         penalties: { $elemMatch: { $in: [address] } }
-    }).sort({ epoch: -1 }).limit(48).lean().exec() || 0
+    }).sort({ epoch: -1 }).limit(epochsPerWeek).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
     let penalties = []
@@ -625,22 +626,60 @@ router.get('/:candidate/:owner/getRewards', [
 
         const candidate = req.params.candidate
         const owner = req.params.owner
-        const page = (req.query.page) ? parseInt(req.query.page) : 1
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        const page = parseInt(req.query.page) || 1
+        let skip
+        skip = (page) ? limit * (page - 1) : 0
+        let masternodesRW = []
 
+        const total = db.Status.countDocuments({
+            candidate: candidate
+        })
+
+        const epochData = await db.Status.find({
+            candidate: candidate
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+
+        let masternodesEpochs = epochData.map(e => {
+            if (e.status === 'MASTERNODE') {
+                return e.epoch
+            }
+        })
+        let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
             {
                 address: candidate,
-                limit,
-                page,
                 owner: owner,
-                reason: 'Voter'
+                reason: 'Voter',
+                epoch: masternodesEpochs
             }
         )
+
+        if (rewards.data && rewards.data.length > 0) {
+            const rwData = rewards.data
+            masternodesRW = rwData.map((r) => {
+                r.status = 'MASTERNODE'
+                if (!r.reward) {
+                    r.rewardTime = masternodes.find(m => m.epoch === r.epoch).epochCreatedAt || ''
+                }
+                return r
+            })
+        }
+
+        let noRewardEpochs = epochData.filter(e => e.status !== 'MASTERNODE')
+
+        if (noRewardEpochs.length > 0) {
+            noRewardEpochs = noRewardEpochs.map(n => {
+                n.masternodeReward = 0
+                n.rewardTime = n.epochCreatedAt
+                n.signNumber = 0
+                return n
+            })
+        }
         return res.json({
-            items: rewards.data.items,
-            total: rewards.data.total
+            items: masternodesRW.concat(noRewardEpochs),
+            total: await total
         })
     } catch (e) {
         return next(e)

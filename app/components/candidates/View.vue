@@ -182,24 +182,6 @@
                                 {{ value }}
                             </p>
                         </div>
-                        <div
-                            v-if="isReady"
-                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
-                            <p class="tomo-info__title">
-                                <i class="tm-dot tomo-info__icon" />
-                                <span class="tomo-info__text">Slashed history</span>
-                            </p>
-                            <p
-                                id="tomo-info__description--slashed"
-                                class="tomo-info__description">
-                                {{ candidate.slashedTimes }}
-                                <b-tooltip
-                                    ref="tooltip"
-                                    target="tomo-info__description--slashed">
-                                    Slashed times in latest 48 epochs
-                                </b-tooltip>
-                            </p>
-                        </div>
                     </div>
                 </b-card>
                 <div
@@ -255,9 +237,11 @@
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="tm-gift color-purple" />
-                            <span>Masternode Rewards</span>
+                            <span>Masternode Rewards and Statues</span>
+                            <!-- <span class="text-truncate section-title__description">
+                                Estimated Reward for Masternode</span> -->
                             <span class="text-truncate section-title__description">
-                                Estimated Reward for Masternode</span>
+                                Slashed {{ candidate.slashedTimes }} times in a week </span>
                         </h3>
                     </div>
                 </div>
@@ -492,6 +476,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'status',
+                    label: 'Status',
+                    sortable: false
+                },
+                {
                     key: 'reward',
                     label: 'Reward',
                     sortable: false
@@ -708,9 +697,10 @@ export default {
                     items.push({
                         epoch: r.epoch,
                         signNumber: r.signNumber,
-                        reward: new BigNumber(r.reward).toFixed(6),
-                        createdAt: moment(r.rewardTime).fromNow(),
-                        dateTooltip: moment(r.rewardTime).format('lll')
+                        reward: new BigNumber(r.masternodeReward).toFixed(6),
+                        createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
+                        dateTooltip: moment(r.rewardTime).format('lll'),
+                        status: r.status
                     })
                 })
                 self.mnRewards = items
