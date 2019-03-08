@@ -329,8 +329,9 @@ router.get('/:candidate', async function (req, res, next) {
     let latestPenalties = await db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
     // Get slashed times in a week
     const epochsPerWeek = 336
-    const slashedHistory = db.Penalty.countDocuments({
-        penalties: { $elemMatch: { $in: [address] } }
+    const slashedHistory = db.Status.countDocuments({
+        candidate: address,
+        status: 'SLASHED'
     }).sort({ epoch: -1 }).limit(epochsPerWeek).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
