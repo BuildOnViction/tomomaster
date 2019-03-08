@@ -237,11 +237,13 @@
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="tm-gift color-purple" />
-                            <span>Masternode Rewards and Statues</span>
-                            <!-- <span class="text-truncate section-title__description">
-                                Estimated Reward for Masternode</span> -->
+                            <span>Masternode Rewards</span>
                             <span class="text-truncate section-title__description">
-                                Slashed {{ candidate.slashedTimes }} times in a week </span>
+                                Reward/Status for candidate</span>
+                            <span
+                                v-if="candidate.slashedTimes"
+                                class="text-truncate section-title__description">
+                                MN was slashed {{ candidate.slashedTimes }} epochs in the recent week </span>
                         </h3>
                     </div>
                 </div>
@@ -696,8 +698,8 @@ export default {
                 mnRewards.data.items.map((r) => {
                     items.push({
                         epoch: r.epoch,
-                        signNumber: r.signNumber,
-                        reward: new BigNumber(r.masternodeReward).toFixed(6),
+                        signNumber: r.signNumber || 0,
+                        reward: new BigNumber(r.masternodeReward || 0).toFixed(6),
                         createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
                         dateTooltip: moment(r.rewardTime).format('lll'),
                         status: r.status

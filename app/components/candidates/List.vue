@@ -47,25 +47,28 @@
                     <h3 class="section-title--masternodes">
                         <div class="masternode-bar">
                             <i class="tm-flag color-yellow" />
-                            <a
-                                v-if="activeCandidates !== 0"
-                                :class="currentTable === 'masternodes' ? 'tab-active' : ''"
-                                @click="changeTable('masternodes')">Masternodes ({{ activeCandidates }})</a>
-                            <span v-if="slashedMN !== 0">|</span>
-                            <a
-                                v-if="slashedMN !== 0"
-                                :class="currentTable === 'slashed' ? 'tab-active' : ''"
-                                @click="changeTable('slashed')">Slashed MNs ({{ slashedMN }})</a>
-                            <span v-if="totalProposedNodes !== 0">|</span>
-                            <a
-                                v-if="totalProposedNodes !== 0"
-                                :class="currentTable === 'proposed' ? 'tab-active' : ''"
-                                @click="changeTable('proposed')">Proposed Nodes ({{ totalProposedNodes }})</a>
-                            <span v-if="resignedMN !== 0">|</span>
-                            <a
-                                v-if="resignedMN !== 0"
-                                :class="currentTable === 'resigned' ? 'tab-active' : ''"
-                                @click="changeTable('resigned')">Resigned Nodes ({{ resignedMN }})</a>
+                            <span>Candidates</span>
+                            <span class="text-truncate section-title__description">
+                                <a
+                                    v-if="activeCandidates !== 0"
+                                    :class="currentTable === 'masternodes' ? 'tab-active' : ''"
+                                    @click="changeTable('masternodes')">Masternodes ({{ activeCandidates }})</a>
+                                <span v-if="slashedMN !== 0">|</span>
+                                <a
+                                    v-if="slashedMN !== 0"
+                                    :class="currentTable === 'slashed' ? 'tab-active' : ''"
+                                    @click="changeTable('slashed')">Slashed MNs ({{ slashedMN }})</a>
+                                <span v-if="totalProposedNodes !== 0">|</span>
+                                <a
+                                    v-if="totalProposedNodes !== 0"
+                                    :class="currentTable === 'proposed' ? 'tab-active' : ''"
+                                    @click="changeTable('proposed')">Proposed Nodes ({{ totalProposedNodes }})</a>
+                                <span v-if="resignedMN !== 0">|</span>
+                                <a
+                                    v-if="resignedMN !== 0"
+                                    :class="currentTable === 'resigned' ? 'tab-active' : ''"
+                                    @click="changeTable('resigned')">Resigned Nodes ({{ resignedMN }})</a>
+                            </span>
                         </div>
                     </h3>
                 </div>
