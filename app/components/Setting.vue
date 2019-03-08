@@ -142,7 +142,7 @@
                         v-if="!isReady && provider === 'metamask'">
                         <p>Please install &amp; login
                             <a
-                                href="http://bitly.com/2gmvrGG"
+                                href="https://metamask.io/"
                                 target="_blank">Metamask Extension</a>
                             then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
