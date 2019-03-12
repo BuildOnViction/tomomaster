@@ -420,7 +420,7 @@ async function watchNewBlock (n) {
             blockNumber = n
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
-            if (n % config.get('blockchain.epoch') === 0) {
+            if (n % config.get('blockchain.epoch') === 10) {
                 await updateSignerPenAndStatus()
             }
             await updateLatestSignedBlock(blk)
