@@ -8,6 +8,7 @@ const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
 const moment = require('moment')
 const logger = require('./helpers/logger')
+const axios = require('axios')
 const _ = require('lodash')
 
 process.setMaxListeners(100)
@@ -266,6 +267,108 @@ async function updatePenalties () {
     }
 }
 
+async function updateSignerPenAndStatus () {
+    try {
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        const lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        const currentEpoch = (parseInt(lastCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+        const blk = await web3.eth.getBlock(lastCheckpoint)
+        const signers = []
+        const penalties = []
+        // get candidate list
+        const candidates = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: {
+                $ne: 'RESIGNED'
+            }
+        })
+        // loop and get status
+        await Promise.all(candidates.map(async (c) => {
+            const data = {
+                'jsonrpc': '2.0',
+                'method': 'eth_getCandidateStatus',
+                'params': [c.candidate.toLowerCase(), '0x' + currentEpoch.toString('hex')],
+                'id': config.get('blockchain.networkId')
+            }
+            const response = await axios.post(config.get('blockchain.rpc'), data)
+
+            if (response.data) {
+                const result = response.data.result
+                switch (result) {
+                case 'MASTERNODE':
+                    signers.push(c.candidate)
+                    await db.Candidate.updateOne({
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        candidate: c.candidate.toLowerCase()
+                    }, {
+                        $set: {
+                            status: 'MASTERNODE'
+                        }
+                    }, { upsert: true })
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
+                        candidate: c.candidate,
+                        status: 'MASTERNODE',
+                        epochCreatedAt: moment.unix(blk.timestamp).utc()
+                    }, { upsert: true })
+                    break
+                case 'SLASHED':
+                    logger.info('Update candidate %s slashed at blockNumber %s', c.candidate, String(blk.number))
+                    await db.Candidate.updateOne({
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        candidate: c.candidate.toLowerCase()
+                    }, {
+                        $set: {
+                            status: 'SLASHED'
+                        }
+                    }, { upsert: true })
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
+                        candidate: c.candidate,
+                        status: 'SLASHED',
+                        epochCreatedAt: moment.unix(blk.timestamp).utc()
+                    }, { upsert: true })
+                    break
+                case 'PROPOSED':
+                    await db.Candidate.updateOne({
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        candidate: c.candidate.toLowerCase()
+                    }, {
+                        $set: {
+                            status: 'PROPOSED'
+                        }
+                    }, { upsert: true })
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
+                        candidate: c.candidate,
+                        status: 'PROPOSED',
+                        epochCreatedAt: moment.unix(blk.timestamp).utc()
+                    }, { upsert: true })
+                    break
+                default:
+                    break
+                }
+            }
+        }))
+        await db.Signer.updateOne({ blockNumber: blk.number }, {
+            networkId: config.get('blockchain.networkId'),
+            blockNumber: blk.number,
+            signers: signers
+        }, { upsert: true })
+
+        await db.Penalty.update({ epoch: currentEpoch }, {
+            networkId: config.get('blockchain.networkId'),
+            blockNumber: blk.number,
+            epoch: currentEpoch,
+            penalties: penalties
+        }, { upsert: true })
+    } catch (e) {
+        logger.error('updateSignerAndPen %s', e)
+        web3 = new Web3Ws()
+        validator = new Validator(web3)
+    }
+}
+
 async function updateSignersAndCandidate () {
     try {
         let blk = {}
@@ -307,57 +410,6 @@ async function updateSignersAndCandidate () {
     }
 }
 
-async function updateStatusHistory (block) {
-    try {
-        logger.info('Update candidate status at block %s', block)
-        const blockCheckpoint = block - (block % parseInt(config.get('blockchain.epoch')))
-
-        const epoch = parseInt(block / config.get('blockchain.epoch')) - 1
-
-        const slashPromise = db.Candidate.find({ status: 'SLASHED' })
-        const MNPromise = db.Candidate.find({ status: 'MASTERNODE' })
-        const ProposePromise = db.Candidate.find({ status: 'PROPOSED' })
-        const blockDataPromise = web3.eth.getBlock(blockCheckpoint)
-
-        const blockData = await blockDataPromise
-
-        const slash = await slashPromise
-        const a = slash.map(async (s) => {
-            await db.Status.updateOne({ epoch: epoch, candidate: s.candidate }, {
-                epoch: epoch,
-                candidate: s.candidate,
-                status: 'SLASHED',
-                epochCreatedAt: moment.unix(blockData.timestamp).utc()
-            }, { upsert: true })
-        })
-
-        const masternode = await MNPromise
-        const b = masternode.map(async (m) => {
-            await db.Status.updateOne({ epoch: epoch, candidate: m.candidate }, {
-                epoch: epoch,
-                candidate: m.candidate,
-                status: 'MASTERNODE',
-                epochCreatedAt: moment.unix(blockData.timestamp).utc()
-            }, { upsert: true })
-        })
-
-        const propose = await ProposePromise
-        const c = propose.map(async (p) => {
-            await db.Status.updateOne({ epoch: epoch, candidate: p.candidate }, {
-                epoch: epoch,
-                candidate: p.candidate,
-                status: 'PROPOSED',
-                epochCreatedAt: moment.unix(blockData.timestamp).utc()
-            }, { upsert: true })
-        })
-
-        // insert Status table
-        await Promise.all([a, b, c])
-    } catch (e) {
-        logger.error('updateStatusHistory %s', e)
-    }
-}
-
 let sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 async function watchNewBlock (n) {
     try {
@@ -368,12 +420,8 @@ async function watchNewBlock (n) {
             blockNumber = n
             logger.info('Watch new block every 1 second blkNumber %s', n)
             let blk = await web3.eth.getBlock(blockNumber)
-            if (n % config.get('blockchain.epoch') === 0) {
-                // reset status
-                await db.Candidate.updateMany({ status: { $nin: ['RESIGNED'] } }, { $set: { status: 'PROPOSED' } })
-                await updateSignersAndCandidate()
-                await updatePenalties()
-                await updateStatusHistory(blk.number)
+            if (n % config.get('blockchain.epoch') === 10) {
+                await updateSignerPenAndStatus()
             }
             await updateLatestSignedBlock(blk)
             await watchValidator()
