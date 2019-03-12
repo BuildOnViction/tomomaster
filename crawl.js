@@ -35,7 +35,7 @@ async function watchValidator () {
                 if (result.event === 'Withdraw') {
                     let owner = (result.returnValues._owner || '').toLowerCase()
                     let capacity = result.returnValues._cap
-                    return db.Withdraw.updateOne({
+                    await db.Withdraw.updateOne({
                         tx: result.transactionHash
                     }, {
                         $set: {
