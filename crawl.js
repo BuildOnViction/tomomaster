@@ -33,8 +33,16 @@ async function watchValidator () {
             let map = events.map(async (event) => {
                 let result = event
                 logger.debug('Event %s in block %s', result.event, result.blockNumber)
+                let candidate = (result.returnValues._candidate || '').toLowerCase()
+                let voter = (result.returnValues._voter || '').toLowerCase()
+                let owner = (result.returnValues._owner || '').toLowerCase()
+                let capacity = result.returnValues._cap
+                let blk = await web3.eth.getBlock(result.blockNumber)
+                let createdAt = moment.unix(blk.timestamp).utc()
+                if (!voter && (event.event === 'Resign' || event.event === 'Withdraw' || event.event === 'Propose')) {
+                    voter = owner
+                }
                 if (result.event === 'Withdraw') {
-                    let owner = (result.returnValues._owner || '').toLowerCase()
                     let capacity = result.returnValues._cap
                     await db.Withdraw.updateOne({
                         tx: result.transactionHash
@@ -48,15 +56,17 @@ async function watchValidator () {
                         }
                     }, { upsert: true })
                 }
-                let candidate = (result.returnValues._candidate || '').toLowerCase()
-                let voter = (result.returnValues._voter || '').toLowerCase()
-                let owner = (result.returnValues._owner || '').toLowerCase()
-                if (!voter && (event.event === 'Resign' || event.event === 'Withdraw' || event.event === 'Propose')) {
-                    voter = owner
+                if (result.event === 'Propose') {
+                    const block = result.blockNumber
+                    const lastCheckpoint = block - (block % parseInt(config.get('blockchain.epoch')))
+                    const currentEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch'))
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: candidate }, {
+                        epoch: currentEpoch,
+                        candidate: candidate,
+                        status: 'PROPOSED',
+                        epochCreatedAt: createdAt
+                    }, { upsert: true })
                 }
-                let capacity = result.returnValues._cap
-                let blk = await web3.eth.getBlock(result.blockNumber)
-                let createdAt = moment.unix(blk.timestamp).utc()
                 await db.Transaction.updateOne({
                     tx: result.transactionHash
                 }, {
