@@ -24,7 +24,7 @@ export default {
     watch: {
         value: async function (newVal, oldVal) {
             if (newVal !== oldVal) {
-                this.calculateRewards()
+                await this.calculateRewards()
             }
         }
     },
@@ -36,7 +36,7 @@ export default {
             const self = this
             const params = {
                 candidate: self.candidate,
-                amount: self.amount
+                amount: self.value
             }
             const query = self.serializeQuery(params)
             const { data } = await axios.get('/api/voters/calculatingReward' + '?' + query)
