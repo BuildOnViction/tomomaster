@@ -1,5 +1,7 @@
 <template>
-    <div class="float-left">
+    <div
+        v-if="estimatedReward !== 'N/A'"
+        class="float-left">
         Estimate reward: {{ estimatedReward }}
     </div>
 </template>
