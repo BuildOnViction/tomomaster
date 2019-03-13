@@ -2,7 +2,7 @@
     <div
         v-if="estimatedReward !== 'N/A'"
         class="float-left">
-        Estimate reward: {{ estimatedReward }}
+        Est. reward: {{ estimatedReward }}
     </div>
 </template>
 <script>
@@ -43,7 +43,7 @@ export default {
             const query = self.serializeQuery(params)
             const { data } = await axios.get('/api/voters/calculatingReward' + '?' + query)
 
-            self.estimatedReward = data
+            self.estimatedReward = data !== 'N/A' ? data.toFixed(6) : data
         }
     }
 }

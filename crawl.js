@@ -58,7 +58,8 @@ async function watchValidator () {
                 }
                 if (result.event === 'Propose') {
                     const block = result.blockNumber
-                    const currentEpoch = Math.ceil(block / config.get('blockchain.epoch'))
+                    const lastCheckpoint = block - (block % parseInt(config.get('blockchain.epoch')))
+                    const currentEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch')) + 1
                     await db.Status.updateOne({ epoch: currentEpoch, candidate: candidate }, {
                         epoch: currentEpoch,
                         candidate: candidate,
