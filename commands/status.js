@@ -45,8 +45,8 @@ async function updateStatus (fromEpoch, toEpoch) {
             })
             let signers = []// list of masternode
             let penalties = []// list of slashed masternodes
-            for (let i = 0; i < events.length; i++) {
-                const event = events[i]
+            for (let j = 0; j < events.length; j++) {
+                const event = events[j]
                 if (event.event === 'Propose') {
                     proposes.push(event.returnValues._candidate.toLowerCase())
                     set.add(event.returnValues._candidate.toLowerCase())
