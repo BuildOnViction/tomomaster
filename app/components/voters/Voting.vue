@@ -65,11 +65,11 @@
                             </b-input-group>
                         </b-form-group>
                         <div>
-                            <div class="float-left">
+                            <!-- <div class="float-left">
                                 <estimate-reward
                                     :value="voteValue"
                                     :candidate="candidate"/>
-                            </div>
+                            </div> -->
                             <div class="buttons text-right">
                                 <b-button
                                     type="button"
