@@ -640,12 +640,14 @@ router.get('/:candidate/:owner/getRewards', [
         const epochData = await db.Status.find({
             candidate: candidate
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+        let masternodesEpochs = []
 
-        let masternodesEpochs = epochData.map(e => {
+        epochData.map(e => {
             if (e.status === 'MASTERNODE') {
-                return e.epoch
+                masternodesEpochs.push(e.epoch)
             }
         })
+
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
@@ -679,8 +681,9 @@ router.get('/:candidate/:owner/getRewards', [
                 return n
             })
         }
+        const items = masternodesRW.concat(noRewardEpochs)
         return res.json({
-            items: masternodesRW.concat(noRewardEpochs),
+            items: items,
             total: await total
         })
     } catch (e) {
