@@ -333,10 +333,6 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         // amount
         const amount = new BigNumber(req.query.amount || 0)
 
-        const latestBlockNumber = await web3.eth.getBlockNumber()
-        const lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        const lastEpoch = parseInt(lastCheckpoint / config.get('blockchain.epoch')) - 1
-
         // search candidate
         const candidate = await db.Candidate.findOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
@@ -355,15 +351,17 @@ router.get('/calculatingReward', [], async (req, res, next) => {
             }
         )
         let signNumber = 0
+        let epoch
         if (rewards.data.items.length > 0) {
             signNumber = rewards.data.items[0].signNumber
+            epoch = rewards.data.items[0].epoch
         }
 
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         // get total signers in latest epoch
         const totalSigners = await axios.post(
-            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${lastEpoch}`)
+            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
         )
 
         if (totalSigners.data && totalSigners.data.totalSignNumber) {
