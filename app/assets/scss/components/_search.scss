@@ -86,6 +86,14 @@
          padding-bottom: 8px;
          transition: .3s all ease-in;
     }
+
+    mark {
+        background-color: transparent;
+        color: #8f8dc1 !important;
+        font-size: inherit !important;
+        padding: 0;
+        transition: .3s all ease-in;
+    }
 }
   
   .autocomplete-result.is-active,
@@ -93,8 +101,9 @@
     background-color: #7573a6;
     color: $color-white;
 
-    .tomo-list__text small {
-        color: $color-white;
+    .tomo-list__text small,
+    .tomo-list__text mark {
+        color: $color-white !important;
     }
   }
   

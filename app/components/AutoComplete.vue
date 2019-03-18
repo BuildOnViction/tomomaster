@@ -25,9 +25,7 @@
                 @click="setResult(result)">
                 <p
                     class="tomo-list__text">
-                    <span>
-                        {{ result.name }}
-                    </span>
+                    <span v-html="formatResult(result.name)" />
                     <small>{{ result.address }}</small>
                 </p>
             </li>
@@ -94,12 +92,25 @@ export default {
         },
         filterResults () {
             // first uncapitalize all the things
-            if (this.search !== '') {
+            if (!this.search) {
                 this.results = this.items.filter((item) => {
                     return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
                 })
                 this.results = this.results.slice(0, 5)
             }
+        },
+        formatResult (str) {
+            if (!str) {
+                return this.search
+            }
+
+            if (!this.search) {
+                return str
+            }
+
+            return str.replace(new RegExp(this.search, 'gi'), (match) => {
+                return `<mark>${match}</mark>`
+            })
         },
         setResult (result) {
             this.search = ''
