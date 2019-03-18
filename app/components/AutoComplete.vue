@@ -4,7 +4,7 @@
             v-model="search"
             type="text"
             class="form-control"
-            placeholder="Search Candidate / Voter address ..."
+            placeholder="Search Candidate / Voter"
             @input="onChange"
             @keydown.down="onArrowDown"
             @keydown.up="onArrowUp"
@@ -25,7 +25,7 @@
                     <span>
                         {{ result.name }}
                     </span>
-                    <span class="tomo-auto__small">{{ result.address }}</span>
+                    <small>{{ result.address }}</small>
                 </p>
             </li>
         </ul>
@@ -110,7 +110,7 @@ export default {
         },
         onEnter () {
             const result = this.results[this.arrowCounter]
-            console.log(result)
+
             if (result) {
                 this.search = ''
                 this.isOpen = false

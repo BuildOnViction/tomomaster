@@ -1,69 +1,41 @@
 .search-form {
+    display: block;
     position: relative;
     width: 100%;
     margin-top: 5px;
 
     input.form-control {
         border-radius: 100px;
-        padding: 4px 70px 4px 20px;
+        padding: 4px 40px 4px 20px;
     }
 
     .btn {
         position: absolute;
-        right: 0;
+        right: 15px;
         top: 0;
         font-size: 0;
         font-weight: 400;
-        width: 50px;
         height: 100%;
         border-radius: 100px;
-        color: #fff;
-        border-color: $color-btn-bg;
-        background-color: $color-btn-bg;
+        color: $color-white;
+        border-color: transparent;
+        background-color: transparent;
+        padding: 0;
+        pointer-events: none;
 
         &:before {
             content: '\e90a';
-            font-size: 12px;
+            font-size: 16px;
 
             @extend %tm-icon;
         }
     }
 
     @include media-breakpoint-up(sm) {
-
         width: auto;
 
         input.form-control {
-            margin-right: 15px;
-            padding-right: 20px;
-        }
-
-        .btn {
-            position: relative;
-            width: auto;
-            height: auto;
-            font-size: 14px;
-            color: #aca9c4;
-            background-color: transparent;
-
-            &:before {
-                margin-right: 10px;
-            }
-
-            &:hover,
-            &:focus,
-            &:active {
-                color: #fff;
-                border-color: $color-btn-hover-bg;
-                background-color: $color-btn-hover-bg;
-            }
-        }
-    }
-
-    @include media-breakpoint-up(md) {
-
-        input.form-control {
-            width: 220px;
+            width: 300px;
         }
     }
 
@@ -71,7 +43,6 @@
 
         input.form-control {
             width: 350px;
-            margin-right: 25px;
         }
     }
 
@@ -88,80 +59,42 @@
   }
   
   .autocomplete-results {
-    position: absolute;
-    list-style: none;
-    margin: 0 auto;
-    padding-left: 1px;
-    overflow: auto;
-    width: 87%;
-    margin-left: 14px;
-    z-index: 5;
-    border: none;
-    border-radius: 0px 0px 10px 10px;
     background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
-    padding-bottom: 20px;
-    padding-top: 10px;
-
-    @include media-breakpoint-up(sm) {
-
-        width: auto;
-
-        input.form-control {
-            margin-right: 15px;
-            padding-right: 20px;
-        }
-    }
-
-    @include media-breakpoint-up(md) {
-        width: 220px;
-    }
-
-    @include media-breakpoint-up(lg) {
-        width: 86%;
-        input.form-control {
-            width: 100%;
-            margin-right: 25px;
-        }
-    }
-
-    @include media-breakpoint-up(xl) {
-        width: 86%;
-        input.form-control {
-            width: 100%;
-        }
-    }
-
-    @include media-breakpoint-up(sm) {
-        width: 86%;
-        input.form-control {
-            width: 100%;
-        }
-    }
+    border-radius: 5px;
+    box-shadow: 0px 5px 20px #1d1e31;
+    list-style: none;
+    margin-left: 10px;
+    margin-bottom: 0;
+    max-height: 268px;
+    overflow: auto;
+    padding-left: 1px;
+    position: absolute;
+    width: calc(100% - 20px);
+    z-index: 5;
   }
   
   .autocomplete-result {
-    list-style: none;
-    text-align: left;
-    padding: 4px 2px;
     cursor: pointer;
     color: #7573a6;
-    padding-left: 15px;
-    line-height: 25px;
+    border-bottom: 1px solid #45446b;
+    padding: 4px 10px;
+    transition: .3s all ease-in;
 
-    .tomo-list__text .tomo-auto__small {
+    small {
          line-height: 10px;
          font-size: 11px;
          padding-bottom: 8px;
+         transition: .3s all ease-in;
     }
 }
   
   .autocomplete-result.is-active,
   .autocomplete-result:hover {
     background-color: #7573a6;
-    color: white;
+    color: $color-white;
 
-    .tomo-list__text .tomo-auto__small {
-        color: white;
+    .tomo-list__text small {
+        color: $color-white;
     }
   }
   
