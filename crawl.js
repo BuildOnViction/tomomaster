@@ -90,7 +90,9 @@ async function watchValidator () {
                 if (result.event === 'Resign' || result.event === 'Propose') {
                     await updateVoterCap(candidate, owner)
                 }
-                await updateCandidateInfo(candidate)
+                if (candidate !== '') {
+                    await updateCandidateInfo(candidate)
+                }
             })
 
             return Promise.all(map)
