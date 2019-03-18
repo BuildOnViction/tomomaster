@@ -684,28 +684,10 @@ router.get('/:candidate/:owner/getRewards', [
                 return n
             })
         }
-        const recentMNEpoch = await db.Status.findOne({
-            candidate: candidate,
-            status: 'MASTERNODE'
-        }).sort({ epoch: -1 }).lean().exec()
-        let recentReward = 0
-        if (recentMNEpoch) {
-            const { data } = await axios.post(
-                urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
-                {
-                    address: candidate,
-                    owner: owner,
-                    reason: 'Voter',
-                    epoch: [recentMNEpoch.epoch]
-                }
-            )
-            recentReward = data.masternodeReward || 0
-        }
         const items = masternodesRW.concat(noRewardEpochs)
         return res.json({
             items: items,
-            total: await total,
-            recentReward: recentReward
+            total: await total
         })
     } catch (e) {
         return next(e)
