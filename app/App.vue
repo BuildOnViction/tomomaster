@@ -8,13 +8,6 @@
                     </b-navbar-brand>
 
                     <b-nav-form class="search-form">
-                        <!-- <b-form-input
-                            v-model="search"
-                            type="text"
-                            autocomplete="off"
-                            placeholder="Search Candidate / Voter address ..."
-                            @keyup.enter="searchCandidate"
-                        /> -->
                         <auto-complete
                             v-model="search"
                             :items="items"/>
