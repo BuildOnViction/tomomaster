@@ -707,7 +707,7 @@ export default {
                 })
                 self.mnRewards = items
 
-                self.recentReward = (self.mnRewards[0] || {}).reward || 0
+                self.recentReward = mnRewards.data.recentReward || 0
 
                 self.mnRewardsTotalRows = mnRewards.data.total
                 self.rewardLoading = false
