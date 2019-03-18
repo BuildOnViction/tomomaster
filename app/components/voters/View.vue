@@ -93,6 +93,12 @@
                     slot="capacity"
                     slot-scope="data">
                     {{ isNaN(data.item.capacity) ? '---' : formatCurrencySymbol(data.item.capacity) }}
+                    <span
+                        v-if="data.item.owner == voter"
+                        :id="`mnowner__${data.index}`">*</span>
+                    <b-tooltip :target="`mnowner__${data.index}`">
+                        This voter owns this node
+                    </b-tooltip>
                 </template>
 
                 <template
@@ -109,6 +115,8 @@
                 align="center"
                 class="tomo-pagination"
                 @change="candidatePageChange" />
+            <div class="text-guide">
+                All candidates are voted by this voter</div>
         </div>
         <div
             :class="'container section section--voterrewards'
@@ -119,7 +127,7 @@
                         <i class="tm-gift color-purple" />
                         <span>Voter Rewards</span>
                         <span class="text-truncate section-title__description">
-                            Calculate Reward for Voter</span>
+                            All Reward for Voter</span>
                     </h3>
                 </div>
             </div>
@@ -423,6 +431,7 @@ export default {
                         address: c.candidate,
                         name: c.candidateName,
                         status: c.status,
+                        owner: c.owner,
                         capacity: new BigNumber(c.capacity).div(10 ** 18).toNumber(),
                         totalCapacity: new BigNumber(c.totalCapacity).div(10 ** 18).toNumber()
                     })
