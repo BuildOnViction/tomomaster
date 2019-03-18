@@ -243,7 +243,7 @@
                             <span
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
-                                MN was slashed {{ candidate.slashedTimes }} epochs in the recent week </span>
+                                MN was slashed for {{ candidate.slashedTimes }} epochs over the past week </span>
                         </h3>
                     </div>
                 </div>
