@@ -26,7 +26,7 @@
                 <p
                     class="tomo-list__text">
                     <span v-html="formatResult(result.name)" />
-                    <small>{{ result.address }}</small>
+                    <small v-html="formatResult(result.address)" />
                 </p>
             </li>
         </ul>
@@ -92,9 +92,17 @@ export default {
         },
         filterResults () {
             // first uncapitalize all the things
-            if (!this.search) {
+            if (this.search) {
                 this.results = this.items.filter((item) => {
-                    return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                    // search by name
+                    let found = item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+
+                    // search by address
+                    if (!found) {
+                        found = item.address.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                    }
+
+                    return found
                 })
                 this.results = this.results.slice(0, 5)
             }
@@ -130,7 +138,7 @@ export default {
             }
         },
         onEnter () {
-            const result = this.results[this.arrowCounter]
+            let result = this.results[this.arrowCounter]
 
             if (result) {
                 this.search = ''
