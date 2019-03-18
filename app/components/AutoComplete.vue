@@ -1,14 +1,17 @@
 <template>
     <div class="autocomplete">
         <input
+            id="search-input"
             v-model="search"
             type="text"
             class="form-control"
             placeholder="Search Candidate / Voter"
             @input="onChange"
+            @focus="onChange"
+            @keydown.enter="onEnter"
+            @keydown.esc="onEsc"
             @keydown.down="onArrowDown"
-            @keydown.up="onArrowUp"
-            @keydown.enter="onEnter" >
+            @keydown.up="onArrowUp" >
         <ul
             v-if="results.length > 0"
             v-show="isOpen"
@@ -61,11 +64,18 @@ export default {
     },
     mounted () {
         document.addEventListener('click', this.handleClickOutside)
+        document.addEventListener('keyup', this.focusSearchInput)
     },
     destroyed () {
         document.removeEventListener('click', this.handleClickOutside)
+        document.removeEventListener('click', this.focusSearchInput)
     },
     methods: {
+        focusSearchInput (evt) {
+            if (evt.key === 's' || evt.key === '/') {
+                document.getElementById('search-input').focus()
+            }
+        },
         onChange () {
             // Let's warn the parent that a change was made
             this.$emit('input', this.search)
@@ -78,10 +88,10 @@ export default {
                 this.filterResults()
                 if (this.results.length > 0) {
                     this.isOpen = true
+                    this.arrowCounter = 0
                 }
             }
         },
-
         filterResults () {
             // first uncapitalize all the things
             if (this.search !== '') {
@@ -98,14 +108,14 @@ export default {
                 path: `/candidate/${result.address}`
             })
         },
-        onArrowDown (evt) {
-            if (this.arrowCounter < this.results.length) {
-                this.arrowCounter = this.arrowCounter + 1
+        onArrowDown () {
+            if (this.arrowCounter < this.results.length - 1) {
+                this.arrowCounter++
             }
         },
         onArrowUp () {
             if (this.arrowCounter > 0) {
-                this.arrowCounter = this.arrowCounter - 1
+                this.arrowCounter--
             }
         },
         onEnter () {
@@ -118,7 +128,13 @@ export default {
                 this.$router.push({
                     path: `/candidate/${result.address}`
                 })
+                document.getElementById('search-input').blur()
             }
+        },
+        onEsc () {
+            this.isOpen = false
+            this.arrowCounter = -1
+            document.getElementById('search-input').blur()
         },
         handleClickOutside (evt) {
             if (!this.$el.contains(evt.target)) {
