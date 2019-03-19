@@ -111,9 +111,24 @@
                             class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                             <p class="tomo-info__title">
                                 <i class="tm-dot tomo-info__icon" />
-                                <span class="tomo-info__text">Recent Reward</span>
+                                <span class="tomo-info__text">Balance</span>
                             </p>
                             <p
+                                id="tomo-info__description--balance"
+                                class="tomo-info__description">
+                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
+                                <b-tooltip
+                                    v-if="checkLongNumber(candidate.balance)"
+                                    ref="tooltip"
+                                    target="tomo-info__description--balance">
+                                    {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
+                                </b-tooltip>
+                            </p>
+                            <!-- <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Recent Reward</span>
+                            </p> -->
+                            <!-- <p
                                 id="tomo-info__description--you-rewarded"
                                 class="tomo-info__description">
                                 {{ formatCurrencySymbol(formatNumber(recentReward)) }}
@@ -123,7 +138,7 @@
                                     target="tomo-info__description--you-rewarded">
                                     {{ formatCurrencySymbol(formatBigNumber(candidate.rewarded, 6)) }}
                                 </b-tooltip>
-                            </p>
+                            </p> -->
                         </div>
                         <div
                             class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
@@ -140,25 +155,6 @@
                                           'color-pink': candidate.status === 'RESIGNED' }"
                                 class="tomo-info__description">
                                 {{ candidate.status }}
-                            </p>
-                        </div>
-                        <div
-                            v-if="isReady"
-                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
-                            <p class="tomo-info__title">
-                                <i class="tm-dot tomo-info__icon" />
-                                <span class="tomo-info__text">Balance</span>
-                            </p>
-                            <p
-                                id="tomo-info__description--balance"
-                                class="tomo-info__description">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
-                                <b-tooltip
-                                    v-if="checkLongNumber(candidate.balance)"
-                                    ref="tooltip"
-                                    target="tomo-info__description--balance">
-                                    {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
-                                </b-tooltip>
                             </p>
                         </div>
                         <div class="col-12 col-md-6 col-lg-6 col-xl-4 order-md-1 order-lg-0 m-xl-0 tomo-info">
@@ -243,7 +239,7 @@
                             <span
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
-                                MN was slashed {{ candidate.slashedTimes }} epochs in the recent week </span>
+                                MN was slashed for {{ candidate.slashedTimes }} epochs over the past week </span>
                         </h3>
                     </div>
                 </div>
@@ -706,8 +702,6 @@ export default {
                     })
                 })
                 self.mnRewards = items
-
-                self.recentReward = (self.mnRewards[0] || {}).reward || 0
 
                 self.mnRewardsTotalRows = mnRewards.data.total
                 self.rewardLoading = false

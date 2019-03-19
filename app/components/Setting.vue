@@ -31,7 +31,7 @@
                                     value="trezor">Trezor Wallet</option>
                                 <option
                                     v-if="!isElectron"
-                                    value="metamask">Metamask/TrustWallet</option>
+                                    value="metamask">Metamask/TrustWallet/MidasWallet</option>
                             </b-form-select>
                             <small
                                 v-if="provider !== 'metamask'"
