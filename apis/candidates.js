@@ -732,6 +732,17 @@ router.put('/update', [
             address.toLowerCase() === c.candidate.toLowerCase() ||
             address.toLowerCase() === c.owner.toLowerCase()
         ) {
+            if (c.name) {
+                const currentBlockNumber = await web3.eth.getBlockNumber()
+                await db.NameHistory.updateOne({
+                    candidate: candidate.toLowerCase(), blockNumber: currentBlockNumber
+                }, {
+                    from: c.name,
+                    to: set.name,
+                    candidate: candidate.toLowerCase(),
+                    blockNumber: currentBlockNumber
+                }, { upsert: true })
+            }
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate.toLowerCase()
