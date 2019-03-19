@@ -445,7 +445,6 @@ async function watchNewBlock (n) {
                     }, {
                         rank: ''
                     })
-                    console.log(candidates)
                     // update rank history
                     await Promise.all(candidates.map(async (c, i) => {
                         await db.Candidate.updateOne({
