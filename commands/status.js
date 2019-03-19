@@ -21,8 +21,7 @@ async function updateStatus (fromEpoch, toEpoch) {
             })
             if (check) {
                 const candidates = await db.Status.find({
-                    epoch: fromEpoch - 1,
-                    status: 'MASTERNODE'
+                    epoch: fromEpoch - 1
                 })
                 candidates.map(m => {
                     set.add(m.candidate)
