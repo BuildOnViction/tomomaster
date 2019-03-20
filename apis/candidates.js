@@ -630,6 +630,11 @@ router.get('/:candidate/:owner/getRewards', [
 
         const candidate = req.params.candidate
         const owner = req.params.owner
+
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        const latestCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        const currentEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) + 1).toString()
+
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
         const page = parseInt(req.query.page) || 1
         let skip
@@ -669,6 +674,10 @@ router.get('/:candidate/:owner/getRewards', [
                 r.status = 'MASTERNODE'
                 if (!r.reward) {
                     r.rewardTime = mn.epochCreatedAt || ''
+                }
+                if (currentEpoch - r.epoch < 2) {
+                    r.masternodeReward = '-'
+                    r.signNumber = '-'
                 }
                 return r
             })
