@@ -64,24 +64,18 @@
                         <b-form-group
                             class="col-md-6"
                             label="Website"
-                            label-for="dcLocation-value">
+                            label-for="website-value">
                             <b-form-input
                                 v-model="website"
-                                name="dcLocation-value"/>
-                            <span
-                                v-if="$v.website.$dirty && (!$v.website.minLength || !$v.website.maxLength)"
-                                class="text-danger">Data Canter Location must be 2 - 30 chars long</span>
+                                name="website-value"/>
                         </b-form-group>
                         <b-form-group
                             class="col-md-6"
                             label="Telegram"
-                            label-for="dcLocation-value">
+                            label-for="telegram-value">
                             <b-form-input
                                 v-model="telegram"
-                                name="dcLocation-value"/>
-                            <span
-                                v-if="$v.telegram.$dirty && (!$v.telegram.minLength || !$v.telegram.maxLength)"
-                                class="text-danger">Data Canter Location must be 2 - 30 chars long</span>
+                                name="telegram-value"/>
                         </b-form-group>
                     </div>
                     <div class="buttons text-right">
@@ -193,7 +187,7 @@ export default {
             interval: null,
             account: '',
             website: '',
-            telagram: ''
+            telegram: ''
         }
     },
     validations: {
@@ -211,14 +205,6 @@ export default {
             minLength: minLength(2)
         },
         dcLocation: {
-            maxLength: maxLength(30),
-            minLength: minLength(2)
-        },
-        website: {
-            maxLength: maxLength(30),
-            minLength: minLength(2)
-        },
-        telegram: {
             maxLength: maxLength(30),
             minLength: minLength(2)
         }
@@ -368,6 +354,14 @@ export default {
                 }
                 if (self.dcLocation !== '') {
                     body.dcLocation = self.dcLocation
+                }
+
+                if (self.website !== '') {
+                    body.website = self.website
+                }
+
+                if (self.telegram !== '') {
+                    body.telegram = self.telegram
                 }
 
                 const { data } = await axios.put(
