@@ -262,7 +262,8 @@
                     <template
                         slot="reward"
                         slot-scope="data">
-                        {{ formatCurrencySymbol(formatNumber(data.item.reward)) }}
+                        {{ !isNaN(data.item.reward)
+                        ? formatCurrencySymbol(formatNumber(data.item.reward)) : data.item.reward }}
                     </template>
 
                     <template
@@ -692,10 +693,12 @@ export default {
                 let items = []
 
                 mnRewards.data.items.map((r) => {
+                    const reward = !isNaN(r.masternodeReward || 0)
+                        ? new BigNumber(r.masternodeReward || 0).toFixed(6) : r.masternodeReward
                     items.push({
                         epoch: r.epoch,
-                        signNumber: r.signNumber || 0,
-                        reward: new BigNumber(r.masternodeReward || 0).toFixed(6),
+                        signNumber: r.signNumber ? r.signNumber : 0,
+                        reward: reward,
                         createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
                         dateTooltip: moment(r.rewardTime).format('lll'),
                         status: r.status
