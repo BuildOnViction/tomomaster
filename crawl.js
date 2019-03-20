@@ -209,7 +209,7 @@ async function updateSignerPenAndStatus () {
     try {
         const latestBlockNumber = await web3.eth.getBlockNumber()
         const latestCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        const latestEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+        const currentEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) + 1).toString()
         const blk = await web3.eth.getBlock(latestCheckpoint)
         const signers = []
         const penalties = []
@@ -225,7 +225,7 @@ async function updateSignerPenAndStatus () {
             const data = {
                 'jsonrpc': '2.0',
                 'method': 'eth_getCandidateStatus',
-                'params': [c.candidate.toLowerCase(), '0x' + latestEpoch.toString('hex')],
+                'params': [c.candidate.toLowerCase(), '0x' + currentEpoch.toString('hex')],
                 'id': config.get('blockchain.networkId')
             }
             const response = await axios.post(config.get('blockchain.rpc'), data)
@@ -243,8 +243,8 @@ async function updateSignerPenAndStatus () {
                             status: 'MASTERNODE'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'MASTERNODE',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -260,8 +260,8 @@ async function updateSignerPenAndStatus () {
                             status: 'SLASHED'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'SLASHED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -276,8 +276,8 @@ async function updateSignerPenAndStatus () {
                             status: 'PROPOSED'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'PROPOSED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -294,10 +294,10 @@ async function updateSignerPenAndStatus () {
             signers: signers
         }, { upsert: true })
 
-        await db.Penalty.update({ epoch: latestEpoch }, {
+        await db.Penalty.update({ epoch: currentEpoch }, {
             networkId: config.get('blockchain.networkId'),
             blockNumber: blk.number,
-            epoch: latestEpoch,
+            epoch: currentEpoch,
             penalties: penalties
         }, { upsert: true })
     } catch (e) {
