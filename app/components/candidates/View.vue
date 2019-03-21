@@ -699,7 +699,7 @@ export default {
                         epoch: r.epoch,
                         signNumber: r.signNumber ? r.signNumber : 0,
                         reward: reward,
-                        createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
+                        createdAt: moment(r.epochCreatedAt).fromNow(),
                         dateTooltip: moment(r.rewardTime).format('lll'),
                         status: r.status
                     })
