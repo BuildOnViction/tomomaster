@@ -672,9 +672,7 @@ router.get('/:candidate/:owner/getRewards', [
             masternodesRW = rwData.map((r) => {
                 const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
-                if (!r.reward) {
-                    r.rewardTime = mn.epochCreatedAt || ''
-                }
+                r.epochCreatedAt = mn.epochCreatedAt
                 if (currentEpoch - r.epoch < 2) {
                     r.masternodeReward = '-'
                     r.signNumber = '-'
