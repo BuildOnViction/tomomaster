@@ -32,7 +32,9 @@ var Candidate = new Schema({
     socials: {
         github: String,
         linkedin: String,
-        email: String
+        email: String,
+        website: String,
+        telegram: String
     },
     status: {
         type: String,
