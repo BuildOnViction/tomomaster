@@ -2,7 +2,7 @@
     position: relative;
 
     &:before {
-        content: url(~/app/assets/img/loading.svg);
+        content: url(/app/assets/img/loading.svg);
         display: block;
         position: absolute;
         top: 50%;
