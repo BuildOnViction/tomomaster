@@ -642,11 +642,17 @@ router.get('/:candidate/:owner/getRewards', [
         let masternodesRW = []
 
         const total = db.Status.countDocuments({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         })
 
         const epochData = await db.Status.find({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
         let masternodesEpochs = []
 
