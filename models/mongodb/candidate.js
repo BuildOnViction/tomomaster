@@ -40,7 +40,8 @@ var Candidate = new Schema({
         type: String,
         enum: ['PROPOSED', 'RESIGNED', 'SLASHED', 'MASTERNODE'],
         index: true
-    }
+    },
+    rank: Number
 }, { timestamps: true })
 
 module.exports = mongoose.model('Candidate', Candidate)
