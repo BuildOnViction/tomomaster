@@ -45,6 +45,51 @@
                             variant="primary">
                             <template
                                 slot="button-content">
+                                <i class="tm-bell ml-2 icon-2x" />
+                                <span
+                                    :class="`notification tomo-status-dot tomo-status-dot--yellow`"/>
+                            </template>
+                            <b-dropdown-text>
+                                <div
+                                    style="text-align: center;">
+                                    Notifications
+                                </div>
+                            </b-dropdown-text>
+                            <b-dropdown-divider />
+                            <b-dropdown-text>
+                                <div
+                                    style="text-align: center;">
+                                    [SLASHED] PQV slashed at epoch [1596]
+                                </div>
+                            </b-dropdown-text>
+                            <b-dropdown-text>
+                                <div
+                                    style="text-align: center;">
+                                    And this is more example text.
+                                </div>
+                            </b-dropdown-text>
+                            <b-dropdown-text>
+                                <div
+                                    style="text-align: center;">
+                                    And this is more example text.
+                                </div>
+                            </b-dropdown-text>
+                            <b-dropdown-divider />
+                            <b-dropdown-item
+                                style="width: 350px; text-align: center; max-width: 500px"
+                                href="/"
+                                @click="signOut">See all</b-dropdown-item>
+                        </b-dropdown>
+
+                        <b-dropdown
+                            v-if="isTomonet"
+                            class="dd-setting"
+                            right
+                            offset="25"
+                            no-caret
+                            variant="primary">
+                            <template
+                                slot="button-content">
                                 <i class="tm-cog ml-2 icon-2x" />
                             </template>
                             <b-dropdown-item

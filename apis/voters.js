@@ -340,7 +340,7 @@ router.get('/calculatingReward', [], async (req, res, next) => {
 
         // get latest reward
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin('https://scan.tomochain.com', 'api/expose/rewards'),
             {
                 address: address,
                 limit: 1,
@@ -355,12 +355,13 @@ router.get('/calculatingReward', [], async (req, res, next) => {
             signNumber = rewards.data.items[0].signNumber
             epoch = rewards.data.items[0].epoch
         }
+        console.log(rewards.data)
 
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         // get total signers in latest epoch
         const totalSigners = await axios.post(
-            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            urljoin('https://scan.tomochain.com', `api/expose/totalSignNumber/${epoch}`)
         )
 
         if (totalSigners.data && totalSigners.data.totalSignNumber) {
