@@ -42,12 +42,15 @@
                             right
                             offset="25"
                             no-caret
-                            variant="primary">
+                            variant="link">
                             <template
                                 slot="button-content">
-                                <i class="tm-bell ml-2 icon-2x" />
+                                <i
+                                    class="tm-bell ml-2 icon-2x"
+                                    @click="readClick" />
                                 <span
-                                    :class="`notification tomo-status-dot tomo-status-dot--yellow`"/>
+                                    :class="`notification tomo-status-dot tomo-status-dot--yellow`"
+                                    :style="statusClass"/>
                             </template>
                             <b-dropdown-text>
                                 <div
@@ -58,20 +61,23 @@
                             <b-dropdown-divider />
                             <b-dropdown-text>
                                 <div
+                                    class="ml-1 mr-1"
                                     style="text-align: center;">
-                                    [SLASHED] PQV slashed at epoch [1596]
+                                    [Slashed] Masternode [PQV] slashed at epoch [1596]
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-text>
                                 <div
+                                    class="ml-1 mr-1"
                                     style="text-align: center;">
-                                    And this is more example text.
+                                    [Withdrawal] 500 Tomo withdrawed succesfulfy
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-text>
                                 <div
+                                    class="ml-1 mr-1"
                                     style="text-align: center;">
-                                    And this is more example text.
+                                    [Reward] You receive 0.30 Tomo for masternode [TEDreamers]
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
@@ -221,7 +227,8 @@ export default {
             isTomonet: false,
             version: pkg.version,
             account: '',
-            items: []
+            items: [],
+            statusClass: ''
         }
     },
     async updated () {
@@ -303,6 +310,9 @@ export default {
             this.$router.go({
                 path: '/'
             })
+        },
+        readClick () {
+            this.statusClass = 'display: none;'
         }
     }
 }
