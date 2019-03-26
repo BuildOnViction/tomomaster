@@ -68,6 +68,9 @@
                             <b-form-input
                                 v-model="website"
                                 name="website-value"/>
+                            <span
+                                v-if="$v.website.$dirty && !$v.website.url"
+                                class="text-danger">Not a url</span>
                         </b-form-group>
                         <b-form-group
                             class="col-md-6"
@@ -76,6 +79,9 @@
                             <b-form-input
                                 v-model="telegram"
                                 name="telegram-value"/>
+                            <span
+                                v-if="$v.telegram.$dirty && !$v.telegram.url"
+                                class="text-danger">Not a url</span>
                         </b-form-group>
                     </div>
                     <div class="buttons text-right">
@@ -157,7 +163,8 @@ import { validationMixin } from 'vuelidate'
 import {
     required,
     minLength,
-    maxLength
+    maxLength,
+    url
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
@@ -207,7 +214,9 @@ export default {
         dcLocation: {
             maxLength: maxLength(30),
             minLength: minLength(2)
-        }
+        },
+        website: { url },
+        telegram: { url }
     },
     beforeDestroy () {
         if (this.interval) {
@@ -355,14 +364,8 @@ export default {
                 if (self.dcLocation !== '') {
                     body.dcLocation = self.dcLocation
                 }
-
-                if (self.website !== '') {
-                    body.website = self.website
-                }
-
-                if (self.telegram !== '') {
-                    body.telegram = self.telegram
-                }
+                body.website = self.website
+                body.telegram = self.telegram
 
                 const { data } = await axios.put(
                     '/api/candidates/update',

@@ -732,6 +732,7 @@ router.put('/update', [
         }
 
         const body = req.body
+        console.log(body)
         let set = _.pick(body, ['name', 'hardware'])
 
         if (body.dcName) {
@@ -741,13 +742,8 @@ router.put('/update', [
             set['dataCenter.location'] = body.dcLocation
         }
 
-        if (body.website) {
-            set['socials.website'] = body.website
-        }
-
-        if (body.telegram) {
-            set['socials.telegram'] = body.telegram
-        }
+        set['socials.website'] = body.website || ''
+        set['socials.telegram'] = body.telegram || ''
 
         const address = await web3.eth.accounts.recover(message, signedMessage)
 
@@ -767,6 +763,7 @@ router.put('/update', [
                     $set: data
                 }, { upsert: true })
             }
+            console.log(set)
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate.toLowerCase()
