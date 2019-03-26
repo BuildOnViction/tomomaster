@@ -642,11 +642,17 @@ router.get('/:candidate/:owner/getRewards', [
         let masternodesRW = []
 
         const total = db.Status.countDocuments({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         })
 
         const epochData = await db.Status.find({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
         let masternodesEpochs = []
 
@@ -672,7 +678,9 @@ router.get('/:candidate/:owner/getRewards', [
             masternodesRW = rwData.map((r) => {
                 const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
-                r.epochCreatedAt = mn.epochCreatedAt
+                if (!r.reward) {
+                    r.rewardTime = mn.epochCreatedAt || ''
+                }
                 if (currentEpoch - r.epoch < 2) {
                     r.masternodeReward = '-'
                     r.signNumber = '-'
