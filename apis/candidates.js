@@ -757,13 +757,14 @@ router.put('/update', [
         ) {
             if (c.name) {
                 const currentBlockNumber = await web3.eth.getBlockNumber()
-                await db.NameHistory.updateOne({
+                const data = set
+                data.candidate = candidate.toLowerCase()
+                data.blockNumber = currentBlockNumber
+
+                await db.History.updateOne({
                     candidate: candidate.toLowerCase(), blockNumber: currentBlockNumber
                 }, {
-                    from: c.name,
-                    to: set.name,
-                    candidate: candidate.toLowerCase(),
-                    blockNumber: currentBlockNumber
+                    $set: data
                 }, { upsert: true })
             }
             await db.Candidate.updateOne({

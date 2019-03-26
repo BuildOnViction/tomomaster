@@ -240,8 +240,8 @@ export default {
                     self.hardware = data.hardware || 'N/A'
                     self.dcName = (data.dataCenter || {}).name || 'N/A'
                     self.dcLocation = (data.dataCenter || {}).location || 'N/A'
-                    self.website = data.website || ''
-                    self.telegram = data.telegram || ''
+                    self.website = (data.socials || {}).website || ''
+                    self.telegram = (data.socials || {}).telegram || ''
                 }
             }
         } catch (e) {
