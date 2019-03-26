@@ -2,7 +2,7 @@
     <div
         v-if="estimatedReward !== 'N/A'"
         class="float-left">
-        Est. reward: {{ estimatedReward }}
+        Est. Daily Reward: {{ estimatedReward }}
     </div>
 </template>
 <script>

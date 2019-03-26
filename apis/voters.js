@@ -338,6 +338,18 @@ router.get('/calculatingReward', [], async (req, res, next) => {
             candidate: address
         })
 
+        let current = new Date()
+        let yesterday = new Date(current.setDate(current.getDate() - 1))
+        const theDayBeforeYes = new Date(current.setDate(current.getDate() - 1))
+
+        const epochIn1Day = db.Status.count({
+            candidate: address,
+            epochCreatedAt: {
+                $gte: theDayBeforeYes,
+                $lt: yesterday
+            }
+        })
+
         // get latest reward
         const rewards = await axios.post(
             urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
@@ -367,8 +379,9 @@ router.get('/calculatingReward', [], async (req, res, next) => {
             // calculate devided reward
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
 
-            // calculate voter reward
-            const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
+            // calculate voter reward 1 day
+            const estimateReward = masternodeReward
+                .multipliedBy((amount.div(0.5))).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
             return res.send(estimateReward.toString(10))
         }
         return res.send('N/A')
