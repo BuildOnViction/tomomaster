@@ -630,6 +630,11 @@ router.get('/:candidate/:owner/getRewards', [
 
         const candidate = req.params.candidate
         const owner = req.params.owner
+
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        const latestCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+        const currentEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) + 1).toString()
+
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
         const page = parseInt(req.query.page) || 1
         let skip
@@ -637,11 +642,17 @@ router.get('/:candidate/:owner/getRewards', [
         let masternodesRW = []
 
         const total = db.Status.countDocuments({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         })
 
         const epochData = await db.Status.find({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
         let masternodesEpochs = []
 
@@ -669,6 +680,10 @@ router.get('/:candidate/:owner/getRewards', [
                 r.status = 'MASTERNODE'
                 if (!r.reward) {
                     r.rewardTime = mn.epochCreatedAt || ''
+                }
+                if (currentEpoch - r.epoch < 2) {
+                    r.masternodeReward = '-'
+                    r.signNumber = '-'
                 }
                 return r
             })
@@ -724,6 +739,14 @@ router.put('/update', [
         }
         if (body.dcLocation) {
             set['dataCenter.location'] = body.dcLocation
+        }
+
+        if (body.website) {
+            set['socials.website'] = body.website
+        }
+
+        if (body.telegram) {
+            set['socials.telegram'] = body.telegram
         }
 
         const address = await web3.eth.accounts.recover(message, signedMessage)

@@ -21,8 +21,7 @@ async function updateStatus (fromEpoch, toEpoch) {
             })
             if (check) {
                 const candidates = await db.Status.find({
-                    epoch: fromEpoch - 1,
-                    status: 'MASTERNODE'
+                    epoch: fromEpoch - 1
                 })
                 candidates.map(m => {
                     set.add(m.candidate)
@@ -88,7 +87,8 @@ async function updateStatus (fromEpoch, toEpoch) {
             total candidates: ${set.size}
             penalties - slash: ${penalties.length}
             signers - masternodes: ${signers.length}`)
-            const block = await web3Rpc.eth.getBlock(i * config.get('blockchain.epoch'))
+
+            const block = await web3Rpc.eth.getBlock((i - 1) * config.get('blockchain.epoch'))
             const epochCreatedAt = moment.unix(block.timestamp).utc()
 
             const a = signers.map(async m => {

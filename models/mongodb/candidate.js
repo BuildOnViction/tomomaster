@@ -32,13 +32,16 @@ var Candidate = new Schema({
     socials: {
         github: String,
         linkedin: String,
-        email: String
+        email: String,
+        website: String,
+        telegram: String
     },
     status: {
         type: String,
         enum: ['PROPOSED', 'RESIGNED', 'SLASHED', 'MASTERNODE'],
         index: true
-    }
+    },
+    rank: Number
 }, { timestamps: true })
 
 module.exports = mongoose.model('Candidate', Candidate)

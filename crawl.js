@@ -154,32 +154,6 @@ async function updateCandidateInfo (candidate) {
     }
 }
 
-async function updateCandidateSlashed (candidate, blockNumber) {
-    try {
-        let result
-        logger.debug('Update candidate %s slashed at blockNumber %s', candidate, String(blockNumber))
-        if (candidate !== '0x0000000000000000000000000000000000000000') {
-            result = await db.Candidate.updateOne({
-                smartContractAddress: config.get('blockchain.validatorAddress'),
-                candidate: candidate.toLowerCase()
-            }, {
-                $set: {
-                    status: 'SLASHED'
-                }
-            }, { upsert: true })
-        } else {
-            result = await db.Candidate.deleteOne({
-                smartContractAddress: validator.address,
-                candidate: candidate
-            })
-        }
-
-        return result
-    } catch (e) {
-        logger.error('updateCandidateSlashed %s', e)
-    }
-}
-
 async function updateVoterCap (candidate, voter) {
     try {
         let capacity = await validator.methods.getVoterCap(candidate, voter).call()
@@ -231,59 +205,11 @@ async function getCurrentCandidates () {
     }
 }
 
-async function updatePenalties () {
-    try {
-        let blks = []
-        let latestBlockNumber = await web3.eth.getBlockNumber()
-        let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-
-        for (let i = 0; i <= 4; i++) {
-            let checkpoint = lastCheckpoint - (i * 900)
-            if (checkpoint > 0) {
-                blks.push(await web3.eth.getBlock(checkpoint))
-            }
-        }
-
-        if (blks.length === 0) {
-            return false
-        }
-
-        // await db.Penalty.remove({})
-
-        let getPenalty = async function (blk) {
-            let sbuff = Buffer.from((blk.penalties || '').substring(2), 'hex')
-            let penalties = []
-            const epoch = (blk.number / config.get('blockchain.epoch')) - 1
-            if (sbuff.length > 0) {
-                for (let i = 1; i <= sbuff.length / 20; i++) {
-                    let address = sbuff.slice((i - 1) * 20, i * 20)
-                    penalties.push('0x' + address.toString('hex'))
-                    await updateCandidateSlashed('0x' + address.toString('hex').toLowerCase(), blk.number)
-                }
-
-                await db.Penalty.update({ epoch: epoch }, {
-                    networkId: config.get('blockchain.networkId'),
-                    blockNumber: blk.number,
-                    epoch: epoch,
-                    penalties: penalties
-                }, { upsert: true })
-            }
-            return penalties
-        }
-
-        await Promise.all(blks.map(blk => getPenalty(blk)))
-    } catch (e) {
-        logger.error('updatePenalties %s', e)
-        web3 = new Web3Ws()
-        validator = new Validator(web3)
-    }
-}
-
 async function updateSignerPenAndStatus () {
     try {
         const latestBlockNumber = await web3.eth.getBlockNumber()
         const latestCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        const latestEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+        const currentEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch')) + 1).toString()
         const blk = await web3.eth.getBlock(latestCheckpoint)
         const signers = []
         const penalties = []
@@ -299,7 +225,7 @@ async function updateSignerPenAndStatus () {
             const data = {
                 'jsonrpc': '2.0',
                 'method': 'eth_getCandidateStatus',
-                'params': [c.candidate.toLowerCase(), '0x' + latestEpoch.toString('hex')],
+                'params': [c.candidate.toLowerCase(), '0x' + currentEpoch.toString('hex')],
                 'id': config.get('blockchain.networkId')
             }
             const response = await axios.post(config.get('blockchain.rpc'), data)
@@ -317,8 +243,8 @@ async function updateSignerPenAndStatus () {
                             status: 'MASTERNODE'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'MASTERNODE',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -334,8 +260,8 @@ async function updateSignerPenAndStatus () {
                             status: 'SLASHED'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'SLASHED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -350,8 +276,8 @@ async function updateSignerPenAndStatus () {
                             status: 'PROPOSED'
                         }
                     }, { upsert: true })
-                    await db.Status.updateOne({ epoch: latestEpoch, candidate: c.candidate }, {
-                        epoch: latestEpoch,
+                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                        epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'PROPOSED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -368,57 +294,18 @@ async function updateSignerPenAndStatus () {
             signers: signers
         }, { upsert: true })
 
-        await db.Penalty.update({ epoch: latestEpoch }, {
+        await db.Penalty.update({ epoch: currentEpoch }, {
             networkId: config.get('blockchain.networkId'),
             blockNumber: blk.number,
-            epoch: latestEpoch,
+            epoch: currentEpoch,
             penalties: penalties
         }, { upsert: true })
     } catch (e) {
         logger.error('updateSignerAndPen %s', e)
         web3 = new Web3Ws()
         validator = new Validator(web3)
-    }
-}
-
-async function updateSignersAndCandidate () {
-    try {
-        let blk = {}
-        let latestBlockNumber = await web3.eth.getBlockNumber()
-        let lastCheckpoint = latestBlockNumber - (latestBlockNumber % parseInt(config.get('blockchain.epoch')))
-        if (lastCheckpoint > 0) {
-            blk = await web3.eth.getBlock(lastCheckpoint)
-        } else {
-            return false
-        }
-        let buff = Buffer.from(blk.extraData.substring(2), 'hex')
-        let sbuff = buff.slice(32, buff.length - 65)
-        let signers = []
-        let address
-        if (sbuff.length > 0) {
-            for (let i = 1; i <= sbuff.length / 20; i++) {
-                address = sbuff.slice((i - 1) * 20, i * 20)
-                signers.push('0x' + address.toString('hex'))
-                // update candidate status
-                await db.Candidate.updateOne({
-                    smartContractAddress: config.get('blockchain.validatorAddress'),
-                    candidate: '0x' + address.toString('hex').toLowerCase()
-                }, {
-                    $set: {
-                        status: 'MASTERNODE'
-                    }
-                }, { upsert: true })
-            }
-            await db.Signer.updateOne({ blockNumber: blk.number },
-                {
-                    networkId: config.get('blockchain.networkId'),
-                    blockNumber: blk.number,
-                    signers: signers
-                }, { upsert: true })
-        }
-        return signers
-    } catch (e) {
-        logger.error('updateSignersAndCandidate %s', e)
+        await sleep(10000)
+        return updateSignerPenAndStatus()
     }
 }
 
@@ -434,6 +321,43 @@ async function watchNewBlock (n) {
             let blk = await web3.eth.getBlock(blockNumber)
             if (n % config.get('blockchain.epoch') === 10) {
                 await updateSignerPenAndStatus()
+                {
+                    // get candidate's cap
+                    const candidates = await db.Candidate.find({
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        status: { $nin: ['RESIGNED', 'PROPOSED'] }
+                    }).sort({ capacityNumber: -1 })
+                    await db.Candidate.updateMany({
+                        smartContractAddress: config.get('blockchain.validatorAddress')
+                    }, {
+                        rank: ''
+                    })
+                    // update rank history
+                    await Promise.all(candidates.map(async (c, i) => {
+                        await db.Candidate.updateOne({
+                            smartContractAddress: config.get('blockchain.validatorAddress'),
+                            candidate: c.candidate
+                        }, {
+                            $set: {
+                                rank: i + 1
+                            }
+                        }, { upsert: true })
+                        // update rank hisroty
+                        const latestBlockNumber = await web3.eth.getBlockNumber()
+                        const latestCheckpoint = latestBlockNumber - (
+                            latestBlockNumber % parseInt(config.get('blockchain.epoch')))
+                        const latestEpoch = (parseInt(
+                            latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+                        const block = await web3.eth.getBlock(latestCheckpoint)
+
+                        await db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
+                            epoch: latestEpoch,
+                            candidate: c.candidate,
+                            rank: i + 1,
+                            epochCreatedAt: moment.unix(block.timestamp).utc()
+                        }, { upsert: true })
+                    }))
+                }
             }
             await updateLatestSignedBlock(blk)
             await watchValidator()
@@ -526,9 +450,7 @@ async function getPastEvent () {
 }
 
 getCurrentCandidates().then(() => {
-    return updatePenalties()
-}).then(() => {
-    return updateSignersAndCandidate()
+    return updateSignerPenAndStatus()
 }).then(() => {
     return getPastEvent().then(() => {
         watchNewBlock()
