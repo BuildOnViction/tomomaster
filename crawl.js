@@ -321,27 +321,14 @@ async function watchNewBlock (n) {
             let blk = await web3.eth.getBlock(blockNumber)
             if (n % config.get('blockchain.epoch') === 10) {
                 await updateSignerPenAndStatus()
+                // update rank history
                 {
-                    // get candidate's cap
                     const candidates = await db.Candidate.find({
                         smartContractAddress: config.get('blockchain.validatorAddress'),
                         status: { $nin: ['RESIGNED', 'PROPOSED'] }
                     }).sort({ capacityNumber: -1 })
-                    await db.Candidate.updateMany({
-                        smartContractAddress: config.get('blockchain.validatorAddress')
-                    }, {
-                        rank: ''
-                    })
-                    // update rank history
+
                     await Promise.all(candidates.map(async (c, i) => {
-                        await db.Candidate.updateOne({
-                            smartContractAddress: config.get('blockchain.validatorAddress'),
-                            candidate: c.candidate
-                        }, {
-                            $set: {
-                                rank: i + 1
-                            }
-                        }, { upsert: true })
                         // update rank hisroty
                         const latestBlockNumber = await web3.eth.getBlockNumber()
                         const latestCheckpoint = latestBlockNumber - (
@@ -359,6 +346,30 @@ async function watchNewBlock (n) {
                             .catch(e => logger.error('update rank history %s', e))
                     }))
                 }
+            }
+            // update rank after 50 blocks
+            if (n % 50 === 0) {
+                // get candidate's cap
+                const candidates = await db.Candidate.find({
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    status: { $nin: ['RESIGNED', 'PROPOSED'] }
+                }).sort({ capacityNumber: -1 })
+                await db.Candidate.updateMany({
+                    smartContractAddress: config.get('blockchain.validatorAddress')
+                }, {
+                    rank: ''
+                })
+                // update rank
+                await Promise.all(candidates.map(async (c, i) => {
+                    await db.Candidate.updateOne({
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        candidate: c.candidate
+                    }, {
+                        $set: {
+                            rank: i + 1
+                        }
+                    }, { upsert: true })
+                }))
             }
             await updateLatestSignedBlock(blk)
             await watchValidator()

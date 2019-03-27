@@ -16,7 +16,9 @@
                     <div class="col-12">
                         <div class="section-title">
                             <i class="tm-flag color-yellow" />
-                            <span>{{ candidate.name }}</span>
+                            <span>
+                                {{ (candidate.rank) ? `${candidate.rank}. ${candidate.name}` : candidate.name }}
+                            </span>
 
                             <router-link
                                 v-if="account === candidate.owner"
@@ -461,7 +463,8 @@ export default {
                 dataCenterInfo: {},
                 socials: {},
                 voted: 0,
-                slashedTimes: 0
+                slashedTimes: 0,
+                rank: ''
             },
             mnRewardsFields: [
                 {
@@ -650,6 +653,7 @@ export default {
                     }
                     self.candidate.socials = data.socials
                     self.candidate.slashedTimes = data.slashedTimes
+                    self.candidate.rank = data.rank
                 }
 
                 if (self.web3) {
