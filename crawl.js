@@ -350,12 +350,13 @@ async function watchNewBlock (n) {
                             latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
                         const block = await web3.eth.getBlock(latestCheckpoint)
 
-                        await db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
+                        db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
                             epoch: latestEpoch,
                             candidate: c.candidate,
                             rank: i + 1,
                             epochCreatedAt: moment.unix(block.timestamp).utc()
-                        }, { upsert: true })
+                        }, { upsert: true }).then(() => { return true })
+                            .catch(e => logger.error('update rank history %s', e))
                     }))
                 }
             }

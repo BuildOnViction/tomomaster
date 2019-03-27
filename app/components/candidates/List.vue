@@ -164,6 +164,11 @@ export default {
             chainConfig: {},
             fields: [
                 {
+                    key: 'rank',
+                    label: 'Rank',
+                    sortable: true
+                },
+                {
                     key: 'address',
                     label: 'Address',
                     sortable: false
@@ -326,7 +331,8 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: candidate.latestSignedBlock
+                        latestSignedBlock: candidate.latestSignedBlock,
+                        rank: candidate.rank
                     })
                 })
                 self.candidates = items
