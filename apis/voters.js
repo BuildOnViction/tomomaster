@@ -325,7 +325,7 @@ router.get('/getScanningResult', [
     }
 })
 
-router.get('/calculatingReward', [], async (req, res, next) => {
+router.get('/calculatingReward1Day', [], async (req, res, next) => {
     try {
         // candidate
         const address = (req.query.candidate || '').toLowerCase()
@@ -333,7 +333,7 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         const amount = new BigNumber(req.query.amount || 0)
 
         // search candidate
-        const candidate = await db.Candidate.findOne({
+        const candidatePromise = db.Candidate.findOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: address
         })
@@ -349,6 +349,8 @@ router.get('/calculatingReward', [], async (req, res, next) => {
                 $lt: yesterday
             }
         })
+
+        const candidate = await candidatePromise
 
         // get latest reward
         const rewards = await axios.post(
