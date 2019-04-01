@@ -354,7 +354,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
         // get latest reward
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin('https://scan.tomochain.com', 'api/expose/rewards'),
             {
                 address: address,
                 limit: 1,
@@ -376,7 +376,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         let totalSigners
         if (epoch) {
             totalSigners = await axios.post(
-                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+                urljoin('https://scan.tomochain.com', `api/expose/totalSignNumber/${epoch}`)
             )
         }
 
