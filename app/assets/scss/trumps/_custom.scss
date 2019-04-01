@@ -143,3 +143,33 @@
     }
 }
 
+.notification-menu-wrapper {
+    position: absolute;
+    z-index: 10;
+    left: auto;
+    background: #fff;
+    border-top-color: rgb(197, 197, 197);
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-right-color: rgb(197, 197, 197);
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-bottom-color: rgb(197, 197, 197);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-left-color: rgb(197, 197, 197);
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    top: 50px;
+    right: 300px;
+    width: 300px;
+    line-height: 21px;
+}

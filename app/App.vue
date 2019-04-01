@@ -36,6 +36,35 @@
                             <i class="tm-cog ml-1 icon-2x" />
                         </router-link> -->
 
+                        <!-- <a
+                            href="#"
+                            class="dd-setting">
+                            <i
+                                class="tm-bell ml-2 icon-2x"
+                                @click="readClick" />
+                        </a>
+                        <div
+                            :style="`${statusClass}`"
+                            class="notification-menu-wrapper">
+                            <div
+                                class="header"
+                                style="border-bottom: 1px solid; padding: 5px">
+                                <span>Notifications</span>
+                                <a
+                                    href
+                                    class="float-right"
+                                    style="color: #216ba5">Mark all as read</a>
+                            </div>
+                            <div class="notification-wrapper">
+                                <div style="text-align: center">No notifications.</div>
+                            </div>
+                            <div style="text-align: center; border-top: 1px solid; padding: 5px">
+                                <a
+                                    href
+                                    style="color: #216ba5">Show all</a>
+                            </div>
+                        </div> -->
+
                         <b-dropdown
                             v-if="isTomonet"
                             class="dd-setting"
@@ -54,35 +83,51 @@
                             </template>
                             <b-dropdown-text>
                                 <div
-                                    style="text-align: center;">
+                                    style="text-align: center; font-size: 14px; font-weight: bold">
                                     Notifications
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
-                            <b-dropdown-text>
-                                <div
-                                    class="ml-1 mr-1"
-                                    style="text-align: center;">
-                                    [Slashed] Masternode [PQV] slashed at epoch [1596]
+                            <div style="max-height: 150px; overflow: auto;font-size: 14px">
+                                <div>
+                                    <b-dropdown-text>
+                                        <div
+                                            class="ml-2 mr-1">
+                                            <span style="font-size: 13px">
+                                                [Slashed] Masternode [PQV] slashed at epoch [1596]
+                                            </span>
+                                            <div style="font-size: 12px">TomoMaster - 5 hours ago</div>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider />
                                 </div>
-                            </b-dropdown-text>
-                            <b-dropdown-text>
-                                <div
-                                    class="ml-1 mr-1"
-                                    style="text-align: center;">
-                                    [Withdrawal] 500 Tomo withdrawed succesfulfy
+                                <div>
+                                    <b-dropdown-text>
+                                        <div
+                                            class="ml-2 mr-1">
+                                            <span style="font-size: 13px">
+                                                [Withdrawal] 500 Tomo withdrawed succesfulfy
+                                            </span>
+                                            <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider />
                                 </div>
-                            </b-dropdown-text>
-                            <b-dropdown-text>
-                                <div
-                                    class="ml-1 mr-1"
-                                    style="text-align: center;">
-                                    [Reward] You receive 0.30 Tomo for masternode [TEDreamers]
+                                <div>
+                                    <b-dropdown-text>
+                                        <div
+                                            class="ml-2 mr-1">
+                                            <span style="font-size: 13px">
+                                                [Reward] You received 0.30 Tomo for masternode [TEDreamers]
+                                            </span>
+                                            <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
+                                        </div>
+                                    </b-dropdown-text>
                                 </div>
-                            </b-dropdown-text>
+                            </div>
                             <b-dropdown-divider />
                             <b-dropdown-item
-                                style="width: 350px; text-align: center; max-width: 500px"
+                                style="width: 350px; text-align: center; max-width: 500px;color: #216ba5"
                                 href="/"
                                 @click="signOut">See all</b-dropdown-item>
                         </b-dropdown>
