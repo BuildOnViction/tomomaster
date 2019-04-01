@@ -31,7 +31,9 @@
                                     :key="key"
                                     class="list-inline-item social-links__item">
                                     <a
+                                        v-if="value !== ''"
                                         :href="value"
+                                        target="_blank"
                                         class="social-links__link">
                                         <i :class="'social-links__icon tm-' + key" />
                                     </a>

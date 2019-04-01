@@ -741,13 +741,8 @@ router.put('/update', [
             set['dataCenter.location'] = body.dcLocation
         }
 
-        if (body.website) {
-            set['socials.website'] = body.website
-        }
-
-        if (body.telegram) {
-            set['socials.telegram'] = body.telegram
-        }
+        set['socials.website'] = body.website || ''
+        set['socials.telegram'] = body.telegram || ''
 
         const address = await web3.eth.accounts.recover(message, signedMessage)
 
