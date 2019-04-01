@@ -373,11 +373,14 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         // get total signers in latest epoch
-        const totalSigners = await axios.post(
-            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
-        )
+        let totalSigners
+        if (epoch) {
+            totalSigners = await axios.post(
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            )
+        }
 
-        if (totalSigners.data && totalSigners.data.totalSignNumber) {
+        if (totalSigners && totalSigners.data && totalSigners.data.totalSignNumber) {
             // calculate devided reward
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
 
