@@ -354,7 +354,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
         // get latest reward
         const rewards = await axios.post(
-            urljoin('https://scan.tomochain.com', 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: address,
                 limit: 1,
@@ -376,7 +376,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         let totalSigners
         if (epoch) {
             totalSigners = await axios.post(
-                urljoin('https://scan.tomochain.com', `api/expose/totalSignNumber/${epoch}`)
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
             )
         }
 
@@ -385,8 +385,8 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
 
             // calculate voter reward 1 day
-            const estimateReward = masternodeReward
-                .multipliedBy((amount.div(0.5))).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
+            const estimateReward = masternodeReward.multipliedBy(0.5)
+                .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
             return res.send(estimateReward.toString(10))
         }
         return res.send('N/A')
