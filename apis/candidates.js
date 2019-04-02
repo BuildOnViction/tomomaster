@@ -762,7 +762,6 @@ router.put('/update', [
                     $set: data
                 }, { upsert: true })
             }
-            console.log(set)
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate.toLowerCase()
