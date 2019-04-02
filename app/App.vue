@@ -195,7 +195,7 @@ export default {
             const candidates = await axios.get('/api/candidates')
             const map = candidates.data.items.map((c) => {
                 return {
-                    name: c.name ? c.name : 'Anonymous Candidate',
+                    name: c.name ? c.name : 'Anonymous',
                     address: c.candidate
                 }
             })
