@@ -71,6 +71,7 @@
                             <span
                                 v-if="$v.website.$dirty && !$v.website.url"
                                 class="text-danger">Not a url</span>
+
                         </b-form-group>
                         <b-form-group
                             class="col-md-6"
@@ -82,6 +83,7 @@
                             <span
                                 v-if="$v.telegram.$dirty && !$v.telegram.url"
                                 class="text-danger">Not a url</span>
+
                         </b-form-group>
                     </div>
                     <div class="buttons text-right">
@@ -364,6 +366,7 @@ export default {
                 if (self.dcLocation !== '') {
                     body.dcLocation = self.dcLocation
                 }
+
                 body.website = self.website
                 body.telegram = self.telegram
 

@@ -115,8 +115,6 @@
                 align="center"
                 class="tomo-pagination"
                 @change="candidatePageChange" />
-            <div class="text-guide">
-                All candidates are voted by this voter</div>
         </div>
         <div
             :class="'container section section--voterrewards'

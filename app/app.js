@@ -77,7 +77,11 @@ Vue.prototype.setupProvider = function (provider, wjs) {
         Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
         Vue.prototype.getAccount = function () {
-            var p = new Promise(function (resolve, reject) {
+            var p = new Promise(async function (resolve, reject) {
+                if (provider === 'metamask') {
+                    // Request account access if needed - for metamask
+                    await window.ethereum.enable()
+                }
                 wjs.eth.getAccounts(async function (err, accs) {
                     if (err != null) {
                         console.log('There was an error fetching your accounts.')

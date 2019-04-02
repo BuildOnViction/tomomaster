@@ -325,7 +325,7 @@ router.get('/getScanningResult', [
     }
 })
 
-router.get('/calculatingReward', [], async (req, res, next) => {
+router.get('/calculatingReward1Day', [], async (req, res, next) => {
     try {
         // candidate
         const address = (req.query.candidate || '').toLowerCase()
@@ -333,10 +333,24 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         const amount = new BigNumber(req.query.amount || 0)
 
         // search candidate
-        const candidate = await db.Candidate.findOne({
+        const candidatePromise = db.Candidate.findOne({
             smartContractAddress: config.get('blockchain.validatorAddress'),
             candidate: address
         })
+
+        let current = new Date()
+        let yesterday = new Date(current.setDate(current.getDate() - 1))
+        const theDayBeforeYes = new Date(current.setDate(current.getDate() - 1))
+
+        const epochIn1Day = db.Status.count({
+            candidate: address,
+            epochCreatedAt: {
+                $gte: theDayBeforeYes,
+                $lt: yesterday
+            }
+        })
+
+        const candidate = await candidatePromise
 
         // get latest reward
         const rewards = await axios.post(
@@ -359,16 +373,20 @@ router.get('/calculatingReward', [], async (req, res, next) => {
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
         // get total signers in latest epoch
-        const totalSigners = await axios.post(
-            urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
-        )
+        let totalSigners
+        if (epoch) {
+            totalSigners = await axios.post(
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            )
+        }
 
-        if (totalSigners.data && totalSigners.data.totalSignNumber) {
+        if (totalSigners && totalSigners.data && totalSigners.data.totalSignNumber) {
             // calculate devided reward
             const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
 
-            // calculate voter reward
-            const estimateReward = masternodeReward.multipliedBy((amount.div(0.5))).div(capacity.plus(amount)) || 'N/A'
+            // calculate voter reward 1 day
+            const estimateReward = masternodeReward.multipliedBy(0.5)
+                .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
             return res.send(estimateReward.toString(10))
         }
         return res.send('N/A')

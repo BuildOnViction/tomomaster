@@ -935,7 +935,7 @@ router.get('/slashed/:epoch', [
 
     try {
         let epoch = req.params.epoch
-        const penalty = db.Penalty.findOne({ epoch: epoch })
+        const penalty = await db.Penalty.findOne({ epoch: epoch })
 
         return res.json(penalty)
     } catch (e) {

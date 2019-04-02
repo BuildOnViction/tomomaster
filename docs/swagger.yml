@@ -17,6 +17,8 @@ tags:
     description: Get Voter information
   - name: Transaction
     description: Get transactions of candidate and voter
+  - name: Signer
+    description: Get a list of signers
 schemes:
   - http
   - https
@@ -240,6 +242,29 @@ paths:
             $ref: '#/definitions/candidateRewards'
         '406':
           description: Not Acceptable
+  '/api/candidates/{candidate}/{owner}/isOwner':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: owner
+        in: path
+        type: string
+        description: owner's address
+        required: true
+    get:
+      tags:
+        - Candidates
+      summary: Owner checking
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/isOwner'
+        '406':
+          description: Not Acceptable
   '/api/voters/{voter}/candidates':
     parameters:
       - name: voter
@@ -344,6 +369,32 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/txVoter'
+  '/api/transactions/{tx}':
+    parameters:
+      - name: tx
+        in: path
+        type: string
+        description: Transaction
+        required: true
+    get:
+      tags:
+        - Transaction
+      summary: Get a transaction's detail
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/transaction'
+  /api/signers/get/latest:
+    get:
+      tags:
+        - Signer
+      summary: Get a list of latest signers
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/signers'
 definitions:
   config:
     properties:
@@ -681,3 +732,101 @@ definitions:
         type: number
         description: Total number of candidate
         example: 1
+  isOwner:
+    type: number
+    enum:
+      - 'true'
+      - 'false'
+  transaction:
+    properties:
+      _id:
+        type: string
+        description: id
+        example: 5c52a4465f0abf3496da0e91
+      tx:
+        type: string
+        description: transaction hash
+        example: '0xdd03614f86982663b4c17eaaf9051b3df7a88fefc445df41921fa223c6178bf7'
+      smartContractAddress:
+        type: string
+        description: smart contract's address
+        example: '0x0000000000000000000000000000000000000088'
+      __v:
+        type: number
+        description: __v
+        example: 0
+      capacity:
+        type: string
+        description: capacity in wei
+        example: '1715000000000000000000'
+      createdAt:
+        type: string
+        description: creation date of candidate
+        example: '2018-10-31T03:42:39.375Z'
+      owner:
+        type: string
+        description: owner's address
+        example: '0x7e0d154cba89190ce1801031cba9d46ad21eb317'
+      blockNumber:
+        type: number
+        description: blockNumber
+        example: 1310702
+      updatedAt:
+        type: string
+        description: update time
+        example: '2019-01-11T09:17:59.535Z'
+      voter:
+        type: string
+        description: voter address
+        example: '0x7e0d154cba89190ce1801031cba9d46ad21eb317'
+      candidate:
+        type: string
+        description: candidate address
+        example: ''
+      event:
+        type: string
+        description: event
+        example: Withdraw
+        enum:
+          - Vote
+          - Unvote
+          - Withdraw
+          - Propose
+          - Resign
+  signers:
+    properties:
+      _id:
+        type: string
+        description: id
+        example: 5c52a4465f0abf3496da0e91
+      signers:
+        type: array
+        description: List of latest signers
+        items:
+          type: string
+          description: signer address
+          example: '0x98ffa09ae64a3ad63289ee0def385e6455b777e5'
+        example:
+          - '0x98ffa09ae64a3ad63289ee0def385e6455b777e5'
+          - '0x6670fe10f076539459753b7aabc53fc218644042'
+          - '0x71ab3b4352084f13bedb15693cd6bb923a1b80a1'
+      __v:
+        type: number
+        description: __v
+        example: 0
+      networkId:
+        type: string
+        description: capacity in wei
+        example: '1715000000000000000000'
+      createdAt:
+        type: string
+        description: creation date of candidate
+        example: '2018-10-31T03:42:39.375Z'
+      blockNumber:
+        type: number
+        description: blockNumber
+        example: 1310702
+      updatedAt:
+        type: string
+        description: update time
+        example: '2019-01-11T09:17:59.535Z'
