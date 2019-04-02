@@ -70,7 +70,8 @@
                                 name="website-value"/>
                             <span
                                 v-if="$v.website.$dirty && !$v.website.url"
-                                class="text-danger">Not an url</span>
+                                class="text-danger">Not a url</span>
+
                         </b-form-group>
                         <b-form-group
                             class="col-md-6"
@@ -81,7 +82,8 @@
                                 name="telegram-value"/>
                             <span
                                 v-if="$v.telegram.$dirty && !$v.telegram.url"
-                                class="text-danger">Not an url</span>
+                                class="text-danger">Not a url</span>
+
                         </b-form-group>
                     </div>
                     <div class="buttons text-right">
