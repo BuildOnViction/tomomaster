@@ -62,18 +62,18 @@ export default {
     },
     mounted () {
         document.addEventListener('click', this.handleClickOutside)
-        document.addEventListener('keyup', this.focusSearchInput)
+        // document.addEventListener('keyup', this.focusSearchInput)
     },
     destroyed () {
         document.removeEventListener('click', this.handleClickOutside)
-        document.removeEventListener('click', this.focusSearchInput)
+        // document.removeEventListener('click', this.focusSearchInput)
     },
     methods: {
-        focusSearchInput (evt) {
-            if (evt.key === 's' || evt.key === '/') {
-                document.getElementById('search-input').focus()
-            }
-        },
+        // focusSearchInput (evt) {
+        //     if (evt.key === 's' || evt.key === '/') {
+        //         document.getElementById('search-input').focus()
+        //     }
+        // },
         onChange () {
             // Let's warn the parent that a change was made
             this.$emit('input', this.search)
