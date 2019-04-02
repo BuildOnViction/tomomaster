@@ -732,7 +732,6 @@ router.put('/update', [
         }
 
         const body = req.body
-        console.log(body)
         let set = _.pick(body, ['name', 'hardware'])
 
         if (body.dcName) {
