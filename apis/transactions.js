@@ -53,8 +53,18 @@ router.get('/voter/:voter', [
             smartContractAddress: config.get('blockchain.validatorAddress'),
             voter: (req.params.voter || '').toLowerCase()
         }).sort(sort).collation(collation).limit(limit).skip(skip)
+
+        const txWithNames = await Promise.all(txs.map(async (t) => {
+            const c = Object.assign({}, t._doc)
+            const b = await db.Candidate.findOne({
+                smartContractAddress: config.get('blockchain.validatorAddress'),
+                candidate: t.candidate
+            }) || {}
+            c.name = b.name || 'Anonymous'
+            return c
+        }))
         return res.json({
-            items: txs,
+            items: txWithNames,
             total: await total
         })
     } catch (e) {

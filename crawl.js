@@ -67,6 +67,9 @@ async function watchValidator () {
                         epochCreatedAt: createdAt
                     }, { upsert: true })
                 }
+
+                // get balance
+                let candidateCap = await validator.methods.getCandidateCap(candidate).call()
                 await db.Transaction.updateOne({
                     tx: result.transactionHash
                 }, {
@@ -79,7 +82,8 @@ async function watchValidator () {
                         candidate: candidate,
                         capacity: capacity,
                         blockNumber: result.blockNumber,
-                        createdAt: createdAt
+                        createdAt: createdAt,
+                        currentCandidateCap: new BigNumber(candidateCap)
                     }
                 }, {
                     upsert: true

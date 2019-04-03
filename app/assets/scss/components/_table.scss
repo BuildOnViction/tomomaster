@@ -381,7 +381,7 @@
 
         thead tr,
         tbody tr {
-            grid-template-columns: auto auto 15% 15% 15% 15% 10%;
+            grid-template-columns: 5% 19% auto 15% 15% 15% 10%;
         }
 
         .text-truncate {
@@ -498,6 +498,66 @@
 
         th[aria-colindex="5"],
         td[aria-colindex="5"] {
+            text-align: center;
+
+            a > span {
+                font-size: 0;
+            }
+
+            i {
+                font-size: 15px;
+            }
+
+            a:hover {
+                color: $color-link !important;
+            }
+        }
+    }
+}
+
+.tomo-table--transactions-voter {
+
+    td[aria-colindex="7"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        &:before {
+            display: none !important;
+        }
+
+        a {
+            color: $color-text;
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 60%;
+        }
+
+        thead tr,
+        tbody tr {
+            padding-right: 0;
+            grid-template-columns: 20% auto 8% 16% 16% 10% 8%;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: left;
+        }
+
+        th[aria-colindex="6"],
+        td[aria-colindex="6"] {
+            text-align: left;
+        }
+
+        th[aria-colindex="7"],
+        td[aria-colindex="7"] {
             text-align: center;
 
             a > span {
