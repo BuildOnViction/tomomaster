@@ -247,7 +247,7 @@ export default {
                         self.$router.push({ path: '/setting' })
                     }, 1000)
                 } else {
-                    self.name = data.name ? data.name : 'Anonymous Candidate'
+                    self.name = data.name ? data.name : 'Anonymous'
                     self.hardware = data.hardware || 'N/A'
                     self.dcName = (data.dataCenter || {}).name || 'N/A'
                     self.dcLocation = (data.dataCenter || {}).location || 'N/A'

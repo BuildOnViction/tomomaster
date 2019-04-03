@@ -219,9 +219,8 @@
                     slot="candidate"
                     slot-scope="data">
                     <router-link
-                        :to="'/candidate/' + data.item.candidate"
-                        class="text-truncate">
-                        {{ data.item.candidate }}
+                        :to="'/candidate/' + data.item.candidate">
+                        {{ truncate(data.item.candidate, 20) }}
                     </router-link>
                 </template>
 

@@ -134,7 +134,7 @@ router.post('/generateQR', [
             candidate: candidate
         }) || {})
 
-        const candidateName = candidateInfo.name ? candidateInfo.name : 'Anonymous Candidate'
+        const candidateName = candidateInfo.name ? candidateInfo.name : 'Anonymous'
 
         const message = voter + ' ' + action + ' ' + amount + ' TOMO for candidate ' + candidate + ' - ' + candidateName
         const id = uuidv4()
