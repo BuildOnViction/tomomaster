@@ -50,7 +50,7 @@
                             <b-dropdown-item
                                 :to="`/voter/${account}`"
                                 class="dd-address">
-                                {{ account }}
+                                {{ truncate(account, 20) }}
                             </b-dropdown-item>
                             <b-dropdown-divider />
                             <b-dropdown-item

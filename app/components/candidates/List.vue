@@ -94,9 +94,8 @@
                     slot="address"
                     slot-scope="data">
                     <router-link
-                        :to="'/candidate/' + data.item.address"
-                        class="text-truncate">
-                        {{ data.item.address }}
+                        :to="'/candidate/' + data.item.address">
+                        {{ truncate(data.item.address, 18) }}
                     </router-link>
                 </template>
 
@@ -165,8 +164,7 @@ export default {
             fields: [
                 {
                     key: 'rank',
-                    label: 'Rank',
-                    sortable: true
+                    label: 'Rank'
                 },
                 {
                     key: 'address',
