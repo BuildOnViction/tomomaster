@@ -50,7 +50,7 @@
                             <b-dropdown-item
                                 :to="`/voter/${account}`"
                                 class="dd-address">
-                                {{ account }}
+                                {{ truncate(account, 20) }}
                             </b-dropdown-item>
                             <b-dropdown-divider />
                             <b-dropdown-item
@@ -195,7 +195,7 @@ export default {
             const candidates = await axios.get('/api/candidates')
             const map = candidates.data.items.map((c) => {
                 return {
-                    name: c.name ? c.name : 'Anonymous Candidate',
+                    name: c.name ? c.name : 'Anonymous',
                     address: c.candidate
                 }
             })

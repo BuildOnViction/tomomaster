@@ -640,7 +640,7 @@ export default {
                 if (c.data) {
                     let data = c.data
                     self.isCandidate = data.candidate
-                    self.candidate.name = data.name ? data.name : 'Anonymous Candidate'
+                    self.candidate.name = data.name ? data.name : 'Anonymous'
                     self.candidate.status = data.status
                     self.candidate.nodeId = data.nodeId
                     self.candidate.owner = data.owner
