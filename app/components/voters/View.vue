@@ -205,7 +205,7 @@
                 :fields="txFields"
                 :per-page="txPerPage"
                 :show-empty="true"
-                :class="`tomo-table tomo-table--transactions${txLoading ? ' loading' : ''}`"
+                :class="`tomo-table tomo-table--transactions-voter${txLoading ? ' loading' : ''}`"
                 empty-text="There are no transactions to show"
                 stacked="md"
                 @sort-changed="sortingChangeTxes" >
@@ -219,9 +219,8 @@
                     slot="candidate"
                     slot-scope="data">
                     <router-link
-                        :to="'/candidate/' + data.item.candidate"
-                        class="text-truncate">
-                        {{ data.item.candidate }}
+                        :to="'/candidate/' + data.item.candidate">
+                        {{ truncate(data.item.candidate, 20) }}
                     </router-link>
                 </template>
 
@@ -235,6 +234,12 @@
                     slot="capacity"
                     slot-scope="data">
                     {{ isNaN(data.item.cap) ? '---' : formatCurrencySymbol(data.item.cap) }}
+                </template>
+
+                <template
+                    slot="candidateCap"
+                    slot-scope="data">
+                    {{ isNaN(data.item.candidateCap) ? '---' : formatCurrencySymbol(data.item.candidateCap) }}
                 </template>
 
                 <template
@@ -280,6 +285,11 @@ export default {
                 {
                     key: 'name',
                     label: 'Name',
+                    sortable: false
+                },
+                {
+                    key: 'status',
+                    label: 'Status',
                     sortable: false
                 },
                 {
@@ -347,7 +357,12 @@ export default {
             txFields: [
                 {
                     key: 'candidate',
-                    label: 'Candidate',
+                    label: 'Address',
+                    sortable: false
+                },
+                {
+                    key: 'name',
+                    label: 'Name',
                     sortable: false
                 },
                 {
@@ -357,6 +372,11 @@ export default {
                 },
                 {
                     key: 'capacity',
+                    label: 'Amount',
+                    sortable: true
+                },
+                {
+                    key: 'candidateCap',
                     label: 'Capacity',
                     sortable: true
                 },
@@ -479,7 +499,9 @@ export default {
                         candidate: tx.candidate,
                         event: tx.event,
                         cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
-                        createdAt: moment(tx.createdAt).fromNow()
+                        createdAt: moment(tx.createdAt).fromNow(),
+                        name: tx.name,
+                        candidateCap: (new BigNumber(tx.currentCandidateCap).div(10 ** 18).toNumber()) || '---'
                     })
                 })
                 self.transactions = items
