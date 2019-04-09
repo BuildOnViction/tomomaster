@@ -80,6 +80,10 @@
     font-weight: 600;
 }
 
+.tooltip {
+    pointer-events: none;
+}
+
 .tooltip-inner {
     color: $color-body-bg;
     background-color: #aca9C4;
