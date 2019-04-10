@@ -270,6 +270,7 @@ async function updateSignerPenAndStatus () {
                         status: 'SLASHED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
                     }, { upsert: true })
+                    penalties.push(c.candidate)
                     break
                 case 'PROPOSED':
                     await db.Candidate.updateOne({
