@@ -541,7 +541,7 @@ Vue.prototype.serializeQuery = function (params, prefix) {
 Vue.prototype.truncate = (fullStr, strLen) => {
     if (fullStr.length <= strLen) return fullStr
 
-    const separator = '....'
+    const separator = '...'
 
     let sepLen = separator.length
     let charsToShow = strLen - sepLen
