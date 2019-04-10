@@ -2,6 +2,7 @@
     width: 100%;
     overflow: hidden;
     margin-bottom: 50px;
+    color: #7573a6;
   
     thead {
         display: none;
@@ -186,7 +187,7 @@
         grid-template-columns: 100% !important;
 
         .btn {
-            margin: 0 0px;
+            margin: 0px;
         }
 
         &:before {
@@ -201,12 +202,12 @@
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
-            max-width: 9rem;
+            max-width: 8rem;
         }
 
         thead tr,
         tbody tr {
-            grid-template-columns: auto auto 10% 20% 15% 15% 10%;
+            grid-template-columns: auto auto 15% 20% 15% 15% 10%;
             align-items: center;
             padding-top: 0;
             padding-bottom: 0;
@@ -378,14 +379,12 @@
     }
 
     @include media-breakpoint-up(xl) {
-
+        .text-truncate {
+            max-width: 12rem;
+        }
         thead tr,
         tbody tr {
             grid-template-columns: 5% 20% auto 15% 15% 15% 10%;
-        }
-
-        .text-truncate {
-            max-width: 15rem;
         }
 
         td[aria-colindex="6"] {

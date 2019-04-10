@@ -95,8 +95,23 @@
                     slot-scope="data">
                     <router-link
                         :to="'/candidate/' + data.item.address">
-                        {{ truncate(data.item.address, 20) }}
+                        {{ truncate(data.item.address, 18) }}
                     </router-link>
+                </template>
+
+                <template
+                    slot="name"
+                    slot-scope="data">
+                    <div
+                        :id="`name_${data.index}`"
+                        class="text-truncate">
+                        {{ data.item.name }}
+                    </div>
+                    <b-tooltip
+                        v-if="data.item.name.length > 20"
+                        :target="`name_${data.index}`">
+                        {{ data.item.name }}
+                    </b-tooltip>
                 </template>
 
                 <template
