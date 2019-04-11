@@ -444,7 +444,17 @@ export default {
                     // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
                     const blks = await blksPromise
-                    await Promise.all(blks.map(async (it, index) => {
+
+                    // remove duplicate
+                    const set = new Set()
+                    for (let i = 0; i < blks.length; i++) {
+                        if (!set.has(blks[i])) {
+                            set.add(blks[i])
+                        }
+                    }
+                    let blks2 = Array.from(set)
+
+                    await Promise.all(blks2.map(async (it, index) => {
                         let blk = new BigNumber(it).toString()
                         if (blk !== '0') {
                             self.aw = true
