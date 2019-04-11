@@ -934,18 +934,22 @@ router.get('/slashed/:epoch', [
     }
     try {
         let epoch = req.params.epoch
-        const response = {
+        let response = {
             epoch,
             penalties: [],
             networkId: config.get('blockchain.networkId')
         }
-        const penalty = await db.Status.find({ epoch: epoch, status: 'SLASHED' })
-        // const penalty = await db.Penalty.findOne({ epoch: epoch })
-
-        if (penalty.length > 0) {
-            await Promise.all(penalty.map(p => {
-                response.penalties.push(p.candidate)
-            }))
+        let penalty
+        penalty = await db.Penalty.findOne({ epoch: epoch })
+        if (penalty && penalty.penalties.length > 0) {
+            response = penalty
+        } else {
+            penalty = await db.Status.find({ epoch: epoch, status: 'SLASHED' })
+            if (penalty.length > 0) {
+                await Promise.all(penalty.map(p => {
+                    response.penalties.push(p.candidate)
+                }))
+            }
         }
 
         return res.json(response)
