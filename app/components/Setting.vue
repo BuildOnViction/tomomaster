@@ -20,6 +20,7 @@
                             <b-form-select
                                 id="provider"
                                 v-model="provider"
+                                class="form-control"
                                 @change="onChangeSelect">
                                 <option
                                     value="tomowallet">TomoWallet (Recommended)</option>
