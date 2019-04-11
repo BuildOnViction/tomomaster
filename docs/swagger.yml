@@ -9,8 +9,6 @@ info:
 tags:
   - name: Config
     description: Get TomoMaster Application Configuration
-  - name: Monitor
-    description: Get information for CPU and Memory charts
   - name: Candidates
     description: Get Candidates information
   - name: Voters
@@ -20,8 +18,8 @@ tags:
   - name: Signer
     description: Get a list of signers
 schemes:
-  - http
   - https
+  - http
 consumes:
   - application/json
 produces:
