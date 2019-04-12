@@ -67,7 +67,8 @@
                             label-for="website-value">
                             <b-form-input
                                 v-model="website"
-                                name="website-value"/>
+                                name="website-value"
+                                placeholder="https://example.com"/>
                             <span
                                 v-if="$v.website.$dirty && !$v.website.url"
                                 class="text-danger">Not a url</span>
@@ -79,7 +80,8 @@
                             label-for="telegram-value">
                             <b-form-input
                                 v-model="telegram"
-                                name="telegram-value"/>
+                                name="telegram-value"
+                                placeholder="https://t.me/example"/>
                             <span
                                 v-if="$v.telegram.$dirty && !$v.telegram.url"
                                 class="text-danger">Not a url</span>
