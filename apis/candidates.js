@@ -958,4 +958,65 @@ router.get('/slashed/:epoch', [
     }
 })
 
+router.get('/:candidate/slashedFilter', [
+    query('limit')
+        .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number'),
+    check('filterBy').isLength({ min: 1 }).exists().withMessage('filterBy is required')
+], async function (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return next(errors.array())
+    }
+    try {
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+        let skip
+        skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+        const filterBy = req.query.filterBy
+        const candidate = req.params.candidate
+
+        let current = new Date()
+        let yesterday = new Date(current.setDate(current.getDate() - 1))
+        const theDayBeforeYes = new Date(current.setDate(current.getDate() - 7))
+
+        const totalEpochs = await db.Status.count({
+            candidate: candidate.toLowerCase(),
+            status: 'SLASHED',
+            epochCreatedAt: {
+                $gte: theDayBeforeYes,
+                $lt: yesterday
+            }
+        })
+
+        const epochs = await db.Status.find({
+            candidate: candidate.toLowerCase(),
+            status: 'SLASHED',
+            epochCreatedAt: {
+                $gte: theDayBeforeYes,
+                $lt: yesterday
+            }
+        }).sort({ epoch: -1 }).lean().exec()
+
+        // const epochs = await db.Status.find({
+        //     candidate: candidate.toLowerCase(),
+        //     status: 'SLASHED',
+        //     epochCreatedAt: {
+        //         $gte: theDayBeforeYes,
+        //         $lt: yesterday
+        //     }
+        // }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
+
+        console.log(skip, filterBy, candidate, yesterday, theDayBeforeYes, totalEpochs, epochs)
+
+        return res.json({
+            epochs,
+            totalEpochs,
+            theDayBeforeYes,
+            yesterday
+        })
+    } catch (e) {
+        return next(e)
+    }
+})
+
 module.exports = router
