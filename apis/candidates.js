@@ -741,13 +741,8 @@ router.put('/update', [
             set['dataCenter.location'] = body.dcLocation
         }
 
-        if (body.website) {
-            set['socials.website'] = body.website
-        }
-
-        if (body.telegram) {
-            set['socials.telegram'] = body.telegram
-        }
+        set['socials.website'] = body.website || ''
+        set['socials.telegram'] = body.telegram || ''
 
         const address = await web3.eth.accounts.recover(message, signedMessage)
 
@@ -755,6 +750,18 @@ router.put('/update', [
             address.toLowerCase() === c.candidate.toLowerCase() ||
             address.toLowerCase() === c.owner.toLowerCase()
         ) {
+            if (c.name) {
+                const currentBlockNumber = await web3.eth.getBlockNumber()
+                const data = set
+                data.candidate = candidate.toLowerCase()
+                data.blockNumber = currentBlockNumber
+
+                await db.History.updateOne({
+                    candidate: candidate.toLowerCase(), blockNumber: currentBlockNumber
+                }, {
+                    $set: data
+                }, { upsert: true })
+            }
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate.toLowerCase()
@@ -925,12 +932,27 @@ router.get('/slashed/:epoch', [
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
-
     try {
         let epoch = req.params.epoch
-        const penalty = await db.Penalty.findOne({ epoch: epoch })
+        let response = {
+            epoch,
+            penalties: [],
+            networkId: config.get('blockchain.networkId')
+        }
+        let penalty
+        penalty = await db.Penalty.findOne({ epoch: epoch })
+        if (penalty && penalty.penalties.length > 0) {
+            response = penalty
+        } else {
+            penalty = await db.Status.find({ epoch: epoch, status: 'SLASHED' })
+            if (penalty.length > 0) {
+                await Promise.all(penalty.map(p => {
+                    response.penalties.push(p.candidate)
+                }))
+            }
+        }
 
-        return res.json(penalty)
+        return res.json(response)
     } catch (e) {
         return next(e)
     }

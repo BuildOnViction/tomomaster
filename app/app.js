@@ -538,6 +538,21 @@ Vue.prototype.serializeQuery = function (params, prefix) {
     return [].concat.apply([], query).join('&')
 }
 
+Vue.prototype.truncate = (fullStr, strLen) => {
+    if (fullStr.length <= strLen) return fullStr
+
+    const separator = '...'
+
+    let sepLen = separator.length
+    let charsToShow = strLen - sepLen
+    let frontChars = Math.ceil(charsToShow / 2)
+    let backChars = Math.floor(charsToShow / 2)
+
+    return fullStr.substr(0, frontChars) +
+           separator +
+           fullStr.substr(fullStr.length - backChars)
+}
+
 const EventBus = new Vue()
 
 Vue.prototype.$bus = EventBus

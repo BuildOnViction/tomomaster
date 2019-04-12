@@ -20,6 +20,7 @@
                             <b-form-select
                                 id="provider"
                                 v-model="provider"
+                                class="form-control"
                                 @change="onChangeSelect">
                                 <option
                                     value="tomowallet">TomoWallet (Recommended)</option>
@@ -119,6 +120,13 @@
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
                             class="text-danger">Required field</span>
+                        <small
+                            class="form-text text-muted">To unlock the wallet, try paths
+                            <code>m/44'/60'/0'</code>
+                            or <code>m/44'/60'/0'/0</code>
+                            with Ethereum App,<br>
+                            or try path <code>m/44'/889'/0'/0</code>
+                            with TomoChain App (on Ledger).</small>
                     </b-form-group>
 
                     <b-form-group

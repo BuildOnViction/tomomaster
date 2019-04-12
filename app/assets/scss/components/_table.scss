@@ -2,6 +2,7 @@
     width: 100%;
     overflow: hidden;
     margin-bottom: 50px;
+    color: #7573a6;
   
     thead {
         display: none;
@@ -181,12 +182,12 @@
         padding: 7px 14px;
     }
 
-    td[aria-colindex="6"] {
+    td[aria-colindex="7"] {
         text-align: center;
         grid-template-columns: 100% !important;
 
         .btn {
-            margin: 0 0px;
+            margin: 0px;
         }
 
         &:before {
@@ -194,19 +195,19 @@
         }
     }
 
-    td[aria-colindex="5"] {
+    td[aria-colindex="6"] {
         border-top: none;
     }
 
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
-            max-width: 9rem;
+            max-width: 8rem;
         }
 
         thead tr,
         tbody tr {
-            grid-template-columns: auto 10% 20% 15% 15% 10%;
+            grid-template-columns: auto auto 15% 20% 15% 15% 10%;
             align-items: center;
             padding-top: 0;
             padding-bottom: 0;
@@ -218,22 +219,22 @@
             padding: 0;
         }
 
-        th[aria-colindex="3"].sorting {
+        th[aria-colindex="4"].sorting {
             text-align: inherit
         }
-        td[aria-colindex="3"] {
+        td[aria-colindex="4"] {
             text-align: inherit;
             padding-right: 35px !important;
         }
 
-        th[aria-colindex="4"] {
+        th[aria-colindex="5"] {
             font-size: 14px;
         }
-        td[aria-colindex="4"] {
+        td[aria-colindex="5"] {
             text-align: inherit
         }
 
-        th[aria-colindex="5"] {
+        th[aria-colindex="6"] {
             position: relative;
 
             &:after {
@@ -248,7 +249,7 @@
             }
         }
 
-        td[aria-colindex="5"] {
+        td[aria-colindex="6"] {
             position: relative;
             font-size: 12px;
 
@@ -257,7 +258,7 @@
             }
         }
         
-        td[aria-colindex="5"] > div {
+        td[aria-colindex="6"] > div {
             position: relative;
             z-index: 1;
 
@@ -283,7 +284,7 @@
             }
         }
 
-        td[aria-colindex="5"] > div > div {
+        td[aria-colindex="6"] > div > div {
 
             &:before,
             &:after {
@@ -307,13 +308,13 @@
             }
         }
 
-        td[aria-colindex="5"],
-        th[aria-colindex="5"] {
+        td[aria-colindex="6"],
+        th[aria-colindex="6"] {
             padding-left: 20px;
             padding-right: 0px;
         }
 
-        th[aria-colindex="6"] {
+        th[aria-colindex="7"] {
 
             &:after {
                 content: '';
@@ -328,7 +329,7 @@
             }
         }
 
-        td[aria-colindex="6"] {
+        td[aria-colindex="7"] {
 
             .btn {
                 position: relative;
@@ -336,7 +337,7 @@
             }
         }
 
-        th[aria-colindex="7"] {
+        th[aria-colindex="8"] {
             padding-left: 10px;
 
             &:after {
@@ -352,7 +353,7 @@
             }
         }
 
-        td[aria-colindex="8"] {
+        td[aria-colindex="9"] {
             text-align: right;
             position: relative;
             z-index: 1;
@@ -362,42 +363,40 @@
             }
         }
 
-        td[aria-colindex="5"],
         td[aria-colindex="6"],
-        td[aria-colindex="7"] {
+        td[aria-colindex="7"],
+        td[aria-colindex="8"] {
             background-color: $color-body-bg;
         }
 
         &.tomo-table--candidates-empty {
 
-            th[aria-colindex="4"]:after,
-            th[aria-colindex="6"]:after {
+            th[aria-colindex="5"]:after,
+            th[aria-colindex="7"]:after {
                 display: none;
             }
         }
     }
 
     @include media-breakpoint-up(xl) {
-
+        .text-truncate {
+            max-width: 12rem;
+        }
         thead tr,
         tbody tr {
-            grid-template-columns: auto 15% 15% 15% 15% 10%;
+            grid-template-columns: 5% 20% auto 15% 15% 15% 10%;
         }
 
-        .text-truncate {
-            max-width: 15rem;
-        }
-
-        td[aria-colindex="5"] {
+        td[aria-colindex="6"] {
             font-size: 14px;
         }
 
-        td[aria-colindex="5"],
-        th[aria-colindex="5"] {
+        td[aria-colindex="6"],
+        th[aria-colindex="6"] {
             padding-left: 20px;
         }
 
-        td[aria-colindex="5"] > div {
+        td[aria-colindex="6"] > div {
 
             &:before,
             &:after {
@@ -405,7 +404,7 @@
             }
         }
 
-        td[aria-colindex="5"] > div > div {
+        td[aria-colindex="6"] > div > div {
 
             &:before,
             &:after {
@@ -498,6 +497,66 @@
 
         th[aria-colindex="5"],
         td[aria-colindex="5"] {
+            text-align: center;
+
+            a > span {
+                font-size: 0;
+            }
+
+            i {
+                font-size: 15px;
+            }
+
+            a:hover {
+                color: $color-link !important;
+            }
+        }
+    }
+}
+
+.tomo-table--transactions-voter {
+
+    td[aria-colindex="7"] {
+        text-align: center;
+        grid-template-columns: 100% !important;
+
+        &:before {
+            display: none !important;
+        }
+
+        a {
+            color: $color-text;
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+
+        .text-truncate {
+            max-width: 60%;
+        }
+
+        thead tr,
+        tbody tr {
+            padding-right: 0;
+            grid-template-columns: 20% auto 8% 16% 16% 10% 8%;
+        }
+
+        th[aria-colindex="4"],
+        td[aria-colindex="4"] {
+            text-align: left;
+        }
+
+        th[aria-colindex="6"],
+        td[aria-colindex="6"] {
+            text-align: left;
+        }
+
+        th[aria-colindex="7"],
+        td[aria-colindex="7"] {
             text-align: center;
 
             a > span {

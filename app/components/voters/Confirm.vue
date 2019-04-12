@@ -13,12 +13,13 @@
                 <p class="md-content">
                     You have {{ event }}
                     <span class="color-white">{{ amount }} TOMO</span> for candidate
-                    <router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link> successfully.
+                    <router-link :to="`/candidate/${candidate}`">
+                    {{ truncate(candidate, 20) }}</router-link> successfully.
                     <br ><br >
                     Transaction Hash:
                     <a
                         :href="txUrl"
-                        target="_blank">{{ tx }}</a>
+                        target="_blank">{{ truncate(tx, 30) }}</a>
                 </p>
                 <p
                     class="md-content"

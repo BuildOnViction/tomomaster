@@ -2,7 +2,7 @@
     <div
         v-if="estimatedReward !== 'N/A'"
         class="float-left">
-        Est. Daily Reward: {{ estimatedReward }}
+        Est. Daily Reward: {{ estimatedReward }} TOMO
     </div>
 </template>
 <script>
@@ -43,7 +43,7 @@ export default {
             const query = self.serializeQuery(params)
             const { data } = await axios.get('/api/voters/calculatingReward1Day' + '?' + query)
 
-            self.estimatedReward = data !== 'N/A' ? data.toFixed(6) : data
+            self.estimatedReward = data !== 'N/A' ? data.toFixed(3) : data
         }
     }
 }

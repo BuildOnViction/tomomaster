@@ -94,10 +94,24 @@
                     slot="address"
                     slot-scope="data">
                     <router-link
-                        :to="'/candidate/' + data.item.address"
-                        class="text-truncate">
-                        {{ data.item.address }}
+                        :to="'/candidate/' + data.item.address">
+                        {{ truncate(data.item.address, 18) }}
                     </router-link>
+                </template>
+
+                <template
+                    slot="name"
+                    slot-scope="data">
+                    <div
+                        :id="`name_${data.index}`"
+                        class="text-truncate">
+                        {{ data.item.name }}
+                    </div>
+                    <b-tooltip
+                        v-if="data.item.name.length > 20"
+                        :target="`name_${data.index}`">
+                        {{ data.item.name }}
+                    </b-tooltip>
                 </template>
 
                 <template
@@ -163,6 +177,10 @@ export default {
         return {
             chainConfig: {},
             fields: [
+                {
+                    key: 'rank',
+                    label: 'Rank'
+                },
                 {
                     key: 'address',
                     label: 'Address',
@@ -326,7 +344,8 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: candidate.latestSignedBlock
+                        latestSignedBlock: candidate.latestSignedBlock,
+                        rank: candidate.rank
                     })
                 })
                 self.candidates = items

@@ -9,8 +9,6 @@ info:
 tags:
   - name: Config
     description: Get TomoMaster Application Configuration
-  - name: Monitor
-    description: Get information for CPU and Memory charts
   - name: Candidates
     description: Get Candidates information
   - name: Voters
@@ -20,8 +18,8 @@ tags:
   - name: Signer
     description: Get a list of signers
 schemes:
-  - http
   - https
+  - http
 consumes:
   - application/json
 produces:
@@ -64,6 +62,27 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/candidate'
+        '406':
+          description: Not Acceptable
+  /api/candidates/masternodes:
+    parameters:
+      - name: limit
+        in: query
+        description: Number of record in a query
+        type: number
+      - name: page
+        in: query
+        description: Page number
+        type: number
+    get:
+      tags:
+        - Candidates
+      summary: Get masternodes(exclude Proposed candidates) information
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/masternode'
         '406':
           description: Not Acceptable
   /api/candidates/slashedMNs:
@@ -209,6 +228,29 @@ paths:
             $ref: '#/definitions/isCandidate'
         '406':
           description: Not Acceptable
+  '/api/candidates/{candidate}/{owner}/isOwner':
+    parameters:
+      - name: candidate
+        in: path
+        type: string
+        description: candidate's address
+        required: true
+      - name: owner
+        in: path
+        type: string
+        description: owner's address
+        required: true
+    get:
+      tags:
+        - Candidates
+      summary: Owner checking
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/isOwner'
+        '406':
+          description: Not Acceptable
   '/api/candidates/{candidate}/{owner}/getRewards':
     parameters:
       - name: candidate
@@ -242,27 +284,22 @@ paths:
             $ref: '#/definitions/candidateRewards'
         '406':
           description: Not Acceptable
-  '/api/candidates/{candidate}/{owner}/isOwner':
+  '/api/candidates/slashed/{epoch}':
     parameters:
-      - name: candidate
+      - name: epoch
         in: path
         type: string
-        description: candidate's address
-        required: true
-      - name: owner
-        in: path
-        type: string
-        description: owner's address
+        description: epoch number
         required: true
     get:
       tags:
         - Candidates
-      summary: Owner checking
+      summary: Get list of slashed masternodes
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/isOwner'
+            $ref: '#/definitions/slashedMasternodes'
         '406':
           description: Not Acceptable
   '/api/voters/{voter}/candidates':
@@ -830,3 +867,72 @@ definitions:
         type: string
         description: update time
         example: '2019-01-11T09:17:59.535Z'
+  masternode:
+    properties:
+      items:
+        type: array
+        description: Masternode's data
+        items:
+          type: object
+          description: masternode's information
+          example:
+            _id: 5c52a0df5f0abf3496d9a38f
+            candidate: '0x1d50df657b6dce50bac634bf18e2d986d807e940'
+            smartContractAddress: '0x0000000000000000000000000000000000000088'
+            __v: 0
+            capacity: '574962709628904011242293'
+            capacityNumber: 574962.709628904
+            createdAt: '2019-01-31T07:16:47.833Z'
+            nodeId: 1d50df657b6dce50bac634bf18e2d986d807e940
+            owner: '0x300d18c65563d0c9021d7722dd1aab74b9cc447f'
+            status: MASTERNODE
+            updatedAt: '2019-04-11T02:56:39.928Z'
+            latestSignedBlock: 3899535
+            name: GNBA.GE
+            rank: 1
+      activeCandidates:
+        type: number
+        description: Total number of active masternode(status = 'MASTERNODE')
+        example: 150
+      totalSlashed:
+        type: number
+        description: Number of slashed masternode
+        example: 1
+      totalResigned:
+        type: number
+        description: Number of resigned masternode
+        example: 53
+      totalProposed:
+        type: number
+        description: Number of proposed masternode
+        example: 10
+  slashedMasternodes:
+    properties:
+      items:
+        type: object
+        description: Masternode's data
+        items:
+          type: object
+          description: slashed masternodelist
+          example:
+            penalties:
+              - '0x8597e3920d5bb0e159a2a2d730f21977d89c2270'
+            _id: 5caeadc6f6aacdcc4d19d30f
+            epoch: 4334
+            __v: 0
+            blockNumber: 3899700
+            createdAt: '2019-04-11T03:00:22.636Z'
+            networkId: 88
+            updatedAt: '2019-04-11T03:22:16.136Z'
+      blockNumber:
+        type: number
+        description: Blocknumber slashed
+        example: 3899700
+      epoch:
+        type: number
+        description: epoch slashed
+        example: 4334
+      networkId:
+        type: number
+        description: Network id
+        example: 88
