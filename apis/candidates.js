@@ -976,43 +976,54 @@ router.get('/:candidate/slashedFilter', [
         const candidate = req.params.candidate
 
         let current = new Date()
-        let yesterday = new Date(current.setDate(current.getDate() - 1))
-        const theDayBeforeYes = new Date(current.setDate(current.getDate() - 7))
+        const today = new Date()
 
-        const totalEpochs = await db.Status.count({
+        let totalEpochs, epochs, fromTime
+
+        switch (filterBy) {
+        case 'week':
+            const aWeekAgo = new Date(current.setDate(current.getDate() - 7))
+            fromTime = aWeekAgo
+            break
+        case 'month':
+            const aMonthAgo = new Date(current.setMonth(current.getMonth() - 1))
+            fromTime = aMonthAgo
+            break
+        case 'year':
+            const aYearAgo = new Date(current.setFullYear(current.getFullYear() - 1))
+            fromTime = aYearAgo
+            break
+        default:
+            fromTime = new Date(current.setDate(current.getDate() - 7))
+            break
+        }
+
+        totalEpochs = await db.Status.countDocuments({
             candidate: candidate.toLowerCase(),
             status: 'SLASHED',
             epochCreatedAt: {
-                $gte: theDayBeforeYes,
-                $lt: yesterday
+                $gte: fromTime,
+                $lt: today
             }
-        })
-
-        const epochs = await db.Status.find({
+        }).lean().exec()
+        epochs = await db.Status.find({
             candidate: candidate.toLowerCase(),
             status: 'SLASHED',
             epochCreatedAt: {
-                $gte: theDayBeforeYes,
-                $lt: yesterday
+                $gte: fromTime,
+                $lt: today
             }
-        }).sort({ epoch: -1 }).lean().exec()
+        }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
 
-        // const epochs = await db.Status.find({
-        //     candidate: candidate.toLowerCase(),
-        //     status: 'SLASHED',
-        //     epochCreatedAt: {
-        //         $gte: theDayBeforeYes,
-        //         $lt: yesterday
-        //     }
-        // }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
-
-        console.log(skip, filterBy, candidate, yesterday, theDayBeforeYes, totalEpochs, epochs)
+        Promise.all(epochs.map(e => {
+            e.rewardTime = e.epochCreatedAt
+        })).catch(e => console.log(e))
 
         return res.json({
-            epochs,
-            totalEpochs,
-            theDayBeforeYes,
-            yesterday
+            items: epochs,
+            total: totalEpochs,
+            from: fromTime,
+            to: today
         })
     } catch (e) {
         return next(e)

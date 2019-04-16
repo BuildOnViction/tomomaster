@@ -244,6 +244,25 @@
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
                                 MN was slashed for {{ candidate.slashedTimes }} epochs over the past week </span>
+                            <span
+                                v-if="candidate.slashedTimes"
+                                class="text-truncate section-title__description">
+                                Filter slashed times:
+                                <a
+                                    v-if="totalProposedNodes !== 0"
+                                    :class="currentTable === 'week' ? 'tab-active' : ''"
+                                    @click="changeTable('week')">1 Week</a>
+                                <span v-if="candidate.slashedTimes">|</span>
+                                <a
+                                    v-if="totalProposedNodes !== 0"
+                                    :class="currentTable === 'month' ? 'tab-active' : ''"
+                                    @click="changeTable('month')">1 Month</a>
+                                <span v-if="candidate.slashedTimes">|</span>
+                                <a
+                                    v-if="totalProposedNodes !== 0"
+                                    :class="currentTable === 'year' ? 'tab-active' : ''"
+                                    @click="changeTable('year')">1 Year</a>
+                            </span>
                         </h3>
                     </div>
                 </div>
