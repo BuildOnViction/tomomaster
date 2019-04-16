@@ -55,7 +55,7 @@
         "express-validator": "^5.1.2",
         "highcharts": "^6.1.1",
         "highcharts-vue": "^1.0.4",
-        "js-yaml": "^3.13.0",
+        "js-yaml": "^3.13.1",
         "kue": "^0.11.6",
         "lodash": "^4.17.11",
         "moment": "^2.22.2",

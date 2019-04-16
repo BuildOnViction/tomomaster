@@ -25,8 +25,10 @@
                 @click="setResult(result)">
                 <p
                     class="tomo-list__text">
-                    <span v-html="formatResult(result.name)" />
-                    <small v-html="formatResult(result.address)" />
+                    <span>{{ result.name }}</span>
+                    <small>{{ result.address }}</small>
+                    <!-- <span v-html="formatResult(result.name)" />
+                    <small v-html="formatResult(result.address)" /> -->
                 </p>
             </li>
         </ul>
