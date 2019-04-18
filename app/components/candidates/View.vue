@@ -233,7 +233,7 @@
             <div
                 :class="'container section section--mnrewards'
                 + (rewardLoading ? ' tomo-loading' : '')">
-                <div class="row">
+                <div class="row candidate-reward-bar">
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="tm-gift color-purple" />
@@ -244,6 +244,25 @@
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
                                 MN was slashed for {{ candidate.slashedTimes }} epochs over the past week </span>
+                            <span
+                                v-if="candidate.slashedTimes"
+                                class="text-truncate section-title__description">
+                                Slashing times:
+                                <a
+                                    v-if="candidate.slashedTimes !== 0"
+                                    :class="currentTab === 'week' ? 'tab-active' : ''"
+                                    @click="filterSlash('week')">1 Week</a>
+                                <span v-if="candidate.slashedTimes">|</span>
+                                <a
+                                    v-if="candidate.slashedTimes !== 0"
+                                    :class="currentTab === 'month' ? 'tab-active' : ''"
+                                    @click="filterSlash('month')">1 Month</a>
+                                <span v-if="candidate.slashedTimes">|</span>
+                                <a
+                                    v-if="candidate.slashedTimes !== 0"
+                                    :class="currentTab === 'year' ? 'tab-active' : ''"
+                                    @click="filterSlash('year')">1 Year</a>
+                            </span>
                         </h3>
                     </div>
                 </div>
@@ -559,7 +578,8 @@ export default {
             currentBlock: null,
             loadedCPU: true,
             loadedMEM: true,
-            isCandidate: true
+            isCandidate: true,
+            currentTab: ''
         }
     },
     computed: {
@@ -821,7 +841,9 @@ export default {
         rewardPageChange (val) {
             if (this.mnRewardsCurrentPage !== val) {
                 this.mnRewardsCurrentPage = val
-                this.getCandidateRewards()
+                if (this.currentTab !== '') {
+                    this.getSlashedData(this.currentTab)
+                } else this.getCandidateRewards()
             }
         },
         sortingChangeVoters (obj) {
@@ -833,6 +855,51 @@ export default {
             this.txSortBy = obj.sortBy
             this.txSortDesc = obj.sortDesc
             this.getCandidateTransactions()
+        },
+        filterSlash (filterName) {
+            this.mnRewardsCurrentPage = 1
+            this.$store.state.mnRewardsCurrentPage = 1
+            if (this.currentTab !== filterName) {
+                this.currentTab = filterName
+                this.getSlashedData(filterName)
+            }
+        },
+        async getSlashedData (filterName) {
+            try {
+                const self = this
+                const address = self.candidate.address
+
+                self.rewardLoading = true
+                const params = {
+                    filterBy: filterName,
+                    page: self.mnRewardsCurrentPage,
+                    limit: self.mnRewardsPerPage
+                }
+                let slashedList = await axios.get(
+                    `/api/candidates/${address}/slashedFilter?${self.serializeQuery(params)}`
+                )
+                let items = []
+
+                slashedList.data.items.map((r) => {
+                    const reward = !isNaN(r.masternodeReward || 0)
+                        ? new BigNumber(r.masternodeReward || 0).toFixed(6) : r.masternodeReward
+                    items.push({
+                        epoch: r.epoch,
+                        signNumber: r.signNumber ? r.signNumber : 0,
+                        reward: reward,
+                        createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
+                        dateTooltip: moment(r.rewardTime).format('lll'),
+                        status: r.status
+                    })
+                })
+                self.mnRewards = items
+
+                self.mnRewardsTotalRows = slashedList.data.total
+                self.rewardLoading = false
+            } catch (error) {
+                self.rewardLoading = false
+                console.log(error)
+            }
         }
     }
 }
