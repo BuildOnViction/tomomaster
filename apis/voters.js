@@ -354,7 +354,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
         // get latest reward
         const rewards = await axios.post(
-            urljoin('https://scan.tomochain.com', 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
             {
                 address: address,
                 limit: 1,
@@ -369,7 +369,6 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
             signNumber = rewards.data.items[0].signNumber
             epoch = rewards.data.items[0].epoch
         }
-        console.log(rewards.data)
 
         const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
         const totalReward = new BigNumber(config.get('blockchain.reward'))
@@ -377,7 +376,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         let totalSigners
         if (epoch) {
             totalSigners = await axios.post(
-                urljoin('https://scan.tomochain.com', `api/expose/totalSignNumber/${epoch}`)
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
             )
         }
 
@@ -391,6 +390,18 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
             return res.send(estimateReward.toString(10))
         }
         return res.send('N/A')
+    } catch (error) {
+        return next(error)
+    }
+})
+
+router.get('/:voter/getNotification', [], async (req, res, next) => {
+    try {
+        const voter = req.params.voter
+        const noti = await db.Notification.find({
+            voter: voter
+        }).sort({ createdAt: -1 })
+        return res.send(noti)
     } catch (error) {
         return next(error)
     }

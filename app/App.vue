@@ -88,48 +88,74 @@
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
-                            <div style="max-height: 150px; overflow: auto;font-size: 14px">
-                                <div>
-                                    <b-dropdown-text>
-                                        <div
-                                            class="ml-2 mr-1">
+                            <div style="max-height: 200px; overflow: auto;font-size: 14px">
+                                <div
+                                    v-for="(value, key) in notifications"
+                                    :key="key">
+                                    <b-dropdown-text v-if="value.event === 'SLASHED'">
+                                        <div>
                                             <span style="font-size: 13px">
-                                                [Slashed] Masternode [PQV] slashed at epoch [1596]
+                                                [
+                                                <strong>SLASHED</strong>
+                                                ] Masternode [
+                                                <strong>{{ value.name }}</strong>
+                                                ] has been slashed
                                             </span>
-                                            <div style="font-size: 12px">TomoMaster - 5 hours ago</div>
+                                            <div style="font-size: 12px">TomoMaster -
+                                                {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
-                                    <b-dropdown-divider />
-                                </div>
-                                <div>
-                                    <b-dropdown-text>
-                                        <div
-                                            class="ml-2 mr-1">
+                                    <b-dropdown-divider
+                                        v-if="value.event === 'SLASHED' &&
+                                        key !== notifications.length - 1"/>
+
+                                    <b-dropdown-text v-if="value.event === 'OUTTOP'">
+                                        <div>
                                             <span style="font-size: 13px">
-                                                [Withdrawal] 500 Tomo withdrawed succesfulfy
+                                                [
+                                                <strong>PROPOSED</strong>
+                                                ] Masternode [
+                                                <strong>{{ value.name }}</strong>
+                                                ] left the top 150 and is no longer a masternode.
                                             </span>
-                                            <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
+                                            <div style="font-size: 12px">TomoMaster -
+                                                {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
-                                    <b-dropdown-divider />
+                                    <b-dropdown-divider
+                                        v-if="value.event === 'OUTTOP' &&
+                                        key !== notifications.length - 1"/>
                                 </div>
-                                <div>
-                                    <b-dropdown-text>
-                                        <div
-                                            class="ml-2 mr-1">
-                                            <span style="font-size: 13px">
-                                                [Reward] You received 0.30 Tomo for masternode [TEDreamers]
-                                            </span>
-                                            <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
-                                        </div>
-                                    </b-dropdown-text>
-                                </div>
+                                <!-- <b-dropdown-text>
+                                    <div>
+                                        <span style="font-size: 13px">
+                                            [Slashed] Masternode [PQV] slashed at epoch [1596]
+                                        </span>
+                                        <div style="font-size: 12px">TomoMaster - 5 hours ago</div>
+                                    </div>
+                                </b-dropdown-text>
+                               <b-dropdown-divider />
+                                <b-dropdown-text>
+                                    <div>
+                                        <span style="font-size: 13px">
+                                            [Withdrawal] 500 Tomo withdrawed succesfulfy
+                                        </span>
+                                        <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
+                                    </div>
+                                </b-dropdown-text>
+                                <b-dropdown-divider />
+                                <b-dropdown-text>
+                                    <div>
+                                        <span style="font-size: 13px">
+                                            [Reward] You received 0.30 Tomo for masternode [TEDreamers]
+                                        </span>
+                                        <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
+                                    </div>
+                                </b-dropdown-text> -->
                             </div>
                             <b-dropdown-divider />
-                            <b-dropdown-item
-                                style="width: 350px; text-align: center; max-width: 500px;color: #216ba5"
-                                href="/"
-                                @click="signOut">See all</b-dropdown-item>
+                            <b-dropdown-text
+                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5"/>
                         </b-dropdown>
 
                         <b-dropdown
@@ -256,6 +282,7 @@
 <script>
 import axios from 'axios'
 import store from 'store'
+import moment from 'moment'
 import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
 export default {
@@ -273,11 +300,18 @@ export default {
             version: pkg.version,
             account: '',
             items: [],
-            statusClass: ''
+            statusClass: '',
+            interval: '',
+            notifications: []
         }
     },
     async updated () {
         await this.checkNetworkAndLogin()
+    },
+    destroyed () {
+        if (this.interval) {
+            clearInterval(this.interval)
+        }
     },
     created: async function () {
         let self = this
@@ -298,6 +332,12 @@ export default {
             })
             const mapping = await Promise.all(map)
             self.items = mapping
+            setTimeout(async () => {
+                await self.getNotification()
+            }, 500)
+            this.interval = setInterval(async () => {
+                await this.getNotification()
+            }, 40000)
         } catch (e) {
             console.log(e)
         }
@@ -358,6 +398,28 @@ export default {
         },
         readClick () {
             this.statusClass = 'display: none;'
+        },
+        async getNotification () {
+            try {
+                const self = this
+                if (self.account && self.isTomonet) {
+                    const { data } = await axios.get('/api/voters/' + self.account.toLowerCase() + '/getNotification')
+                    if (data.length > 0) {
+                        let items = []
+                        data.map(d => {
+                            items.push({
+                                event: d.event,
+                                createdAt: moment(d.createdAt).fromNow(),
+                                name: d.candidateName,
+                                candidate: d.candidate
+                            })
+                        })
+                        self.notifications = items
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }
