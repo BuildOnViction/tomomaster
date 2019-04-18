@@ -392,7 +392,7 @@ async function updateLatestSignedBlock (blk) {
     try {
         for (let hash of ((blk || {}).transactions || [])) {
             let tx = await web3Rpc.eth.getTransaction(hash)
-            if (tx.to === config.get('blockchain.blockSignerAddress')) {
+            if ((tx || {}).to === config.get('blockchain.blockSignerAddress')) {
                 let signer = tx.from
                 let buff = Buffer.from((tx.input || '').substring(2), 'hex')
                 let sbuff = buff.slice(buff.length - 32, buff.length)
