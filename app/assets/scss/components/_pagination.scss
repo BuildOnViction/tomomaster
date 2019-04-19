@@ -19,7 +19,8 @@
         &:last-child {
             font-size: 0;
 
-            span:before {
+            span:before,
+            a:before {
                 font-size: 16px;
                 line-height: 30px;
                 display: inline-block;
@@ -29,19 +30,23 @@
             }
         }
   
-        &:first-child span:before {
+        &:first-child span:before,
+        &:first-child a:before {
             content: '\e914';
         }
     
-        &:nth-child(2) span:before {
+        &:nth-child(2) span:before,
+        &:nth-child(2) a:before {
             content: '\e915';
         }
     
-        &:nth-last-child(2) span:before {
+        &:nth-last-child(2) span:before,
+        &:nth-last-child(2) a:before {
             content: '\e917';
         }
     
-        &:last-child span:before {
+        &:last-child span:before,
+        &:last-child a:before {
             content: '\e916';
         }
       
