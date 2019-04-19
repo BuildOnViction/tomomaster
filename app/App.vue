@@ -66,7 +66,6 @@
                         </div> -->
 
                         <b-dropdown
-                            v-if="isTomonet"
                             class="dd-setting"
                             right
                             offset="25"
@@ -79,7 +78,7 @@
                                     @click="readClick" />
                                 <span
                                     :class="`notification tomo-status-dot tomo-status-dot--yellow`"
-                                    :style="statusClass"/>
+                                    :style="(isTomonet ? (readNoti <= 0 ? 'display: none;': '') : statusClass)"/>
                             </template>
                             <b-dropdown-text>
                                 <div
@@ -88,17 +87,24 @@
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
-                            <div style="max-height: 200px; overflow: auto;font-size: 14px">
+                            <div
+                                v-if="isTomonet"
+                                style="max-height: 200px; overflow: auto;font-size: 14px">
                                 <div
                                     v-for="(value, key) in notifications"
                                     :key="key">
                                     <b-dropdown-text v-if="value.event === 'SLASHED'">
                                         <div>
-                                            <span style="font-size: 13px">
+                                            <span
+                                                :style="value.isRead ? 'font-size: 13px;' :
+                                                'font-size: 13px; font-weight: bold'"
+                                                class="notification__content">
                                                 [
                                                 <strong>SLASHED</strong>
                                                 ] Masternode [
-                                                <strong>{{ value.name }}</strong>
+                                                <router-link :to="`/candidate/${value.candidate}`">
+                                                    <strong>{{ value.name }}</strong>
+                                                </router-link>
                                                 ] has been slashed
                                             </span>
                                             <div style="font-size: 12px">TomoMaster -
@@ -115,7 +121,9 @@
                                                 [
                                                 <strong>PROPOSED</strong>
                                                 ] Masternode [
-                                                <strong>{{ value.name }}</strong>
+                                                <router-link :to="`/candidate/${value.candidate}`">
+                                                    <strong>{{ value.name }}</strong>
+                                                </router-link>
                                                 ] left the top 150 and is no longer a masternode.
                                             </span>
                                             <div style="font-size: 12px">TomoMaster -
@@ -126,36 +134,28 @@
                                         v-if="value.event === 'OUTTOP' &&
                                         key !== notifications.length - 1"/>
                                 </div>
-                                <!-- <b-dropdown-text>
-                                    <div>
-                                        <span style="font-size: 13px">
-                                            [Slashed] Masternode [PQV] slashed at epoch [1596]
-                                        </span>
-                                        <div style="font-size: 12px">TomoMaster - 5 hours ago</div>
+                            </div>
+                            <div v-if="!isTomonet">
+                                <b-dropdown-text>
+                                    <div style="font-size: 13px;">
+                                        <strong>TomoMaster up to 1.3.3.</strong>
+                                        New features have been added to.
+                                        <p>- Owner can add their website, telegram to masternode's information</p>
+                                        <p>- Voter can see estimated daily reward when voting</p>
+                                        <p>- Fix privacy issue regarding to new metamask updates</p>
                                     </div>
                                 </b-dropdown-text>
-                               <b-dropdown-divider />
-                                <b-dropdown-text>
-                                    <div>
-                                        <span style="font-size: 13px">
-                                            [Withdrawal] 500 Tomo withdrawed succesfulfy
-                                        </span>
-                                        <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
-                                    </div>
-                                </b-dropdown-text>
-                                <b-dropdown-divider />
-                                <b-dropdown-text>
-                                    <div>
-                                        <span style="font-size: 13px">
-                                            [Reward] You received 0.30 Tomo for masternode [TEDreamers]
-                                        </span>
-                                        <div style="font-size: 12px">TomoMaster - 6 hours ago</div>
-                                    </div>
-                                </b-dropdown-text> -->
                             </div>
                             <b-dropdown-divider />
+                            <b-dropdown-item
+                                v-if="isTomonet"
+                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5"
+                                @click="markReadAll">Mark all as read</b-dropdown-item>
                             <b-dropdown-text
-                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5"/>
+                                v-if="!isTomonet"
+                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5">
+                                TomoMaster - {{ version }}
+                            </b-dropdown-text>
                         </b-dropdown>
 
                         <b-dropdown
@@ -302,7 +302,8 @@ export default {
             items: [],
             statusClass: '',
             interval: '',
-            notifications: []
+            notifications: [],
+            readNoti: 0
         }
     },
     async updated () {
@@ -322,6 +323,9 @@ export default {
             }
             self.$bus.$on('logged', async () => {
                 await self.checkNetworkAndLogin()
+                setTimeout(async () => {
+                    await self.getNotification()
+                }, 500)
             })
             const candidates = await axios.get('/api/candidates')
             const map = candidates.data.items.map((c) => {
@@ -396,7 +400,7 @@ export default {
                 path: '/'
             })
         },
-        readClick () {
+        async readClick () {
             this.statusClass = 'display: none;'
         },
         async getNotification () {
@@ -406,20 +410,35 @@ export default {
                     const { data } = await axios.get('/api/voters/' + self.account.toLowerCase() + '/getNotification')
                     if (data.length > 0) {
                         let items = []
+                        let readNoti = 0
                         data.map(d => {
+                            if (!d.isRead) {
+                                readNoti++
+                            }
                             items.push({
                                 event: d.event,
                                 createdAt: moment(d.createdAt).fromNow(),
                                 name: d.candidateName,
-                                candidate: d.candidate
+                                candidate: d.candidate,
+                                isRead: d.isRead
                             })
                         })
+                        self.readNoti = readNoti
                         self.notifications = items
                     }
                 }
             } catch (error) {
                 console.log(error)
             }
+        },
+        async markReadAll () {
+            // mark read all
+            this.readNoti = 0
+            await axios.get('/api/voters/' + this.account.toLowerCase() + '/markReadAll')
+            this.notifications = this.notifications.map(n => {
+                n.isRead = true
+                return n
+            })
         }
     }
 }

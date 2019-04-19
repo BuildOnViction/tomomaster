@@ -664,7 +664,7 @@ router.get('/:candidate/:owner/getRewards', [
 
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
         const rewards = await axios.post(
-            urljoin('https://scan.tomochain.com', 'api/expose/MNRewardsByEpochs'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
             {
                 address: candidate,
                 owner: owner,
