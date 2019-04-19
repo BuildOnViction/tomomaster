@@ -452,6 +452,18 @@ async function watchNewBlock (n) {
 async function fireNotification (voter, candidate, name, event) {
     try {
         const isRead = false
+        switch (event.toLowerCase()) {
+        case 'resigned':
+        case 'resign':
+            event = 'RESIGNED'
+            break
+        case 'propose':
+        case 'proposed':
+            event = 'PROPOSED'
+            break
+        default:
+            break
+        }
         await db.Notification.create({
             voter: voter,
             candidate: candidate,

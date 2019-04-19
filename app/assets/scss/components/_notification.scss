@@ -1,7 +1,17 @@
-.notification {
-    max-height: 200px;
+.notification--header {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+.notification--body {
+    max-height: 250px;
     overflow: auto;
     font-size: 14px;
+
+    a {
+        font-weight: bold;
+        color: darkslategrey;
+    }
 
     &__content {
         font-size: 13px !important;
@@ -9,4 +19,18 @@
     &__time {
         font-size: 12px !important;
     }
+}
+
+.notification-bottom {
+    width: 340px;
+    text-align: center;
+    max-width: 500px;
+    color: #216ba5;
+}
+
+
+.notification__bell {
+    position: absolute;
+      top: -35%;
+      left: 70%;
 }

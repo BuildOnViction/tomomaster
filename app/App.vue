@@ -29,42 +29,6 @@
                             to="/apply"
                             variant="primary">Become a candidate</b-button>
 
-                        <!-- <router-link
-                            v-if="isTomonet"
-                            id="btn-setting"
-                            to="/setting">
-                            <i class="tm-cog ml-1 icon-2x" />
-                        </router-link> -->
-
-                        <!-- <a
-                            href="#"
-                            class="dd-setting">
-                            <i
-                                class="tm-bell ml-2 icon-2x"
-                                @click="readClick" />
-                        </a>
-                        <div
-                            :style="`${statusClass}`"
-                            class="notification-menu-wrapper">
-                            <div
-                                class="header"
-                                style="border-bottom: 1px solid; padding: 5px">
-                                <span>Notifications</span>
-                                <a
-                                    href
-                                    class="float-right"
-                                    style="color: #216ba5">Mark all as read</a>
-                            </div>
-                            <div class="notification-wrapper">
-                                <div style="text-align: center">No notifications.</div>
-                            </div>
-                            <div style="text-align: center; border-top: 1px solid; padding: 5px">
-                                <a
-                                    href
-                                    style="color: #216ba5">Show all</a>
-                            </div>
-                        </div> -->
-
                         <b-dropdown
                             class="dd-setting"
                             right
@@ -77,37 +41,35 @@
                                     class="tm-bell ml-2 icon-2x"
                                     @click="readClick" />
                                 <span
-                                    :class="`notification tomo-status-dot tomo-status-dot--yellow`"
+                                    :class="`notification__bell tomo-status-dot tomo-status-dot--yellow`"
                                     :style="(isTomonet ? (readNoti <= 0 ? 'display: none;': '') : statusClass)"/>
                             </template>
                             <b-dropdown-text>
-                                <div
-                                    style="text-align: center; font-size: 14px; font-weight: bold">
+                                <div class="notification--header">
                                     Notifications
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
                             <div
                                 v-if="isTomonet"
-                                style="max-height: 200px; overflow: auto;font-size: 14px">
+                                class="notification--body">
                                 <div
                                     v-for="(value, key) in notifications"
                                     :key="key">
                                     <b-dropdown-text v-if="value.event === 'SLASHED'">
                                         <div>
                                             <span
-                                                :style="value.isRead ? 'font-size: 13px;' :
-                                                'font-size: 13px; font-weight: bold'"
-                                                class="notification__content">
-                                                [
-                                                <strong>SLASHED</strong>
-                                                ] Masternode [
-                                                <router-link :to="`/candidate/${value.candidate}`">
+                                                :style="value.isRead ? '' :
+                                                'font-weight: bold;'"
+                                                class="notification--body__content">
+                                                [<strong>SLASHED</strong>]
+                                                Masternode
+                                                [<router-link :to="`/candidate/${value.candidate}`">
                                                     <strong>{{ value.name }}</strong>
-                                                </router-link>
-                                                ] has been slashed
+                                                </router-link>]
+                                                has been slashed
                                             </span>
-                                            <div style="font-size: 12px">TomoMaster -
+                                            <div class="notification--body__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
@@ -117,7 +79,10 @@
 
                                     <b-dropdown-text v-if="value.event === 'OUTTOP'">
                                         <div>
-                                            <span style="font-size: 13px">
+                                            <span
+                                                :style="value.isRead ? '' :
+                                                'font-weight: bold;'"
+                                                class="notification__content">
                                                 [
                                                 <strong>PROPOSED</strong>
                                                 ] Masternode [
@@ -126,7 +91,45 @@
                                                 </router-link>
                                                 ] left the top 150 and is no longer a masternode.
                                             </span>
-                                            <div style="font-size: 12px">TomoMaster -
+                                            <div class="notification__time">TomoMaster -
+                                                {{ value.createdAt }}</div>
+                                        </div>
+                                    </b-dropdown-text>
+
+                                    <b-dropdown-text v-if="value.event === 'PROPOSED'">
+                                        <div>
+                                            <span
+                                                :style="value.isRead ? '' :
+                                                'font-weight: bold;'"
+                                                class="notification__content">
+                                                [
+                                                <strong>PROPOSED</strong>
+                                                ] Candidate [
+                                                <router-link :to="`/candidate/${value.candidate}`">
+                                                    <strong>{{ value.name }}</strong>
+                                                </router-link>
+                                                ] has been proposed become a masternode
+                                            </span>
+                                            <div class="notification__time">TomoMaster -
+                                                {{ value.createdAt }}</div>
+                                        </div>
+                                    </b-dropdown-text>
+
+                                    <b-dropdown-text v-if="value.event === 'RESIGNED'">
+                                        <div>
+                                            <span
+                                                :style="value.isRead ? '' :
+                                                'font-weight: bold;'"
+                                                class="notification__content">
+                                                [
+                                                <strong>RESIGNED</strong>
+                                                ] Masternode [
+                                                <router-link :to="`/candidate/${value.candidate}`">
+                                                    <strong>{{ value.name }}</strong>
+                                                </router-link>
+                                                ] resigned
+                                            </span>
+                                            <div class="notification__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
@@ -149,11 +152,11 @@
                             <b-dropdown-divider />
                             <b-dropdown-item
                                 v-if="isTomonet"
-                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5"
+                                class="notification-bottom"
                                 @click="markReadAll">Mark all as read</b-dropdown-item>
                             <b-dropdown-text
                                 v-if="!isTomonet"
-                                style="width: 340px; text-align: center; max-width: 500px;color: #216ba5">
+                                class="notification-bottom">
                                 TomoMaster - {{ version }}
                             </b-dropdown-text>
                         </b-dropdown>
@@ -339,9 +342,11 @@ export default {
             setTimeout(async () => {
                 await self.getNotification()
             }, 500)
-            this.interval = setInterval(async () => {
-                await this.getNotification()
-            }, 40000)
+            if (this.isTomonet) {
+                this.interval = setInterval(async () => {
+                    await this.getNotification()
+                }, 40000)
+            }
         } catch (e) {
             console.log(e)
         }
