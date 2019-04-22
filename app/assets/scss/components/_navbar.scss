@@ -87,16 +87,25 @@
         transform: rotate(45deg);
     }
     button {
-        background: none;
         border: none;
         padding: 0;
+        background: none!important;
         &:hover {
-            background: none;
+            background: none!important;
             border-color: none;
         }
         &:focus {
-            background: none;
+            background: none!important;
             border-color: none;
+            text-decoration: none;
+        }
+        &:active {
+            background: none!important;
+            border-color: none;
+            text-decoration: none;
+            &:focus { 
+                background: none!important;
+            }
         }
     }
 }
