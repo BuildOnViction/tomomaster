@@ -345,6 +345,8 @@ async function watchNewBlock (n) {
                         db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
                             epoch: latestEpoch,
                             candidate: c.candidate,
+                            capacity: c.capacity,
+                            capacityNumber: c.capacityNumber,
                             rank: i + 1,
                             epochCreatedAt: moment.unix(block.timestamp).utc()
                         }, { upsert: true }).then(() => { return true })
