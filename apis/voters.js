@@ -44,6 +44,22 @@ router.get('/:voter/candidates', [
             capacityNumber: { $ne: 0 }
         }).sort(sort).limit(limit).skip(skip).lean().exec()
 
+        let totalCandidates = db.Voter.aggregate([
+            {
+                $match: {
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    voter: (req.params.voter || '').toLowerCase(),
+                    capacityNumber: { $ne: 0 }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalVoted: { $sum: '$capacityNumber' }
+                }
+            }
+        ])
+
         let cs = voters.map(v => v.candidate)
 
         let candidates = await db.Candidate.find({
@@ -63,7 +79,8 @@ router.get('/:voter/candidates', [
         })
         return res.json({
             items: voters,
-            total: await total
+            total: await total,
+            totalVoted: (await totalCandidates)[0].totalVoted
         })
     } catch (e) {
         return next(e)
