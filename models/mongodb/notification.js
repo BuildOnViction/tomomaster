@@ -4,7 +4,7 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var Notification = new Schema({
-    voter: String,
+    voter: { type: String, index: true },
     candidate: String,
     candidateName: String,
     event: String,
