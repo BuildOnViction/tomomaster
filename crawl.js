@@ -93,6 +93,21 @@ async function watchValidator () {
                 }
                 if (result.event === 'Resign' || result.event === 'Propose') {
                     await updateVoterCap(candidate, owner)
+                    // fire notification
+                    const voters = await db.Voter.find({
+                        candidate: candidate,
+                        smartContractAddress: config.get('blockchain.validtorAddress'),
+                        capacityNumber: { $gt: 0 }
+                    })
+                    if (voters && voters.length > 0) {
+                        const candidateInfor = await db.Candidate.findOne({
+                            smartContractAddress: config.get('blockchain.validatorAddress'),
+                            candidate: candidate.toLowerCase()
+                        })
+                        await Promise.all(voters.map(async (v) => {
+                            await fireNotification(v.voter, candidate, candidateInfor.name, result.event.toUpperCase())
+                        }))
+                    }
                 }
                 if (candidate !== '') {
                     await updateCandidateInfo(candidate)
@@ -256,20 +271,38 @@ async function updateSignerPenAndStatus () {
                     break
                 case 'SLASHED':
                     logger.info('Update candidate %s slashed at blockNumber %s', c.candidate, String(blk.number))
-                    await db.Candidate.updateOne({
+                    // fireNotification
+                    if (result.toLowerCase() !== c.status.toLowerCase()) {
+                        // get all voters who have capacity > 0
+                        const voters = await db.Voter.find({
+                            candidate: c.candidate,
+                            smartContractAddress: config.get('blockchain.validatorAddress'),
+                            capacityNumber: { $gt: 0 }
+                        })
+                        if (voters && voters.length > 0) {
+                            await Promise.all(voters.map(async (v) => {
+                                await fireNotification(v.voter, c.candidate, c.name, 'SLASHED')
+                            }))
+                        }
+                    }
+
+                    db.Candidate.updateOne({
                         smartContractAddress: config.get('blockchain.validatorAddress'),
                         candidate: c.candidate.toLowerCase()
                     }, {
                         $set: {
                             status: 'SLASHED'
                         }
-                    }, { upsert: true })
-                    await db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
+                    }, { upsert: true }).then(() => true)
+                        .catch(error => console.log(error))
+
+                    db.Status.updateOne({ epoch: currentEpoch, candidate: c.candidate }, {
                         epoch: currentEpoch,
                         candidate: c.candidate,
                         status: 'SLASHED',
                         epochCreatedAt: moment.unix(blk.timestamp).utc()
-                    }, { upsert: true })
+                    }, { upsert: true }).then(() => true)
+                        .catch(error => console.log(error))
                     penalties.push(c.candidate)
                     break
                 case 'PROPOSED':
@@ -359,6 +392,34 @@ async function watchNewBlock (n) {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     status: { $nin: ['RESIGNED', 'PROPOSED'] }
                 }).sort({ capacityNumber: -1 })
+
+                // get top 150 before updating
+                const oldTop150 = await db.Candidate.find({
+                    smartContractAddress: config.get('blockchain.validatorAddress'),
+                    status: { $nin: ['RESIGNED', 'PROPOSED'] },
+                    rank: { $ne: null }
+                })
+                // check changing in top 150 to fire notification
+                const outOfTop = diff(oldTop150.map(c => c.candidate), candidates.map(c => c.candidate))
+
+                // fire notification
+                if (outOfTop.length > 0) {
+                    Promise.all(outOfTop.map(async (candidate) => {
+                        const candidateInfor = candidates.find(c => c.candidate === candidate)
+                        // get all voters who have capacity > 0
+                        const voters = await db.Voter.find({
+                            candidate: candidate,
+                            smartContractAddress: config.get('blockchain.validatorAddress'),
+                            capacityNumber: { $gt: 0 }
+                        })
+                        if (voters && voters.length > 0) {
+                            await Promise.all(voters.map(async (v) => {
+                                await fireNotification(v.voter, candidate, candidateInfor.name, 'OUTTOP')
+                            }))
+                        }
+                    })).then(() => true).catch(e => console.log(e))
+                }
+
                 await db.Candidate.updateMany({
                     smartContractAddress: config.get('blockchain.validatorAddress')
                 }, {
@@ -386,6 +447,40 @@ async function watchNewBlock (n) {
     }
     await sleep(1000)
     return watchNewBlock(n)
+}
+
+async function fireNotification (voter, candidate, name, event) {
+    try {
+        const isRead = false
+        switch (event.toLowerCase()) {
+        case 'resigned':
+        case 'resign':
+            event = 'RESIGNED'
+            break
+        case 'propose':
+        case 'proposed':
+            event = 'PROPOSED'
+            break
+        default:
+            break
+        }
+        await db.Notification.create({
+            voter: voter,
+            candidate: candidate,
+            candidateName: name || 'Anonymous',
+            event: event,
+            isRead: isRead
+        })
+        return true
+    } catch (error) {
+        logger.error('fire notification error %s', error)
+    }
+}
+
+function diff (a, b) {
+    return a.filter((i) => {
+        return b.indexOf(i) < 0
+    })
 }
 
 async function updateLatestSignedBlock (blk) {

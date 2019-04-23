@@ -412,4 +412,30 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
     }
 })
 
+router.get('/:voter/getNotification', [], async (req, res, next) => {
+    try {
+        const voter = req.params.voter
+        const noti = await db.Notification.find({
+            voter: voter
+        }).sort({ createdAt: -1 }).limit(20)
+        return res.send(noti)
+    } catch (error) {
+        return next(error)
+    }
+})
+
+router.get('/:voter/markReadAll', [], async (req, res, next) => {
+    try {
+        const voter = req.params.voter
+        await db.Notification.updateMany({
+            voter: voter
+        }, {
+            isRead: true
+        })
+        return res.send('Done')
+    } catch (error) {
+        return next(error)
+    }
+})
+
 module.exports = router
