@@ -446,13 +446,7 @@ export default {
                     const blks = await blksPromise
 
                     // remove duplicate
-                    const set = new Set()
-                    for (let i = 0; i < blks.length; i++) {
-                        if (!set.has(blks[i])) {
-                            set.add(blks[i])
-                        }
-                    }
-                    let blks2 = Array.from(set)
+                    const blks2 = [...new Set(blks)]
 
                     await Promise.all(blks2.map(async (it, index) => {
                         let blk = new BigNumber(it).toString()
