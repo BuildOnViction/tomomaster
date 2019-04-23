@@ -95,6 +95,9 @@
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
+                                    <b-dropdown-divider
+                                        v-if="value.event === 'OUTTOP' &&
+                                        key !== notifications.length - 1"/>
 
                                     <b-dropdown-text v-if="value.event === 'PROPOSED'">
                                         <div>
@@ -102,18 +105,18 @@
                                                 :style="value.isRead ? '' :
                                                 'font-weight: bold;'"
                                                 class="notification__content">
-                                                [
-                                                <strong>PROPOSED</strong>
-                                                ] Candidate [
-                                                <router-link :to="`/candidate/${value.candidate}`">
-                                                    <strong>{{ value.name }}</strong>
-                                                </router-link>
-                                                ] has been proposed become a masternode
+                                                [<strong>PROPOSED</strong>]
+                                                Congratulation for having your own new candidate!
+                                                Its time to gather votes from community by promoting it and
+                                                be in top 150 to get your first reward.
                                             </span>
                                             <div class="notification__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
+                                    <b-dropdown-divider
+                                        v-if="value.event === 'PROPOSED' &&
+                                        key !== notifications.length - 1"/>
 
                                     <b-dropdown-text v-if="value.event === 'RESIGNED'">
                                         <div>
@@ -134,7 +137,7 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'OUTTOP' &&
+                                        v-if="value.event === 'RESIGNED' &&
                                         key !== notifications.length - 1"/>
                                 </div>
                             </div>

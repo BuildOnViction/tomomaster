@@ -90,6 +90,19 @@ async function watchValidator () {
                 })
                 if (result.event === 'Vote' || result.event === 'Unvote') {
                     await updateVoterCap(candidate, voter)
+                    if (result.event === 'Unvote') {
+                        // store withdraw for notification
+                        await db.WithdrawNoti.updateOne({
+                            voter: owner,
+                            blockNumber: result.blockNumber,
+                            amount: capacity
+                        }, {
+                            voter: voter,
+                            blockNumber: result.blockNumber,
+                            amount: (new BigNumber(capacity)).div(1e18).toString(10),
+                            withdrawBlockNumber: result.blockNumber + 86400 // 86400 blocks later
+                        }, { upsert: true })
+                    }
                 }
                 if (result.event === 'Resign' || result.event === 'Propose') {
                     await updateVoterCap(candidate, owner)
@@ -437,6 +450,20 @@ async function watchNewBlock (n) {
                     }, { upsert: true })
                 }))
             }
+
+            // check withdrawal status after 10 blocks
+            if (n % 10 === 0) {
+                // get list of unvote
+                const withdrawBlockNumbers = await db.WithdrawNoti.find({
+                    withdrawBlockNumber: { $lte: n }
+                })
+                // check with current block number
+                if (withdrawBlockNumbers.length > 0) {
+                    await Promise.all(withdrawBlockNumbers.map(async (w) => {
+                        fireNotification(w.voter, '', '', 'WITHDRAW', w.amount)
+                    }))
+                }
+            }
             await updateLatestSignedBlock(blk)
             await watchValidator()
         }
@@ -449,7 +476,7 @@ async function watchNewBlock (n) {
     return watchNewBlock(n)
 }
 
-async function fireNotification (voter, candidate, name, event) {
+async function fireNotification (voter, candidate, name, event, amount = '') {
     try {
         const isRead = false
         switch (event.toLowerCase()) {
@@ -469,7 +496,8 @@ async function fireNotification (voter, candidate, name, event) {
             candidate: candidate,
             candidateName: name || 'Anonymous',
             event: event,
-            isRead: isRead
+            isRead: isRead,
+            amount: amount
         })
         return true
     } catch (error) {
