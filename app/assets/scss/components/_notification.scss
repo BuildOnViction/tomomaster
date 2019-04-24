@@ -1,10 +1,12 @@
-.notification--header {
+.notification_header {
     text-align: center;
     font-size: 14px;
     font-weight: bold;
+    width: 320px;
+    max-width: 500px;
 }
-.notification--body {
-    max-height: 250px;
+.notification_body {
+    max-height: 280px;
     overflow: auto;
     font-size: 14px;
 
@@ -19,12 +21,13 @@
     &__time {
         font-size: 12px !important;
     }
+    &__empty {
+        text-align: center;
+    }
 }
 
-.notification-bottom {
-    width: 340px;
+.notification_bottom {
     text-align: center;
-    max-width: 500px;
     color: #216ba5;
 }
 
@@ -33,4 +36,46 @@
     position: absolute;
       top: -35%;
       left: 70%;
+}
+
+.readAllBtn {
+    color: #7573a6;
+
+    &:hover {
+        color: #7573a6;
+        text-decoration: underline !important; 
+    }
+}
+
+.notification_label {
+    border-radius: 12px;
+    color: #fff;
+    font-size: 12px;
+    padding: 0 6px;
+    height: 18px;
+    line-height: 18px;
+}
+
+.slashed {
+    background: rgb(240, 159, 9);
+    color: rgb(255, 255, 255) !important;
+}
+.proposed {
+    background: #678be0;
+}
+.outtop {
+    background: rgb(255, 217, 0);
+    color: black !important;
+}
+.resigned {
+    background: rgb(190, 0, 0);
+}
+
+.masternode-name {
+    color: #7573a6;
+
+    &:hover {
+        color: #7573a6;
+        text-decoration: underline !important; 
+    }
 }
