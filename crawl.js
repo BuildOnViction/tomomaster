@@ -105,7 +105,7 @@ async function watchValidator () {
                             candidate: candidate.toLowerCase()
                         })
                         await Promise.all(voters.map(async (v) => {
-                            await fireNotification(v.voter, candidate, candidateInfor.name, result.event.toUpperCase())
+                            await fireNotification(v.voter, candidate, candidateInfor.name, result.event)
                         }))
                     }
                 }
@@ -281,7 +281,7 @@ async function updateSignerPenAndStatus () {
                         })
                         if (voters && voters.length > 0) {
                             await Promise.all(voters.map(async (v) => {
-                                await fireNotification(v.voter, c.candidate, c.name, 'SLASHED')
+                                await fireNotification(v.voter, c.candidate, c.name, 'Slash')
                             }))
                         }
                     }
@@ -414,7 +414,7 @@ async function watchNewBlock (n) {
                         })
                         if (voters && voters.length > 0) {
                             await Promise.all(voters.map(async (v) => {
-                                await fireNotification(v.voter, candidate, candidateInfor.name, 'OUTTOP')
+                                await fireNotification(v.voter, candidate, candidateInfor.name, 'Outtop')
                             }))
                         }
                     })).then(() => true).catch(e => console.log(e))
@@ -452,18 +452,6 @@ async function watchNewBlock (n) {
 async function fireNotification (voter, candidate, name, event) {
     try {
         const isRead = false
-        switch (event.toLowerCase()) {
-        case 'resigned':
-        case 'resign':
-            event = 'RESIGNED'
-            break
-        case 'propose':
-        case 'proposed':
-            event = 'PROPOSED'
-            break
-        default:
-            break
-        }
         await db.Notification.create({
             voter: voter,
             candidate: candidate,

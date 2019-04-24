@@ -64,7 +64,7 @@
                                 <div
                                     v-for="(value, key) in notifications"
                                     :key="key">
-                                    <b-dropdown-text v-if="value.event === 'SLASHED'">
+                                    <b-dropdown-text v-if="value.event === 'Slash'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
@@ -82,10 +82,10 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'SLASHED' &&
+                                        v-if="value.event === 'Slash' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'OUTTOP'">
+                                    <b-dropdown-text v-if="value.event === 'Outtop'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
@@ -102,10 +102,10 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'OUTTOP' &&
+                                        v-if="value.event === 'Outtop' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'PROPOSED'">
+                                    <b-dropdown-text v-if="value.event === 'Propose'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
@@ -121,10 +121,10 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'PROPOSED' &&
+                                        v-if="value.event === 'Propose' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'RESIGNED'">
+                                    <b-dropdown-text v-if="value.event === 'Resign'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
@@ -140,7 +140,7 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'RESIGNED' &&
+                                        v-if="value.event === 'Resign' &&
                                         key !== notifications.length - 1"/>
                                 </div>
                             </div>
