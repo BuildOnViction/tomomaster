@@ -38,74 +38,80 @@
                             <template
                                 slot="button-content">
                                 <i
-                                    class="tm-bell ml-2 icon-2x"
+                                    class="tm-bell ml-1 icon-2x"
                                     @click="readClick" />
                                 <span
                                     :class="`notification__bell tomo-status-dot tomo-status-dot--yellow`"
                                     :style="(isTomonet ? (readNoti <= 0 ? 'display: none;': '') : statusClass)"/>
                             </template>
                             <b-dropdown-text>
-                                <div class="notification--header">
-                                    Notifications
+                                <div class="notification_header">
+                                    <span class="float-left">Notifications</span>
+                                    <b-button
+                                        variant="primary"
+                                        class="float-right readAllBtn"
+                                        @click="markReadAll">Mark all as read</b-button>
                                 </div>
                             </b-dropdown-text>
                             <b-dropdown-divider />
                             <div
                                 v-if="isTomonet"
-                                class="notification--body">
+                                class="notification_body">
+                                <div
+                                    v-if="notifications.length <= 0"
+                                    class="notification_body__empty">
+                                    No notifications.</div>
                                 <div
                                     v-for="(value, key) in notifications"
                                     :key="key">
-                                    <b-dropdown-text v-if="value.event === 'SLASHED'">
+                                    <b-dropdown-text v-if="value.event === 'Slash'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
                                                 'font-weight: bold;'"
-                                                class="notification--body__content">
-                                                [<strong>SLASHED</strong>]
+                                                class="notification_body__content">
+                                                <span class="notification_label slashed">Slashed</span>
                                                 Masternode
                                                 [<router-link :to="`/candidate/${value.candidate}`">
-                                                    <strong>{{ value.name }}</strong>
+                                                    <span class="masternode-name">{{ value.name }}</span>
                                                 </router-link>]
                                                 has been slashed
                                             </span>
-                                            <div class="notification--body__time">TomoMaster -
+                                            <div class="notification_body__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'SLASHED' &&
+                                        v-if="value.event === 'Slash' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'OUTTOP'">
+                                    <b-dropdown-text v-if="value.event === 'Outtop'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
                                                 'font-weight: bold;'"
                                                 class="notification__content">
-                                                [
-                                                <strong>PROPOSED</strong>
-                                                ] Masternode [
-                                                <router-link :to="`/candidate/${value.candidate}`">
-                                                    <strong>{{ value.name }}</strong>
-                                                </router-link>
-                                                ] left the top 150 and is no longer a masternode.
+                                                <span class="notification_label outtop">Out top</span>
+                                                Masternode [<router-link :to="`/candidate/${value.candidate}`">
+                                                    <span class="masternode-name">{{ value.name }}</span>
+                                                </router-link>]
+                                                left the top 150 and is no longer a masternode.
                                             </span>
                                             <div class="notification__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'OUTTOP' &&
+                                        v-if="value.event === 'Outtop' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'PROPOSED'">
+                                    <b-dropdown-text v-if="value.event === 'Propose'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
                                                 'font-weight: bold;'"
                                                 class="notification__content">
-                                                [<strong>PROPOSED</strong>]
+                                                <span class="notification_label proposed">Proposed</span>
                                                 Congratulation for having your own new candidate!
                                                 Its time to gather votes from community by promoting it and
                                                 be in top 150 to get your first reward.
@@ -115,29 +121,26 @@
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'PROPOSED' &&
+                                        v-if="value.event === 'Propose' &&
                                         key !== notifications.length - 1"/>
 
-                                    <b-dropdown-text v-if="value.event === 'RESIGNED'">
+                                    <b-dropdown-text v-if="value.event === 'Resign'">
                                         <div>
                                             <span
                                                 :style="value.isRead ? '' :
                                                 'font-weight: bold;'"
                                                 class="notification__content">
-                                                [
-                                                <strong>RESIGNED</strong>
-                                                ] Masternode [
-                                                <router-link :to="`/candidate/${value.candidate}`">
-                                                    <strong>{{ value.name }}</strong>
-                                                </router-link>
-                                                ] resigned
+                                                <span class="notification_label resigned">Resigned</span>
+                                                Masternode [<router-link :to="`/candidate/${value.candidate}`">
+                                                    <span class="masternode-name">{{ value.name }}</span>
+                                                </router-link>] resigned
                                             </span>
                                             <div class="notification__time">TomoMaster -
                                                 {{ value.createdAt }}</div>
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider
-                                        v-if="value.event === 'RESIGNED' &&
+                                        v-if="value.event === 'Resign' &&
                                         key !== notifications.length - 1"/>
 
                                     <b-dropdown-text v-if="value.event === 'Withdraw'">
@@ -169,11 +172,8 @@
                                     </div>
                                 </b-dropdown-text>
                             </div>
-                            <b-dropdown-divider />
-                            <b-dropdown-item
-                                v-if="isTomonet"
-                                class="notification-bottom"
-                                @click="markReadAll">Mark all as read</b-dropdown-item>
+                            <b-dropdown-divider
+                                v-if="!isTomonet" />
                             <b-dropdown-text
                                 v-if="!isTomonet"
                                 class="notification-bottom">
@@ -190,7 +190,7 @@
                             variant="primary">
                             <template
                                 slot="button-content">
-                                <i class="tm-cog ml-2 icon-2x" />
+                                <i class="tm-cog ml-2 icon-2x"/>
                             </template>
                             <b-dropdown-item
                                 :to="`/voter/${account}`"
@@ -445,8 +445,7 @@ export default {
                                 createdAt: moment(d.createdAt).fromNow(),
                                 name: d.candidateName,
                                 candidate: d.candidate,
-                                isRead: d.isRead,
-                                amount: d.amount.toFixed(4) || ''
+                                isRead: d.isRead
                             })
                         })
                         self.readNoti = readNoti

@@ -7,7 +7,10 @@ var Notification = new Schema({
     voter: { type: String, index: true },
     candidate: String,
     candidateName: String,
-    event: String,
+    event: {
+        type: String,
+        enum: ['Propose', 'Resign', 'Slash', 'Outtop', 'Withdraw']
+    },
     isRead: Boolean
 }, { timestamps: true })
 
