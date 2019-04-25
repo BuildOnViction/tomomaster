@@ -36,6 +36,10 @@
     position: absolute;
     top: -10%;
     left: 60%;
+    @include media-breakpoint-down(sm) {
+        top: 10% !important;
+        left: 60% !important;
+    }
 }
 
 .readAllBtn {
