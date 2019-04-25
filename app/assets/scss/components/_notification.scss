@@ -34,8 +34,12 @@
 
 .notification__bell {
     position: absolute;
-    top: -10%;
+    top: -25%;
     left: 60%;
+    @include media-breakpoint-down(sm) {
+        top: -25% !important;
+        left: 60% !important;
+    }
 }
 
 .readAllBtn {
