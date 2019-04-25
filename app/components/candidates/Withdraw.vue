@@ -247,7 +247,7 @@ export default {
                 self.loading = true
                 if (data.tx) {
                     clearInterval(self.interval)
-                    let toastMessage = (data.tx && data.status) ? 'You have successfully withdrawed!'
+                    let toastMessage = (data.tx && data.status) ? 'You have successfully withdrawn!'
                         : 'An error occurred while voting, please try again'
                     self.$toasted.show(toastMessage)
                     setTimeout(() => {
