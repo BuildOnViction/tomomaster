@@ -49,7 +49,7 @@ router.get('/:voter/candidates', [
                 $match: {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     voter: (req.params.voter || '').toLowerCase(),
-                    capacityNumber: { $ne: 0 }
+                    capacityNumber: { $gt: 0 }
                 }
             },
             {
@@ -77,10 +77,11 @@ router.get('/:voter/candidates', [
             return _.pick(v, ['candidate', 'capacity', 'capacityNumber', 'totalCapacity',
                 'candidateName', 'status', 'owner'])
         })
+        const totalVoted = await totalCandidates
         return res.json({
             items: voters,
             total: await total,
-            totalVoted: (await totalCandidates)[0].totalVoted
+            totalVoted: totalVoted.length > 0 ? totalVoted[0].totalVoted : 0
         })
     } catch (e) {
         return next(e)
