@@ -39,7 +39,7 @@
                                 to="/apply"
                                 variant="primary">Become a candidate</b-button>
                             <b-dropdown
-                                class="dd-setting"
+                                class="dd-setting ml-3"
                                 right
                                 offset="25"
                                 no-caret
@@ -47,7 +47,7 @@
                                 <template
                                     slot="button-content">
                                     <i
-                                        class="tm-bell ml-1 icon-2x"
+                                        class="tm-bell icon-2x"
                                         @click="readClick" />
                                     <span
                                         :class="`notification__bell tomo-status-dot tomo-status-dot--yellow`"
@@ -174,14 +174,14 @@
                             </b-dropdown>
                             <b-dropdown
                                 v-if="isTomonet"
-                                class="dd-setting"
+                                class="dd-setting ml-3"
                                 right
                                 offset="25"
                                 no-caret
                                 variant="primary">
                                 <template
                                     slot="button-content">
-                                    <i class="tm-cog ml-2 icon-2x"/>
+                                    <i class="tm-cog icon-2x"/>
                                 </template>
                                 <b-dropdown-item
                                     :to="`/voter/${account}`"
