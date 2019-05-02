@@ -454,6 +454,7 @@ export default {
                         totalCapacity: new BigNumber(c.totalCapacity).div(10 ** 18).toNumber()
                     })
                 })
+
                 self.totalVoted = candidates.data.totalVoted
                 self.candidates = items
 
