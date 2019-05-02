@@ -13,6 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
+const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -126,12 +127,35 @@ router.get('/masternodes', [
             status: { $nin: ['RESIGNED', 'PROPOSED'] }
         }).sort(sort).limit(limit).skip(skip).lean().exec()
 
+        const votedAmount = await db.Candidate.aggregate([
+            {
+                $match: {
+                    status: { $ne: 'RESIGNED' }
+                }
+            },
+            {
+                $group: {
+                    _id: null, sum: { $sum: '$capacityNumber' }
+                }
+            }
+        ])
+
+        let map = candidates.map(async c => {
+            if (votedAmount) {
+                c.votePercentage = new BigNumber(c.capacityNumber)
+                    .multipliedBy(100).div(votedAmount[0].sum).toString(10)
+            }
+            return c
+        })
+        let ret = await Promise.all(map)
+
         return res.json({
-            items: candidates,
+            items: ret,
             activeCandidates: await activeCandidates || 0,
             totalSlashed: await totalSlashed,
             totalResigned: await totalResigned,
-            totalProposed: await totalProposed
+            totalProposed: await totalProposed,
+            votedAmount
         })
     } catch (e) {
         return next(e)

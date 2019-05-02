@@ -6,6 +6,8 @@ var Schema = mongoose.Schema
 var Rank = new Schema({
     candidate: Number,
     rank: Number,
+    capacity: String,
+    capacityNumber: Number,
     epoch: Number,
     epochCreatedAt: Date
 }, { timestamps: true })
