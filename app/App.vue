@@ -174,7 +174,7 @@
                             </b-dropdown>
                             <b-dropdown
                                 v-if="isTomonet"
-                                class="dd-setting ml-3"
+                                class="dd-setting ml-1"
                                 right
                                 offset="25"
                                 no-caret
