@@ -372,7 +372,7 @@ async function watchNewBlock (n) {
                         const latestCheckpoint = latestBlockNumber - (
                             latestBlockNumber % parseInt(config.get('blockchain.epoch')))
                         const latestEpoch = (parseInt(
-                            latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+                            latestCheckpoint / config.get('blockchain.epoch'))).toString()
                         const block = await web3.eth.getBlock(latestCheckpoint)
 
                         db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
