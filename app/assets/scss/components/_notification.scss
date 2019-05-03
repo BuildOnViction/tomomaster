@@ -35,10 +35,10 @@
 .notification__bell {
     position: absolute;
     top: -25%;
-    left: 60%;
+    left: 30%;
     @include media-breakpoint-down(sm) {
         top: -25% !important;
-        left: 60% !important;
+        left: 30% !important;
     }
 }
 
