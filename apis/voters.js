@@ -350,7 +350,13 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         // amount
         const amount = new BigNumber(req.query.amount || 0)
 
-        const reward = await calculatingRewardDaily(address, amount)
+        // search candidate
+        const candidate = await db.Candidate.findOne({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            candidate: address
+        })
+
+        const reward = await calculatingRewardDaily(candidate, amount)
         return res.send(reward)
     } catch (error) {
         return next(error)
@@ -383,64 +389,84 @@ router.get('/:voter/markReadAll', [], async (req, res, next) => {
     }
 })
 
-const calculatingRewardDaily = async (address, amount) => {
-    // search candidate
-    const candidatePromise = db.Candidate.findOne({
-        smartContractAddress: config.get('blockchain.validatorAddress'),
-        candidate: address
-    })
-    let current = new Date()
-    let yesterday = new Date(current.setDate(current.getDate() - 1))
-    const theDayBeforeYes = new Date(current.setDate(current.getDate() - 1))
+router.get('/estimatedHighestGain', [], async (req, res, next) => {
+    try {
+        // get top 5 from bottom
+        const masternodes = await db.Candidate.find({
+            smartContractAddress: config.get('blockchain.validatorAddress'),
+            rank: { $ne: null }
+        }).sort({ rank: -1 }).limit(5).lean().exec()
+        // promise all to get estimate reward
 
-    const epochIn1Day = db.Status.count({
-        candidate: address,
-        epochCreatedAt: {
-            $gte: theDayBeforeYes,
-            $lt: yesterday
-        }
-    })
-
-    const candidate = await candidatePromise
-
-    // get latest reward
-    const rewards = await axios.post(
-        urljoin('https://scan.tomochain.com', 'api/expose/rewards'),
-        {
-            address: address,
-            limit: 1,
-            page: 1,
-            owner: candidate.owner,
-            reason: 'Voter'
-        }
-    )
-    let signNumber = 0
-    let epoch
-    if (rewards.data.items.length > 0) {
-        signNumber = rewards.data.items[0].signNumber
-        epoch = rewards.data.items[0].epoch
+        const map = await Promise.all(masternodes.map(async (m) => {
+            const estimateReward = await calculatingRewardDaily(m, 1000)
+            if (estimateReward !== 'N/A') {
+                m.estimateReward = estimateReward
+            }
+            return m
+        }))
+        return res.send(map)
+    } catch (error) {
+        return next(error)
     }
+})
 
-    const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
-    const totalReward = new BigNumber(config.get('blockchain.reward'))
-    // get total signers in latest epoch
-    let totalSigners
-    if (epoch) {
-        totalSigners = await axios.post(
-            urljoin('https://scan.tomochain.com', `api/expose/totalSignNumber/${epoch}`)
+const calculatingRewardDaily = async (candidate, amount) => {
+    try {
+        const address = candidate.candidate
+        let current = new Date()
+        let yesterday = new Date(current.setDate(current.getDate() - 1))
+        const theDayBeforeYes = new Date(current.setDate(current.getDate() - 1))
+
+        const epochIn1Day = db.Status.count({
+            candidate: address,
+            epochCreatedAt: {
+                $gte: theDayBeforeYes,
+                $lt: yesterday
+            }
+        })
+
+        // get latest reward
+        const rewards = await axios.post(
+            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            {
+                address: address,
+                limit: 1,
+                page: 1,
+                owner: candidate.owner,
+                reason: 'Voter'
+            }
         )
-    }
+        let signNumber = 0
+        let epoch
+        if (rewards.data.items.length > 0) {
+            signNumber = rewards.data.items[0].signNumber
+            epoch = rewards.data.items[0].epoch
+        }
 
-    if (totalSigners && totalSigners.data && totalSigners.data.totalSignNumber) {
-        // calculate devided reward
-        const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
+        const capacity = new BigNumber(candidate.capacity).div(10 ** 18)
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+        // get total signers in latest epoch
+        let totalSigners
+        if (epoch) {
+            totalSigners = await axios.post(
+                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            )
+        }
 
-        // calculate voter reward 1 day
-        const estimateReward = masternodeReward.multipliedBy(0.5)
-            .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
-        return estimateReward.toString(10)
+        if (totalSigners && totalSigners.data && totalSigners.data.totalSignNumber) {
+            // calculate devided reward
+            const masternodeReward = totalReward.multipliedBy(signNumber).dividedBy(totalSigners.data.totalSignNumber)
+
+            // calculate voter reward 1 day
+            const estimateReward = masternodeReward.multipliedBy(0.5)
+                .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
+            return estimateReward.toString(10)
+        }
+        return 'N/A'
+    } catch (error) {
+        throw error
     }
-    return 'N/A'
 }
 
 module.exports = router
