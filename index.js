@@ -30,7 +30,7 @@ app.use(validator({}))
 app.use('/build', express.static('build'))
 app.use('/app/assets', express.static('app/assets'))
 const docs = yaml.safeLoad(fs.readFileSync('./docs/swagger.yml', 'utf8'))
-app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(docs))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(docs))
 
 // apis
 app.use(require('./apis'))

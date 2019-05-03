@@ -237,7 +237,7 @@
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="/apidocs"><i class="tm-checklist mr-1"/>API Documentation</a>
+                                            href="/api-docs"><i class="tm-checklist mr-1"/>API Documentation</a>
                                     </li>
                                 </ul>
                             </div>
