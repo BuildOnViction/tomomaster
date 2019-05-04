@@ -13,6 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
+const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -315,6 +316,61 @@ router.get('/crawlStatus', async function (req, res, next) {
         )
     } catch (e) {
         return next(e)
+    }
+})
+
+router.get('/votingDaily', [], async function (req, res, next) {
+    try {
+        let today = new Date()
+        let current = new Date()
+        let yesterday = new Date(current.setDate(current.getDate() - 1))
+        // voting amount
+        const a = await db.Transaction.find({
+            event: 'Vote',
+            createdAt: {
+                $gte: yesterday,
+                $lt: today
+            }
+        })
+        // unvoting amount
+        const b = await db.Transaction.find({
+            event: 'Unvote',
+            createdAt: {
+                $gte: yesterday,
+                $lt: today
+            }
+        })
+        // couting gaining and lossing
+        const map1 = new Map()
+        a.map(async (m) => {
+            const amount = new BigNumber(m.capacity).div(10 ** 18).toNumber()
+            if (map1.has(m.candidate)) {
+                const storedAmount = map1.get(m.candidate)
+                map1.set(m.candidate, storedAmount + amount)
+            } else {
+                map1.set(m.candidate, amount)
+            }
+        })
+
+        b.map(async (m) => {
+            const amount = -(new BigNumber(m.capacity).div(10 ** 18).toNumber())
+            if (map1.has(m.candidate)) {
+                const storedAmount = map1.get(m.candidate)
+                map1.set(m.candidate, storedAmount + amount)
+            } else {
+                map1.set(m.candidate, amount)
+            }
+        })
+
+        // sort by value
+        const mapSort1 = new Map([...map1.entries()].sort((a, b) => b[1] - a[1]))
+        const result = {}
+        for (let [key, val] of mapSort1.entries()) {
+            result[key] = val
+        }
+        return res.send(result)
+    } catch (error) {
+        return next(error)
     }
 })
 
