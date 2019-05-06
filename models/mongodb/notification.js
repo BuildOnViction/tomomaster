@@ -11,7 +11,8 @@ var Notification = new Schema({
         type: String,
         enum: ['Propose', 'Resign', 'Slash', 'Outtop', 'Withdraw']
     },
-    isRead: Boolean
+    isRead: Boolean,
+    blockNumber: { type: Number, index: true }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Notification', Notification)
