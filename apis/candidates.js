@@ -13,6 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
+// const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -78,13 +79,15 @@ router.get('/', [
 router.get('/masternodes', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number'),
+    query('view').isIn(['default', 'reward', 'stability', 'balance'])
+        .optional().withMessage('view must be one of these: default, reward, stability, balance')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
-
+    const view = req.query.view || 'default'
     let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
     let skip
     skip = (req.query.page) ? limit * (req.query.page - 1) : 0
@@ -126,8 +129,38 @@ router.get('/masternodes', [
             status: { $nin: ['RESIGNED', 'PROPOSED'] }
         }).sort(sort).limit(limit).skip(skip).lean().exec()
 
+        let map = null
+
+        switch (view) {
+        case 'reward':
+            let totalVoted = await db.Voter.aggregate([
+                {
+                    $match: {
+                        smartContractAddress: config.get('blockchain.validatorAddress')
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalVoted: { $sum: '$capacityNumber' }
+                    }
+                }
+            ])
+
+            map = await Promise.all(candidates.map(async (c) => {
+                if (totalVoted && totalVoted.length > 0) {
+                    const total = totalVoted[0].totalVoted
+                    c.votePercentage = (c.capacityNumber * 100) / total
+                }
+                return c
+            }))
+            break
+        default:
+            break
+        }
+
         return res.json({
-            items: candidates,
+            items: map || candidates,
             activeCandidates: await activeCandidates || 0,
             totalSlashed: await totalSlashed,
             totalResigned: await totalResigned,
