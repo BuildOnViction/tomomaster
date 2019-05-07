@@ -5,7 +5,7 @@ var Schema = mongoose.Schema
 
 var Notification = new Schema({
     voter: { type: String, index: true },
-    candidate: String,
+    candidate: { type: String, index: true },
     candidateName: String,
     event: {
         type: String,
