@@ -133,6 +133,27 @@ router.get('/masternodes', [
 
         switch (view) {
         case 'reward':
+            break
+        case 'balance':
+            map = await Promise.all(candidates.map(async (c) => {
+                const masternodeCount = db.Status.count({
+                    candidate: c.candidate,
+                    status: { $ne: 'PROPOSED' }
+                }) || 1
+                const slashedCount = db.Status.count({
+                    candidate: c.candidate,
+                    status: 'SLASHED'
+                }) || 1
+                const candidateCount = await db.Status.count({
+                    candidate: c.candidate
+                }) || 1
+
+                c.top150Percentage = ((await masternodeCount) * 100) / candidateCount
+                c.slashedPercentage = ((await slashedCount) * 100) / candidateCount
+                return c
+            }))
+            break
+        default:
             let totalVoted = await db.Voter.aggregate([
                 {
                     $match: {
@@ -154,8 +175,6 @@ router.get('/masternodes', [
                 }
                 return c
             }))
-            break
-        default:
             break
         }
 
