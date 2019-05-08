@@ -156,11 +156,13 @@
                                 <div v-if="!isTomonet">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
-                                            <strong>TomoMaster up to 1.3.3.</strong>
+                                            <strong>TomoMaster up to 1.4.0</strong>
                                             New features have been added to.
-                                            <p>- Owner can add their website, telegram to masternode's information</p>
-                                            <p>- Voter can see estimated daily reward when voting</p>
-                                            <p>- Fix privacy issue regarding to new metamask updates</p>
+                                            <p>- Add rank column in masternode list table</p>
+                                            <p>- Add masternode name, current cap columns
+                                            in voter transaction table</p>
+                                            <p>- Remove v-html in order to prevent XSS attacking</p>
+                                            <p>- Fix bugs: masternode status and  history status</p>
                                         </div>
                                     </b-dropdown-text>
                                 </div>
@@ -168,7 +170,7 @@
                                     v-if="!isTomonet" />
                                 <b-dropdown-text
                                     v-if="!isTomonet"
-                                    class="notification-bottom">
+                                    class="notification_bottom">
                                     TomoMaster - {{ version }}
                                 </b-dropdown-text>
                             </b-dropdown>
