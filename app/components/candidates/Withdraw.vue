@@ -45,7 +45,7 @@
                                         <!-- <button
                                             class="btn btn-primary"
                                             variant="primary"
-                                            @click="vote">Submit</button> -->
+                                            @click="vote">Withdraw</button> -->
                                     </div>
                                 </div>
                                 <div>
@@ -74,7 +74,7 @@
                                 v-if="provider !== 'tomowallet'"
                                 class="btn btn-primary"
                                 variant="primary"
-                                @click="withdraw(blockNumber, index)">Submit</button>
+                                @click="withdraw(blockNumber, index)">Withdraw</button>
                         </b-card-footer>
                     </b-card>
                 </b-row>
