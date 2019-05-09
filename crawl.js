@@ -69,7 +69,10 @@ async function watchValidator () {
                 }
 
                 // get balance
-                let candidateCap = await validator.methods.getCandidateCap(candidate).call()
+                let candidateCap = 0
+                if (candidate) {
+                    candidateCap = await validator.methods.getCandidateCap(candidate).call()
+                }
                 await db.Transaction.updateOne({
                     tx: result.transactionHash
                 }, {
