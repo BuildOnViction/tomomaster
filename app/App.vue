@@ -158,10 +158,15 @@
                                         <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.4.0</strong>
                                             New features have been added to.
+                                            <p>- Added notification for propose, resign,
+                                            slash and out of top 150</p>
                                             <p>- Add rank column in masternode list table</p>
                                             <p>- Add masternode name, current cap columns
                                             in voter transaction table</p>
+                                            <p>- Added slashing history filter in masternode reward table</p>
                                             <p>- Remove v-html in order to prevent XSS attacking</p>
+                                            <p>- Hide login section after logged in successfully</p>
+                                            <p>- Update api documentation</p>
                                             <p>- Fix bugs: masternode status and  history status</p>
                                         </div>
                                     </b-dropdown-text>
