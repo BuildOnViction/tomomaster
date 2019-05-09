@@ -243,23 +243,20 @@
                             <span
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
-                                MN was slashed for {{ candidate.slashedTimes }} epochs over the past week </span>
+                                MN was slashed for {{ candidate.slashedTimes }}
+                                {{ candidate.slashedTimes > 1 ? 'epochs' : 'epoch' }} over the past week </span>
                             <span
-                                v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
-                                Slashing times:
+                                Slashing history:
                                 <a
-                                    v-if="candidate.slashedTimes !== 0"
                                     :class="currentTab === 'week' ? 'tab-active' : ''"
                                     @click="filterSlash('week')">1 Week</a>
-                                <span v-if="candidate.slashedTimes">|</span>
+                                <span>|</span>
                                 <a
-                                    v-if="candidate.slashedTimes !== 0"
                                     :class="currentTab === 'month' ? 'tab-active' : ''"
                                     @click="filterSlash('month')">1 Month</a>
-                                <span v-if="candidate.slashedTimes">|</span>
+                                <span>|</span>
                                 <a
-                                    v-if="candidate.slashedTimes !== 0"
                                     :class="currentTab === 'year' ? 'tab-active' : ''"
                                     @click="filterSlash('year')">1 Year</a>
                             </span>

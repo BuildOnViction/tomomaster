@@ -9,6 +9,9 @@
         align-items: center;
         padding: 0;
     }
+    &.navbar-expand {
+        flex-flow: inherit;
+    }
 }
 
 .navbar-brand {
@@ -18,12 +21,16 @@
 }
 
 .navbar-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     display: flex;
     width: 100%;
     text-align: right;
     margin-top: 10px;
     margin-bottom: 7px;
     button {
+        line-height: 1;
         display: inline-flex;
         vertical-align: middle;
     }
@@ -52,7 +59,21 @@
     }
     
 }
-
+.btn-menu-sp {
+    border: 0!important;
+    background: transparent!important;
+    &:active,
+    &:focus {
+        border: 0!important;
+        background: transparent!important;
+        outline: none!important;
+        &:focus {
+            border: 0!important;
+            background: transparent!important;
+            outline: none!important;
+        }
+    }
+}
 #btn-setting {
     font-size: 0;
     width: 20px;
@@ -72,9 +93,6 @@
 }
 
 .dd-setting {
-    font-size: 0;
-    width: 20px;
-
     i {
         display: inline-block;
         font-size: 18px;
@@ -90,10 +108,12 @@
     button {
         border: none;
         padding: 0;
+        padding-right: 0.75rem !important;
         background: none!important;
         &:hover {
             background: none!important;
             border-color: none;
+            text-decoration: none;
         }
         &:focus {
             background: none!important;
@@ -102,7 +122,6 @@
         }
         &:active {
             background: none!important;
-            border-color: none;
             text-decoration: none;
             &:focus { 
                 background: none!important;

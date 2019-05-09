@@ -4,9 +4,9 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var Rank = new Schema({
-    candidate: Number,
+    candidate: { type: Number, index: true },
     rank: Number,
-    epoch: Number,
+    epoch: { type: Number, index: true },
     epochCreatedAt: Date
 }, { timestamps: true })
 

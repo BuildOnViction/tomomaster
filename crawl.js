@@ -69,7 +69,10 @@ async function watchValidator () {
                 }
 
                 // get balance
-                let candidateCap = await validator.methods.getCandidateCap(candidate).call()
+                let candidateCap = 0
+                if (candidate) {
+                    candidateCap = await validator.methods.getCandidateCap(candidate).call()
+                }
                 await db.Transaction.updateOne({
                     tx: result.transactionHash
                 }, {
@@ -109,7 +112,7 @@ async function watchValidator () {
                     // fire notification
                     const voters = await db.Voter.find({
                         candidate: candidate,
-                        smartContractAddress: config.get('blockchain.validtorAddress'),
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
                         capacityNumber: { $gt: 0 }
                     })
                     if (voters && voters.length > 0) {
@@ -118,7 +121,8 @@ async function watchValidator () {
                             candidate: candidate.toLowerCase()
                         })
                         await Promise.all(voters.map(async (v) => {
-                            await fireNotification(v.voter, candidate, candidateInfor.name, result.event)
+                            await fireNotification(v.voter, candidate,
+                                candidateInfor.name || null, result.event, result.blockNumber)
                         }))
                     }
                 }
@@ -294,7 +298,7 @@ async function updateSignerPenAndStatus () {
                         })
                         if (voters && voters.length > 0) {
                             await Promise.all(voters.map(async (v) => {
-                                await fireNotification(v.voter, c.candidate, c.name, 'Slash')
+                                await fireNotification(v.voter, c.candidate, c.name, 'Slash', latestBlockNumber)
                             }))
                         }
                     }
@@ -385,7 +389,7 @@ async function watchNewBlock (n) {
                         const latestCheckpoint = latestBlockNumber - (
                             latestBlockNumber % parseInt(config.get('blockchain.epoch')))
                         const latestEpoch = (parseInt(
-                            latestCheckpoint / config.get('blockchain.epoch')) - 1).toString()
+                            latestCheckpoint / config.get('blockchain.epoch'))).toString()
                         const block = await web3.eth.getBlock(latestCheckpoint)
 
                         db.Rank.updateOne({ candidate: c.candidate, epoch: latestEpoch }, {
@@ -427,7 +431,7 @@ async function watchNewBlock (n) {
                         })
                         if (voters && voters.length > 0) {
                             await Promise.all(voters.map(async (v) => {
-                                await fireNotification(v.voter, candidate, candidateInfor.name, 'Outtop')
+                                await fireNotification(v.voter, candidate, candidateInfor.name, 'Outtop', n)
                             }))
                         }
                     })).then(() => true).catch(e => console.log(e))
@@ -476,17 +480,21 @@ async function watchNewBlock (n) {
     return watchNewBlock(n)
 }
 
-async function fireNotification (voter, candidate, name, event, amount = '') {
+async function fireNotification (voter, candidate, name, event, amount = '', blockNumber) {
     try {
         const isRead = false
-        await db.Notification.create({
+        await db.Notification.updateOne({
+            voter: voter,
+            candidate: candidate,
+            blockNumber: blockNumber
+        }, {
             voter: voter,
             candidate: candidate,
             candidateName: name || 'Anonymous',
             event: event,
             isRead: isRead,
             amount: amount
-        })
+        }, { upsert: true })
         return true
     } catch (error) {
         logger.error('fire notification error %s', error)

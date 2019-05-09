@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.0.0
+  version: 1.3.3
   title: TomoMaster APIs
   description: Happy to code TomoMaster APIs
   license:

@@ -45,7 +45,7 @@
                                         <!-- <button
                                             class="btn btn-primary"
                                             variant="primary"
-                                            @click="vote">Submit</button> -->
+                                            @click="vote">Withdraw</button> -->
                                     </div>
                                 </div>
                                 <div>
@@ -74,7 +74,7 @@
                                 v-if="provider !== 'tomowallet'"
                                 class="btn btn-primary"
                                 variant="primary"
-                                @click="withdraw(blockNumber, index)">Submit</button>
+                                @click="withdraw(blockNumber, index)">Withdraw</button>
                         </b-card-footer>
                     </b-card>
                 </b-row>
@@ -209,7 +209,7 @@ export default {
                 } else {
                     wd = await contract.withdraw(String(blockNumber), String(index), txParams)
                 }
-                let toastMessage = wd.tx ? 'You have successfully withdrawed!'
+                let toastMessage = wd.tx ? 'You have successfully withdrawn!'
                     : 'An error occurred while withdrawing, please try again'
                 self.$toasted.show(toastMessage)
 
@@ -247,7 +247,7 @@ export default {
                 self.loading = true
                 if (data.tx) {
                     clearInterval(self.interval)
-                    let toastMessage = (data.tx && data.status) ? 'You have successfully withdrawed!'
+                    let toastMessage = (data.tx && data.status) ? 'You have successfully withdrawn!'
                         : 'An error occurred while voting, please try again'
                     self.$toasted.show(toastMessage)
                     setTimeout(() => {
