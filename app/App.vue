@@ -151,6 +151,22 @@
                                         <b-dropdown-divider
                                             v-if="value.event === 'Resign' &&
                                             key !== notifications.length - 1"/>
+                                        <b-dropdown-text v-if="value.event === 'Withdraw'">
+                                            <div>
+                                                <span
+                                                    :style="value.isRead ? '' :
+                                                    'font-weight: bold;'"
+                                                    class="notification__content">
+                                                    <span class="notification_label withdraw">Withdraw</span>
+                                                    {{ value.amount }} unvoted TOMO are ready to withdraw
+                                                </span>
+                                                <div class="notification__time">TomoMaster -
+                                                    {{ value.createdAt }}</div>
+                                            </div>
+                                        </b-dropdown-text>
+                                        <b-dropdown-divider
+                                            v-if="value.event === 'Withdraw' &&
+                                            key !== notifications.length - 1"/>
                                     </div>
                                 </div>
                                 <div v-if="!isTomonet">
@@ -170,26 +186,6 @@
                                             <p>- Fix bugs: masternode status and  history status</p>
                                         </div>
                                     </b-dropdown-text>
-                                    <b-dropdown-divider
-                                        v-if="value.event === 'Resign' &&
-                                        key !== notifications.length - 1"/>
-
-                                    <b-dropdown-text v-if="value.event === 'Withdraw'">
-                                        <div>
-                                            <span
-                                                :style="value.isRead ? '' :
-                                                'font-weight: bold;'"
-                                                class="notification__content">
-                                                <span class="notification_label withdraw">Withdraw</span>
-                                                {{ value.amount }} unvoted TOMO are ready to withdraw
-                                            </span>
-                                            <div class="notification__time">TomoMaster -
-                                                {{ value.createdAt }}</div>
-                                        </div>
-                                    </b-dropdown-text>
-                                    <b-dropdown-divider
-                                        v-if="value.event === 'Withdraw' &&
-                                        key !== notifications.length - 1"/>
                                 </div>
                                 <b-dropdown-divider
                                     v-if="!isTomonet" />

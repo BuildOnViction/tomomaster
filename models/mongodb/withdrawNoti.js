@@ -16,7 +16,8 @@ var WithdrawNoti = new Schema({
         type: Number,
         index: true
     },
-    amount: { type: Number, index: true }
+    amount: { type: Number, index: true },
+    candidate: { type: String, index: true }
 }, { timestamps: true })
 
 module.exports = mongoose.model('WithdrawNoti', WithdrawNoti)

@@ -96,14 +96,16 @@ async function watchValidator () {
                     if (result.event === 'Unvote') {
                         // store withdraw for notification
                         await db.WithdrawNoti.updateOne({
-                            voter: owner,
-                            blockNumber: result.blockNumber,
-                            amount: capacity
-                        }, {
                             voter: voter,
                             blockNumber: result.blockNumber,
-                            amount: (new BigNumber(capacity)).div(1e18).toString(10),
-                            withdrawBlockNumber: result.blockNumber + 86400 // 86400 blocks later
+                            candidate: candidate
+                        }, {
+                            $set: {
+                                voter: voter,
+                                blockNumber: result.blockNumber,
+                                amount: (new BigNumber(capacity)).div(1e18).toString(10),
+                                withdrawBlockNumber: result.blockNumber + 86400 // 86400 blocks later
+                            }
                         }, { upsert: true })
                     }
                 }
@@ -464,7 +466,10 @@ async function watchNewBlock (n) {
                 // check with current block number
                 if (withdrawBlockNumbers.length > 0) {
                     await Promise.all(withdrawBlockNumbers.map(async (w) => {
-                        fireNotification(w.voter, '', '', 'WITHDRAW', w.amount)
+                        fireNotification(w.voter, '', '', 'Withdraw', n, w.amount)
+                        await db.WithdrawNoti.deleteOne({
+                            _id: w._id
+                        })
                     }))
                 }
             }
@@ -480,7 +485,7 @@ async function watchNewBlock (n) {
     return watchNewBlock(n)
 }
 
-async function fireNotification (voter, candidate, name, event, amount = '', blockNumber) {
+async function fireNotification (voter, candidate, name, event, blockNumber, amount = '') {
     try {
         const isRead = false
         await db.Notification.updateOne({
