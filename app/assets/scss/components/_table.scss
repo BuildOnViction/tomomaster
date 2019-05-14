@@ -210,10 +210,14 @@
     .btn {
         padding: 7px 14px;
     }
-    td[aria-colindex="1"] {
-        padding-left: 1em;
+    th[aria-colindex="1"],
+    th[aria-colindex="2"],
+    th[aria-colindex="3"]    {
+        padding-left: 0px !important;
     }
-
+    td[aria-colindex="1"] {
+        padding-left: 0.5em;
+    }
     td[aria-colindex="7"] {
         text-align: center;
         grid-template-columns: 100% !important;
@@ -448,6 +452,14 @@
 
 .tomo-table--voted {
 
+    th[aria-colindex="1"],
+    th[aria-colindex="2"],
+    th[aria-colindex="3"],
+    th[aria-colindex="4"],
+    th[aria-colindex="5"] {
+        padding-left: 0px;
+    }
+
     @include media-breakpoint-up(lg) {
 
         .text-truncate {
@@ -467,6 +479,9 @@
 }
 
 .tomo-table--voter {
+    th[aria-colindex="1"] {
+        padding-left: 0px;
+    }
 
     @include media-breakpoint-up(lg) {
 
@@ -487,6 +502,12 @@
 }
 
 .tomo-table--transactions {
+
+    th[aria-colindex="1"],
+    th[aria-colindex="4"],
+    th[aria-colindex="5"] {
+        padding-left: 0px;
+    }
 
     td[aria-colindex="5"] {
         text-align: center;
@@ -547,6 +568,12 @@
 }
 
 .tomo-table--transactions-voter {
+
+    th[aria-colindex="1"],
+    th[aria-colindex="2"],
+    th[aria-colindex="6"] {
+        padding-left: 0px;
+    }
 
     td[aria-colindex="7"] {
         text-align: center;
@@ -710,6 +737,13 @@
 }
 
 .tomo-table--voterrewards {
+    th[aria-colindex="1"],
+    th[aria-colindex="2"],
+    th[aria-colindex="3"],
+    th[aria-colindex="4"],
+    th[aria-colindex="5"] {
+        padding-left: 0px;
+    }
 
     @include media-breakpoint-up(lg) {
         .text-truncate {
@@ -733,6 +767,13 @@
     .text-truncate {
         max-width: 90%;
     }
+    th[aria-colindex="1"],
+    th[aria-colindex="2"],
+    th[aria-colindex="3"],
+    th[aria-colindex="4"],
+    th[aria-colindex="5"] {
+        padding-left: 0px;
+    }
     @include media-breakpoint-up(lg) {
         .text-truncate {
             max-width: 100%;
@@ -742,8 +783,5 @@
         .text-truncate {
             max-width: 100%;
         }
-    }
-    td[aria-colindex="2"] {
-        padding-left: 2em;
     }
 }
