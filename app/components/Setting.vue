@@ -523,6 +523,7 @@ export default {
 
             this.$v.$touch()
             if (this.provider === 'custom' && !this.$v.mnemonic.$invalid) {
+                this.hdPath = "m/44'/60'/0'/0"
                 this.save()
             }
             if (this.provider === 'ledger' && !this.$v.hdPath.$invalid) {
