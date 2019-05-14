@@ -156,6 +156,16 @@
                                 <div v-if="!isTomonet">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.4.1</strong>
+                                            New features have been added to.
+                                            <p>- Disable sorting masternodes by name</p>
+                                            <p>- Hide voters who unvoted all TOMO</p>
+                                            <p>- Show slashing history</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.4.0</strong>
                                             New features have been added to.
                                             <p>- Added notification for propose, resign,
