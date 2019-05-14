@@ -34,6 +34,35 @@
             }
         }
 
+        tr {
+            th {
+                border: none;
+                font-weight: 400;
+                font-size: 16px;
+    
+                &:focus {
+                    outline: none;
+                }
+    
+                & {
+                    padding-right: 0 !important;
+                    padding-left: 1em;
+                }
+    
+                &:before {
+                    display: block;
+                    left: 0;
+                    right: auto !important;
+                    @extend %transit;
+                }
+    
+                &:after {
+                    left: 0em;
+                    right: auto !important;
+                }
+            }
+        }
+
         @include media-breakpoint-up(lg) {
             display: block;
             margin-bottom: 20px;
@@ -180,6 +209,9 @@
 
     .btn {
         padding: 7px 14px;
+    }
+    td[aria-colindex="1"] {
+        padding-left: 1em;
     }
 
     td[aria-colindex="7"] {
@@ -710,5 +742,8 @@
         .text-truncate {
             max-width: 100%;
         }
+    }
+    td[aria-colindex="2"] {
+        padding-left: 2em;
     }
 }
