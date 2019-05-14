@@ -383,7 +383,8 @@ router.get('/:candidate/voters', [
 
     let total = db.Voter.countDocuments({
         smartContractAddress: config.get('blockchain.validatorAddress'),
-        candidate: (req.params.candidate || '').toLowerCase()
+        candidate: (req.params.candidate || '').toLowerCase(),
+        capacityNumber: { $ne: 0 }
     })
 
     const sort = {}
@@ -395,7 +396,8 @@ router.get('/:candidate/voters', [
 
     let voters = await db.Voter.find({
         smartContractAddress: config.get('blockchain.validatorAddress'),
-        candidate: (req.params.candidate || '').toLowerCase()
+        candidate: (req.params.candidate || '').toLowerCase(),
+        capacityNumber: { $ne: 0 }
     }).sort(sort).limit(limit).skip(skip)
     return res.json({
         items: await voters,
