@@ -189,7 +189,7 @@ export default {
                 {
                     key: 'name',
                     label: 'Name',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     key: 'capacity',
