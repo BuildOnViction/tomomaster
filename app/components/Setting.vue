@@ -70,6 +70,25 @@
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
                             class="text-danger">Required field</span>
                     </b-form-group>
+                    <b-form-group
+                        v-if="provider === 'custom'"
+                        class="mb-4"
+                        label="Select HD derivation path(MNEMONIC)"
+                        label-for="hdPath">
+                        <b-form-input
+                            :class="getValidationClass('hdPath')"
+                            :value="hdPath"
+                            v-model="hdPath"
+                            type="text" />
+                        <span
+                            v-if="$v.hdPath.$dirty && !$v.hdPath.required"
+                            class="text-danger">Required field</span>
+                        <small
+                            class="form-text text-muted">To unlock the wallet, try paths
+                            <code>m/44'/60'/0'/0</code>
+                            or <code>m/44'/60'/0'</code>
+                            or try path <code>m/44'/889'/0'/0</code></small>
+                    </b-form-group>
 
                     <b-form-group
                         v-if="provider === 'tomowallet'"
@@ -523,7 +542,6 @@ export default {
 
             this.$v.$touch()
             if (this.provider === 'custom' && !this.$v.mnemonic.$invalid) {
-                this.hdPath = "m/44'/60'/0'/0"
                 this.save()
             }
             if (this.provider === 'ledger' && !this.$v.hdPath.$invalid) {
