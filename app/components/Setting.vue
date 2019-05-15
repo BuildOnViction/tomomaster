@@ -87,7 +87,7 @@
                             class="form-text text-muted">To unlock the wallet, try paths
                             <code>m/44'/60'/0'/0</code>
                             or <code>m/44'/60'/0'</code>
-                            or try path <code>m/44'/889'/0'/0</code></small>
+                            or <code>m/44'/889'/0'/0</code></small>
                     </b-form-group>
 
                     <b-form-group
