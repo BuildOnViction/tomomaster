@@ -107,9 +107,10 @@ async function watchValidator () {
                             smartContractAddress: config.get('blockchain.validatorAddress'),
                             candidate: candidate.toLowerCase()
                         })
+                        const candidateName = candidateInfor ? candidateInfor.name || null : null
                         await Promise.all(voters.map(async (v) => {
                             await fireNotification(v.voter, candidate,
-                                candidateInfor.name || null, result.event, result.blockNumber)
+                                candidateName, result.event, result.blockNumber)
                         }))
                     }
                 }
