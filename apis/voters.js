@@ -188,7 +188,8 @@ router.post('/generateQR', [
 })
 
 router.post('/verifyTx', [
-    query('id').exists().withMessage('is is required'),
+    query('id').isLength({ min: 1 }).exists().withMessage('is is required')
+        .contains('-').withMessage('wrong id format'),
     check('action').isLength({ min: 1 }).exists().withMessage('action is required'),
     check('signer').isLength({ min: 1 }).exists().withMessage('signer is required'),
     check('rawTx').isLength({ min: 1 }).exists().withMessage('rawTx is required')
@@ -198,7 +199,7 @@ router.post('/verifyTx', [
         return next(errors.array())
     }
     try {
-        const id = req.query.id
+        const id = escape(req.query.id || '')
         const action = req.body.action
         let signer = (req.body.signer || '').toLowerCase()
         let candidate = (req.body.candidate || '').toLowerCase()
@@ -306,14 +307,15 @@ router.post('/verifyTx', [
 })
 
 router.get('/getScanningResult', [
-    query('id').exists().withMessage('id is required')
+    query('id').isLength({ min: 1 }).exists().withMessage('id is required')
+        .contains('-').withMessage('wrong id format')
 ], async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
     try {
-        const id = req.query.id
+        const id = escape(req.query.id || '')
 
         const signTx = await db.SignTransaction.findOne({ signId: id })
 
