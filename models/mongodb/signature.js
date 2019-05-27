@@ -9,7 +9,7 @@ const Signature = new Schema({
     message: String,
     signature: String,
     status: Boolean,
-    createdAt: { type: Date, expires: 86400, default: Date.now }
+    expiredAt: { type: Date, expires: 86400, default: Date.now }
 }, {
     timestamps: true,
     versionKey: false
