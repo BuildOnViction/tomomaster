@@ -832,7 +832,8 @@ router.post('/:candidate/generateMessage', [
 })
 
 router.post('/verifyScannedQR', [
-    query('id').exists().withMessage('id is required'),
+    query('id').isLength({ min: 1 }).exists().withMessage('id is required')
+        .contains('-').withMessage('wrong id format'),
     check('message').isLength({ min: 1 }).exists().withMessage('message is required'),
     check('signature').isLength({ min: 1 }).exists().withMessage('signature is required'),
     check('signer').isLength({ min: 1 }).exists().withMessage('signer is required'),
@@ -845,7 +846,7 @@ router.post('/verifyScannedQR', [
     try {
         const message = req.body.message
         const signature = req.body.signature
-        const id = req.query.id
+        const id = escape(req.query.id)
         let signer = req.body.signer.toLowerCase()
 
         const checkId = await db.Signature.findOne({ signedId: id })
@@ -881,14 +882,15 @@ router.post('/verifyScannedQR', [
 })
 
 router.get('/:candidate/getSignature', [
-    query('id').exists().withMessage('id is required')
+    query('id').isLength({ min: 1 }).exists().withMessage('id is required')
+        .contains('-').withMessage('wrong id format')
 ], async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
     try {
-        const messId = req.query.id || ''
+        const messId = escape(req.query.id)
 
         const signature = await db.Signature.findOne({ signedId: messId })
 
