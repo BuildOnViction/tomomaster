@@ -8,7 +8,8 @@ const Signature = new Schema({
     signedId: { type: String, index: true },
     message: String,
     signature: String,
-    status: Boolean
+    status: Boolean,
+    expiredAt: { type: Date, expires: 86400, default: Date.now }
 }, {
     timestamps: true,
     versionKey: false
