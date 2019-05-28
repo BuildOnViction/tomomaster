@@ -158,6 +158,12 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.4.3</strong>
+                                            <p>- Fix id injection issue</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.4.2</strong>
                                             <p>- Fix proposing a new masternode issue</p>
                                             <p>- Fix incorrect address when loggin in by mnemonic words</p>
