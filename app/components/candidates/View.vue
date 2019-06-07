@@ -182,9 +182,7 @@
                                 {{ value }}
                             </p>
                         </div>
-                        <div
-                            v-if="voterROI"
-                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                             <p class="tomo-info__title">
                                 <i class="tm-dot tomo-info__icon" />
                                 <span class="tomo-info__text">Est. Staking ROI</span>
@@ -192,7 +190,18 @@
                             <p
                                 id="tomo-info__description--balance"
                                 class="tomo-info__description">
-                                {{ voterROI }}%
+                                {{ voterROI ? voterROI + '%' : '---' }}
+                            </p>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Est. Owner ROI</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--balance"
+                                class="tomo-info__description">
+                                {{ mnROI ? mnROI + '%' : '---' }}
                             </p>
                         </div>
                     </div>
@@ -590,7 +599,8 @@ export default {
             loadedMEM: true,
             isCandidate: true,
             currentTab: '',
-            voterROI: ''
+            voterROI: '',
+            mnROI: ''
         }
     },
     computed: {
@@ -914,17 +924,17 @@ export default {
             }
         },
         async getAnnualReward () {
-            try {
-                axios.get('/api/voters/annualReward?candidate=' + this.candidate.address)
-                    .then((result) => {
-                        if (result.data && result.data.voterROI) {
-                            this.voterROI = result.data.voterROI.toFixed(2)
-                        }
-                    })
-            } catch (error) {
-                console.log(error)
-                this.$toasted.show(error, { type: 'error' })
-            }
+            axios.get('/api/voters/annualReward?candidate=' + this.candidate.address)
+                .then((result) => {
+                    if (result.data && result.data.voterROI) {
+                        this.voterROI = result.data.voterROI.toFixed(2)
+                        this.mnROI = result.data.mnROI.toFixed(2)
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.$toasted.show(error, { type: 'error' })
+                })
         }
     }
 }

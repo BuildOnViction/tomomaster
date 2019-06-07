@@ -516,4 +516,78 @@ router.get('/annualReward', [
     }
 })
 
+router.get('/averageroi', [], async (req, res, next) => {
+    try {
+        // Average ROI for voters and owners
+        const promises0 = await Promise.all([
+            db.Candidate.find({
+                rank: { $nin: ['', null] }
+            }).sort({ rank: 1 }).limit(1).lean().exec(),
+            db.Candidate.find({
+                rank: { $nin: ['', null] }
+            }).sort({ rank: -1 }).limit(1).lean().exec()
+        ])
+
+        const latestBlock = await web3.eth.getBlockNumber()
+        const latestCheckpoint = latestBlock - (latestBlock % parseInt(config.get('blockchain.epoch')))
+        const lastEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch'))).toString()
+
+        const promises = await Promise.all([
+            web3.eth.getBlock(latestCheckpoint - 899),
+            web3.eth.getBlock(latestCheckpoint),
+            db.Status.find({
+                epoch: lastEpoch,
+                status: 'MASTERNODE'
+            })
+        ])
+        const numberOfMN = promises[2]
+        const epochDuration = ((new Date(promises[1].timestamp * 1000) -
+            new Date(promises[0].timestamp * 1000)) / 1000) / 60 // minutes
+        // number of epochs in a year
+        const minPerDay = 60 * 24
+        const epochYear = (minPerDay * 365) / epochDuration
+
+        const totalReward = new BigNumber(config.get('blockchain.reward'))
+        let voterAmount = 1000
+
+        // Reward divided to masternode
+        let masternodeReward = totalReward.dividedBy(numberOfMN.length)
+
+        const top1MN = promises0[0]
+        const lastMN = promises0[1]
+
+        // 50% for voter and calculate reward 1 year
+        const top1MNVoterRW1Year = masternodeReward.multipliedBy(0.5)
+            .multipliedBy(voterAmount).dividedBy(top1MN[0].capacityNumber).multipliedBy(epochYear)
+        const lastMNVoterRW1Year = masternodeReward.multipliedBy(0.5)
+            .multipliedBy(voterAmount).dividedBy(lastMN[0].capacityNumber).multipliedBy(epochYear)
+        // 40% for masternode
+        const mnStakingYear = masternodeReward.multipliedBy(0.4).multipliedBy(epochYear)
+        // master staking reward
+        const top1MNStakingYear = masternodeReward.multipliedBy(0.5)
+            .multipliedBy(50000).dividedBy(top1MN[0].capacityNumber).multipliedBy(epochYear)
+        const lastMNStakingYear = masternodeReward.multipliedBy(0.5)
+            .multipliedBy(50000).dividedBy(lastMN[0].capacityNumber).multipliedBy(epochYear)
+
+        // calculate percentage
+
+        const top1MNVoterROI = top1MNVoterRW1Year.div(voterAmount).multipliedBy(100)
+        const lastMNVoterROI = lastMNVoterRW1Year.div(voterAmount).multipliedBy(100)
+        const top1MNOwnerROI = (top1MNStakingYear.plus(mnStakingYear)).dividedBy(50000).multipliedBy(100)
+        const lastMNOwnerROI = (lastMNStakingYear.plus(mnStakingYear)).dividedBy(50000).multipliedBy(100)
+
+        const averageStakingROI = (top1MNVoterROI.plus(lastMNVoterROI)).dividedBy(2).toNumber()
+        const averageMNOwnerROI = (top1MNOwnerROI.plus(lastMNOwnerROI)).dividedBy(2).toNumber()
+
+        return res.json({
+            epochDuration,
+            lastEpoch,
+            averageStakingROI: averageStakingROI,
+            averageOwnerROI: averageMNOwnerROI
+        })
+    } catch (error) {
+        return next(error)
+    }
+})
+
 module.exports = router
