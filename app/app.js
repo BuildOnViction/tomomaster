@@ -30,7 +30,8 @@ import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
-import HDWalletProvider from 'truffle-hdwallet-provider'
+// import HDWalletProvider from 'truffle-hdwallet-provider'
+import { HDWalletProvider } from '../helpers.js'
 import localStorage from 'store'
 // Libusb is included as a submodule.
 // On Linux, you'll need libudev to build libusb.

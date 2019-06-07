@@ -19,14 +19,15 @@
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">Block Time</h6>
-                        <p class="tomo-card__text">{{ chainConfig.blockTime }}.00 s</p>
+                        <h6 class="tomo-card__title">Epoch</h6>
+                        <p class="tomo-card__text">
+                            #{{ Math.floor(chainConfig.blockNumber / chainConfig.epoch) + 1 }}</p>
                     </b-card>
                 </div>
                 <div
                     class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">Average Staking ROI</h6>
+                        <h6 class="tomo-card__title">Avg. Staking ROI</h6>
                         <p class="tomo-card__text">
                             {{ averageStakingROI ? averageStakingROI + '%' : '---' }}</p>
                     </b-card>
@@ -34,7 +35,7 @@
                 <div
                     class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">Average Owner ROI</h6>
+                        <h6 class="tomo-card__title">Avg. Owner ROI</h6>
                         <p class="tomo-card__text">
                             <!-- eslint-disable-next-line max-len -->
                             {{ averageOwnerROI ? averageOwnerROI + '%' : '---' }}</p>
@@ -522,9 +523,9 @@ export default {
             axios.get('/api/voters/averageroi')
                 .then(result => {
                     if (result.data && result.data.averageStakingROI) {
-                            this.averageStakingROI = result.data.averageStakingROI.toFixed(2)
-                            this.averageOwnerROI = result.data.averageOwnerROI.toFixed(2)
-                        }
+                        this.averageStakingROI = result.data.averageStakingROI.toFixed(2)
+                        this.averageOwnerROI = result.data.averageOwnerROI.toFixed(2)
+                    }
                 })
                 .catch(error => {
                     console.log(error)
