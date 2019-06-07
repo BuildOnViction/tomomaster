@@ -23,19 +23,21 @@
                         <p class="tomo-card__text">{{ chainConfig.blockTime }}.00 s</p>
                     </b-card>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div
+                    class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">Epoch</h6>
+                        <h6 class="tomo-card__title">Average Staking ROI</h6>
                         <p class="tomo-card__text">
-                            #{{ Math.floor(chainConfig.blockNumber / chainConfig.epoch) + 1 }}</p>
+                            {{ averageStakingROI ? averageStakingROI + '%' : '---' }}</p>
                     </b-card>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div
+                    class="col-md-6 col-lg-3">
                     <b-card class="tomo-card tomo-card">
-                        <h6 class="tomo-card__title">Next Checkpoint</h6>
+                        <h6 class="tomo-card__title">Average Owner ROI</h6>
                         <p class="tomo-card__text">
                             <!-- eslint-disable-next-line max-len -->
-                            #{{ parseInt(chainConfig.epoch) * (Math.floor(parseInt(chainConfig.blockNumber) / parseInt(chainConfig.epoch) + 1)) }}</p>
+                            {{ averageOwnerROI ? averageOwnerROI + '%' : '---' }}</p>
                     </b-card>
                 </div>
             </div>
@@ -231,7 +233,9 @@ export default {
             resignedMN: 0,
             slashedMN: 0,
             totalProposedNodes: 0,
-            currentTable: 'masternodes'
+            currentTable: 'masternodes',
+            averageStakingROI: '',
+            averageOwnerROI: ''
         }
     },
     computed: {},
@@ -262,6 +266,7 @@ export default {
             console.log(error)
         }
         self.getDataFromApi()
+        self.averageroi()
     },
     mounted () { },
     methods: {
@@ -512,6 +517,19 @@ export default {
                 this.getDataFromApi()
                 break
             }
+        },
+        async averageroi () {
+            axios.get('/api/voters/averageroi')
+                .then(result => {
+                    if (result.data && result.data.averageStakingROI) {
+                            this.averageStakingROI = result.data.averageStakingROI.toFixed(2)
+                            this.averageOwnerROI = result.data.averageOwnerROI.toFixed(2)
+                        }
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.$toasted.show(error, { type: 'error' })
+                })
         }
     }
 }
