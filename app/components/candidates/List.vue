@@ -6,7 +6,7 @@
                 <div class="col-12">
                     <h3 class="section-title">
                         <i class="tm-bolt color-pink" />
-                        <span>Network Status</span>
+                        <span>Network Information</span>
                     </h3>
                 </div>
                 <div class="col-md-6 col-lg-3">
