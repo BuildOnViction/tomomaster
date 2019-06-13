@@ -274,6 +274,12 @@ import moment from 'moment'
 
 export default {
     name: 'App',
+    metaInfo: {
+        title: 'Staker Details | TomoMaster',
+        meta: [
+            { name: 'description', content: 'Staking history, Reward history, Masternode list, Transaction list. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake TomoChain' } // eslint-disable-line
+        ]
+    },
     data () {
         return {
             candidateFields: [

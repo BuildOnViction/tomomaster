@@ -34,6 +34,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(docs))
 
 // apis
 app.use(require('./apis'))
+app.use(require('./middlewares/sitemap'))
 
 // error handler
 app.use(require('./middlewares/error'))
