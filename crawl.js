@@ -574,7 +574,7 @@ async function getPastEvent () {
                 let capacity = event.returnValues._cap
                 let blk = await web3.eth.getBlock(event.blockNumber)
                 let createdAt = moment.unix(blk.timestamp).utc()
-                await db.Transaction.updateOne({ tx: event.transactionHash }, {
+                await db.Transaction.findOneAndUpdate({ tx: event.transactionHash }, {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     tx: event.transactionHash,
                     blockNumber: event.blockNumber,
