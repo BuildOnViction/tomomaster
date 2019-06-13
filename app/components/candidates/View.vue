@@ -453,6 +453,12 @@ import store from 'store'
 
 export default {
     name: 'App',
+    metaInfo: {
+        title: 'Candidate Details | TomoMaster',
+        meta: [
+            { name: 'description', content: 'Staking TomoChain Masternode to get the reward every epochs. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake TomoChain' } // eslint-disable-line
+        ]
+    },
     components: {
         chart: Chart
     },

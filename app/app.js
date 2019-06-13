@@ -42,7 +42,9 @@ import Eth from '@ledgerhq/hw-app-eth'
 import TrezorConnect from 'trezor-connect'
 import Transaction from 'ethereumjs-tx'
 import * as HDKey from 'ethereumjs-wallet/hdkey'
+import Meta from 'vue-meta'
 
+Vue.use(Meta)
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
 
