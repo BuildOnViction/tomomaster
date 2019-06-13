@@ -299,7 +299,8 @@ export default {
                 self.loading = true
                 let account = await self.getAccount()
                 account = account.toLowerCase()
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 let txParams = {
                     from: account,
                     value: self.web3.utils.toHex(new BigNumber(this.voteValue).multipliedBy(10 ** 18).toString(10)),
@@ -322,7 +323,12 @@ export default {
                     // sign transaction with function and parameter to get signature
                     // attach txParams and signature then sendSignedTransaction
                     let nonce = await self.web3.eth.getTransactionCount(account)
-                    let dataTx = contract.vote.request(self.candidate).params[0]
+                    // let dataTx = contract.vote.request(self.candidate).params[0]
+                    let data = await contract.methods.vote(self.candidate).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -334,9 +340,10 @@ export default {
                     let signature = await self.signTransaction(dataTx)
                     rs = await self.sendSignedTransaction(dataTx, signature)
                 } else {
-                    rs = await contract.vote(self.candidate, txParams)
+                    // rs = await contract.vote(self.candidate, txParams)
+                    rs = await contract.methods.vote(self.candidate).send(txParams)
                 }
-                let toastMessage = rs.tx ? 'You have successfully voted!'
+                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully voted!'
                     : 'An error occurred while voting, please try again'
                 self.$toasted.show(toastMessage)
 
@@ -346,8 +353,8 @@ export default {
                     if (self.interval) {
                         clearInterval(self.interval)
                     }
-                    if (rs.tx) {
-                        self.$router.push({ path: `/confirm/${rs.tx}` })
+                    if (rs.tx || rs.transactionHash) {
+                        self.$router.push({ path: `/confirm/${rs.tx || rs.transactionHash}` })
                     }
                 }, 2000)
             } catch (e) {

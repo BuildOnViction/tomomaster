@@ -275,10 +275,12 @@ export default {
 
             const isOwnerPromise = axios.get(`/api/candidates/${candidate}/${self.voter}/isOwner`)
 
-            let contract = await self.getTomoValidatorInstance()
-            let votedCap = await contract.getVoterCap(candidate, account)
+            let contract// = await self.getTomoValidatorInstance()
+            contract = self.TomoValidator
+            // let votedCap = await contract.getVoterCap(candidate, account)
+            let votedCap = await contract.methods.getVoterCap(candidate, account).call()
 
-            self.voted = votedCap.div(10 ** 18).toString(10)
+            self.voted = new BigNumber(votedCap).div(10 ** 18).toString(10)
             const isOwner = (await isOwnerPromise).data || false
             self.isOwner = Boolean(isOwner)
             self.loading = false
@@ -329,7 +331,8 @@ export default {
                 let unvoteValue = new BigNumber(value).multipliedBy(1e+18).toString(10)
                 let account = await self.getAccount()
                 account = account.toLowerCase()
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 let txParams = {
                     from: account,
                     gasPrice: self.web3.utils.toHex(self.gasPrice),
@@ -351,7 +354,12 @@ export default {
                     // sign transaction with function and parameter to get signature
                     // attach txParams and signature then sendSignedTransaction
                     let nonce = await self.web3.eth.getTransactionCount(account)
-                    let dataTx = contract.unvote.request(candidate, unvoteValue).params[0]
+                    // let dataTx = contract.unvote.request(candidate, unvoteValue).params[0]
+                    let data = await contract.methods.unvote(candidate, unvoteValue).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     if (self.NetworkProvider === 'trezor') {
                         txParams.value = self.web3.utils.toHex(0)
                     }
@@ -366,18 +374,19 @@ export default {
                     let signature = await self.signTransaction(dataTx)
                     rs = await self.sendSignedTransaction(dataTx, signature)
                 } else {
-                    rs = await contract.unvote(candidate, unvoteValue, txParams)
+                    // rs = await contract.unvote(candidate, unvoteValue, txParams)
+                    rs = await contract.methods.unvote(candidate, unvoteValue).send(txParams)
                 }
                 self.vote -= value
 
-                let toastMessage = rs.tx ? 'You have successfully unvoted!'
+                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully unvoted!'
                     : 'An error occurred while unvoting, please try again'
                 self.$toasted.show(toastMessage)
 
                 setTimeout(() => {
                     self.loading = false
-                    if (rs.tx) {
-                        self.$router.push({ path: `/confirm/${rs.tx}` })
+                    if (rs.tx || rs.transactionHash) {
+                        self.$router.push({ path: `/confirm/${rs.tx || rs.transactionHash}` })
                     }
                 }, 2000)
             } catch (e) {

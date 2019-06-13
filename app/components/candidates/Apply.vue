@@ -290,7 +290,8 @@ export default {
 
                 self.loading = true
 
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 let txParams = {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
@@ -303,7 +304,12 @@ export default {
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(self.account)
-                    let dataTx = contract.propose.request(coinbase).params[0]
+                    // let dataTx = contract.propose.request(coinbase).params[0]
+                    const data = await contract.methods.propose(coinbase).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -315,15 +321,16 @@ export default {
                     let signature = await self.signTransaction(dataTx)
                     rs = await self.sendSignedTransaction(dataTx, signature)
                 } else {
-                    rs = await contract.propose(coinbase, txParams)
+                    // rs = await contract.propose(coinbase, txParams)
+                    rs = await contract.methods.propose(coinbase).send(txParams)
                 }
-                let toastMessage = rs.tx ? 'You have successfully applied!'
+                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully applied!'
                     : 'An error occurred while applying, please try again'
                 self.$toasted.show(toastMessage)
 
                 setTimeout(() => {
                     self.loading = false
-                    if (rs.tx) {
+                    if (rs.tx || rs.transactionHash) {
                         self.$router.push({ path: `/candidate/${coinbase}` })
                     }
                 }, 2000)

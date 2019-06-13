@@ -252,7 +252,8 @@ export default {
 
         try {
             if (self.isReady) {
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 if (store.get('address')) {
                     account = store.get('address').toLowerCase()
                 } else {
@@ -273,6 +274,7 @@ export default {
     methods: {
         watch: async function () {
             let contract = await self.getTomoValidatorInstance()
+            contract = self.TomoValidator
             const allEvents = contract.allEvents({
                 fromBlock: self.blockNumber,
                 toBlock: 'latest'

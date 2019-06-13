@@ -627,7 +627,8 @@ export default {
         self.isReady = !!self.web3
         try {
             if (self.isReady) {
-                let contract = self.TomoValidator.deployed()
+                let contract// = self.TomoValidator.deployed()
+                contract = self.TomoValidator
                 if (store.get('address')) {
                     self.account = store.get('address').toLowerCase()
                 } else {
@@ -710,13 +711,17 @@ export default {
                     })
                     if (self.account) {
                         try {
-                            let contract = await self.getTomoValidatorInstance()
-                            youVoted = await contract.getVoterCap(address, self.account)
-                            self.candidate.cap = await contract.getCandidateCap(address).div(1e18).toNumber()
+                            let contract// = await self.getTomoValidatorInstance()
+                            contract = self.TomoValidator
+                            // youVoted = await contract.getVoterCap(address, self.account)
+                            youVoted = await contract.methods.getVoterCap(address, self.account)
+                                .call()
+                            self.candidate.cap = await contract.methods.getCandidateCap(address)
+                                .call().div(1e18).toNumber()
                         } catch (e) {}
                     }
 
-                    self.candidate.voted = youVoted.div(10 ** 18).toNumber()
+                    self.candidate.voted = new BigNumber(youVoted).div(10 ** 18).toNumber()
                 }
 
                 self.loading = false

@@ -20,7 +20,7 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Web3 from 'web3'
-import { default as contract } from 'truffle-contract'
+// import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
@@ -68,77 +68,74 @@ TrezorConnect.manifest({
 stockInit(Highcharts)
 Vue.use(HighchartsVue)
 
-Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
+// Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
-Vue.prototype.setupProvider = function (provider, wjs) {
+Vue.prototype.setupProvider = async function (provider, wjs) {
     const self = this
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
+        const chainConfig = (await getConfig()).blockchain
         Vue.prototype.web3 = wjs
-        Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
+        Vue.prototype.TomoValidator = new wjs.eth.Contract(
+            TomoValidatorArtifacts.abi,
+            chainConfig.validatorAddress
+        )
+        // Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
         Vue.prototype.getAccount = function () {
             var p = new Promise(async function (resolve, reject) {
-                if (provider === 'metamask') {
+                switch (provider) {
+                case 'metamask':
                     // Request account access if needed - for metamask
                     await window.ethereum.enable()
-                }
-                wjs.eth.getAccounts(async function (err, accs) {
-                    if (err != null) {
+                    const accs = await wjs.eth.getAccounts()
+                    if (!accs || accs.length <= 0) {
                         console.log('There was an error fetching your accounts.')
-                        return reject(err)
+                        return reject(new Error(`Couldn't get any accounts! Make sure
+                        your Ethereum client is configured correctly.`))
+                    } else { return resolve(accs[0]) }
+                case 'tomowallet':
+                    return resolve(self.$store.state.walletLoggedIn)
+                case 'custom':
+                    if (wjs.currentProvider.address) {
+                        return resolve(wjs.currentProvider.address)
                     }
-                    switch (provider) {
-                    case 'tomowallet':
-                        return resolve(self.$store.state.walletLoggedIn)
-                    case 'custom':
-                        if (wjs.currentProvider.address) {
-                            return resolve(wjs.currentProvider.address)
-                        }
 
-                        if (wjs.currentProvider.addresses) {
-                            return resolve(wjs.currentProvider.addresses[0])
+                    if (wjs.currentProvider.addresses) {
+                        return resolve(wjs.currentProvider.addresses[0])
+                    }
+                    return resolve('')
+                case 'ledger':
+                    try {
+                        if (!Vue.prototype.appEth) {
+                            let transport = await new Transport()
+                            Vue.prototype.appEth = await new Eth(transport)
                         }
-                        return resolve('')
-                    case 'ledger':
-                        try {
-                            if (!Vue.prototype.appEth) {
-                                let transport = await new Transport()
-                                Vue.prototype.appEth = await new Eth(transport)
-                            }
-                            let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
-                            if (!ethAppConfig.arbitraryDataEnabled) {
-                                return reject(new Error(`Please go to App Setting
-                                    to enable contract data and display data on your device!`))
-                            }
-                            let result = await Vue.prototype.appEth.getAddress(
-                                localStorage.get('hdDerivationPath')
-                            )
-                            return resolve(result.address)
-                        } catch (error) {
-                            return reject(error.message)
+                        let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
+                        if (!ethAppConfig.arbitraryDataEnabled) {
+                            return reject(new Error(`Please go to App Setting
+                                to enable contract data and display data on your device!`))
                         }
-                    case 'trezor':
-                        const xpub = (Vue.prototype.trezorPayload) ? Vue.prototype.trezorPayload.xpub
-                            : localStorage.get('trezorXpub')
-                        const offset = localStorage.get('offset')
-                        const result = Vue.prototype.HDWalletCreate(
-                            xpub,
-                            offset
+                        let result = await Vue.prototype.appEth.getAddress(
+                            localStorage.get('hdDerivationPath')
                         )
-                        localStorage.set('trezorXpub', xpub)
-                        return resolve(result)
-                    default:
-                        break
+                        return resolve(result.address)
+                    } catch (error) {
+                        return reject(error.message)
                     }
-                    if (accs.length === 0) {
-                        console.log(`Couldn't get any accounts! Make sure
-                        your Ethereum client is configured correctly.`)
-                        return resolve('')
-                    }
-
-                    return resolve(accs[0])
-                })
+                case 'trezor':
+                    const xpub = (Vue.prototype.trezorPayload) ? Vue.prototype.trezorPayload.xpub
+                        : localStorage.get('trezorXpub')
+                    const offset = localStorage.get('offset')
+                    const result = Vue.prototype.HDWalletCreate(
+                        xpub,
+                        offset
+                    )
+                    localStorage.set('trezorXpub', xpub)
+                    return resolve(result)
+                default:
+                    break
+                }
             })
             return p
         }

@@ -438,7 +438,8 @@ export default {
                 }
                 if (self.web3) {
                     try {
-                        contract = await self.getTomoValidatorInstance()
+                        // contract = await self.getTomoValidatorInstance()
+                        contract = self.TomoValidator
                         self.gasPrice = await self.web3.eth.getGasPrice()
                     } catch (error) {
                         throw Error('Make sure you choose correct tomochain network.')
@@ -467,7 +468,8 @@ export default {
                 })
                 let whPromise = axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
                 if (contract) {
-                    let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
+                    // let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
+                    let blksPromise = contract.methods.getWithdrawBlockNumbers().call({ from: account })
                     // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
                     const blks = await blksPromise
@@ -484,7 +486,8 @@ export default {
                             blockNumber: blk
                         }
                         wd.cap = new BigNumber(
-                            await contract.getWithdrawCap.call(blk, { from: account })
+                            // await contract.getWithdrawCap.call(blk, { from: account })
+                            await contract.methods.getWithdrawCap(blk).call({ from: account })
                         ).div(10 ** 18).toFormat()
                         wd.estimatedTime = await self.getSecondsToHms(
                             (wd.blockNumber - self.chainConfig.blockNumber)
@@ -710,7 +713,8 @@ export default {
 
             await self.setupProvider(this.provider, web3)
             try {
-                contract = await self.getTomoValidatorInstance()
+                // contract = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
             } catch (error) {
                 if (self.interval) {
                     clearInterval(self.interval)
@@ -727,7 +731,8 @@ export default {
                 }
             })
             if (contract) {
-                let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+                // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
+                let blks = await contract.methods.getWithdrawBlockNumbers().call({ from: account })
 
                 await Promise.all(blks.map(async (it, index) => {
                     let blk = new BigNumber(it).toString()
@@ -738,7 +743,8 @@ export default {
                         blockNumber: blk
                     }
                     wd.cap = new BigNumber(
-                        await contract.getWithdrawCap.call(blk, { from: account })
+                        // await contract.getWithdrawCap.call(blk, { from: account })
+                        await contract.methods.getWithdrawCap(blk).call({ from: account })
                     ).div(10 ** 18).toFormat()
                     wd.estimatedTime = await self.getSecondsToHms(
                         (wd.blockNumber - self.chainConfig.blockNumber)

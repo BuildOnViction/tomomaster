@@ -175,7 +175,8 @@ export default {
     methods: {
         withdraw: async function (blockNumber, index) {
             let self = this
-            let contract = await self.getTomoValidatorInstance()
+            let contract// = await self.getTomoValidatorInstance()
+            contract = self.TomoValidator
             let account = await self.getAccount()
             account = account.toLowerCase()
             self.loading = true
@@ -192,7 +193,14 @@ export default {
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
-                    let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    // let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    console.log(blockNumber)
+                    console.log(index)
+                    const data = await contract.methods.withdraw(blockNumber, index).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     if (self.NetworkProvider === 'trezor') {
                         txParams.value = self.web3.utils.toHex(0)
                     }
@@ -207,15 +215,16 @@ export default {
                     let signature = await self.signTransaction(dataTx)
                     wd = await self.sendSignedTransaction(dataTx, signature)
                 } else {
-                    wd = await contract.withdraw(String(blockNumber), String(index), txParams)
+                    // wd = await contract.withdraw(String(blockNumber), String(index), txParams)
+                    wd = await contract.methods.withdraw(blockNumber, index).send(txParams)
                 }
-                let toastMessage = wd.tx ? 'You have successfully withdrawn!'
+                let toastMessage = wd.tx || wd.transactionHash ? 'You have successfully withdrawn!'
                     : 'An error occurred while withdrawing, please try again'
                 self.$toasted.show(toastMessage)
 
                 setTimeout(() => {
                     self.loading = false
-                    if (wd.tx) {
+                    if (wd.tx || wd.transactionHash) {
                         self.$router.push({ path: `/setting` })
                     }
                 }, 2000)
