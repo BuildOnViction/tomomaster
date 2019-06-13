@@ -56,6 +56,8 @@ commander
     .option('-gh, --scGithub <github>', 'Github Information')
     .option('-lkn, --scLinkedin <linkedin>', 'Linkedin Information')
     .option('-em, --scEmail <email>', 'Email Information')
+    .option('-tele, --scTelegram <telegram>', 'Telegram')
+    .option('-web, --scWebsite <website>', 'Website')
     .action(async (id, options) => {
         let set = _.pick(options, ['nodeId', 'hardware'])
         if (typeof options.name === 'string') {
@@ -75,6 +77,12 @@ commander
         }
         if (options.scEmail) {
             set['socials.email'] = options.scEmail
+        }
+        if (options.scTelegram) {
+            set['socials.telegram'] = options.scTelegram
+        }
+        if (options.scWebsite) {
+            set['socials.website'] = options.scWebsite
         }
         let u = await db.Candidate.updateOne({
             candidate: id
