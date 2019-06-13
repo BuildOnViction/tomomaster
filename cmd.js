@@ -52,10 +52,12 @@ commander
     .option('-i, --nodeId <nodeId>', 'nodeId of Candidate')
     .option('-dcn, --dc-name <dcName>', 'Name of Datacenter')
     .option('-dcl, --dc-location <dcLocation>', 'Location of Datacenter')
-    .option('-hw, --hardware <hardware>', 'Harware Information')
-    .option('-gh, --scGithub <github>', 'Github Information')
-    .option('-lkn, --scLinkedin <linkedin>', 'Linkedin Information')
-    .option('-em, --scEmail <email>', 'Email Information')
+    .option('-h, --hardware <hardware>', 'Harware Information')
+    .option('-g, --scGithub <github>', 'Github Information')
+    .option('-l, --scLinkedin <linkedin>', 'Linkedin Information')
+    .option('-e, --scEmail <email>', 'Email Information')
+    .option('-t, --scTelegram <telegram>', 'Telegram')
+    .option('-w, --scWebsite <website>', 'Website')
     .action(async (id, options) => {
         let set = _.pick(options, ['nodeId', 'hardware'])
         if (typeof options.name === 'string') {
@@ -75,6 +77,12 @@ commander
         }
         if (options.scEmail) {
             set['socials.email'] = options.scEmail
+        }
+        if (options.scTelegram) {
+            set['socials.telegram'] = options.scTelegram
+        }
+        if (options.scWebsite) {
+            set['socials.website'] = options.scWebsite
         }
         let u = await db.Candidate.updateOne({
             candidate: id
