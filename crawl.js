@@ -93,6 +93,21 @@ async function watchValidator () {
                 })
                 if (result.event === 'Vote' || result.event === 'Unvote') {
                     await updateVoterCap(candidate, voter)
+                    if (result.event === 'Unvote') {
+                        // store withdraw for notification
+                        await db.WithdrawNoti.updateOne({
+                            voter: voter,
+                            blockNumber: result.blockNumber,
+                            candidate: candidate
+                        }, {
+                            $set: {
+                                voter: voter,
+                                blockNumber: result.blockNumber,
+                                amount: (new BigNumber(capacity)).div(1e18).toString(10),
+                                withdrawBlockNumber: result.blockNumber + 86400 // 86400 blocks later
+                            }
+                        }, { upsert: true })
+                    }
                 }
                 if (result.event === 'Resign' || result.event === 'Propose') {
                     await updateVoterCap(candidate, owner)
@@ -442,6 +457,23 @@ async function watchNewBlock (n) {
                     }, { upsert: true })
                 }))
             }
+
+            // check withdrawal status after 10 blocks
+            if (n % 10 === 0) {
+                // get list of unvote
+                const withdrawBlockNumbers = await db.WithdrawNoti.find({
+                    withdrawBlockNumber: { $lte: n }
+                })
+                // check with current block number
+                if (withdrawBlockNumbers.length > 0) {
+                    await Promise.all(withdrawBlockNumbers.map(async (w) => {
+                        fireNotification(w.voter, '', '', 'Withdraw', n, w.amount)
+                        await db.WithdrawNoti.deleteOne({
+                            _id: w._id
+                        })
+                    }))
+                }
+            }
             await updateLatestSignedBlock(blk)
             await watchValidator()
         }
@@ -454,7 +486,7 @@ async function watchNewBlock (n) {
     return watchNewBlock(n)
 }
 
-async function fireNotification (voter, candidate, name, event, blockNumber) {
+async function fireNotification (voter, candidate, name, event, blockNumber, amount = '') {
     try {
         const isRead = false
         await db.Notification.updateOne({
@@ -466,7 +498,8 @@ async function fireNotification (voter, candidate, name, event, blockNumber) {
             candidate: candidate,
             candidateName: name || 'Anonymous',
             event: event,
-            isRead: isRead
+            isRead: isRead,
+            amount: amount
         }, { upsert: true })
         return true
     } catch (error) {
@@ -541,7 +574,7 @@ async function getPastEvent () {
                 let capacity = event.returnValues._cap
                 let blk = await web3.eth.getBlock(event.blockNumber)
                 let createdAt = moment.unix(blk.timestamp).utc()
-                await db.Transaction.updateOne({ tx: event.transactionHash }, {
+                await db.Transaction.findOneAndUpdate({ tx: event.transactionHash }, {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     tx: event.transactionHash,
                     blockNumber: event.blockNumber,

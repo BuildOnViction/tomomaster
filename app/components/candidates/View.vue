@@ -182,6 +182,28 @@
                                 {{ value }}
                             </p>
                         </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Est. Staking ROI</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--balance"
+                                class="tomo-info__description">
+                                {{ voterROI ? voterROI + '%' : '---' }}
+                            </p>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                            <p class="tomo-info__title">
+                                <i class="tm-dot tomo-info__icon" />
+                                <span class="tomo-info__text">Est. Owner ROI</span>
+                            </p>
+                            <p
+                                id="tomo-info__description--balance"
+                                class="tomo-info__description">
+                                {{ mnROI ? mnROI + '%' : '---' }}
+                            </p>
+                        </div>
                     </div>
                 </b-card>
                 <div
@@ -582,7 +604,9 @@ export default {
             loadedCPU: true,
             loadedMEM: true,
             isCandidate: true,
-            currentTab: ''
+            currentTab: '',
+            voterROI: '',
+            mnROI: ''
         }
     },
     computed: {
@@ -634,6 +658,7 @@ export default {
         self.getCandidateVoters()
         self.getCandidateTransactions()
         self.getCandidateRewards()
+        self.getAnnualReward()
     },
     mounted () {},
     methods: {
@@ -903,6 +928,19 @@ export default {
                 self.rewardLoading = false
                 console.log(error)
             }
+        },
+        async getAnnualReward () {
+            axios.get('/api/voters/annualReward?candidate=' + this.candidate.address)
+                .then((result) => {
+                    if (result.data && result.data.voterROI) {
+                        this.voterROI = result.data.voterROI.toFixed(2)
+                        this.mnROI = result.data.mnROI.toFixed(2)
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.$toasted.show(error, { type: 'error' })
+                })
         }
     }
 }

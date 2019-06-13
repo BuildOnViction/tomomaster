@@ -335,7 +335,7 @@ paths:
       - name: voter
         in: path
         type: string
-        description: candidate's address
+        description: voter's address
         required: true
       - name: limit
         in: query
@@ -356,6 +356,24 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/voterRewards'
+        '406':
+          description: Not Acceptable
+  /api/voters/annualReward:
+    parameters:
+      - name: candidate
+        in: query
+        type: string
+        description: candidate's address
+        required: true
+    get:
+      tags:
+        - Voters
+      summary: Get ROI of masternode and voter
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/annualReward'
         '406':
           description: Not Acceptable
   '/api/transactions/candidate/{candidate}':
@@ -936,3 +954,29 @@ definitions:
         type: number
         description: Network id
         example: 88
+  annualReward:
+    properties:
+      epochDuration:
+        type: number
+        description: Epoch duration in minutes
+        example: 30
+      lastEpoch:
+        type: number
+        description: Last epoch
+        example: 6945
+      numberOfMN:
+        type: number
+        description: Masternode numbers
+        example: 150
+      capacity:
+        type: string
+        description: Masternode capacity
+        example: 200000
+      voterROI:
+        type: number
+        description: Voter ROI
+        example: 6
+      mnROI:
+        type: number
+        description: Masternode ROI
+        example: 29
