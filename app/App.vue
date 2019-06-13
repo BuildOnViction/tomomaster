@@ -174,10 +174,20 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.5.0</strong>
+                                            <p>- Display average ROI for masternode owner and voter</p>
+                                            <p>- Display owner ROI and voter ROI in masternode detail page</p>
+                                            <p>- Add withdrawal notification</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.4.3</strong>
                                             <p>- Fix id injection issue</p>
                                         </div>
                                     </b-dropdown-text>
+                                    <b-dropdown-divider/>
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.4.2</strong>
