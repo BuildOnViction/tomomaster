@@ -43,7 +43,9 @@ import Eth from '@ledgerhq/hw-app-eth'
 import TrezorConnect from 'trezor-connect'
 import Transaction from 'ethereumjs-tx'
 import * as HDKey from 'ethereumjs-wallet/hdkey'
+import Meta from 'vue-meta'
 
+Vue.use(Meta)
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
 
@@ -97,12 +99,14 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
                 case 'tomowallet':
                     return resolve(self.$store.state.walletLoggedIn)
                 case 'custom':
-                    if (wjs.currentProvider.address) {
-                        return resolve(wjs.currentProvider.address)
+                    const provider = wjs.currentProvider.connection || wjs.currentProvider
+                    console.log(provider)
+                    if (provider.address) {
+                        return resolve(provider.address)
                     }
 
-                    if (wjs.currentProvider.addresses) {
-                        return resolve(wjs.currentProvider.addresses[0])
+                    if (provider.addresses) {
+                        return resolve(provider.addresses[0])
                     }
                     return resolve('')
                 case 'ledger':

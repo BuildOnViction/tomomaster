@@ -372,7 +372,10 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
+                    console.log(1)
                     rs = await self.sendSignedTransaction(dataTx, signature)
+                    console.log(2)
+                    console.log(rs)
                 } else {
                     // rs = await contract.unvote(candidate, unvoteValue, txParams)
                     rs = await contract.methods.unvote(candidate, unvoteValue).send(txParams)
