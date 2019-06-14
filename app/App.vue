@@ -345,6 +345,12 @@ import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
 export default {
     name: 'App',
+    metaInfo: {
+        title: 'TomoChain Governance DApp | TomoMaster',
+        meta: [
+            { name: 'description', content: 'Tomomaster - Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics' } // eslint-disable-line
+        ]
+    },
     components: {
         AutoComplete
     },
