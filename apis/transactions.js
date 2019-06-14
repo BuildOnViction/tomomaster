@@ -60,7 +60,10 @@ router.get('/voter/:voter', [
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: t.candidate
             }) || {}
-            c.name = b.name || 'Anonymous'
+
+            if (t.event === 'Withdraw') {
+                c.name = ''
+            } else { c.name = b.name || 'Anonymous' }
             return c
         }))
         return res.json({
