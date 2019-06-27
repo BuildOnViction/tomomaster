@@ -42,7 +42,8 @@ import Transport from '@ledgerhq/hw-transport-u2f' // for browser
 import Eth from '@ledgerhq/hw-app-eth'
 import TrezorConnect from 'trezor-connect'
 import Transaction from 'ethereumjs-tx'
-import * as HDKey from 'ethereumjs-wallet/hdkey'
+import * as HDKey from 'hdkey'
+import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
 
 Vue.use(Meta)
@@ -128,14 +129,13 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
                         return reject(error.message)
                     }
                 case 'trezor':
-                    const xpub = (Vue.prototype.trezorPayload) ? Vue.prototype.trezorPayload.xpub
-                        : localStorage.get('trezorXpub')
+                    const payload = Vue.prototype.trezorPayload || localStorage.get('trezorPayload')
                     const offset = localStorage.get('offset')
                     const result = Vue.prototype.HDWalletCreate(
-                        xpub,
+                        payload,
                         offset
                     )
-                    localStorage.set('trezorXpub', xpub)
+                    localStorage.set('trezorPayload', { xpub: payload.xpub })
                     return resolve(result)
                 default:
                     break
@@ -153,31 +153,24 @@ Vue.prototype.loadMultipleLedgerWallets = async function (offset, limit) {
     }
     await Vue.prototype.detectNetwork('ledger')
     if (!Vue.prototype.appEth) {
-        let transport = await new Transport()
+        let transport = await Transport.create()
         Vue.prototype.appEth = await new Eth(transport)
     }
+    const payload = Vue.prototype.ledgerPayload
     let web3 = Vue.prototype.web3
     let balance = 0
+    let convertedAddress
     let wallets = {}
-    let walker = offset
-    while (limit > 0) {
-        let tail = '/' + walker.toString()
-        let hdPath = localStorage.get('hdDerivationPath')
-        hdPath += tail
-        let result = await Vue.prototype.appEth.getAddress(
-            hdPath
-        )
-        if (!result || !result.address) {
-            return {}
-        }
-        balance = await web3.eth.getBalance(result.address)
-        wallets[walker] = {
-            address: result.address,
+
+    for (let i = offset; i < (offset + limit); i++) {
+        convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
+        balance = await web3.eth.getBalance(convertedAddress)
+        wallets[i] = {
+            address: convertedAddress,
             balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
         }
-        walker++
-        limit--
     }
+    Vue.prototype.ledgerPayload = ''
     return wallets
 }
 
@@ -193,11 +186,46 @@ Vue.prototype.unlockTrezor = async () => {
     }
 }
 
-Vue.prototype.HDWalletCreate = (xpub, index) => {
-    const hdWallet = HDKey.fromExtendedKey(xpub)
-    const node = hdWallet.deriveChild(index)
+Vue.prototype.unlockLedger = async () => {
+    try {
+        if (!Vue.prototype.appEth) {
+            let transport = await Transport.create()
+            Vue.prototype.appEth = await new Eth(transport)
+        }
+        const path = localStorage.get('hdDerivationPath')
 
-    return '0x' + node.getWallet().getAddress().toString('hex')
+        const result = await Vue.prototype.appEth.getAddress(
+            path,
+            false,
+            true
+        )
+        Vue.prototype.ledgerPayload = result
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+Vue.prototype.HDWalletCreate = (payload, index) => {
+    const provider = Vue.prototype.NetworkProvider
+    let derivedKey
+    if (provider === 'trezor') {
+        const xpub = payload.xpub
+        const hdWallet = HDKey.fromExtendedKey(xpub)
+        derivedKey = hdWallet.derive('m/' + index)
+        console.log(derivedKey)
+    } else {
+        const pubKey = payload.publicKey
+        const chainCode = payload.chainCode
+        const hdkey = new HDKey()
+        hdkey.publicKey = Buffer.from(pubKey, 'hex')
+        hdkey.chainCode = Buffer.from(chainCode, 'hex')
+        derivedKey = hdkey.derive('m/' + index)
+    }
+    let pubKey = ethUtils.bufferToHex(derivedKey.publicKey)
+    const buff = ethUtils.publicToAddress(pubKey, true)
+
+    return ethUtils.bufferToHex(buff)
 }
 
 Vue.prototype.loadTrezorWallets = async (offset, limit) => {
@@ -205,7 +233,6 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
         const wallets = {}
         const payload = Vue.prototype.trezorPayload
         if (payload && !payload.error) {
-            const xpub = payload.xpub
             let convertedAddress
             let balance
             let web3
@@ -214,7 +241,7 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
             }
             web3 = Vue.prototype.web3
             for (let i = offset; i < (offset + limit); i++) {
-                convertedAddress = Vue.prototype.HDWalletCreate(xpub, i)
+                convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
                 balance = await web3.eth.getBalance(convertedAddress)
                 wallets[i] = {
                     address: convertedAddress,

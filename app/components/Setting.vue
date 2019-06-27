@@ -565,6 +565,7 @@ export default {
                     await self.unlockTrezor()
                     wallets = await self.loadTrezorWallets(offset, limit)
                 } else {
+                    await self.unlockLedger()
                     wallets = await self.loadMultipleLedgerWallets(offset, limit)
                 }
                 if (Object.keys(wallets).length > 0) {
