@@ -293,7 +293,7 @@
                     :per-page="mnRewardsPerPage"
                     :show-empty="true"
                     :class="`tomo-table tomo-table--mnrewards${rewardLoading ? ' loading' : ''}`"
-                    empty-text="There are no rewards to show"
+                    :empty-text="`There are no ${(currentTab !== '' ? 'records' : 'rewards')} to show`"
                     stacked="md" >
 
                     <template
