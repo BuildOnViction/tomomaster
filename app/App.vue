@@ -178,6 +178,7 @@
                                             <p>- Display average ROI for masternode owner and voter</p>
                                             <p>- Display owner ROI and voter ROI in masternode detail page</p>
                                             <p>- Add withdrawal notification</p>
+                                            <p>- Add sitemap</p>
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider/>
