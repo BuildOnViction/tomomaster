@@ -458,59 +458,61 @@ router.get('/annualReward', [
         if (!candidateData) {
             return next(new Error('Candidate not found'))
         }
-        const capacity = new BigNumber(candidateData.capacityNumber)
-        const latestBlock = await web3.eth.getBlockNumber()
-        const latestCheckpoint = latestBlock - (latestBlock % parseInt(config.get('blockchain.epoch')))
-        const lastEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch'))).toString()
+        if (candidateData.rank) {
+            const capacity = new BigNumber(candidateData.capacityNumber)
+            const latestBlock = await web3.eth.getBlockNumber()
+            const latestCheckpoint = latestBlock - (latestBlock % parseInt(config.get('blockchain.epoch')))
+            const lastEpoch = (parseInt(latestCheckpoint / config.get('blockchain.epoch'))).toString()
 
-        const promises = await Promise.all([
-            web3.eth.getBlock(latestCheckpoint - 899),
-            web3.eth.getBlock(latestCheckpoint),
-            db.Status.find({
-                epoch: lastEpoch,
-                status: 'MASTERNODE'
+            const promises = await Promise.all([
+                web3.eth.getBlock(latestCheckpoint - 899),
+                web3.eth.getBlock(latestCheckpoint),
+                db.Status.find({
+                    epoch: lastEpoch,
+                    status: 'MASTERNODE'
+                })
+            ])
+            const numberOfMN = promises[2]
+            const epochDuration = ((new Date(promises[1].timestamp * 1000) -
+                new Date(promises[0].timestamp * 1000)) / 1000) / 60 // minutes
+            // number of epochs in a year
+            const minPerDay = 60 * 24
+            const epochYear = (minPerDay * 365) / epochDuration
+
+            const totalReward = new BigNumber(config.get('blockchain.reward'))
+            let voterAmount = 1000
+            let voterRW1Year
+            let mnRW1Year
+            let mnStakingYear
+            let masternodeReward
+            // Reward divided to masternode
+            masternodeReward = totalReward.dividedBy(numberOfMN.length)
+
+            // 50% for voter
+            const voterRWEpoch = masternodeReward.multipliedBy(0.5)
+                .multipliedBy(voterAmount).dividedBy(capacity)
+            // 40% for masternode
+            const mnRWEpoch = masternodeReward.multipliedBy(0.4)
+            // master staking reward
+            const mnStakingEpoch = masternodeReward.multipliedBy(0.5)
+                .multipliedBy(50000).dividedBy(capacity)
+
+            // calculate reward 1 year
+            voterRW1Year = voterRWEpoch.multipliedBy(epochYear)
+            mnRW1Year = mnRWEpoch.multipliedBy(epochYear)
+            mnStakingYear = mnStakingEpoch.multipliedBy(epochYear)
+            const voterROI = voterRW1Year.div(voterAmount).multipliedBy(100).toNumber()
+            const mnROI = (mnRW1Year.plus(mnStakingYear)).dividedBy(50000).multipliedBy(100).toNumber()
+
+            return res.json({
+                epochDuration,
+                lastEpoch,
+                numberOfMN: numberOfMN.length,
+                capacity: capacity,
+                voterROI,
+                mnROI
             })
-        ])
-        const numberOfMN = promises[2]
-        const epochDuration = ((new Date(promises[1].timestamp * 1000) -
-            new Date(promises[0].timestamp * 1000)) / 1000) / 60 // minutes
-        // number of epochs in a year
-        const minPerDay = 60 * 24
-        const epochYear = (minPerDay * 365) / epochDuration
-
-        const totalReward = new BigNumber(config.get('blockchain.reward'))
-        let voterAmount = 1000
-        let voterRW1Year
-        let mnRW1Year
-        let mnStakingYear
-        let masternodeReward
-        // Reward divided to masternode
-        masternodeReward = totalReward.dividedBy(numberOfMN.length)
-
-        // 50% for voter
-        const voterRWEpoch = masternodeReward.multipliedBy(0.5)
-            .multipliedBy(voterAmount).dividedBy(capacity)
-        // 40% for masternode
-        const mnRWEpoch = masternodeReward.multipliedBy(0.4)
-        // master staking reward
-        const mnStakingEpoch = masternodeReward.multipliedBy(0.5)
-            .multipliedBy(50000).dividedBy(capacity)
-
-        // calculate reward 1 year
-        voterRW1Year = voterRWEpoch.multipliedBy(epochYear)
-        mnRW1Year = mnRWEpoch.multipliedBy(epochYear)
-        mnStakingYear = mnStakingEpoch.multipliedBy(epochYear)
-        const voterROI = voterRW1Year.div(voterAmount).multipliedBy(100).toNumber()
-        const mnROI = (mnRW1Year.plus(mnStakingYear)).dividedBy(50000).multipliedBy(100).toNumber()
-
-        return res.json({
-            epochDuration,
-            lastEpoch,
-            numberOfMN: numberOfMN.length,
-            capacity: capacity,
-            voterROI,
-            mnROI
-        })
+        }
     } catch (error) {
         return next(error)
     }
