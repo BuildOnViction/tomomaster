@@ -658,7 +658,9 @@ export default {
         self.getCandidateVoters()
         self.getCandidateTransactions()
         self.getCandidateRewards()
-        self.getAnnualReward()
+        if (self.candidate.rank) {
+            self.getAnnualReward()
+        }
     },
     mounted () {},
     methods: {
