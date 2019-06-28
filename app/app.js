@@ -30,8 +30,8 @@ import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
-import HDWalletProvider from 'truffle-hdwallet-provider'
-// import { HDWalletProvider } from '../helpers.js'
+// import HDWalletProvider from 'truffle-hdwallet-provider'
+import { HDWalletProvider } from '../helpers.js'
 import localStorage from 'store'
 // Libusb is included as a submodule.
 // On Linux, you'll need libudev to build libusb.
@@ -101,7 +101,6 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
                     return resolve(self.$store.state.walletLoggedIn)
                 case 'custom':
                     const provider = wjs.currentProvider.connection || wjs.currentProvider
-                    console.log(provider)
                     if (provider.address) {
                         return resolve(provider.address)
                     }
