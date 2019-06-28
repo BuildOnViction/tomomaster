@@ -174,10 +174,19 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.5.1</strong>
+                                            <p>- Hide staking ROI if a masternode out of top 150</p>
+                                            <p>- Fix missing latest reward record</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.5.0</strong>
                                             <p>- Display average ROI for masternode owner and voter</p>
                                             <p>- Display owner ROI and voter ROI in masternode detail page</p>
                                             <p>- Add withdrawal notification</p>
+                                            <p>- Add sitemap</p>
                                         </div>
                                     </b-dropdown-text>
                                     <b-dropdown-divider/>
@@ -355,6 +364,12 @@ import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
 export default {
     name: 'App',
+    metaInfo: {
+        title: 'TomoChain Governance DApp | TomoMaster',
+        meta: [
+            { name: 'description', content: 'Tomomaster - Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics' } // eslint-disable-line
+        ]
+    },
     components: {
         AutoComplete
     },

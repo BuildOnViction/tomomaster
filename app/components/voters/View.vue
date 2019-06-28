@@ -507,7 +507,7 @@ export default {
                         event: tx.event,
                         cap: new BigNumber(tx.capacity).div(10 ** 18).toNumber(),
                         createdAt: moment(tx.createdAt).fromNow(),
-                        name: tx.name,
+                        name: tx.name || '---',
                         candidateCap: (new BigNumber(tx.currentCandidateCap).div(10 ** 18).toNumber()) || '---'
                     })
                 })
