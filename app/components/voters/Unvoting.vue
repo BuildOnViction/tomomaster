@@ -261,7 +261,7 @@ export default {
         let candidate = self.candidate
         let account
         self.loading = true
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.gasPrice = await self.web3.eth.getGasPrice()
         self.txFee = new BigNumber(this.chainConfig.gas * self.gasPrice).div(10 ** 18).toString(10)

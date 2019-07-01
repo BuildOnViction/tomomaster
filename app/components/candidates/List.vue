@@ -247,13 +247,9 @@ export default {
         let self = this
         let account
         self.isReady = !!self.web3
-        self.appConfig().then(config => {
-            self.chainConfig = config.blockchain
-            self.currentBlock = self.chainConfig.blockNumber
-        }).catch(error => {
-            console.log(error)
-            self.$toasted.show(error, { type: 'error' })
-        })
+        const config = store.get('config') || await self.appConfig()
+        self.chainConfig = config.blockchain
+        self.currentBlock = self.chainConfig.blockNumber
 
         try {
             if (self.isReady) {

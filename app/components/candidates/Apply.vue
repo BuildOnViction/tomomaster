@@ -197,7 +197,7 @@ export default {
     created: async function () {
         const self = this
         let account
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         try {
             self.isReady = !!self.web3

@@ -271,6 +271,7 @@
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
+import store from 'store'
 
 export default {
     name: 'App',
@@ -417,7 +418,7 @@ export default {
     update () {},
     created: async function () {
         let self = this
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
 
         self.getCandidates()
         self.getRewards()

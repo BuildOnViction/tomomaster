@@ -628,7 +628,7 @@ export default {
     },
     created: async function () {
         let self = this
-        self.config = await this.appConfig()
+        self.config = store.get('config') || await this.appConfig()
         self.currentBlock = self.config.blockchain.blockNumber
         self.isReady = !!self.web3
         try {
