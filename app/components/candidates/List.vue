@@ -236,7 +236,8 @@ export default {
             totalProposedNodes: 0,
             currentTable: 'masternodes',
             averageStakingROI: '',
-            averageOwnerROI: ''
+            averageOwnerROI: '',
+            currentBlock: ''
         }
     },
     computed: {},
@@ -246,9 +247,13 @@ export default {
         let self = this
         let account
         self.isReady = !!self.web3
-        let config = await self.appConfig()
-        self.chainConfig = config.blockchain
-        self.currentBlock = self.chainConfig.blockNumber
+        self.appConfig().then(config => {
+            self.chainConfig = config.blockchain
+            self.currentBlock = self.chainConfig.blockNumber
+        }).catch(error => {
+            console.log(error)
+            self.$toasted.show(error, { type: 'error' })
+        })
 
         try {
             if (self.isReady) {

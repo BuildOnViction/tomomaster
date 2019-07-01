@@ -116,7 +116,10 @@ export default {
             processing: true,
             id: '',
             provider: this.Networkprovider || store.get('network') || null,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessage: 'You have successfully withdrawn!',
+            toastMessageError: 'An error occurred while withdrawing, please try again'
         }
     },
     computed: { },
@@ -189,7 +192,6 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let wd
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
@@ -213,21 +215,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    wd = await self.sendSignedTransaction(dataTx, signature)
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/setting` })
+                                    }
+                                }, 2000)
+                            }
+                        }
+                    }
                 } else {
                     // wd = await contract.withdraw(String(blockNumber), String(index), txParams)
-                    wd = await contract.methods.withdraw(blockNumber, index).send(txParams)
+                    contract.methods.withdraw(blockNumber, index).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/setting` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
                 }
-                let toastMessage = wd.tx || wd.transactionHash ? 'You have successfully withdrawn!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (wd.tx || wd.transactionHash) {
-                        self.$router.push({ path: `/setting` })
-                    }
-                }, 2000)
             } catch (e) {
                 console.log(e)
                 self.loading = false

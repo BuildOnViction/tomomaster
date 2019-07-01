@@ -234,7 +234,10 @@ export default {
             txFee: 0,
             gasPrice: null,
             isOwner: false,
-            limitedUnvote: 0
+            limitedUnvote: 0,
+            transactionHash: '',
+            toastMessage: 'You have successfully unvoted!',
+            toastMessageError: 'An error occurred while unvoting, please try again'
         }
     },
     validations () {
@@ -340,7 +343,6 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let rs
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
@@ -372,26 +374,48 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    console.log(1)
-                    rs = await self.sendSignedTransaction(dataTx, signature)
-                    console.log(2)
-                    console.log(rs)
-                } else {
-                    // rs = await contract.unvote(candidate, unvoteValue, txParams)
-                    rs = await contract.methods.unvote(candidate, unvoteValue).send(txParams)
-                }
-                self.vote -= value
-
-                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully unvoted!'
-                    : 'An error occurred while unvoting, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (rs.tx || rs.transactionHash) {
-                        self.$router.push({ path: `/confirm/${rs.tx || rs.transactionHash}` })
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/confirm/${self.transactionHash}` })
+                                    }
+                                }, 2000)
+                            }
+                        }
                     }
-                }, 2000)
+                } else {
+                    contract.methods.unvote(candidate, unvoteValue).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/confirm/${self.transactionHash}` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
+                }
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('An error occurred while unvoting, please try again', {

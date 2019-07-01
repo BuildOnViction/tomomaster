@@ -198,7 +198,10 @@ export default {
             provider: this.NetworkProvider || store.get('network') || null,
             votingError: false,
             txFee: 0,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessageError: 'An error occurred while voting, please try again',
+            toastMessage: 'You have successfully voted!'
         }
     },
     validations: {
@@ -309,7 +312,6 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let rs
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     // check if network provider is hardware wallet
@@ -338,25 +340,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    rs = await self.sendSignedTransaction(dataTx, signature)
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/confirm/${self.transactionHash}` })
+                                    }
+                                }, 2000)
+                            }
+                        }
+                    }
                 } else {
                     // rs = await contract.vote(self.candidate, txParams)
-                    rs = await contract.methods.vote(self.candidate).send(txParams)
+                    contract.methods.vote(self.candidate).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/confirm/${self.transactionHash}` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
                 }
-                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully voted!'
-                    : 'An error occurred while voting, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    self.processing = false
-                    if (self.interval) {
-                        clearInterval(self.interval)
-                    }
-                    if (rs.tx || rs.transactionHash) {
-                        self.$router.push({ path: `/confirm/${rs.tx || rs.transactionHash}` })
-                    }
-                }, 2000)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show(`An error occurred while voting. ${String(e)}`, {

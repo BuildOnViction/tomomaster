@@ -492,25 +492,28 @@ Vue.prototype.signTransaction = async function (txParams) {
  * @param object signature {r,s,v}
  * @return transactionReceipt
  */
-Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
-    // "hexify" the keys
-    Object.keys(signature).map((key, _) => {
-        if (signature[key].startsWith('0x')) {
-            return signature[key]
-        } else signature[key] = '0x' + signature[key]
+Vue.prototype.sendSignedTransaction = function (txParams, signature) {
+    return new Promise((resolve, reject) => {
+        try {
+            // "hexify" the keys
+            Object.keys(signature).map((key, _) => {
+                if (signature[key].startsWith('0x')) {
+                    return signature[key]
+                } else signature[key] = '0x' + signature[key]
+            })
+            let txObj = Object.assign({}, txParams, signature)
+            let tx = new Transaction(txObj)
+            let serializedTx = '0x' + tx.serialize().toString('hex')
+            // web3 v0.2, method name is sendRawTransaction
+            // You are using web3 v1.0. The method was renamed to sendSignedTransaction.
+            Vue.prototype.web3.eth.sendSignedTransaction(
+                serializedTx
+            ).on('transactionHash', txHash => resolve(txHash))
+                .catch(error => reject(error))
+        } catch (error) {
+            reject(error)
+        }
     })
-    let txObj = Object.assign({}, txParams, signature)
-    let tx = new Transaction(txObj)
-    let serializedTx = '0x' + tx.serialize().toString('hex')
-    // web3 v0.2, method name is sendRawTransaction
-    // You are using web3 v1.0. The method was renamed to sendSignedTransaction.
-    let rs = await Vue.prototype.web3.eth.sendSignedTransaction(
-        serializedTx
-    )
-    if (!rs.tx && rs.transactionHash) {
-        rs.tx = rs.transactionHash
-    }
-    return rs
 }
 
 Vue.prototype.signMessage = async function (message) {

@@ -164,7 +164,10 @@ export default {
             candidateError: false,
             balance: 0,
             txFee: 0,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessage: 'You have successfully applied!',
+            toastMessageError: 'An error occurred while applying, please try again'
         }
     },
     validations: {
@@ -300,7 +303,6 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let rs
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(self.account)
@@ -319,21 +321,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    rs = await self.sendSignedTransaction(dataTx, signature)
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/candidate/${coinbase}` })
+                                    }
+                                }, 2000)
+                            }
+                        }
+                    }
                 } else {
                     // rs = await contract.propose(coinbase, txParams)
-                    rs = await contract.methods.propose(coinbase).send(txParams)
+                    contract.methods.propose(coinbase).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/candidate/${coinbase}` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
                 }
-                let toastMessage = rs.tx || rs.transactionHash ? 'You have successfully applied!'
-                    : 'An error occurred while applying, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (rs.tx || rs.transactionHash) {
-                        self.$router.push({ path: `/candidate/${coinbase}` })
-                    }
-                }, 2000)
             } catch (e) {
                 self.loading = false
                 self.$toasted.show(`An error occurred while applying, please fix it and try again: ${String(e)}`, {
