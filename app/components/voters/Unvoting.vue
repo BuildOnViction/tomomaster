@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="loading"
+        v-if="loadingPage"
         class="tomo-loading" />
     <div v-else>
         <div class="container">
@@ -220,6 +220,7 @@ export default {
             voted: 0,
             unvoteValue: '100',
             loading: false,
+            loadingPage: false,
             step: 1,
             interval: null,
             processing: true,
@@ -260,7 +261,7 @@ export default {
         let self = this
         let candidate = self.candidate
         let account
-        self.loading = true
+        self.loadingPage = true
         self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.gasPrice = await self.web3.eth.getGasPrice()
@@ -286,7 +287,7 @@ export default {
             self.voted = new BigNumber(votedCap).div(10 ** 18).toString(10)
             const isOwner = (await isOwnerPromise).data || false
             self.isOwner = Boolean(isOwner)
-            self.loading = false
+            self.loadingPage = false
         } catch (e) {
             console.log(e)
         }
