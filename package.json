@@ -54,6 +54,7 @@
         "ethereumjs-util": "^6.0.0",
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
+        "helmet": "^3.18.0",
         "highcharts": "^6.1.1",
         "highcharts-vue": "^1.0.4",
         "js-yaml": "^3.13.1",
