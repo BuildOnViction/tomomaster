@@ -236,7 +236,8 @@ export default {
             totalProposedNodes: 0,
             currentTable: 'masternodes',
             averageStakingROI: '',
-            averageOwnerROI: ''
+            averageOwnerROI: '',
+            currentBlock: ''
         }
     },
     computed: {},
@@ -246,13 +247,14 @@ export default {
         let self = this
         let account
         self.isReady = !!self.web3
-        let config = await self.appConfig()
+        const config = store.get('config') || await self.appConfig()
         self.chainConfig = config.blockchain
         self.currentBlock = self.chainConfig.blockNumber
 
         try {
             if (self.isReady) {
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 if (store.get('address')) {
                     account = store.get('address').toLowerCase()
                 } else {
@@ -273,6 +275,7 @@ export default {
     methods: {
         watch: async function () {
             let contract = await self.getTomoValidatorInstance()
+            contract = self.TomoValidator
             const allEvents = contract.allEvents({
                 fromBlock: self.blockNumber,
                 toBlock: 'latest'
