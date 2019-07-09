@@ -20,7 +20,7 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Web3 from 'web3'
-import { default as contract } from 'truffle-contract'
+// import { default as contract } from 'truffle-contract'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
@@ -30,8 +30,8 @@ import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
-import HDWalletProvider from 'truffle-hdwallet-provider'
-// import { HDWalletProvider } from '../helpers.js'
+// import HDWalletProvider from 'truffle-hdwallet-provider'
+import { HDWalletProvider } from '../helpers.js'
 import localStorage from 'store'
 // Libusb is included as a submodule.
 // On Linux, you'll need libudev to build libusb.
@@ -42,7 +42,8 @@ import Transport from '@ledgerhq/hw-transport-u2f' // for browser
 import Eth from '@ledgerhq/hw-app-eth'
 import TrezorConnect from 'trezor-connect'
 import Transaction from 'ethereumjs-tx'
-import * as HDKey from 'ethereumjs-wallet/hdkey'
+import * as HDKey from 'hdkey'
+import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
 
 Vue.use(Meta)
@@ -70,77 +71,75 @@ TrezorConnect.manifest({
 stockInit(Highcharts)
 Vue.use(HighchartsVue)
 
-Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
+// Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 
-Vue.prototype.setupProvider = function (provider, wjs) {
+Vue.prototype.setupProvider = async function (provider, wjs) {
     const self = this
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
+        const config = localStorage.get('config') || await getConfig()
+        localStorage.set('config', config)
         Vue.prototype.web3 = wjs
-        Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
+        Vue.prototype.TomoValidator = new wjs.eth.Contract(
+            TomoValidatorArtifacts.abi,
+            config.blockchain.validatorAddress
+        )
+        // Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
         Vue.prototype.getAccount = function () {
             var p = new Promise(async function (resolve, reject) {
-                if (provider === 'metamask') {
+                switch (provider) {
+                case 'metamask':
                     // Request account access if needed - for metamask
                     await window.ethereum.enable()
-                }
-                wjs.eth.getAccounts(async function (err, accs) {
-                    if (err != null) {
+                    const accs = await wjs.eth.getAccounts()
+                    if (!accs || accs.length <= 0) {
                         console.log('There was an error fetching your accounts.')
-                        return reject(err)
+                        return reject(new Error(`Couldn't get any accounts! Make sure
+                        your Ethereum client is configured correctly.`))
+                    } else { return resolve(accs[0]) }
+                case 'tomowallet':
+                    return resolve(self.$store.state.walletLoggedIn)
+                case 'custom':
+                    const provider = wjs.currentProvider.connection || wjs.currentProvider
+                    if (provider.address) {
+                        return resolve(provider.address)
                     }
-                    switch (provider) {
-                    case 'tomowallet':
-                        return resolve(self.$store.state.walletLoggedIn)
-                    case 'custom':
-                        if (wjs.currentProvider.address) {
-                            return resolve(wjs.currentProvider.address)
-                        }
 
-                        if (wjs.currentProvider.addresses) {
-                            return resolve(wjs.currentProvider.addresses[0])
+                    if (provider.addresses) {
+                        return resolve(provider.addresses[0])
+                    }
+                    return resolve('')
+                case 'ledger':
+                    try {
+                        if (!Vue.prototype.appEth) {
+                            let transport = await new Transport()
+                            Vue.prototype.appEth = await new Eth(transport)
                         }
-                        return resolve('')
-                    case 'ledger':
-                        try {
-                            if (!Vue.prototype.appEth) {
-                                let transport = await new Transport()
-                                Vue.prototype.appEth = await new Eth(transport)
-                            }
-                            let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
-                            if (!ethAppConfig.arbitraryDataEnabled) {
-                                return reject(new Error(`Please go to App Setting
-                                    to enable contract data and display data on your device!`))
-                            }
-                            let result = await Vue.prototype.appEth.getAddress(
-                                localStorage.get('hdDerivationPath')
-                            )
-                            return resolve(result.address)
-                        } catch (error) {
-                            return reject(error.message)
+                        let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
+                        if (!ethAppConfig.arbitraryDataEnabled) {
+                            return reject(new Error(`Please go to App Setting
+                                to enable contract data and display data on your device!`))
                         }
-                    case 'trezor':
-                        const xpub = (Vue.prototype.trezorPayload) ? Vue.prototype.trezorPayload.xpub
-                            : localStorage.get('trezorXpub')
-                        const offset = localStorage.get('offset')
-                        const result = Vue.prototype.HDWalletCreate(
-                            xpub,
-                            offset
+                        let result = await Vue.prototype.appEth.getAddress(
+                            localStorage.get('hdDerivationPath')
                         )
-                        localStorage.set('trezorXpub', xpub)
-                        return resolve(result)
-                    default:
-                        break
+                        return resolve(result.address)
+                    } catch (error) {
+                        return reject(error.message)
                     }
-                    if (accs.length === 0) {
-                        console.log(`Couldn't get any accounts! Make sure
-                        your Ethereum client is configured correctly.`)
-                        return resolve('')
-                    }
-
-                    return resolve(accs[0])
-                })
+                case 'trezor':
+                    const payload = Vue.prototype.trezorPayload || localStorage.get('trezorPayload')
+                    const offset = localStorage.get('offset')
+                    const result = Vue.prototype.HDWalletCreate(
+                        payload,
+                        offset
+                    )
+                    localStorage.set('trezorPayload', { xpub: payload.xpub })
+                    return resolve(result)
+                default:
+                    break
+                }
             })
             return p
         }
@@ -154,31 +153,24 @@ Vue.prototype.loadMultipleLedgerWallets = async function (offset, limit) {
     }
     await Vue.prototype.detectNetwork('ledger')
     if (!Vue.prototype.appEth) {
-        let transport = await new Transport()
+        let transport = await Transport.create()
         Vue.prototype.appEth = await new Eth(transport)
     }
+    const payload = Vue.prototype.ledgerPayload
     let web3 = Vue.prototype.web3
     let balance = 0
+    let convertedAddress
     let wallets = {}
-    let walker = offset
-    while (limit > 0) {
-        let tail = '/' + walker.toString()
-        let hdPath = localStorage.get('hdDerivationPath')
-        hdPath += tail
-        let result = await Vue.prototype.appEth.getAddress(
-            hdPath
-        )
-        if (!result || !result.address) {
-            return {}
-        }
-        balance = await web3.eth.getBalance(result.address)
-        wallets[walker] = {
-            address: result.address,
+
+    for (let i = offset; i < (offset + limit); i++) {
+        convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
+        balance = await web3.eth.getBalance(convertedAddress)
+        wallets[i] = {
+            address: convertedAddress,
             balance: parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
         }
-        walker++
-        limit--
     }
+    Vue.prototype.ledgerPayload = ''
     return wallets
 }
 
@@ -194,11 +186,45 @@ Vue.prototype.unlockTrezor = async () => {
     }
 }
 
-Vue.prototype.HDWalletCreate = (xpub, index) => {
-    const hdWallet = HDKey.fromExtendedKey(xpub)
-    const node = hdWallet.deriveChild(index)
+Vue.prototype.unlockLedger = async () => {
+    try {
+        if (!Vue.prototype.appEth) {
+            let transport = await Transport.create()
+            Vue.prototype.appEth = await new Eth(transport)
+        }
+        const path = localStorage.get('hdDerivationPath')
 
-    return '0x' + node.getWallet().getAddress().toString('hex')
+        const result = await Vue.prototype.appEth.getAddress(
+            path,
+            false,
+            true
+        )
+        Vue.prototype.ledgerPayload = result
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+Vue.prototype.HDWalletCreate = (payload, index) => {
+    const provider = Vue.prototype.NetworkProvider
+    let derivedKey
+    if (provider === 'trezor') {
+        const xpub = payload.xpub
+        const hdWallet = HDKey.fromExtendedKey(xpub)
+        derivedKey = hdWallet.derive('m/' + index)
+    } else {
+        const pubKey = payload.publicKey
+        const chainCode = payload.chainCode
+        const hdkey = new HDKey()
+        hdkey.publicKey = Buffer.from(pubKey, 'hex')
+        hdkey.chainCode = Buffer.from(chainCode, 'hex')
+        derivedKey = hdkey.derive('m/' + index)
+    }
+    let pubKey = ethUtils.bufferToHex(derivedKey.publicKey)
+    const buff = ethUtils.publicToAddress(pubKey, true)
+
+    return ethUtils.bufferToHex(buff)
 }
 
 Vue.prototype.loadTrezorWallets = async (offset, limit) => {
@@ -206,7 +232,6 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
         const wallets = {}
         const payload = Vue.prototype.trezorPayload
         if (payload && !payload.error) {
-            const xpub = payload.xpub
             let convertedAddress
             let balance
             let web3
@@ -215,7 +240,7 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
             }
             web3 = Vue.prototype.web3
             for (let i = offset; i < (offset + limit); i++) {
-                convertedAddress = Vue.prototype.HDWalletCreate(xpub, i)
+                convertedAddress = Vue.prototype.HDWalletCreate(payload, i)
                 balance = await web3.eth.getBalance(convertedAddress)
                 wallets[i] = {
                     address: convertedAddress,
@@ -356,7 +381,7 @@ getConfig().then((config) => {
     // let provider = 'tomowallet'
     // var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     // Vue.prototype.setupProvider(provider, web3js)
-
+    localStorage.set('config', config)
     Vue.use(VueAnalytics, {
         id: config.GA,
         linkers: ['tomochain.com'],
@@ -380,7 +405,7 @@ const store = new Vuex.Store({
 Vue.prototype.detectNetwork = async function (provider) {
     try {
         let wjs = this.web3
-        const config = await getConfig()
+        const config = localStorage.get('config') || await getConfig()
         const chainConfig = config.blockchain
         if (!wjs) {
             switch (provider) {
@@ -437,7 +462,7 @@ Vue.prototype.signTransaction = async function (txParams) {
     const provider = Vue.prototype.NetworkProvider
     let signature
     if (provider === 'ledger') {
-        const config = await getConfig()
+        const config = localStorage.get('config') || await getConfig()
         const chainConfig = config.blockchain
         const rawTx = new Transaction(txParams)
         rawTx.v = Buffer.from([chainConfig.networkId])
@@ -467,25 +492,28 @@ Vue.prototype.signTransaction = async function (txParams) {
  * @param object signature {r,s,v}
  * @return transactionReceipt
  */
-Vue.prototype.sendSignedTransaction = async function (txParams, signature) {
-    // "hexify" the keys
-    Object.keys(signature).map((key, _) => {
-        if (signature[key].startsWith('0x')) {
-            return signature[key]
-        } else signature[key] = '0x' + signature[key]
+Vue.prototype.sendSignedTransaction = function (txParams, signature) {
+    return new Promise((resolve, reject) => {
+        try {
+            // "hexify" the keys
+            Object.keys(signature).map((key, _) => {
+                if (signature[key].startsWith('0x')) {
+                    return signature[key]
+                } else signature[key] = '0x' + signature[key]
+            })
+            let txObj = Object.assign({}, txParams, signature)
+            let tx = new Transaction(txObj)
+            let serializedTx = '0x' + tx.serialize().toString('hex')
+            // web3 v0.2, method name is sendRawTransaction
+            // You are using web3 v1.0. The method was renamed to sendSignedTransaction.
+            Vue.prototype.web3.eth.sendSignedTransaction(
+                serializedTx
+            ).on('transactionHash', txHash => resolve(txHash))
+                .catch(error => reject(error))
+        } catch (error) {
+            reject(error)
+        }
     })
-    let txObj = Object.assign({}, txParams, signature)
-    let tx = new Transaction(txObj)
-    let serializedTx = '0x' + tx.serialize().toString('hex')
-    // web3 v0.2, method name is sendRawTransaction
-    // You are using web3 v1.0. The method was renamed to sendSignedTransaction.
-    let rs = await Vue.prototype.web3.eth.sendSignedTransaction(
-        serializedTx
-    )
-    if (!rs.tx && rs.transactionHash) {
-        rs.tx = rs.transactionHash
-    }
-    return rs
 }
 
 Vue.prototype.signMessage = async function (message) {

@@ -116,7 +116,10 @@ export default {
             processing: true,
             id: '',
             provider: this.Networkprovider || store.get('network') || null,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessage: 'You have successfully withdrawn!',
+            toastMessageError: 'An error occurred while withdrawing, please try again'
         }
     },
     computed: { },
@@ -140,7 +143,7 @@ export default {
     },
     async mounted () {
         const self = this
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!this.web3
         if (!self.coinbase) {
@@ -175,7 +178,8 @@ export default {
     methods: {
         withdraw: async function (blockNumber, index) {
             let self = this
-            let contract = await self.getTomoValidatorInstance()
+            let contract// = await self.getTomoValidatorInstance()
+            contract = self.TomoValidator
             let account = await self.getAccount()
             account = account.toLowerCase()
             self.loading = true
@@ -188,11 +192,17 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let wd
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
-                    let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    // let dataTx = contract.withdraw.request(String(blockNumber), String(index)).params[0]
+                    console.log(blockNumber)
+                    console.log(index)
+                    const data = await contract.methods.withdraw(blockNumber, index).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     if (self.NetworkProvider === 'trezor') {
                         txParams.value = self.web3.utils.toHex(0)
                     }
@@ -205,20 +215,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    wd = await self.sendSignedTransaction(dataTx, signature)
-                } else {
-                    wd = await contract.withdraw(String(blockNumber), String(index), txParams)
-                }
-                let toastMessage = wd.tx ? 'You have successfully withdrawn!'
-                    : 'An error occurred while withdrawing, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (wd.tx) {
-                        self.$router.push({ path: `/setting` })
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/setting` })
+                                    }
+                                }, 2000)
+                            }
+                        }
                     }
-                }, 2000)
+                } else {
+                    // wd = await contract.withdraw(String(blockNumber), String(index), txParams)
+                    contract.methods.withdraw(blockNumber, index).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/setting` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
+                }
             } catch (e) {
                 console.log(e)
                 self.loading = false

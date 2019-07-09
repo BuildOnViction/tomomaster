@@ -91,7 +91,10 @@ export default {
             provider: this.NetworkProvider || store.get('network') || null,
             qrCode: 'text',
             interval: null,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessage: 'You have successfully resigned!',
+            toastMessageError: 'An error occurred while retiring, please try again'
         }
     },
     computed: { },
@@ -100,7 +103,7 @@ export default {
     created: async function () {
         let self = this
         let account
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         self.gasPrice = await self.web3.eth.getGasPrice()
@@ -134,7 +137,8 @@ export default {
                 self.loading = true
 
                 let account = (await self.getAccount() || '').toLowerCase()
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 let coinbase = self.coinbase
                 let txParams = {
                     from: account,
@@ -143,11 +147,16 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let rs
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(account)
-                    let dataTx = contract.resign.request(coinbase).params[0]
+                    // let dataTx = contract.resign.request(coinbase).params[0]
+                    let data = await contract.methods.resign(coinbase).encodeABI()
+
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
 
                     if (self.NetworkProvider === 'trezor') {
                         txParams.value = self.web3.utils.toHex(0)
@@ -161,20 +170,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    rs = await self.sendSignedTransaction(dataTx, signature)
-                } else {
-                    rs = await contract.resign(coinbase, txParams)
-                }
-                let toastMessage = rs.tx ? 'You have successfully resigned!'
-                    : 'An error occurred while retiring, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (rs.tx) {
-                        self.$router.push({ path: '/' })
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: '/' })
+                                    }
+                                }, 2000)
+                            }
+                        }
                     }
-                }, 2000)
+                } else {
+                    // rs = await contract.resign(coinbase, txParams)
+                    contract.methods.resign(coinbase).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: '/' })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
+                }
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('An error occurred while retiring, please try again', {
