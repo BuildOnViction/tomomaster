@@ -291,7 +291,7 @@ export default {
                     self.signHash = await self.web3.eth.sign(self.message, self.account)
                     break
                 case 'metamask':
-                    self.signHash = await self.web3.eth.personal.sign(self.message, self.account)
+                    self.signHash = await self.web3.eth.personal.sign(self.message, self.account, '')
                     break
                 case 'trezor':
                 case 'ledger':

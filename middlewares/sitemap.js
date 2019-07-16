@@ -2,8 +2,10 @@ const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
 const _ = require('lodash')
+const apicache = require('apicache')
+const cache = apicache.middleware
 
-router.get('/sitemap.xml', async (req, res) => {
+router.get('/sitemap.xml', cache('1 day'), async (req, res) => {
     const domain = 'https://master.tomochain.com'
     let routes = (await db.Candidate.find()
         .sort({ capacityNumber: -1 })

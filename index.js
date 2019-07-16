@@ -11,8 +11,14 @@ const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const morgan = require('morgan')
 const logger = require('./helpers/logger')
+const helmet = require('helmet')
+
 // body parse
 const app = express()
+
+// helmet
+app.use(helmet())
+app.use(helmet.hidePoweredBy())
 
 // cors
 app.use(cors({

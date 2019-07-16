@@ -174,6 +174,14 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.5.1</strong>
+                                            <p>- Hide staking ROI if a masternode out of top 150</p>
+                                            <p>- Fix missing latest reward record</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.5.0</strong>
                                             <p>- Display average ROI for masternode owner and voter</p>
                                             <p>- Display owner ROI and voter ROI in masternode detail page</p>
@@ -456,7 +464,8 @@ export default {
             let self = this
             setTimeout(async () => {
                 try {
-                    const contract = await self.getTomoValidatorInstance()
+                    let contract// = await self.getTomoValidatorInstance()
+                    contract = self.TomoValidator
                     if (store.get('address')) {
                         self.account = store.get('address').toLowerCase()
                     } else {

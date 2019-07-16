@@ -164,7 +164,10 @@ export default {
             candidateError: false,
             balance: 0,
             txFee: 0,
-            gasPrice: null
+            gasPrice: null,
+            transactionHash: '',
+            toastMessage: 'You have successfully applied!',
+            toastMessageError: 'An error occurred while applying, please try again'
         }
     },
     validations: {
@@ -194,7 +197,7 @@ export default {
     created: async function () {
         const self = this
         let account
-        self.config = await self.appConfig()
+        self.config = store.get('config') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         try {
             self.isReady = !!self.web3
@@ -290,7 +293,8 @@ export default {
 
                 self.loading = true
 
-                let contract = await self.getTomoValidatorInstance()
+                let contract// = await self.getTomoValidatorInstance()
+                contract = self.TomoValidator
                 let txParams = {
                     from : self.account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
@@ -299,11 +303,15 @@ export default {
                     gasLimit: self.web3.utils.toHex(self.chainConfig.gas),
                     chainId: self.chainConfig.networkId
                 }
-                let rs
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
                     let nonce = await self.web3.eth.getTransactionCount(self.account)
-                    let dataTx = contract.propose.request(coinbase).params[0]
+                    // let dataTx = contract.propose.request(coinbase).params[0]
+                    const data = await contract.methods.propose(coinbase).encodeABI()
+                    const dataTx = {
+                        data,
+                        to: self.chainConfig.validatorAddress
+                    }
                     Object.assign(
                         dataTx,
                         dataTx,
@@ -313,20 +321,49 @@ export default {
                         }
                     )
                     let signature = await self.signTransaction(dataTx)
-                    rs = await self.sendSignedTransaction(dataTx, signature)
-                } else {
-                    rs = await contract.propose(coinbase, txParams)
-                }
-                let toastMessage = rs.tx ? 'You have successfully applied!'
-                    : 'An error occurred while applying, please try again'
-                self.$toasted.show(toastMessage)
-
-                setTimeout(() => {
-                    self.loading = false
-                    if (rs.tx) {
-                        self.$router.push({ path: `/candidate/${coinbase}` })
+                    const txHash = await self.sendSignedTransaction(dataTx, signature)
+                    if (txHash) {
+                        self.transactionHash = txHash
+                        let check = true
+                        while (check) {
+                            const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                            if (receipt) {
+                                check = false
+                                self.$toasted.show(self.toastMessage)
+                                setTimeout(() => {
+                                    self.loading = false
+                                    if (self.transactionHash) {
+                                        self.$router.push({ path: `/candidate/${coinbase}` })
+                                    }
+                                }, 2000)
+                            }
+                        }
                     }
-                }, 2000)
+                } else {
+                    // rs = await contract.propose(coinbase, txParams)
+                    contract.methods.propose(coinbase).send(txParams)
+                        .on('transactionHash', async (txHash) => {
+                            self.transactionHash = txHash
+                            let check = true
+                            while (check) {
+                                const receipt = await self.web3.eth.getTransactionReceipt(txHash)
+                                if (receipt) {
+                                    check = false
+                                    self.$toasted.show(self.toastMessage)
+                                    setTimeout(() => {
+                                        self.loading = false
+                                        if (self.transactionHash) {
+                                            self.$router.push({ path: `/candidate/${coinbase}` })
+                                        }
+                                    }, 2000)
+                                }
+                            }
+                        }).catch(e => {
+                            console.log(e)
+                            self.loading = false
+                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                        })
+                }
             } catch (e) {
                 self.loading = false
                 self.$toasted.show(`An error occurred while applying, please fix it and try again: ${String(e)}`, {
