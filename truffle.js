@@ -28,6 +28,13 @@ module.exports = {
             network_id: config.get('blockchain.networkId'),
             gas: 4000000,
             gasPrice: 2500
+        },
+        coverage: {
+            host: 'localhost',
+            network_id: '*',
+            port: 8555,
+            gas: 0xfffffffffff,
+            gasPrice: 0x01
         }
     }
 }
