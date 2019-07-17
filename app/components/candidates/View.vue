@@ -655,7 +655,7 @@ export default {
             console.log(error)
         }
 
-        self.getCandidateData()
+        await self.getCandidateData()
         self.getCandidateVoters()
         self.getCandidateTransactions()
         self.getCandidateRewards()
