@@ -127,10 +127,10 @@
                     slot-scope="data">
                     <div>
                         <span
-                            :class="`float-left mr-2 ${(data.item.latestSignedBlock)
+                            :class="`float-left mr-2 ${(data.item.status !== 'PROPOSED')
                                 ? ` tomo-status-dot tomo-status-dot--${getColor(
                             data.item.latestSignedBlock || '', currentBlock)}` : '' }`">
-                            {{ data.item.latestSignedBlock || '' }}
+                            {{ data.item.latestSignedBlock }}
                         </span>
                     </div>
                 </template>
@@ -181,40 +181,13 @@ export default {
         return {
             chainConfig: {},
             fields: [
-                {
-                    key: 'rank',
-                    label: 'Rank'
-                },
-                {
-                    key: 'address',
-                    label: 'Address',
-                    sortable: false
-                },
-                {
-                    key: 'name',
-                    label: 'Name',
-                    sortable: false
-                },
-                {
-                    key: 'capacity',
-                    label: 'Capacity',
-                    sortable: true
-                },
-                {
-                    key: 'latestSignedBlock',
-                    label: 'Latest Signed Block',
-                    sortable: true
-                },
-                {
-                    key: 'status',
-                    label: 'Status',
-                    sortable: false
-                },
-                {
-                    key: 'action',
-                    label: '',
-                    sortable: false
-                }
+                { key: 'rank', label: 'Rank' },
+                { key: 'address', label: 'Address', sortable: false },
+                { key: 'name', label: 'Name', sortable: false },
+                { key: 'capacity', label: 'Capacity', sortable: true },
+                { key: 'latestSignedBlock', label: 'Latest Signed Block', sortable: true },
+                { key: 'status', label: 'Status', sortable: false },
+                { key: 'action', label: '', sortable: false }
             ],
             sortBy: 'capacity',
             sortDesc: true,
@@ -354,7 +327,7 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: candidate.latestSignedBlock,
+                        latestSignedBlock: candidate.latestSignedBlock || 0,
                         rank: candidate.rank
                     })
                 })
@@ -407,7 +380,7 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: candidate.latestSignedBlock
+                        latestSignedBlock: candidate.latestSignedBlock || 0
                     })
                 })
                 self.candidates = items
@@ -445,7 +418,7 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: '' // candidate.latestSignedBlock
+                        latestSignedBlock: '---' // candidate.latestSignedBlock
                     })
                 })
                 self.candidates = items
@@ -482,7 +455,7 @@ export default {
                         isPenalty: candidate.isPenalty,
                         name: candidate.name || 'Anonymous',
                         cap: new BigNumber(candidate.capacity).div(10 ** 18).toNumber(),
-                        latestSignedBlock: candidate.latestSignedBlock
+                        latestSignedBlock: candidate.latestSignedBlock || 0
                     })
                 })
                 self.candidates = items

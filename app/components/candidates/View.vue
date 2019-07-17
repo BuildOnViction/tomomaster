@@ -62,7 +62,9 @@
                                 </router-link>
                             </p>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
+                        <div
+                            v-if="candidate.status !== 'PROPOSED'"
+                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                             <p class="tomo-info__title">
                                 <i class="tm-dot tomo-info__icon" />
                                 <span class="tomo-info__text">Latest Signed Block</span>
