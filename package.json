@@ -109,7 +109,7 @@
         "node-sass": "^4.11.0",
         "nodemon": "^1.17.3",
         "sass-loader": "^7.0.3",
-        "solidity-coverage": "^0.5.11",
+        "solidity-coverage": "^0.6.2",
         "style-loader": "^0.20.3",
         "truffle": "^4.1.13",
         "uglifyjs-webpack-plugin": "^1.2.7",
