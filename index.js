@@ -46,7 +46,13 @@ app.use(require('./middlewares/sitemap'))
 app.use(require('./middlewares/error'))
 
 app.get('*', function (req, res) {
-    return res.sendFile(path.join(__dirname, 'index.html'))
+    let p
+    if (process.env.NODE_ENV === 'development') {
+        p = path.resolve(__dirname, 'index.html')
+    } else {
+        p = path.resolve(__dirname, './build', 'index.html')
+    }
+    return res.sendFile(p)
 })
 
 // start server

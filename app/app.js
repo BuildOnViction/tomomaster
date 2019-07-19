@@ -78,7 +78,7 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
     const self = this
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
-        const config = localStorage.get('config') || await getConfig()
+        const config = await getConfig()
         localStorage.set('config', config)
         Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator = new wjs.eth.Contract(
@@ -428,8 +428,8 @@ Vue.prototype.detectNetwork = async function (provider) {
             default:
                 break
             }
+            await this.setupProvider(provider, await wjs)
         }
-        await this.setupProvider(provider, await wjs)
     } catch (error) {
         console.log(error)
     }
