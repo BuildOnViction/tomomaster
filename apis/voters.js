@@ -467,7 +467,7 @@ router.get('/annualReward', [
             const promises = await Promise.all([
                 web3.eth.getBlock(latestCheckpoint - 899),
                 web3.eth.getBlock(latestCheckpoint),
-                db.Status.find({
+                db.Status.count({
                     epoch: lastEpoch,
                     status: 'MASTERNODE'
                 })
@@ -486,7 +486,7 @@ router.get('/annualReward', [
             let mnStakingYear
             let masternodeReward
             // Reward divided to masternode
-            masternodeReward = totalReward.dividedBy(numberOfMN.length)
+            masternodeReward = totalReward.dividedBy(numberOfMN)
 
             // 50% for voter
             const voterRWEpoch = masternodeReward.multipliedBy(0.5)
@@ -507,7 +507,7 @@ router.get('/annualReward', [
             return res.json({
                 epochDuration,
                 lastEpoch,
-                numberOfMN: numberOfMN.length,
+                numberOfMN: numberOfMN,
                 capacity: capacity,
                 voterROI,
                 mnROI
@@ -537,7 +537,7 @@ router.get('/averageroi', [], async (req, res, next) => {
         const promises = await Promise.all([
             web3.eth.getBlock(latestCheckpoint - 899),
             web3.eth.getBlock(latestCheckpoint),
-            db.Status.find({
+            db.Status.count({
                 epoch: lastEpoch,
                 status: 'MASTERNODE'
             })
@@ -553,7 +553,7 @@ router.get('/averageroi', [], async (req, res, next) => {
         let voterAmount = 1000
 
         // Reward divided to masternode
-        let masternodeReward = totalReward.dividedBy(numberOfMN.length)
+        let masternodeReward = totalReward.dividedBy(numberOfMN)
 
         const top1MN = promises0[0]
         const lastMN = promises0[1]
