@@ -85,9 +85,15 @@
                             class="text-danger">Required field</span>
                         <small
                             class="form-text text-muted">To unlock the wallet, try paths
-                            <code>m/44'/60'/0'/0</code>
-                            or <code>m/44'/60'/0'</code>
-                            or <code>m/44'/889'/0'/0</code></small>
+                            <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/60'/0'/0`)">m/44'/60'/0'/0</code> or
+                            <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/60'/0'`)">m/44'/60'/0'</code> or
+                            <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/889'/0'/0`)">m/44'/889'/0'/0</code></small>
                     </b-form-group>
 
                     <b-form-group
@@ -142,10 +148,16 @@
                             class="text-danger">Required field</span>
                         <small
                             class="form-text text-muted">To unlock the wallet, try paths
-                            <code>m/44'/60'/0'</code>
-                            or <code>m/44'/60'/0'/0</code>
+                            <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/60'/0'`)">m/44'/60'/0'</code>
+                            or <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/60'/0'/0`)">m/44'/60'/0'/0</code>
                             with Ethereum App,<br>
-                            or try path <code>m/44'/889'/0'/0</code>
+                            or try path <code
+                                class="hd-path"
+                                @click="changePath(`m/44'/889'/0'/0`)">m/44'/889'/0'/0</code>
                             with TomoChain App (on Ledger).</small>
                     </b-form-group>
 
@@ -622,6 +634,7 @@ export default {
                     store.set('offset', offset)
                     break
                 default:
+                    console.log(self.hdPath)
                     const walletProvider =
                         (self.mnemonic.indexOf(' ') >= 0)
                             ? new HDWalletProvider(
@@ -629,6 +642,7 @@ export default {
                                 self.chainConfig.rpc, 0, 1, self.hdPath)
                             : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
                     wjs = new Web3(walletProvider)
+                    console.log(wjs)
                     break
                 }
                 await self.setupProvider(this.provider, wjs)
@@ -804,6 +818,9 @@ export default {
             await this.selectHdPath(Object.keys(this.hdWallets).length, this.defaultWalletNumber)
             document.getElementById('moreHdAddresses').style.cursor = 'pointer'
             document.body.style.cursor = 'default'
+        },
+        changePath (path) {
+            this.hdPath = path
         }
     }
 }
