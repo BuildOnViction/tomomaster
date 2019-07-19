@@ -15,7 +15,7 @@ async function updateStatus (fromEpoch, toEpoch) {
             toEpoch = parseInt((latestBlockNumber / config.get('blockchain.epoch')))
         }
         // not start from every first epoch
-        if (fromEpoch && fromEpoch > 1) {
+        if (fromEpoch) {
             const check = await db.Status.findOne({
                 epoch: fromEpoch - 1
             })
@@ -30,8 +30,7 @@ async function updateStatus (fromEpoch, toEpoch) {
                 throw Error('Should crawl from further, input epoch does not exist')
             }
         } else {
-            fromEpoch = 1
-            await db.Status.remove({})
+            throw Error('Need fromEpoch(-f) argument')
         }
         logger.info('Crawling from %s to %s', fromEpoch, toEpoch)
         for (let i = fromEpoch; i <= toEpoch; i++) {
