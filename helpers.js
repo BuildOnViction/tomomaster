@@ -3,8 +3,9 @@ const hdkey = require('ethereumjs-wallet/hdkey')
 const ProviderEngine = require('web3-provider-engine')
 const FiltersSubprovider = require('web3-provider-engine/subproviders/filters.js')
 const HookedSubprovider = require('web3-provider-engine/subproviders/hooked-wallet.js')
-const ProviderSubprovider = require('web3-provider-engine/subproviders/provider.js')
-const Web3 = require('web3')
+const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
+// const ProviderSubprovider = require('web3-provider-engine/subproviders/provider.js')
+// const Web3 = require('web3')
 const Transaction = require('ethereumjs-tx')
 const ethUtil = require('ethereumjs-util')
 
@@ -95,8 +96,11 @@ function HDWalletProvider (
 		}	
     }))
     this.engine.addProvider(new FiltersSubprovider())
-    Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send
-    this.engine.addProvider(new ProviderSubprovider(new Web3.providers.HttpProvider(provider_url)))
+    // Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send
+    // this.engine.addProvider(new ProviderSubprovider(new Web3.providers.HttpProvider(provider_url)))
+    this.engine.addProvider(new RpcSubprovider({
+      rpcUrl: provider_url,
+    }))
     this.engine.start() // Required by the provider engine.
 }
 
