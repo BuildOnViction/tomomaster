@@ -418,7 +418,7 @@ export default {
     update () {},
     created: async function () {
         let self = this
-        self.config = store.get('config') || await self.appConfig()
+        self.config = store.get('configMaster') || await self.appConfig()
 
         self.getCandidates()
         self.getRewards()

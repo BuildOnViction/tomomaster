@@ -79,7 +79,7 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
         const config = await getConfig()
-        localStorage.set('config', config)
+        localStorage.set('configMaster', config)
         Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator = new wjs.eth.Contract(
             TomoValidatorArtifacts.abi,
@@ -381,7 +381,7 @@ getConfig().then((config) => {
     // let provider = 'tomowallet'
     // var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
     // Vue.prototype.setupProvider(provider, web3js)
-    localStorage.set('config', config)
+    localStorage.set('configMaster', config)
     Vue.use(VueAnalytics, {
         id: config.GA,
         linkers: ['tomochain.com'],
@@ -405,7 +405,7 @@ const store = new Vuex.Store({
 Vue.prototype.detectNetwork = async function (provider) {
     try {
         let wjs = this.web3
-        const config = localStorage.get('config') || await getConfig()
+        const config = localStorage.get('configMaster') || await getConfig()
         const chainConfig = config.blockchain
         if (!wjs) {
             switch (provider) {
@@ -462,7 +462,7 @@ Vue.prototype.signTransaction = async function (txParams) {
     const provider = Vue.prototype.NetworkProvider
     let signature
     if (provider === 'ledger') {
-        const config = localStorage.get('config') || await getConfig()
+        const config = localStorage.get('configMaster') || await getConfig()
         const chainConfig = config.blockchain
         const rawTx = new Transaction(txParams)
         rawTx.v = Buffer.from([chainConfig.networkId])

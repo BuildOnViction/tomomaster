@@ -436,7 +436,7 @@ export default {
         this.provider = this.NetworkProvider || 'tomowallet'
         let self = this
         self.hdWallets = self.hdWallets || {}
-        self.config = store.get('config') || await self.appConfig()
+        self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.networks.rpc = self.chainConfig.rpc
 

@@ -221,7 +221,7 @@ export default {
         let self = this
         let account
         self.isReady = !!self.web3
-        const config = store.get('config') || await self.appConfig()
+        const config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = config.blockchain
         self.currentBlock = self.chainConfig.blockNumber
 

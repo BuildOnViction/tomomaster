@@ -143,7 +143,7 @@ export default {
     },
     async mounted () {
         const self = this
-        self.config = store.get('config') || await self.appConfig()
+        self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!this.web3
         if (!self.coinbase) {

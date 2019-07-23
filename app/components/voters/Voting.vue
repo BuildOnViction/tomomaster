@@ -220,7 +220,7 @@ export default {
     created: async function () {
         let self = this
         let account
-        self.config = store.get('config') || await self.appConfig()
+        self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         self.gasPrice = await self.web3.eth.getGasPrice()
