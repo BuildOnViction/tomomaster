@@ -62,7 +62,7 @@ export default {
     updated () {},
     created: async function () {
         let self = this
-        self.config = store.get('config') || await self.appConfig()
+        self.config = store.get('configMaster') || await self.appConfig()
 
         axios.get(`/api/transactions/${self.tx}`).then(function (response) {
             if (response.data == null) {
