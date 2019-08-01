@@ -650,8 +650,11 @@ export default {
                 self.loading = false
                 self.$store.state.walletLoggedIn = null
 
-                store.set('address', self.address.toLowerCase())
-                store.set('network', self.provider)
+                if (self.provider === 'metamask') {
+                    store.set('address', self.address.toLowerCase())
+                    store.set('network', self.provider)
+                }
+
                 if (self.address) {
                     self.$bus.$emit('logged', 'user logged')
                     self.$toasted.show('Network Provider was changed successfully')
