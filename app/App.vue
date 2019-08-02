@@ -401,15 +401,15 @@ export default {
                     await self.getNotification()
                 }, 500)
             })
-            const candidates = await axios.get('/api/candidates')
-            const map = candidates.data.items.map((c) => {
-                return {
-                    name: c.name ? c.name : 'Anonymous',
-                    address: c.candidate
-                }
-            })
-            const mapping = await Promise.all(map)
-            self.items = mapping
+            // const candidates = await axios.get('/api/candidates')
+            // const map = candidates.data.items.map((c) => {
+            //     return {
+            //         name: c.name ? c.name : 'Anonymous',
+            //         address: c.candidate
+            //     }
+            // })
+            // const mapping = await Promise.all(map)
+            // self.items = mapping
             setTimeout(async () => {
                 await self.getNotification()
             }, 500)
