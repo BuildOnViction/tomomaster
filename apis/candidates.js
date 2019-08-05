@@ -328,20 +328,30 @@ router.get('/search', [
         return res.status(400).json({ errors: errors.array() })
     }
     try {
+        const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
         const query = req.query.query || ''
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
         let skip
         skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-        const total = db.Candidate.count({
-            name: { $regex: query, $options: 'i' }
-        })
-        const data = await db.Candidate.find({
-            name: { $regex: query, $options: 'i' }
-        }).limit(limit).skip(skip).lean().exec()
-        return res.json({
-            total: await total,
-            items: data
-        })
+        if (regexpAddr.test(query)) {
+            const data = await db.Candidate.find({
+                candidate: query
+            }).limit(limit).skip(skip).lean().exec()
+            return res.json({
+                items: data
+            })
+        } else {
+            const total = db.Candidate.count({
+                name: { $regex: query, $options: 'i' }
+            })
+            const data = await db.Candidate.find({
+                name: { $regex: query, $options: 'i' }
+            }).limit(limit).skip(skip).lean().exec()
+            return res.json({
+                total: await total,
+                items: data
+            })
+        }
     } catch (e) {
         return next(e)
     }
