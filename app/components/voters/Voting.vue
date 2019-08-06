@@ -219,7 +219,6 @@ export default {
     updated () {},
     created: async function () {
         let self = this
-        let account
         self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
@@ -229,15 +228,8 @@ export default {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            if (store.get('address')) {
-                account = store.get('address').toLowerCase()
-            } else {
-                account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
-            }
-            if (account) {
-                self.voter = account
-            }
+            self.voter = store.get('address') ||
+                self.$store.state.address || await self.getAccount()
             self.web3.eth.getBalance(self.voter, function (a, b) {
                 self.balance = new BigNumber(b).div(10 ** 18)
                 if (a) {
@@ -300,8 +292,7 @@ export default {
                     throw Error('Web3 is not properly detected.')
                 }
                 self.loading = true
-                let account = await self.getAccount()
-                account = account.toLowerCase()
+                const account = (await self.getAccount() || '').toLowerCase()
                 let contract// = await self.getTomoValidatorInstance()
                 contract = self.TomoValidator
                 let txParams = {

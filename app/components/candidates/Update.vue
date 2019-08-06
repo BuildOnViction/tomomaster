@@ -235,12 +235,8 @@ export default {
                 self.$router.push({ path: '/setting' })
                 throw Error('Web3 is not properly detected.')
             }
-            if (store.get('address')) {
-                self.account = store.get('address').toLowerCase()
-            } else {
-                self.account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
-            }
+            self.account = store.get('address') ||
+                self.$store.state.address || await self.getAccount()
             const { data } = await axios.get(`/api/candidates/${self.address}`)
             if (data) {
                 if (data.owner !== self.account) {

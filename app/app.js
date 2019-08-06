@@ -99,7 +99,7 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
                         your Ethereum client is configured correctly.`))
                     } else { return resolve(accs[0]) }
                 case 'tomowallet':
-                    return resolve(self.$store.state.walletLoggedIn)
+                    return resolve(self.$store.state.address)
                 case 'custom':
                     const provider = wjs.currentProvider.connection || wjs.currentProvider
                     if (provider.address) {
@@ -399,7 +399,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
     state: {
-        walletLoggedIn: null
+        address: null
     }
 })
 Vue.prototype.detectNetwork = async function (provider) {

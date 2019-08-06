@@ -196,7 +196,6 @@ export default {
     },
     created: async function () {
         const self = this
-        let account
         self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         try {
@@ -206,13 +205,8 @@ export default {
             if (!self.web3 && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            if (store.get('address')) {
-                account = store.get('address').toLowerCase()
-            } else {
-                account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
-            }
-            self.account = account
+            self.account = store.get('address') ||
+                self.$store.state.address || await self.getAccount()
         } catch (e) {
             self.$toasted.show(`You need login your account before voting`,
                 {
@@ -295,8 +289,9 @@ export default {
 
                 let contract// = await self.getTomoValidatorInstance()
                 contract = self.TomoValidator
+                const account = (await self.getAccount() || '').toLowerCase()
                 let txParams = {
-                    from : self.account,
+                    from : account,
                     value: self.web3.utils.toHex(new BigNumber(value).multipliedBy(10 ** 18).toString(10)),
                     gasPrice: self.web3.utils.toHex(self.gasPrice),
                     gas: self.web3.utils.toHex(self.chainConfig.gas),
@@ -305,7 +300,7 @@ export default {
                 }
                 if (self.NetworkProvider === 'ledger' ||
                     self.NetworkProvider === 'trezor') {
-                    let nonce = await self.web3.eth.getTransactionCount(self.account)
+                    let nonce = await self.web3.eth.getTransactionCount(account)
                     // let dataTx = contract.propose.request(coinbase).params[0]
                     const data = await contract.methods.propose(coinbase).encodeABI()
                     const dataTx = {
