@@ -260,7 +260,6 @@ export default {
     created: async function () {
         let self = this
         let candidate = self.candidate
-        let account
         self.loadingPage = true
         self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
@@ -269,20 +268,15 @@ export default {
 
         try {
             self.isReady = !!self.web3
-            if (store.get('address')) {
-                account = store.get('address').toLowerCase()
-            } else {
-                account = this.$store.state.walletLoggedIn
-                    ? this.$store.state.walletLoggedIn : await self.getAccount()
-            }
-            self.voter = account
+            self.voter = store.get('address') ||
+                self.$store.state.address || await self.getAccount()
 
             const isOwnerPromise = axios.get(`/api/candidates/${candidate}/${self.voter}/isOwner`)
 
             let contract// = await self.getTomoValidatorInstance()
             contract = self.TomoValidator
             // let votedCap = await contract.getVoterCap(candidate, account)
-            let votedCap = await contract.methods.getVoterCap(candidate, account).call()
+            let votedCap = await contract.methods.getVoterCap(candidate, self.voter).call()
 
             self.voted = new BigNumber(votedCap).div(10 ** 18).toString(10)
             const isOwner = (await isOwnerPromise).data || false
@@ -333,8 +327,7 @@ export default {
 
                 self.loading = true
                 let unvoteValue = new BigNumber(value).multipliedBy(1e+18).toString(10)
-                let account = await self.getAccount()
-                account = account.toLowerCase()
+                const account = (await self.getAccount() || '').toLowerCase()
                 let contract// = await self.getTomoValidatorInstance()
                 contract = self.TomoValidator
                 let txParams = {

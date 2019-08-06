@@ -637,12 +637,8 @@ export default {
             if (self.isReady) {
                 let contract// = self.TomoValidator.deployed()
                 contract = self.TomoValidator
-                if (store.get('address')) {
-                    self.account = store.get('address').toLowerCase()
-                } else {
-                    self.account = this.$store.state.walletLoggedIn
-                        ? this.$store.state.walletLoggedIn : self.getAccount()
-                }
+                self.account = store.get('address') ||
+                    self.$store.state.address || await self.getAccount()
                 if (await self.account && await contract) {
                     self.isTomonet = true
                 }

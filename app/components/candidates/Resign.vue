@@ -102,20 +102,14 @@ export default {
     updated () {},
     created: async function () {
         let self = this
-        let account
         self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
         self.isReady = !!self.web3
         self.gasPrice = await self.web3.eth.getGasPrice()
         try {
             if (self.isReady) {
-                if (store.get('address')) {
-                    account = store.get('address').toLowerCase()
-                } else {
-                    account = this.$store.state.walletLoggedIn
-                        ? this.$store.state.walletLoggedIn : await self.getAccount()
-                }
-                self.account = (account || '').toLowerCase()
+                self.account = store.get('address') ||
+                    self.$store.state.address || await self.getAccount()
             }
 
             let candidate = await axios.get(`/api/candidates/${self.coinbase}`)
@@ -136,7 +130,7 @@ export default {
 
                 self.loading = true
 
-                let account = (await self.getAccount() || '').toLowerCase()
+                const account = (await self.getAccount() || '').toLowerCase()
                 let contract// = await self.getTomoValidatorInstance()
                 contract = self.TomoValidator
                 let coinbase = self.coinbase

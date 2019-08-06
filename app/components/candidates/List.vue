@@ -234,7 +234,6 @@ export default {
     updated () {},
     created: async function () {
         let self = this
-        let account
         self.isReady = !!self.web3
         const config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = config.blockchain
@@ -244,13 +243,9 @@ export default {
             if (self.isReady) {
                 let contract// = await self.getTomoValidatorInstance()
                 contract = self.TomoValidator
-                if (store.get('address')) {
-                    account = store.get('address').toLowerCase()
-                } else {
-                    account = this.$store.state.walletLoggedIn
-                        ? this.$store.state.walletLoggedIn : await self.getAccount()
-                }
-                if (account && contract) {
+                self.account = store.get('address') ||
+                    self.$store.state.address || await self.getAccount()
+                if (self.account && contract) {
                     self.isTomonet = true
                 }
             }
