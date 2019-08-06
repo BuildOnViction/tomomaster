@@ -70,6 +70,7 @@
         "trezor-connect": "^7.0.1",
         "truffle-hdwallet-provider": "^1.0.12",
         "truffle-privatekey-provider": "^0.1.0",
+        "twitter": "^1.7.1",
         "url-join": "^4.0.0",
         "uuid": "^3.3.2",
         "vue-clipboards": "^1.2.4",
