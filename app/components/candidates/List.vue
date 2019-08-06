@@ -84,6 +84,15 @@
         <div
             v-else
             class="container">
+            <b-pagination
+                v-if="mobileCheck && totalRows > 0 && totalRows > perPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                v-model="currentPage"
+                align="center"
+                class="tomo-pagination"
+                style="margin-bottom: 50px !important;"
+                @change="pageChange"/>
             <b-table
                 :items="candidates"
                 :fields="fields"
@@ -214,7 +223,13 @@ export default {
             currentBlock: ''
         }
     },
-    computed: {},
+    computed: {
+        mobileCheck: () => {
+            const isAndroid = navigator.userAgent.match(/Android/i)
+            const isIOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            return (isAndroid || isIOS)
+        }
+    },
     watch: {},
     updated () {},
     created: async function () {

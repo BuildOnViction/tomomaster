@@ -318,6 +318,45 @@ router.get('/crawlStatus', async function (req, res, next) {
     }
 })
 
+router.get('/search', [
+    query('query').isAlphanumeric().withMessage('query must be alpha numeric'),
+    query('limit').isInt({ min: 0, max: 50 }).withMessage('limit must be number and less than 200 items per page'),
+    query('page').isInt({ min: 0 }).withMessage('page must be number')
+], async function (req, res, next) {
+    let errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+    try {
+        const regexpAddr = /^(0x)?[0-9a-fA-F]{40}$/
+        const query = req.query.query || ''
+        let limit = (req.query.limit) ? parseInt(req.query.limit) : 200
+        let skip
+        skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+        if (regexpAddr.test(query)) {
+            const data = await db.Candidate.find({
+                candidate: query
+            }).limit(limit).skip(skip).lean().exec()
+            return res.json({
+                items: data
+            })
+        } else {
+            const total = db.Candidate.count({
+                name: { $regex: query, $options: 'i' }
+            })
+            const data = await db.Candidate.find({
+                name: { $regex: query, $options: 'i' }
+            }).limit(limit).skip(skip).lean().exec()
+            return res.json({
+                total: await total,
+                items: data
+            })
+        }
+    } catch (e) {
+        return next(e)
+    }
+})
+
 router.get('/:candidate', async function (req, res, next) {
     let address = (req.params.candidate || '').toLowerCase()
     let candidate = (await db.Candidate.findOne({

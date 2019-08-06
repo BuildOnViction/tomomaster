@@ -25,10 +25,12 @@
                 @click="setResult(result)">
                 <p
                     class="tomo-list__text">
-                    <span>{{ result.name }}</span>
-                    <small>{{ result.address }}</small>
+                    <span>{{ result.rank ? result.rank + '. ' : '' }} {{ result.name || 'Anonymous' }} -
+                        {{ result.status }}
+                    </span>
+                    <small>{{ result.candidate }}</small>
                     <!-- <span v-html="formatResult(result.name)" />
-                    <small v-html="formatResult(result.address)" /> -->
+                    <small v-html="formatResult(result.candidate)" /> -->
                 </p>
             </li>
         </ul>
@@ -36,6 +38,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     name: 'AutoComplete',
 
@@ -61,6 +64,13 @@ export default {
         }
     },
     watch: {
+        search: async function (newValue, oldValue) {
+            if (newValue !== '') {
+                this.doSearch()
+            } else {
+                this.results = []
+            }
+        }
     },
     mounted () {
         document.addEventListener('click', this.handleClickOutside)
@@ -101,7 +111,7 @@ export default {
 
                     // search by address
                     if (!found) {
-                        found = item.address.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                        found = item.candidate.toLowerCase().indexOf(this.search.toLowerCase()) > -1
                     }
 
                     return found
@@ -126,7 +136,7 @@ export default {
             this.search = ''
             this.isOpen = false
             this.$router.push({
-                path: `/candidate/${result.address}`
+                path: `/candidate/${result.candidate}`
             })
         },
         onArrowDown () {
@@ -147,7 +157,7 @@ export default {
                 this.isOpen = false
                 this.arrowCounter = -1
                 this.$router.push({
-                    path: `/candidate/${result.address}`
+                    path: `/candidate/${result.candidate}`
                 })
                 document.getElementById('search-input').blur()
             }
@@ -162,6 +172,11 @@ export default {
                 this.isOpen = false
                 this.arrowCounter = -1
             }
+        },
+        async doSearch () {
+            const { data } = await axios.get('/api/candidates/search?page=1&limit=4&query=' + this.search || '')
+            this.results = data.items
+            this.isOpen = true
         }
     }
 }
