@@ -40,5 +40,11 @@
         "voterWithdrawDelay": 100,
         "epochNumber": 900
     },
-    "GA": "UA-124427827-2"
+    "GA": "UA-124427827-2",
+    "twitter": {
+        "consumer_key": "twittter-consumer-api-key",
+        "consumer_secret": "twittter-consumer-api-secret-key",
+        "access_token_key": "twittter-access-token-key",
+        "access_token_secret": "twittter-access-token-secret-key"
+    }
 }
