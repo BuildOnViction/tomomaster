@@ -174,6 +174,16 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.6.0</strong>
+                                            <p>- Add Auto tweeting when a new candidate is proposed</p>
+                                            <p>- Update searching</p>
+                                            <p>- Add top page pagination on small screen</p>
+                                            <p>- Remove hardware wallet session storing</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.5.2</strong>
                                             <p>- Hide latest signed block for proposed masternode</p>
                                             <p>- Refactor code</p>
@@ -210,16 +220,6 @@
                                             <strong>TomoMaster up to 1.4.2</strong>
                                             <p>- Fix proposing a new masternode issue</p>
                                             <p>- Fix incorrect address when loggin in by mnemonic words</p>
-                                        </div>
-                                    </b-dropdown-text>
-                                    <b-dropdown-divider/>
-                                    <b-dropdown-text>
-                                        <div style="font-size: 13px;">
-                                            <strong>TomoMaster up to 1.4.1</strong>
-                                            New features have been added to.
-                                            <p>- Disable sorting masternodes by name</p>
-                                            <p>- Hide voters who unvoted all TOMO</p>
-                                            <p>- Show slashing history</p>
                                         </div>
                                     </b-dropdown-text>
                                 </div>
