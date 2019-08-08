@@ -42,9 +42,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(docs))
 app.use(require('./apis'))
 app.use(require('./middlewares/sitemap'))
 
-// error handler
-app.use(require('./middlewares/error'))
-
 app.get('*', function (req, res) {
     let p
     if (process.env.NODE_ENV === 'development') {
@@ -54,6 +51,9 @@ app.get('*', function (req, res) {
     }
     return res.sendFile(p)
 })
+
+// error handler
+app.use(require('./middlewares/error'))
 
 // start server
 server.listen(config.get('server.port'), config.get('server.host'), function () {
