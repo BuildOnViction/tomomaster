@@ -25,9 +25,9 @@ import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
-import HighchartsVue from 'highcharts-vue'
-import Highcharts from 'highcharts'
-import stockInit from 'highcharts/modules/stock'
+// import HighchartsVue from 'highcharts-vue'
+// import Highcharts from 'highcharts'
+// import stockInit from 'highcharts/modules/stock'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 // import HDWalletProvider from 'truffle-hdwallet-provider'
@@ -68,8 +68,8 @@ TrezorConnect.manifest({
     appUrl: 'https://master.tomochain.com'
 })
 
-stockInit(Highcharts)
-Vue.use(HighchartsVue)
+// stockInit(Highcharts)
+// Vue.use(HighchartsVue)
 
 // Vue.prototype.TomoValidator = contract(TomoValidatorArtifacts)
 Vue.prototype.isElectron = !!(window && window.process && window.process.type)

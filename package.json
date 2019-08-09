@@ -52,8 +52,6 @@
         "express-validator": "^5.1.2",
         "hdkey": "^1.1.1",
         "helmet": "^3.18.0",
-        "highcharts": "^6.1.1",
-        "highcharts-vue": "^1.0.4",
         "js-yaml": "^3.13.1",
         "lodash": "^4.17.14",
         "moment": "^2.22.2",
