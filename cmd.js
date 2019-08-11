@@ -6,6 +6,7 @@ const _ = require('lodash')
 const cmdValidator = require('./commands/validator')
 const { updatePenalty } = require('./commands/penalty')
 const { updateStatus } = require('./commands/status')
+const { watchValidator } = require('./commands/recrawl')
 const web3Rpc = require('./models/blockchain/web3rpc')
 
 commander
@@ -123,6 +124,20 @@ commander
         const fromEpoch = input.fromEpoch || null
         const toEpoch = input.toEpoch || null
         await updateStatus(fromEpoch, toEpoch)
+        process.exit()
+    })
+
+commander
+    .command('update-transaction')
+    .description('Update transaction table')
+    .description('WARNING')
+    .description('From block should exist in the status table first')
+    .option('-f, --fromBlock <fromBlock>', 'From block')
+    .option('-t, --toBlock <toBlock>', 'To block')
+    .action(async (input) => {
+        const fromBlock = input.fromBlock || null
+        const toBlock = input.toBlock || null
+        await watchValidator(fromBlock, toBlock)
         process.exit()
     })
 
