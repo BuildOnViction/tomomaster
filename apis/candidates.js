@@ -319,7 +319,7 @@ router.get('/crawlStatus', async function (req, res, next) {
 })
 
 router.get('/search', [
-    query('query').isAlphanumeric().withMessage('query must be alpha numeric'),
+    query('query').isAscii().withMessage('query must be ascii symbols'),
     query('limit').isInt({ min: 0, max: 50 }).withMessage('limit must be number and less than 200 items per page'),
     query('page').isInt({ min: 0 }).withMessage('page must be number')
 ], async function (req, res, next) {
