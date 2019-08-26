@@ -7,7 +7,8 @@ const webpackConfig = {
     },
     optimization: {
         splitChunks: {
-            name: 'app'
+            // name: 'app',
+            // chunks: 'all'
         }
     },
     module: {
