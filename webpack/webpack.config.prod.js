@@ -9,15 +9,41 @@ const merge = require('webpack-merge')
 
 const webpackConfig = merge(commonConfig, {
     mode: 'production',
+    entry: {
+        vendor: ['bignumber.js', 'vue', 'vue-router', 'vuex', 'web3']
+    },
     output: {
         path: path.resolve(__dirname, '../build'),
         publicPath: '/build/',
-        filename: '[name].[hash].js'
-        // chunkFilename: 'chunks/[chunkhash].js',
+        filename: '[name].[hash].js',
+        chunkFilename: '[name].chunks.[chunkhash].js'
         // jsonpFunction: 'pluginWebpack'
     },
     optimization: {
-        minimize: process.env.NODE_ENV === 'production'
+        minimize: process.env.NODE_ENV === 'production',
+        splitChunks: {
+            minSize: 30000,
+            maxSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            automaticNameDelimiter: '~',
+            name: true,
+            cacheGroups: {
+                vendor: {
+                    chunks: 'initial',
+                    name: 'vendor',
+                    test: './node_modules/',
+                    enforce: true
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
+        },
+        runtimeChunk: true
     },
     plugins: [
         new webpack.DefinePlugin({
