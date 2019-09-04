@@ -12,6 +12,11 @@ const webpackConfig = merge(commonConfig, {
         // chunkFilename: 'chunks/[chunkhash].js',
         // jsonpFunction: 'pluginWebpack'
     },
+    optimization: {
+        splitChunks: {
+            name: 'app'
+        }
+    },
     devServer: {
         compress: true,
         historyApiFallback: true,

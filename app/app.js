@@ -21,10 +21,10 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Web3 from 'web3'
 // import { default as contract } from 'truffle-contract'
-import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
+// import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
 import axios from 'axios'
-import BigNumber from 'bignumber.js'
+// import BigNumber from 'bignumber.js'
 // import HighchartsVue from 'highcharts-vue'
 // import Highcharts from 'highcharts'
 // import stockInit from 'highcharts/modules/stock'
@@ -45,6 +45,7 @@ import Transaction from 'ethereumjs-tx'
 import * as HDKey from 'hdkey'
 import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
+import Helper from './utils'
 
 Vue.use(Meta)
 Vue.use(BootstrapVue)
@@ -82,7 +83,7 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
         localStorage.set('configMaster', config)
         Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator = new wjs.eth.Contract(
-            TomoValidatorArtifacts.abi,
+            Helper.TomoValidatorArtifacts.abi,
             config.blockchain.validatorAddress
         )
         // Vue.prototype.TomoValidator.setProvider(wjs.currentProvider)
@@ -257,63 +258,22 @@ Vue.prototype.loadTrezorWallets = async (offset, limit) => {
     }
 }
 
-Vue.prototype.formatNumber = function (number) {
-    let seps = (number || 0).toString().split('.')
-    seps[0] = seps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+Vue.prototype.formatNumber = Helper.formatNumber
 
-    return seps.join('.')
-}
+Vue.prototype.formatCurrencySymbol = Helper.formatCurrencySymbol
 
-Vue.prototype.formatCurrencySymbol = function (number) {
-    let unit = this.getCurrencySymbol()
+Vue.prototype.getCurrencySymbol = Helper.getCurrencySymbol
 
-    if (unit === null) {
-        unit = 'TOMO'
-    }
-    return `${number} ${unit}`
-}
+Vue.prototype.checkLongNumber = Helper.checkLongNumber
 
-Vue.prototype.getCurrencySymbol = function () {
-    return 'TOMO'
-}
-
-Vue.prototype.checkLongNumber = function (num) {
-    let str = num.toString().split('.')
-
-    return (typeof str[1] !== 'undefined' && str[1].length > 3)
-}
-
-Vue.prototype.formatBigNumber = function (num, dp) {
-    if (this.checkLongNumber(num)) {
-        return new BigNumber(num).toFormat(dp)
-    }
-
-    return this.formatNumber(num)
-}
+Vue.prototype.formatBigNumber = Helper.formatBigNumber
 
 const getConfig = Vue.prototype.appConfig = async function () {
     let config = await axios.get('/api/config')
     return config.data
 }
 
-Vue.prototype.getSecondsToHms = function (number) {
-    number = parseInt(number, 10)
-    if (number < 0) {
-        return 'Available to withdraw'
-    }
-
-    number = number * 2
-
-    let h = Math.floor(number / 3600)
-    let m = Math.floor(number % 3600 / 60)
-    let s = Math.floor(number % 3600 % 60)
-
-    if (h < 10) { h = '0' + h }
-    if (m < 10) { m = '0' + m }
-    if (s < 10) { s = '0' + s }
-
-    return `${h}:${m}:${s}`
-}
+Vue.prototype.getSecondsToHms = Helper.getSecondsToHms
 
 Vue.use(VueRouter)
 
@@ -551,38 +511,9 @@ Vue.prototype.signMessage = async function (message) {
     }
 }
 
-Vue.prototype.serializeQuery = function (params, prefix) {
-    const query = Object.keys(params).map((key) => {
-        const value = params[key]
+Vue.prototype.serializeQuery = Helper.serializeQuery
 
-        if (params.constructor === Array) {
-            key = `${prefix}[]`
-        } else {
-            if (params.constructor === Object) {
-                key = (prefix ? `${prefix}[${key}]` : key)
-            }
-        }
-
-        return value === 'object' ? this.serializeQuery(value, key) : `${key}=${encodeURIComponent(value)}`
-    })
-
-    return [].concat.apply([], query).join('&')
-}
-
-Vue.prototype.truncate = (fullStr, strLen) => {
-    if (fullStr.length <= strLen) return fullStr
-
-    const separator = '...'
-
-    let sepLen = separator.length
-    let charsToShow = strLen - sepLen
-    let frontChars = Math.ceil(charsToShow / 2)
-    let backChars = Math.floor(charsToShow / 2)
-
-    return fullStr.substr(0, frontChars) +
-           separator +
-           fullStr.substr(fullStr.length - backChars)
-}
+Vue.prototype.truncate = Helper.truncate
 
 const EventBus = new Vue()
 

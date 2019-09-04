@@ -467,7 +467,8 @@ export default {
         },
         signOut () {
             store.clearAll()
-            this.$store.state.address = null
+            Object.assign(this.$store.state, this.getDefaultState())
+            // this.$store.state.address = null
 
             this.$router.go({
                 path: '/'
