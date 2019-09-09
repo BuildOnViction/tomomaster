@@ -491,7 +491,8 @@ router.post('/apply', async function (req, res, next) {
         if (req.query.name) {
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
-                candidate: candidate
+                candidate: candidate,
+                owner: walletProvider.address
             }, {
                 $set: {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
