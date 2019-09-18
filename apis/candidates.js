@@ -19,7 +19,8 @@ const gas = config.get('blockchain.gas')
 router.get('/', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -78,7 +79,8 @@ router.get('/', [
 router.get('/masternodes', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -141,7 +143,8 @@ router.get('/masternodes', [
 router.get('/slashedMNs', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -186,7 +189,8 @@ router.get('/slashedMNs', [
 router.get('/proposedMNs', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     try {
         const errors = validationResult(req)
@@ -231,7 +235,8 @@ router.get('/proposedMNs', [
 router.get('/resignedMNs', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -321,7 +326,8 @@ router.get('/crawlStatus', async function (req, res, next) {
 router.get('/search', [
     query('query').isAscii().withMessage('query must be ascii symbols'),
     query('limit').isInt({ min: 0, max: 50 }).withMessage('limit must be number and less than 200 items per page'),
-    query('page').isInt({ min: 0 }).withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     let errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -408,7 +414,8 @@ router.get('/:candidate', async function (req, res, next) {
 router.get('/:candidate/voters', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -663,7 +670,8 @@ router.get('/:candidate/isCandidate', async function (req, res, next) {
 router.get('/:candidate/:owner/getRewards', [
     query('limit')
         .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     try {
         const errors = validationResult(req)
@@ -1006,7 +1014,8 @@ router.get('/slashed/:epoch', [
 router.get('/:candidate/slashedFilter', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number'),
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500'),
     check('filterBy').isLength({ min: 1 }).exists().withMessage('filterBy is required')
 ], async function (req, res, next) {
     const errors = validationResult(req)
