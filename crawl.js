@@ -282,7 +282,7 @@ async function updateSignerPenAndStatus () {
             const response = await axios.post(config.get('blockchain.rpc'), data)
 
             if (response.data) {
-                const result = response.data.result
+                const result = (response.data.result || {}).status
                 switch (result) {
                 case 'MASTERNODE':
                     signers.push(c.candidate)
