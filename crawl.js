@@ -276,7 +276,7 @@ async function updateSignerPenAndStatus () {
             const data = {
                 'jsonrpc': '2.0',
                 'method': 'eth_getCandidateStatus',
-                'params': [c.candidate.toLowerCase(), '0x' + currentEpoch.toString('hex')],
+                'params': [c.candidate.toLowerCase(), 'latest'],
                 'id': config.get('blockchain.networkId')
             }
             const response = await axios.post(config.get('blockchain.rpc'), data)
