@@ -15,7 +15,8 @@ const urljoin = require('url-join')
 router.get('/:voter/candidates', [
     query('limit')
         .isInt({ min: 0, max: 200 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -91,7 +92,8 @@ router.get('/:voter/candidates', [
 router.get('/:voter/rewards', [
     query('limit')
         .isInt({ min: 0, max: 100 }).optional().withMessage('limit should greater than 0 and less than 200'),
-    query('page').isNumeric({ no_symbols: true }).optional().withMessage('page must be number')
+    query('page').isNumeric({ no_symbols: true })
+        .optional().isInt({ min: 0, max: 500 }).withMessage('page should greater than 0 and less than 500')
 ], async function (req, res, next) {
     try {
         const errors = validationResult(req)
