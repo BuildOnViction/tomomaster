@@ -371,7 +371,7 @@ router.get('/:candidate', async function (req, res, next) {
     }).lean().exec() || {})
 
     let latestSigners = await db.Signer.findOne({}).sort({ _id: 'desc' })
-    let latestPenalties = await db.Penalty.find({}).sort({ epoch: 'desc' }).lean().exec()
+    let latestPenalties = await db.Penalty.findOne({}).sort({ epoch: 'desc' }).lean().exec()
     // Get slashed times in a week
     const epochsPerWeek = 336
     const promise = db.Status.find({
@@ -379,10 +379,7 @@ router.get('/:candidate', async function (req, res, next) {
     }).sort({ epoch: -1 }).limit(epochsPerWeek).lean().exec() || 0
 
     let signers = (latestSigners || {}).signers || []
-    let penalties = []
-    latestPenalties.forEach(p => {
-        penalties = _.concat(penalties, (p || {}).penalties || [])
-    })
+    let penalties = (latestPenalties || {}).penalties || []
 
     const setS = new Set()
     for (let i = 0; i < signers.length; i++) {
