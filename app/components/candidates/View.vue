@@ -652,10 +652,9 @@ export default {
         } catch (error) {
             console.log(error)
         }
-
-        await self.getCandidateData()
         self.getCandidateVoters()
         self.getCandidateTransactions()
+        await self.getCandidateData()
         self.getCandidateRewards()
         if (self.candidate.rank) {
             self.getAnnualReward()
