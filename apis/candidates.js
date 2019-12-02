@@ -3,7 +3,7 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const db = require('../models/mongodb')
-const web3 = require('../models/blockchain/web3rpc')
+const web3 = require('../models/blockchain/web3rpc').Web3RpcInternal()
 const validator = require('../models/blockchain/validatorRpc')
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
@@ -464,7 +464,7 @@ router.get('/:candidate/rewards', async function (req, res, next) {
 // for automation test only
 router.post('/apply', async function (req, res, next) {
     let key = req.query.key
-    let network = config.get('blockchain.rpc')
+    let network = config.get('blockchain.internalRpc')
     const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
@@ -519,7 +519,7 @@ router.post('/apply', async function (req, res, next) {
 // for automation test only
 router.post('/applyBulk', async function (req, res, next) {
     let key = req.query.key
-    let network = config.get('blockchain.rpc')
+    let network = config.get('blockchain.internalRpc')
     const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
@@ -569,7 +569,7 @@ router.post('/applyBulk', async function (req, res, next) {
 // for automation test only
 router.post('/resign', async function (req, res, next) {
     let key = req.query.key
-    let network = config.get('blockchain.rpc')
+    let network = config.get('blockchain.internalRpc')
     const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
@@ -594,7 +594,7 @@ router.post('/resign', async function (req, res, next) {
 // for automation test only
 router.post('/vote', async function (req, res, next) {
     let key = req.query.key
-    let network = config.get('blockchain.rpc')
+    let network = config.get('blockchain.internalRpc')
     const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =
@@ -618,7 +618,7 @@ router.post('/vote', async function (req, res, next) {
 // for automation test only
 router.post('/unvote', async function (req, res, next) {
     let key = req.query.key
-    let network = config.get('blockchain.rpc')
+    let network = config.get('blockchain.internalRpc')
     const gasPrice = await web3.eth.getGasPrice()
     try {
         let walletProvider =

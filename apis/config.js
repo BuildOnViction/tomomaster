@@ -2,7 +2,7 @@
 const express = require('express')
 const config = require('config')
 const router = express.Router()
-const web3 = require('../models/blockchain/web3rpc')
+const web3 = require('../models/blockchain/web3rpc').Web3Rpc()
 
 router.get('/', async function (req, res, next) {
     let appConfig = {}

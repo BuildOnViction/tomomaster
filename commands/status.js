@@ -2,7 +2,7 @@
 const Validator = require('../models/blockchain/validator')
 const config = require('config')
 const moment = require('moment')
-const web3Rpc = require('../models/blockchain/web3rpc')
+const web3Rpc = require('../models/blockchain/web3rpc').Web3RpcInternal()
 const logger = require('../helpers/logger')
 const db = require('../models/mongodb')
 var validator = new Validator(web3Rpc)

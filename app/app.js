@@ -339,7 +339,7 @@ router.beforeEach(async (to, from, next) => {
 
 getConfig().then((config) => {
     // let provider = 'tomowallet'
-    // var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.rpc))
+    // var web3js = new Web3(new Web3.providers.HttpProvider(config.blockchain.internalRpc))
     // Vue.prototype.setupProvider(provider, web3js)
     localStorage.set('configMaster', config)
     Vue.use(VueAnalytics, {

@@ -1,7 +1,7 @@
 'use strict'
 
 // const Validator = require('./models/blockchain/validator')
-const web3Rpc = require('../models/blockchain/web3rpc')
+const web3Rpc = require('../models/blockchain/web3rpc').Web3RpcInternal()
 const logger = require('../helpers/logger')
 const config = require('config')
 const db = require('../models/mongodb')

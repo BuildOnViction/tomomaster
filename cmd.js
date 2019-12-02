@@ -7,7 +7,7 @@ const cmdValidator = require('./commands/validator')
 const { updatePenalty } = require('./commands/penalty')
 const { updateStatus } = require('./commands/status')
 const { watchValidator } = require('./commands/recrawl')
-const web3Rpc = require('./models/blockchain/web3rpc')
+const web3Rpc = require('./models/blockchain/web3rpc').Web3RpcInternal()
 
 commander
     .version('0.1.0')
