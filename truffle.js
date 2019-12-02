@@ -19,7 +19,7 @@ module.exports = {
         },
         tomo: {
             provider: function () {
-                let w = new HDWalletProvider(config.get('truffle.mnemonic'), config.get('blockchain.rpc'))
+                let w = new HDWalletProvider(config.get('truffle.mnemonic'), config.get('blockchain.publicRpc'))
                 let nonceTracker = new NonceTrackerSubprovider()
                 w.engine._providers.unshift(nonceTracker)
                 nonceTracker.setEngine(w.engine)

@@ -5,6 +5,8 @@
     "blockchain": {
         "rpc": "https://rpc.tomochain.com",
         "ws": "wss://ws.tomochain.com",
+        "internalRpc": "",
+        "internalWs": "",
         "networkId": 88
     },
     "explorerUrl": "https://scan.tomochain.com",

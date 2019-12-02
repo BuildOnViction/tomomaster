@@ -1,8 +1,8 @@
 'use strict'
 
 const Validator = require('./models/blockchain/validator')
-const Web3Ws = require('./models/blockchain/web3ws')
-const web3Rpc = require('./models/blockchain/web3rpc')
+const Web3Ws = require('./models/blockchain/web3ws').Web3WsInternal
+const web3Rpc = require('./models/blockchain/web3rpc').Web3RpcInternal()
 const config = require('config')
 const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
