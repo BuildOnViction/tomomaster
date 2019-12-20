@@ -1,7 +1,7 @@
 'use strict'
 
 const Validator = require('../models/blockchain/validator')
-const Web3Ws = require('../models/blockchain/web3ws')
+const Web3Ws = require('../models/blockchain/web3ws').Web3Ws
 const config = require('config')
 const db = require('../models/mongodb')
 const moment = require('moment')
