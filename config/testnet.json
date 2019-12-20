@@ -1,7 +1,7 @@
 {
     "blockchain": {
-        "rpc": "https://testnet.tomochain.com",
-        "ws": "wss://testnet.tomochain.com/ws",
+        "rpc": "https://rpc.testnet.tomochain.com",
+        "ws": "wss://ws.testnet.tomochain.com",
         "internalRpc": "",
         "internalWs": "",
         "networkId": 89
