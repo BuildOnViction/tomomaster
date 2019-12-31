@@ -316,7 +316,7 @@ router.get('/crawlStatus', async function (req, res, next) {
         let blockNumber = await web3.eth.getBlockNumber()
 
         return res.json(
-            (parseInt(latestSignedBlock) > parseInt(blockNumber) - 20)
+            (parseInt(latestSignedBlock) > parseInt(blockNumber) - 100)
         )
     } catch (e) {
         return next(e)
