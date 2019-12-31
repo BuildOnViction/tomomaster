@@ -119,7 +119,7 @@ stages:
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
   - name: Release desktop application
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
-  - name: Deploy in devnet
-    if: type != pull_request AND branch = master AND repo = tomochain/tomomaster
+#  - name: Deploy in devnet
+#    if: type != pull_request AND branch = master AND repo = tomochain/tomomaster
   - name: Deploy in testnet
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
