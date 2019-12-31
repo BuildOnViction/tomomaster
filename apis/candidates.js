@@ -689,7 +689,7 @@ router.get('/:candidate/:owner/getRewards', [
         skip = (page) ? limit * (page - 1) : 0
         let masternodesRW = []
 
-        const total = db.Status.countDocuments({
+        const total = db.Status.estimatedDocumentCount({
             candidate: candidate,
             epoch: {
                 $lte: currentEpoch - 2
