@@ -101,7 +101,7 @@
         "ganache-cli": "^6.1.3",
         "html-webpack-plugin": "^3.2.0",
         "is-online": "^8.0.0",
-        "node-sass": "^4.11.0",
+        "node-sass": "^4.13.1",
         "nodemon": "^1.17.3",
         "sass-loader": "^7.0.3",
         "solidity-coverage": "^0.6.2",
@@ -116,7 +116,7 @@
         "vue-router": "^3.0.1",
         "vue-template-compiler": "^2.5.16",
         "vuelidate": "^0.6.2",
-        "webpack": "^4.6.0",
+        "webpack": "^4.41.6",
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.1.14",
         "webpack-merge": "^4.2.1"
