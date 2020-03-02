@@ -281,18 +281,21 @@
                                 <ul class="list-inline">
                                     <li class="list-inline-item">
                                         <a
-                                            target="_blank"
-                                            href="https://bit.ly/2B6p29o"><i class="tm-lifebuoy mr-1"/>Need help?</a>
+                                            :href="needHelpLink"
+                                            target="_blank">
+                                        <i class="tm-lifebuoy mr-1"/>Need help?</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="/privacyPolicy"><i class="tm-lock mr-1"/>Privacy Policy</a>
+                                            href="https://docs.tomochain.com/legal/privacy">
+                                        <i class="tm-lock mr-1"/>Privacy Policy</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="/terms"><i class="tm-profile mr-1"/>Terms of Service</a>
+                                            href="https://docs.tomochain.com/legal/terms-of-use">
+                                        <i class="tm-profile mr-1"/>Terms of Use</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
@@ -378,7 +381,8 @@ export default {
             statusClass: '',
             interval: '',
             notifications: [],
-            readNoti: 0
+            readNoti: 0,
+            needHelpLink: 'https://docs.tomochain.com/faq/products/tomochain-applications/tomomaster'
         }
     },
     async updated () {
