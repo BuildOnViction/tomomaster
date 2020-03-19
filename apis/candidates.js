@@ -316,7 +316,7 @@ router.get('/crawlStatus', async function (req, res, next) {
         let blockNumber = await web3.eth.getBlockNumber()
 
         return res.json(
-            (parseInt(latestSignedBlock) > parseInt(blockNumber) - 20)
+            (parseInt(latestSignedBlock) > parseInt(blockNumber) - 100)
         )
     } catch (e) {
         return next(e)
@@ -689,7 +689,7 @@ router.get('/:candidate/:owner/getRewards', [
         skip = (page) ? limit * (page - 1) : 0
         let masternodesRW = []
 
-        const total = db.Status.countDocuments({
+        const total = db.Status.estimatedDocumentCount({
             candidate: candidate,
             epoch: {
                 $lte: currentEpoch - 2

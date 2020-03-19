@@ -114,39 +114,6 @@
                             </p>
                         </div>
                         <div
-                            class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
-                            <p class="tomo-info__title">
-                                <i class="tm-dot tomo-info__icon" />
-                                <span class="tomo-info__text">Balance</span>
-                            </p>
-                            <p
-                                id="tomo-info__description--balance"
-                                class="tomo-info__description">
-                                {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 3)) }}
-                                <b-tooltip
-                                    v-if="checkLongNumber(candidate.balance)"
-                                    ref="tooltip"
-                                    target="tomo-info__description--balance">
-                                    {{ formatCurrencySymbol(formatBigNumber(candidate.balance, 6)) }}
-                                </b-tooltip>
-                            </p>
-                            <!-- <p class="tomo-info__title">
-                                <i class="tm-dot tomo-info__icon" />
-                                <span class="tomo-info__text">Recent Reward</span>
-                            </p> -->
-                            <!-- <p
-                                id="tomo-info__description--you-rewarded"
-                                class="tomo-info__description">
-                                {{ formatCurrencySymbol(formatNumber(recentReward)) }}
-                                <b-tooltip
-                                    v-if="checkLongNumber(candidate.rewarded)"
-                                    ref="tooltip"
-                                    target="tomo-info__description--you-rewarded">
-                                    {{ formatCurrencySymbol(formatBigNumber(candidate.rewarded, 6)) }}
-                                </b-tooltip>
-                            </p> -->
-                        </div>
-                        <div
                             class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-xl-0 tomo-info">
                             <p class="tomo-info__title">
                                 <i class="tm-dot tomo-info__icon" />
@@ -521,6 +488,11 @@ export default {
                     sortable: false
                 },
                 {
+                    key: 'name',
+                    label: 'Name',
+                    sortable: false
+                },
+                {
                     key: 'signNumber',
                     label: 'Sign Number',
                     sortable: false
@@ -759,7 +731,8 @@ export default {
                         reward: reward,
                         createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
                         dateTooltip: moment(r.rewardTime).format('lll'),
-                        status: r.status
+                        status: r.status,
+                        name: self.candidate.name || 'Anonymous'
                     })
                 })
                 self.mnRewards = items
