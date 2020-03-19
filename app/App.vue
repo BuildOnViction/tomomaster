@@ -174,6 +174,15 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.6.2</strong>
+                                            <p>- Remove masternode balance</p>
+                                            <p>- Display masternode name in reward table</p>
+                                            <p>- Improve loading reward table</p>
+                                            <p>- Update new logo</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.6.1</strong>
                                             <p>- Add check owner address</p>
                                             <p>- Clean unused libraries</p>
