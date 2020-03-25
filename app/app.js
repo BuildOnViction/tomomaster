@@ -95,12 +95,23 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
                     if (window.ethereum) {
                         await window.ethereum.enable()
                     }
-                    const accs = await wjs.eth.getAccounts()
+                    let accs = await wjs.eth.getAccounts()
                     if (!accs || accs.length <= 0) {
                         console.log('There was an error fetching your accounts.')
                         return reject(new Error(`Couldn't get any accounts! Make sure
                         your Ethereum client is configured correctly.`))
                     } else { return resolve(accs[0]) }
+                case 'pantograph':
+                    // Request account access if needed - for metamask
+                    if (window.tomochain) {
+                        await window.tomochain.enable()
+                    }
+                    let paccs = await wjs.eth.getAccounts()
+                    if (!paccs || paccs.length <= 0) {
+                        console.log('There was an error fetching your accounts.')
+                        return reject(new Error(`Couldn't get any accounts! Make sure
+                        your Ethereum client is configured correctly.`))
+                    } else { return resolve(paccs[0]) }
                 case 'tomowallet':
                     return resolve(self.$store.state.address)
                 case 'custom':
@@ -374,10 +385,20 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'metamask':
                 if (window.web3) {
                     if (window.web3.currentProvider) {
-                        var p = window.web3.currentProvider
+                        let p = window.web3.currentProvider
                         wjs = new Web3(p)
                     } else {
                         wjs = window.web3
+                    }
+                }
+                break
+            case 'pantograph':
+                if (window.tomoWeb3) {
+                    if (window.tomoWeb3.currentProvider) {
+                        let pp = window.tomoWeb3.currentProvider
+                        wjs = new Web3(pp)
+                    } else {
+                        wjs = window.tomoWeb3
                     }
                 }
                 break
