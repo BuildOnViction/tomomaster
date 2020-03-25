@@ -34,9 +34,12 @@
                                 <option
                                     v-if="!isElectron"
                                     value="metamask">Metamask/DApp Wallets</option>
+                                <option
+                                    v-if="!isElectron"
+                                    value="pantograph">Pantograph</option>
                             </b-form-select>
                             <small
-                                v-if="provider !== 'metamask'"
+                                v-if="provider !== 'metamask' && provider !== 'pantograph'"
                                 class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small>
                         </b-input-group>
                     </b-form-group>
@@ -184,6 +187,14 @@
                             <a
                                 href="https://metamask.io/"
                                 target="_blank">Metamask Extension</a>
+                            then connect it to Tomochain Mainnet or Testnet.</p>
+                    </div>
+                    <div
+                        v-if="!isReady && provider === 'pantograph'">
+                        <p>Please install &amp; login
+                            <a
+                                href="https://pantograph.io/"
+                                target="_blank">Pantograph Extension</a>
                             then connect it to Tomochain Mainnet or Testnet.</p>
                     </div>
                     <div class="buttons text-right">
@@ -448,6 +459,9 @@ export default {
                 if (!self.web3 && self.NetworkProvider === 'metamask') {
                     throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
                 }
+                if (!self.web3 && self.NetworkProvider === 'pantograph') {
+                    throw Error('Web3 is not properly detected. Have you installed Pantograph extension?')
+                }
                 if (self.web3) {
                     try {
                         // contract = await self.getTomoValidatorInstance()
@@ -551,7 +565,7 @@ export default {
             }
         },
         validate: function () {
-            if (this.provider === 'metamask') {
+            if (this.provider === 'metamask' || this.provider === 'pantograph') {
                 this.save()
             }
 
@@ -613,6 +627,12 @@ export default {
                         wjs = new Web3(p)
                     }
                     break
+                case 'pantograph':
+                    if (window.tomoWeb3) {
+                        var pp = window.tomoWeb3.currentProvider
+                        wjs = new Web3(pp)
+                    }
+                    break
                 case 'ledger':
                     // Object - HttpProvider
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
@@ -650,7 +670,7 @@ export default {
 
                 if (self.address) {
                     self.$store.state.address = self.address.toLowerCase()
-                    if (self.provider === 'metamask') {
+                    if (self.provider === 'metamask' || self.provider === 'pantograph') {
                         store.set('address', self.address.toLowerCase())
                         store.set('network', self.provider)
                     }
