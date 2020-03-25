@@ -174,6 +174,13 @@
                                     class="notification_body">
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
+                                            <strong>TomoMaster up to 1.6.4</strong>
+                                            <p>- Support pantograph</p>
+                                        </div>
+                                    </b-dropdown-text>
+                                    <b-dropdown-divider/>
+                                    <b-dropdown-text>
+                                        <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.6.3</strong>
                                             <p>- Remove masternode balance</p>
                                             <p>- Display masternode name in reward table</p>
@@ -181,12 +188,14 @@
                                             <p>- Update new logo</p>
                                         </div>
                                     </b-dropdown-text>
+                                    <b-dropdown-divider/>
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.6.2</strong>
                                             <p>- Fix test api issue</p>
                                         </div>
                                     </b-dropdown-text>
+                                    <b-dropdown-divider/>
                                     <b-dropdown-text>
                                         <div style="font-size: 13px;">
                                             <strong>TomoMaster up to 1.6.1</strong>
@@ -229,13 +238,6 @@
                                             <p>- Display owner ROI and voter ROI in masternode detail page</p>
                                             <p>- Add withdrawal notification</p>
                                             <p>- Add sitemap</p>
-                                        </div>
-                                    </b-dropdown-text>
-                                    <b-dropdown-divider/>
-                                    <b-dropdown-text>
-                                        <div style="font-size: 13px;">
-                                            <strong>TomoMaster up to 1.4.3</strong>
-                                            <p>- Fix id injection issue</p>
                                         </div>
                                     </b-dropdown-text>
                                 </div>
