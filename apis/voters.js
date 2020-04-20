@@ -11,6 +11,13 @@ const BigNumber = require('bignumber.js')
 const _ = require('lodash')
 const { check, validationResult, query } = require('express-validator/check')
 const urljoin = require('url-join')
+const LRU = require('lru-cache')
+const cache = new LRU({
+    max: 1000,
+    length: function (n, key) { return n * 2 + key.length },
+    dispose: function (key, n) { n.close() },
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+})
 
 router.get('/:voter/candidates', [
     query('limit')
@@ -374,17 +381,28 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
         const candidate = await candidatePromise
 
+        if (!candidate) {
+            return res.send('N/A')
+        }
+
         // get latest reward
-        const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
-            {
-                address: address,
-                limit: 1,
-                page: 1,
-                owner: candidate.owner,
-                reason: 'Voter'
-            }
-        )
+        let cacheKey = urljoin(config.get('tomoscanUrl'),
+            'api/expose/rewards', address.toLowerCase(), candidate.owner.toLowerCase())
+        let rewards = cache.get(cacheKey)
+        if (!rewards) {
+            rewards = await axios.post(
+                urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+                {
+                    address: address,
+                    limit: 1,
+                    page: 1,
+                    owner: candidate.owner,
+                    reason: 'Voter'
+                }
+            )
+            cache.set(cacheKey, rewards)
+        }
+
         let signNumber = 0
         let epoch
         if (rewards.data.items.length > 0) {
@@ -397,9 +415,14 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         // get total signers in latest epoch
         let totalSigners
         if (epoch) {
-            totalSigners = await axios.post(
-                urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
-            )
+            cacheKey = urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            totalSigners = cache.get(cacheKey)
+            if (!totalSigners) {
+                totalSigners = await axios.post(
+                    urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+                )
+                cache.set(cacheKey, totalSigners)
+            }
         }
 
         if (totalSigners && totalSigners.data && totalSigners.data.totalSignNumber) {
