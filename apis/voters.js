@@ -14,8 +14,6 @@ const urljoin = require('url-join')
 const LRU = require('lru-cache')
 const cache = new LRU({
     max: 1000,
-    length: function (n, key) { return n * 2 + key.length },
-    dispose: function (key, n) { n.close() },
     maxAge: 24 * 60 * 60 * 1000 // 1 day
 })
 
