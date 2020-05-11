@@ -12,7 +12,7 @@
                     <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
-                            <i class="tm-tomo tomo-list__icon" />
+                            <i class="tm-tomo2 tomo-list__icon" />
                             <p class="tomo-list__text">
                                 <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
                                 <span>Voter</span>
@@ -26,7 +26,7 @@
                             </p>
                         </li>
                         <li class="tomo-list__item">
-                            <i class="tm-tomo tomo-list__icon" />
+                            <i class="tm-tomo2 tomo-list__icon" />
                             <p class="tomo-list__text">
                                 <span> {{ formatCurrencySymbol(formatNumber(balance)) }}</span>
                                 <span>Balance</span>
@@ -51,7 +51,7 @@
                                     v-model="voteValue"
                                     name="vote-value"/>
                                 <b-input-group-append>
-                                    <i class="tm-tomo" />
+                                    <i class="tm-tomo2" />
                                 </b-input-group-append>
                                 <span
                                     v-if="$v.voteValue.$dirty && !$v.voteValue.required"

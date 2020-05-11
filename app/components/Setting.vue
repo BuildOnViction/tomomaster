@@ -224,7 +224,7 @@
                         </p>
                     </li>
                     <li class="tomo-list__item">
-                        <i class="tm-tomo tomo-list__icon" />
+                        <i class="tm-tomo2 tomo-list__icon" />
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ formatNumber(balance) }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>

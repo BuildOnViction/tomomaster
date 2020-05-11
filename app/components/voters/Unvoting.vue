@@ -53,7 +53,7 @@
                                     </p>
                                 </li>
                                 <li class="tomo-list__item">
-                                    <i class="tm-tomo tomo-list__icon" />
+                                    <i class="tm-tomo2 tomo-list__icon" />
                                     <p class="tomo-list__text">
                                         <span> {{ formatCurrencySymbol(formatNumber(voted)) }}
                                             - <a
@@ -81,7 +81,7 @@
                                             name="vote-value"
                                             @input="onChange"/>
                                         <b-input-group-append>
-                                            <i class="tm-tomo" />
+                                            <i class="tm-tomo2" />
                                         </b-input-group-append>
                                         <span
                                             v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
