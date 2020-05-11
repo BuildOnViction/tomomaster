@@ -20,14 +20,14 @@
                                 </p>
                             </li>
                             <li class="tomo-list__item">
-                                <i class="tm-tomo tomo-list__icon" />
+                                <i class="tm-tomo2 tomo-list__icon" />
                                 <p class="tomo-list__text">
                                     <span> {{ formatCurrencySymbol(formatNumber(capacity)) }}</span>
                                     <span>Capacity</span>
                                 </p>
                             </li>
                             <li class="tomo-list__item">
-                                <i class="tm-tomo tomo-list__icon" />
+                                <i class="tm-tomo2 tomo-list__icon" />
                                 <p class="tomo-list__text">
                                     <span> {{ blockNumber }}</span>
                                     <span>Block Number</span>

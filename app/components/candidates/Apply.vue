@@ -10,7 +10,7 @@
                 <h4 class="color-white tomo-card__title tomo-card__title--big">Become a Candidate</h4>
                 <ul class="tomo-list list-unstyled">
                     <li class="tomo-list__item">
-                        <i class="tm-tomo tomo-list__icon" />
+                        <i class="tm-tomo2 tomo-list__icon" />
                         <span class="tomo-list__text">You have to deposit at least 50,000 TOMO</span>
                     </li>
                     <li class="tomo-list__item">
@@ -40,7 +40,7 @@
                                 v-model="applyValue"
                                 name="apply-value"/>
                             <b-input-group-append>
-                                <i class="tm-tomo" />
+                                <i class="tm-tomo2" />
                             </b-input-group-append>
                             <span
                                 v-if="$v.applyValue.$dirty && !$v.applyValue.required"
