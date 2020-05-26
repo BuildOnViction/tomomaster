@@ -183,6 +183,7 @@
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import store from 'store'
+import Web3 from 'web3'
 
 export default {
     name: 'App',
@@ -240,14 +241,33 @@ export default {
         self.currentBlock = self.chainConfig.blockNumber
 
         try {
-            if (self.isReady) {
-                let contract// = await self.getTomoValidatorInstance()
-                contract = self.TomoValidator
-                self.account = store.get('address') ||
+            if (self.isReady || window.web3) {
+                if (window.web3 && window.web3.currentProvider) {
+                    const wjs = new Web3(window.web3.currentProvider)
+                    await self.setupProvider('tomowalletDapp', wjs)
+                    self.account = await self.getAccount()
+                    if (self.account) {
+                        self.$store.state.address = self.account
+                        store.set('address', self.account.toLowerCase())
+                        store.set('network', 'tomowalletDapp')
+                        self.$bus.$emit('logged', 'user logged')
+                    }
+                } else {
+                    self.account = store.get('address') ||
                     self.$store.state.address || await self.getAccount()
+                }
+                let contract
+                contract = self.TomoValidator
                 if (self.account && contract) {
                     self.isTomonet = true
                 }
+                // let contract// = await self.getTomoValidatorInstance()
+                // contract = self.TomoValidator
+                // self.account = store.get('address') ||
+                //     self.$store.state.address || await self.getAccount()
+                // if (self.account && contract) {
+                //     self.isTomonet = true
+                // }
             }
         } catch (error) {
             console.log(error)

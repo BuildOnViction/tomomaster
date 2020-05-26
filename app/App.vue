@@ -272,6 +272,7 @@
                                 <b-dropdown-item to="/setting">Settings/Withdraws</b-dropdown-item>
                                 <b-dropdown-divider />
                                 <b-dropdown-item
+                                    v-if="!mobileCheck && isTomonet"
                                     href="/"
                                     @click="signOut">Sign out</b-dropdown-item>
                             </b-dropdown>
@@ -400,6 +401,13 @@ export default {
             notifications: [],
             readNoti: 0,
             needHelpLink: 'https://docs.tomochain.com/faq/products/tomochain-applications/tomomaster'
+        }
+    },
+    computed: {
+        mobileCheck: () => {
+            const isAndroid = navigator.userAgent.match(/Android/i)
+            const isIOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            return (isAndroid || isIOS)
         }
     },
     async updated () {
