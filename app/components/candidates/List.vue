@@ -242,7 +242,8 @@ export default {
 
         try {
             if (self.isReady || window.web3) {
-                if (window.web3 && window.web3.currentProvider) {
+                if (window.web3 && window.web3.currentProvider &&
+                    window.web3.currentProvider.isTomoWallet) {
                     const wjs = new Web3(window.web3.currentProvider)
                     await self.setupProvider('tomowalletDapp', wjs)
                     self.account = await self.getAccount()
