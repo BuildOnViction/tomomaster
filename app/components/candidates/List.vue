@@ -262,13 +262,6 @@ export default {
                 if (self.account && contract) {
                     self.isTomonet = true
                 }
-                // let contract// = await self.getTomoValidatorInstance()
-                // contract = self.TomoValidator
-                // self.account = store.get('address') ||
-                //     self.$store.state.address || await self.getAccount()
-                // if (self.account && contract) {
-                //     self.isTomonet = true
-                // }
             }
         } catch (error) {
             console.log(error)
