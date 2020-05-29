@@ -353,7 +353,7 @@ getConfig().then((config) => {
     localStorage.set('configMaster', config)
     Vue.use(VueAnalytics, {
         id: config.GA,
-        linkers: ['tomochain.com'],
+        linkers: ['master.tomochain.com'],
         router,
         autoTraking: {
             screenView: true
