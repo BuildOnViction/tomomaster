@@ -60,7 +60,8 @@ Vue.use(Toasted, {
         onClick : (e, toastObject) => {
             toastObject.goAway(0)
         }
-    }
+    },
+    singleton: true
 })
 
 // set trezor's manifest
