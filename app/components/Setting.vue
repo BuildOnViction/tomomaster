@@ -500,10 +500,7 @@ export default {
 
                     const blks = await blksPromise
 
-                    // remove duplicate
-                    const blks2 = [...new Set(blks)]
-
-                    await Promise.all(blks2.map(async (it, index) => {
+                    await Promise.all(blks.map(async (it, index) => {
                         let blk = new BigNumber(it).toString()
                         if (blk !== '0') {
                             self.aw = true

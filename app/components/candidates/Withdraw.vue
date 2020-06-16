@@ -218,7 +218,7 @@ export default {
                         let check = true
                         while (check) {
                             const receipt = await self.web3.eth.getTransactionReceipt(txHash)
-                            if (receipt) {
+                            if (receipt && receipt.status) {
                                 check = false
                                 self.$toasted.show(self.toastMessage)
                                 setTimeout(() => {
