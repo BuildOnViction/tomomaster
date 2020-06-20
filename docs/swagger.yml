@@ -20,6 +20,7 @@ tags:
 schemes:
   - https
   - http
+host: master.tomochain.com
 consumes:
   - application/json
 produces:
