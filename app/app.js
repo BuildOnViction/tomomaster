@@ -23,7 +23,7 @@ import Web3 from 'web3'
 // import { default as contract } from 'truffle-contract'
 // import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 import Toasted from 'vue-toasted'
-// import axios from 'axios'
+import axios from 'axios'
 // import BigNumber from 'bignumber.js'
 // import HighchartsVue from 'highcharts-vue'
 // import Highcharts from 'highcharts'
@@ -279,29 +279,8 @@ Vue.prototype.checkLongNumber = Helper.checkLongNumber
 Vue.prototype.formatBigNumber = Helper.formatBigNumber
 
 const getConfig = Vue.prototype.appConfig = async function () {
-    return {
-        blockchain: {
-            rpc: 'https://rpc.tomochain.com',
-            ws: 'wss://ws.tomochain.com',
-            internalRpc: 'http://10.130.38.186:8545',
-            internalWs: 'ws://10.130.38.186:8546',
-            networkId: 88,
-            epoch: 900,
-            blockTime: 2,
-            reward: 250,
-            voterRewardRate: 50,
-            masternodeRewardRate: 40,
-            foundationRewardRate: 10,
-            gas: 2000000,
-            foundationAddress: '0x0000000000000000000000000000000000000068',
-            validatorAddress: '0x0000000000000000000000000000000000000088',
-            blockSignerAddress: '0x0000000000000000000000000000000000000089',
-            randomizeAddress: '0x0000000000000000000000000000000000000090',
-            blockNumber: 23839265
-        },
-        explorerUrl: 'https://scan.tomochain.com',
-        GA: 'UA-124597188-4'
-    }
+    let config = await axios.get('/api/config')
+    return config.data
 }
 
 Vue.prototype.getSecondsToHms = Helper.getSecondsToHms
