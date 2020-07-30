@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js'
 import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
+import Cookies from 'js-cookie'
+import axios from 'axios'
 
 const Helper = {
     getCurrencySymbol () {
@@ -86,7 +88,27 @@ const Helper = {
 
         return this.formatNumber(num)
     },
-    TomoValidatorArtifacts
+    TomoValidatorArtifacts,
+    async listTomoPool () {
+        const KEY = 'tomopool'
+        if (Cookies.get(KEY)) {
+            return JSON.parse(Cookies.get(KEY))
+        }
+        const { data } = await axios.get('https://api-v2.tomopool.com/api/candidates')
+        const pools = {}
+        for (let i = 0; i < data.candidates.length; i++) {
+            let candidate = data.candidates[i]
+            pools[candidate.coinbase] = {
+                name: candidate.name,
+                domain: candidate.domain,
+                avatar: candidate.avatar,
+                fullAvatar: candidate.fullAvatar,
+                hash: candidate.hash
+            }
+        }
+        Cookies.set(KEY, JSON.stringify(pools), { expires: 1 })
+        return pools
+    }
 }
 
 export default Helper

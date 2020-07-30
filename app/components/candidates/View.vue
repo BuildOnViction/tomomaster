@@ -15,9 +15,16 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="section-title">
-                            <i class="tm-flag color-yellow" />
+                            <img
+                                v-if="pools[candidate.address]"
+                                :src="pools[candidate.address].fullAvatar"
+                                width="50px">
+                            <i
+                                v-else
+                                class="tm-flag color-yellow" />
                             <span>
-                                {{ (candidate.rank) ? `${candidate.rank}. ${candidate.name}` : candidate.name }}
+                                {{ (candidate.rank) ? `${candidate.rank}.` : '' }}
+                                {{ pools[candidate.address] ? pools[candidate.address].name : candidate.name }}
                             </span>
 
                             <router-link
@@ -189,6 +196,11 @@
                         v-if="candidate.status !== 'RESIGNED' && isTomonet"
                         :to="`/voting/${candidate.address}`"
                         variant="primary">Vote</b-button>
+                    <a
+                        v-if="candidate.status !== 'RESIGNED' && pools[candidate.address]"
+                        :href="pools[candidate.address].domain"
+                        class="btn btn-secondary"
+                        target="_blank">Stake with {{ pools[candidate.address].name }}</a>
                 </div>
             </div>
             <!-- <div
@@ -580,7 +592,8 @@ export default {
             isCandidate: true,
             currentTab: '',
             voterROI: '',
-            mnROI: ''
+            mnROI: '',
+            pools: {}
         }
     },
     computed: {
@@ -631,6 +644,7 @@ export default {
         if (self.candidate.rank) {
             self.getAnnualReward()
         }
+        self.pools = await self.tomopool
     },
     mounted () {},
     methods: {
