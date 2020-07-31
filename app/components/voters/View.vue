@@ -78,6 +78,15 @@
                     slot="index"
                     slot-scope="data">{{ data.index + 1 }}
                 </template>
+                <template
+                    slot="name"
+                    slot-scope="data">
+                    <img
+                        v-if="pools[data.item.address]"
+                        :src="pools[data.item.address].fullAvatar"
+                        width="30px">
+                    {{ pools[data.item.address] ? pools[data.item.address].name : data.item.name }}
+                </template>
 
                 <template
                     slot="address"
@@ -403,7 +412,8 @@ export default {
             txPerPage: 10,
             txTotalRows: 0,
             txSortBy: 'createdAt',
-            txSortDesc: true
+            txSortDesc: true,
+            pools: {}
         }
     },
     computed: { },
@@ -423,6 +433,7 @@ export default {
         self.getCandidates()
         self.getRewards()
         self.getTransactions()
+        self.pools = await self.tomopool
     },
     methods: {
         getEventClass (event) {

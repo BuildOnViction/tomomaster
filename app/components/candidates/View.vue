@@ -299,6 +299,16 @@
                         slot="checkpoint"
                         slot-scope="data">{{ data.item.checkpoint }}
                     </template>
+                    <template
+                        slot="name"
+                        slot-scope="data">
+
+                        <img
+                            v-if="pools[candidate.address]"
+                            :src="pools[candidate.address].fullAvatar"
+                            width="30px">
+                        {{ pools[candidate.address] ? pools[candidate.address].name : data.item.name }}
+                    </template>
 
                     <template
                         slot="reward"
