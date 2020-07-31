@@ -103,7 +103,8 @@ const Helper = {
                 domain: candidate.domain,
                 avatar: candidate.avatar,
                 fullAvatar: candidate.fullAvatar,
-                hash: candidate.hash
+                hash: candidate.hash,
+                socials: candidate.socials
             }
         }
         Cookies.set(KEY, JSON.stringify(pools), { expires: 1 })

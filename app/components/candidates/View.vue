@@ -34,7 +34,25 @@
                                 <i class="tm-edit ml-2 mr-0" />
                             </router-link>
                             <span class="text-truncate section-title__description">{{ candidate.address }}</span>
-                            <ul class="list-inline social-links">
+                            <ul
+                                v-if="pools[candidate.address]"
+                                class="list-inline social-links">
+                                <li
+                                    v-for="(value, key) in pools[candidate.address].socials"
+                                    :key="key"
+                                    class="list-inline-item social-links__item">
+                                    <a
+                                        v-if="value !== ''"
+                                        :href="value"
+                                        target="_blank"
+                                        class="social-links__link">
+                                        <i :class="'social-links__icon tm-' + key" />
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul
+                                v-else
+                                class="list-inline social-links">
                                 <li
                                     v-for="(value, key) in candidate.socials"
                                     :key="key"
