@@ -540,6 +540,8 @@ Vue.prototype.serializeQuery = Helper.serializeQuery
 
 Vue.prototype.truncate = Helper.truncate
 
+Vue.prototype.tomopool = Helper.listTomoPool()
+
 const EventBus = new Vue()
 
 Vue.prototype.$bus = EventBus
