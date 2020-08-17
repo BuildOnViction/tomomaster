@@ -15,16 +15,9 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="section-title">
-                            <img
-                                v-if="pools[candidate.address]"
-                                :src="pools[candidate.address].fullAvatar"
-                                width="50px">
-                            <i
-                                v-else
-                                class="tm-flag color-yellow" />
+                            <i class="tm-flag color-yellow" />
                             <span>
-                                {{ (candidate.rank) ? `${candidate.rank}.` : '' }}
-                                {{ pools[candidate.address] ? pools[candidate.address].name : candidate.name }}
+                                {{ (candidate.rank) ? `${candidate.rank}. ${candidate.name}` : candidate.name }}
                             </span>
 
                             <router-link
@@ -34,25 +27,7 @@
                                 <i class="tm-edit ml-2 mr-0" />
                             </router-link>
                             <span class="text-truncate section-title__description">{{ candidate.address }}</span>
-                            <ul
-                                v-if="pools[candidate.address]"
-                                class="list-inline social-links">
-                                <li
-                                    v-for="(value, key) in pools[candidate.address].socials"
-                                    :key="key"
-                                    class="list-inline-item social-links__item">
-                                    <a
-                                        v-if="value !== ''"
-                                        :href="value"
-                                        target="_blank"
-                                        class="social-links__link">
-                                        <i :class="'social-links__icon tm-' + key" />
-                                    </a>
-                                </li>
-                            </ul>
-                            <ul
-                                v-else
-                                class="list-inline social-links">
+                            <ul class="list-inline social-links">
                                 <li
                                     v-for="(value, key) in candidate.socials"
                                     :key="key"
@@ -214,11 +189,6 @@
                         v-if="candidate.status !== 'RESIGNED' && isTomonet"
                         :to="`/voting/${candidate.address}`"
                         variant="primary">Vote</b-button>
-                    <a
-                        v-if="candidate.status !== 'RESIGNED' && pools[candidate.address]"
-                        :href="pools[candidate.address].domain"
-                        class="btn btn-secondary"
-                        target="_blank">Stake with {{ pools[candidate.address].name }}</a>
                 </div>
             </div>
             <!-- <div
@@ -298,16 +268,6 @@
                     <template
                         slot="checkpoint"
                         slot-scope="data">{{ data.item.checkpoint }}
-                    </template>
-                    <template
-                        slot="name"
-                        slot-scope="data">
-
-                        <img
-                            v-if="pools[candidate.address]"
-                            :src="pools[candidate.address].fullAvatar"
-                            width="30px">
-                        {{ pools[candidate.address] ? pools[candidate.address].name : data.item.name }}
                     </template>
 
                     <template
@@ -620,8 +580,7 @@ export default {
             isCandidate: true,
             currentTab: '',
             voterROI: '',
-            mnROI: '',
-            pools: {}
+            mnROI: ''
         }
     },
     computed: {
@@ -672,7 +631,6 @@ export default {
         if (self.candidate.rank) {
             self.getAnnualReward()
         }
-        self.pools = await self.tomopool
     },
     mounted () {},
     methods: {
