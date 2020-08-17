@@ -117,11 +117,7 @@
                     <div
                         :id="`name_${data.index}`"
                         class="text-truncate">
-                        <img
-                            v-if="pools[data.item.address]"
-                            :src="pools[data.item.address].fullAvatar"
-                            width="30px">
-                        {{ pools[data.item.address] ? pools[data.item.address].name : data.item.name }}
+                        {{ data.item.name }}
                     </div>
                     <b-tooltip
                         v-if="data.item.name.length > 20"
@@ -165,12 +161,7 @@
                     slot="action"
                     slot-scope="data">
                     <b-button
-                        v-if="pools[data.item.address] && data.item.status !== 'RESIGNED'"
-                        :to="`/candidate/${data.item.address}`"
-                        variant="primary"
-                        class="mt-3 mt-lg-0 vote-btn">Detail</b-button>
-                    <b-button
-                        v-else-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
+                        v-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
                         variant="primary"
                         class="mt-3 mt-lg-0 vote-btn"
                         @click="onRowClick(data.item.address)">Vote</b-button>
@@ -230,8 +221,7 @@ export default {
             currentTable: 'masternodes',
             averageStakingROI: '',
             averageOwnerROI: '',
-            currentBlock: '',
-            pools: {}
+            currentBlock: ''
         }
     },
     computed: {
@@ -278,7 +268,6 @@ export default {
         }
         self.getDataFromApi()
         self.averageroi()
-        self.pools = await self.tomopool
     },
     mounted () { },
     methods: {
