@@ -444,7 +444,9 @@ export default {
         }
     },
     created: async function () {
-        this.provider = this.NetworkProvider || 'tomowallet'
+        if (this.NetworkProvider) {
+            this.provider = this.NetworkProvider
+        }
         let self = this
         self.hdWallets = self.hdWallets || {}
         self.config = store.get('configMaster') || await self.appConfig()
@@ -480,9 +482,10 @@ export default {
                 }
 
                 if (!account) {
-                    if (store.get('address') && self.provider !== 'custom') {
-                        account = store.get('address')
-                    } else return false
+                    return false
+                    // if (store.get('address') && self.provider !== 'custom') {
+                    //     account = store.get('address')
+                    // } else return false
                 }
 
                 self.address = account
