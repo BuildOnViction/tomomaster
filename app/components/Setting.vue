@@ -676,12 +676,6 @@ export default {
                     }
                     self.$bus.$emit('logged', 'user logged')
                     self.$toasted.show('Network Provider was changed successfully')
-                } else {
-                    self.$toasted.show(
-                        'Couldn\'t get any accounts! Make sure ' +
-                        'your Ethereum client is configured correctly.', {
-                            type : 'error'
-                        })
                 }
             } catch (e) {
                 self.loading = false
