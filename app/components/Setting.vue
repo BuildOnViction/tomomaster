@@ -466,11 +466,10 @@ export default {
                 }
                 if (self.web3) {
                     try {
-                        // contract = await self.getTomoValidatorInstance()
                         contract = self.TomoValidator
                         self.gasPrice = await self.web3.eth.getGasPrice()
                     } catch (error) {
-                        throw Error('Make sure you choose correct tomochain network.')
+                        self.$toasted.show('Make sure you choose correct tomochain network.')
                     }
                 }
 
@@ -489,12 +488,12 @@ export default {
                 }
 
                 self.address = account
-                self.web3.eth.getBalance(self.address, function (a, b) {
-                    self.balance = new BigNumber(b).div(10 ** 18)
-                    if (a) {
-                        console.log('got an error', a)
-                    }
+                self.web3.eth.getBalance(self.address).then(balanceBN => {
+                    self.balance = new BigNumber(balanceBN).div(10 ** 18)
+                }).catch(e => {
+                    self.$toasted.show('Cannot load balance', { type: 'error' })
                 })
+
                 let whPromise = axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
                 if (contract) {
                     // let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
