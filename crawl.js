@@ -250,7 +250,7 @@ async function getCurrentCandidates () {
             await Promise.all(m)
             return updateCandidateInfo(candidate)
         })
-        return Promise.all(map).catch(e => logger.error('getCurrentCandidates %s', e))
+        return Promise.all(map).catch(e => logger.info('getCurrentCandidates %s', e))
     } catch (e) {
         logger.error('getCurrentCandidates2 %s', e)
     }
@@ -417,6 +417,12 @@ async function watchNewBlock (n) {
                     }))
                 }
             }
+            
+            // update capacity every 150 blocks
+            if (n % 150 === 0) {
+                getCurrentCandidates()
+            }
+
             // update rank after 50 blocks
             if (n % 50 === 0) {
                 // get candidate's cap
