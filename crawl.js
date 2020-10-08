@@ -417,7 +417,7 @@ async function watchNewBlock (n) {
                     }))
                 }
             }
-            
+
             // update capacity every 150 blocks
             if (n % 150 === 0) {
                 getCurrentCandidates()
