@@ -7,6 +7,8 @@ const web3 = require('../models/blockchain/web3rpc').Web3Rpc()
 router.get('/', async function (req, res, next) {
     let appConfig = {}
     appConfig.blockchain = config.get('blockchain')
+    delete appConfig.blockchain.internalRpc
+    delete appConfig.blockchain.internalWs
     try {
         appConfig.blockchain.blockNumber = await web3.eth.getBlockNumber()
     } catch (e) {
