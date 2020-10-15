@@ -1,6 +1,5 @@
 var path = require('path')
 var webpack = require('webpack')
-// var appName = '[name].[hash].js'
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
@@ -15,12 +14,12 @@ const webpackConfig = merge(commonConfig, {
     output: {
         path: path.resolve(__dirname, '../build'),
         publicPath: '/build/',
-        filename: '[name].[hash].js',
-        chunkFilename: '[name].chunks.[chunkhash].js'
+        filename: '[name].[contenthash].js'
+        // chunkFilename: '[name].chunks.[chunkhash].js'
         // jsonpFunction: 'pluginWebpack'
     },
     optimization: {
-        minimize: process.env.NODE_ENV === 'production',
+        minimize: true,
         splitChunks: {
             chunks: 'all',
             minSize: 30000,

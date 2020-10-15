@@ -1,4 +1,6 @@
 var path = require('path')
+const globImporter = require('node-sass-glob-importer')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const webpackConfig = {
     entry: {
@@ -7,8 +9,7 @@ const webpackConfig = {
     },
     optimization: {
         splitChunks: {
-            // name: 'app',
-            // chunks: 'all'
+            // name: 'app'
         }
     },
     module: {
@@ -32,7 +33,22 @@ const webpackConfig = {
                 use: [
                     'vue-style-loader',
                     'css-loader',
-                    'sass-loader'
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            importer: globImporter()
+                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: [
+                                require('stylelint')(),
+                                require('autoprefixer')()
+                            ]
+                        }
+                    }
                 ]
             },
             {
@@ -81,7 +97,10 @@ const webpackConfig = {
     performance: {
         hints: false
     },
-    devtool: '#eval-source-map'
+    devtool: '#eval-source-map',
+    plugins: [
+        new VueLoaderPlugin()
+    ]
 }
 
 module.exports = webpackConfig
