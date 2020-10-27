@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------
+/* --------------------------------------------------------------
 >>> TABLE OF CONTENTS:
 ----------------------------------------------------------------
 # Settings
@@ -8,7 +8,8 @@
 # Objects
 # Components
 # Trumps
---------------------------------------------------------------*/
+--------------------------------------------------------------
+*/
 
 /*
 SETTINGS
@@ -17,10 +18,8 @@ Split up into logical sections, the smaller and simpler the better.
 used with preprocessors and contain font, colors definitions, etc
 ================================================
 */
-@import "settings/fonts";
-@import "settings/global";
-// @import "../fonts/icon-tomo/style.css";
-
+@import 'settings/fonts';
+@import 'settings/global';
 @import '../../../node_modules/bootstrap/scss/functions';
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
@@ -76,7 +75,7 @@ moThese come with default styling from the browser so we can redefine them here.
 /*
 OBJECTS
 ================================================
-"formless", in other words invisible to the user, no cosmetics
+'formless', in other words invisible to the user, no cosmetics
   Eg. wrappers, grid systems, etc.
 This is the first layer of classes and should be agnostically named
   Eg. list-inline, ui-list, etc.
