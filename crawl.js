@@ -252,7 +252,7 @@ async function getCurrentCandidates () {
         })
         return Promise.all(map).catch(e => logger.info('getCurrentCandidates %s', e))
     } catch (e) {
-        logger.error('getCurrentCandidates2 %s', e)
+        logger.info('getCurrentCandidates2 %s', e)
     }
 }
 
