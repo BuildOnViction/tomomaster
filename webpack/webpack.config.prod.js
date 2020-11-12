@@ -1,6 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const commonConfig = require('./webpack.config.common')
@@ -53,14 +53,17 @@ const webpackConfig = merge(commonConfig, {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
-            minimizer: new UglifyJsPlugin({
-                uglifyOptions: {
-                    sourceMap: false,
-                    compress: {
-                        warnings: false
+            minimizer: [
+                new TerserPlugin({
+                    terserOptions: {
+                        sourceMap: true,
+                        loops: false,
+                        compress: {
+                            warning: false
+                        }
                     }
-                }
-            })
+                })
+            ]
         }),
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: ['**/*js', '**/*html', '**/*svg']
