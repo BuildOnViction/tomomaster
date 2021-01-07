@@ -1,5 +1,6 @@
 const bip39 = require('bip39')
-const hdkey = require('ethereumjs-wallet/hdkey')
+// const hdkey = require('ethereumjs-wallet/hdkey')
+const { hdkey } = require('ethereumjs-wallet')
 const ProviderEngine = require('web3-provider-engine')
 const FiltersSubprovider = require('web3-provider-engine/subproviders/filters.js')
 const HookedSubprovider = require('web3-provider-engine/subproviders/hooked-wallet.js')
@@ -10,36 +11,6 @@ const Transaction = require('ethereumjs-tx')
 const ethUtil = require('ethereumjs-util')
 
 /* eslint-disable */
-
-// function HDWalletProvider(
-// 	mnemonic,
-// 	provider_url,
-// 	address_index = 0,
-// 	num_addresses = 1,
-// 	wallet_hdpath = "m/44'/889'/0'/0"
-// ) {
-// 	try {
-
-// 		this.mnemonic = mnemonic
-// 		if (!bip39.validateMnemonic(this.mnemonic)) {
-// 			throw new Error('Invalid Mnemonic Supplied')
-// 		}
-// 		this.hdwallet = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic))
-// 		this.wallet_hdpath = wallet_hdpath
-// 		this.wallets = {}
-// 		this.addresses = []
-
-// 		for (let i = address_index; i < address_index + num_addresses; i++) {
-// 			const wallet = this.hdwallet.derivePath(this.wallet_hdpath + '/' + i).getWallet();
-// 			const addr = '0x' + wallet.getAddress().toString('hex');
-// 			this.addresses.push(addr);
-// 			this.wallets[addr] = wallet;
-// 		}
-// 		console.log(this)
-// 	} catch (error) {
-// 		throw error
-// 	}
-// }
 
 function HDWalletProvider (
     mnemonic,
