@@ -24,16 +24,16 @@
                                 class="form-control"
                                 @change="onChangeSelect">
                                 <option
-                                    value="tomowallet">TomoWallet (Recommended)</option>
+                                    v-if="!isElectron"
+                                    value="metamask">Metamask/DApp Wallets</option>
+                                <!-- <option
+                                    value="tomowallet">TomoWallet (Recommended)</option> -->
                                 <option
                                     value="custom">PrivateKey/MNEMONIC</option>
                                 <option
                                     value="ledger">Ledger Wallet</option>
                                 <option
                                     value="trezor">Trezor Wallet</option>
-                                <option
-                                    v-if="!isElectron"
-                                    value="metamask">Metamask/DApp Wallets</option>
                                 <option
                                     v-if="!isElectron"
                                     value="pantograph">Pantograph</option>
@@ -394,7 +394,7 @@ export default {
             hdPath: "m/44'/889'/0'/0", // HD DerivationPath of hardware wallet
             hdWallets: {}, // list of addresses in hardware wallet
             config: {},
-            provider: 'tomowallet',
+            provider: 'metamask',
             address: '',
             withdraws: [],
             wh: [],
