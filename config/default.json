@@ -7,7 +7,7 @@
         "level": "debug"
     },
     "cors": [
-        "https://swagger.tomochain.com"
+        "https://swagger.swapdex.net"
     ],
     "blockchain": {
         "rpc": "https://rpc.swapdex.net",
@@ -32,7 +32,7 @@
     },
     "explorerUrl": "http://localhost:3003",
     "tomoscanUrl": "https://dexscan.net",
-    "baseUrl": "https://master.swapdex.net/",
+    "baseUrl": "https://gov.swapdex.net/",
     "truffle": {
         "mnemonic": "",
         "minCandidateCap": "10000000000000000000000",
