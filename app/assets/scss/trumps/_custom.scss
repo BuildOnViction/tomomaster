@@ -48,7 +48,7 @@
 }
 
 .toasted.bubble {
-    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+    background: linear-gradient(270deg, #E94082, #FB6D9C);
     background-size: 400% 400%;
     animation: toasted 2s ease infinite;
 }
@@ -182,4 +182,7 @@
 }
 .hd-path {
     cursor: pointer;
+}
+.tomo-list__text.inpadding {
+    padding-bottom: 20px;
 }
