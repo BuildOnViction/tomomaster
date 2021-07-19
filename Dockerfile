@@ -12,6 +12,8 @@ RUN apk --no-cache --virtual deps add \
       g++ \
       bash \
       git \
+      npm@6 \
+      
     && npm install
 
 COPY . .
