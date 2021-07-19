@@ -1,0 +1,185 @@
+.color-highlight {
+    color: $color-text-highlight !important;
+}
+
+.color-cyan {
+    color: $color-link !important;
+}
+
+.color-white {
+    color: $color-white !important;
+}
+
+.color-pink {
+    color: $color-pink !important;
+}
+
+.color-yellow {
+    color: $color-yellow !important;
+}
+
+.color-purple {
+    color: $color-purple !important;
+}
+
+.color-orange {
+    color: $color-orange !important;
+}
+
+.color-btn-bg {
+    color: $color-btn-bg !important;
+}
+
+.text-muted {
+    color: $color-text-muted !important;
+}
+
+.text-danger {
+    font-size: 12px;
+    color: $color-pink !important;
+}
+
+.text-warning {
+    font-size: 12px;
+}
+
+.toasted.bubble {
+    border-radius: 8px;
+}
+
+.toasted.bubble {
+    background: linear-gradient(270deg, #2bb3d6, #4ad0c5);
+    background-size: 400% 400%;
+    animation: toasted 2s ease infinite;
+}
+
+.toasted.bubble.error {
+    background-color: $color-pink;
+}
+
+.toasted.bubble .action {
+    color: $color-body-bg;
+}
+
+*::selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
+
+*::-moz-selection {
+    color: #fff;
+    background-color: $color-btn-bg;
+}
+
+.row.row-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.tooltip {
+    pointer-events: none;
+}
+
+.tooltip-inner {
+    color: $color-body-bg;
+    background-color: #aca9C4;
+}
+
+.bs-tooltip-right .arrow:before {
+    border-right-color: #aca9C4;
+}
+
+.bs-tooltip-left .arrow:before {
+    border-left-color: #aca9C4;
+}
+
+.bs-tooltip-bottom .arrow:before {
+    border-bottom-color: #aca9C4;
+}
+
+.bs-tooltip-top .arrow:before {
+    border-top-color: #aca9C4;
+}
+
+#disabled-button-wrapper {
+    display: inline-block;
+}
+  
+#disabled-button-wrapper .btn[disabled] {
+    pointer-events: none;
+}
+  
+#disabled-button-wrapper {
+    cursor: not-allowed;
+}
+
+.sign-message {
+    border-color: $color-input-bg;
+    background-color: $color-input-bg;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: left;
+    color: $color-text-highlight;
+
+    @extend %transit;
+
+    &:focus {
+        color: $color-text-highlight;
+        box-shadow: none;
+        border-color: $color-input-focus-bg;
+        background-color: $color-input-focus-bg;
+    }
+
+    &::-webkit-input-placeholder {
+        color: #505078;
+    }
+
+    &:-moz-placeholder {
+        color: #505078;
+    }
+
+    &:-ms-input-placeholder {
+        color: #505078;
+    }
+}
+
+.notification-menu-wrapper {
+    position: absolute;
+    z-index: 10;
+    left: auto;
+    background: #fff;
+    border-top-color: rgb(197, 197, 197);
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-right-color: rgb(197, 197, 197);
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-bottom-color: rgb(197, 197, 197);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-left-color: rgb(197, 197, 197);
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    top: 50px;
+    right: 300px;
+    width: 300px;
+    line-height: 21px;
+}
+.estimate-reward {
+    margin-top: -10px
+}
+.hd-path {
+    cursor: pointer;
+}
