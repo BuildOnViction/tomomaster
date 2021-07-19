@@ -1,6 +1,6 @@
-FROM node:8-alpine
+FROM node:10-alpine
 
-LABEL maintainer="etienne@tomochain.com"
+LABEL maintainer="dev@swapdex.net"
 
 WORKDIR /app
 
@@ -13,9 +13,6 @@ RUN apk --no-cache --virtual deps add \
       bash \
       git \
     && npm install
-       npm@6 \
-       dotenv \
-       node-gyp
 COPY . .
 
 RUN mkdir -p build/contracts \
