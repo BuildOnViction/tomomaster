@@ -1,6 +1,6 @@
 FROM node:8-alpine
 
-LABEL maintainer="etienne@tomochain.com"
+LABEL maintainer="dev@swapdex.net"
 
 WORKDIR /app
 
