@@ -3,15 +3,15 @@
         "level": "info"
     },
     "blockchain": {
-        "rpc": "https://rpc.tomochain.com",
-        "ws": "wss://ws.tomochain.com",
+        "rpc": "https://rpc.swapdex.net",
+        "ws": "wss://ws.swapdex.net",
         "internalRpc": "",
         "internalWs": "",
-        "networkId": 88
+        "networkId": 7879
     },
     "explorerUrl": "https://scan.tomochain.com",
     "tomoscanUrl": "http://tomoscan_server:3333",
-    "baseUrl": "https://master.tomochain.com/",
+    "baseUrl": "https://master.swapdex.net/",
     "db": {
         "uri" : "mongodb://tomomaster_db:27017/governance"
     },
