@@ -3,10 +3,10 @@
         "level": "info"
     },
     "blockchain": {
-        "rpc": "http://blockchain-proxy:8545",
-        "ws": "ws://blockchain-proxy:8546",
-        "internalRpc": "",
-        "internalWs": "",
+        "rpc": "https://erpc.swapdex.net",
+        "ws": "ws://ews.swapdex.net",
+        "internalRpc": "http://rpc_rpc:8545",
+        "internalWs": "ws://rpc_rpc:8546",
         "networkId": 88
     },
     "db": {
