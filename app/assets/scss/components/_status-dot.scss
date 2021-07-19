@@ -17,6 +17,7 @@
     &--cyan:before {
         background-color: $color-link;
         animation: glowingColor1 3s infinite;
+		margin-right: 10px;
     }
 
     &--pink:before {
