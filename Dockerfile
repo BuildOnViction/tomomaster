@@ -12,10 +12,10 @@ RUN apk --no-cache --virtual deps add \
       g++ \
       bash \
       git \
-      npm@6 \
-      
     && npm install
-
+       npm@6 \
+       dotenv \
+       node-gyp
 COPY . .
 
 RUN mkdir -p build/contracts \
