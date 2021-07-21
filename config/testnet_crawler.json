@@ -1,12 +1,12 @@
 {
     "blockchain": {
-        "rpc": "https://testnet.tomochain.com",
-        "ws": "wss://testnet.tomochain.com/ws",
+        "rpc": "https://rpc.testnet.swapdex.net",
+        "ws": "wss://ws.testnet.swapdex.net",
         "internalRpc": "",
         "internalWs": "",
-        "networkId": 89
+        "networkId": 7880
     },
     "db": {
-        "uri" : "mongodb://tomomaster_db:27017/governance"
+        "uri" : "mongodb://master_db:27017/governance"
     }
 }
