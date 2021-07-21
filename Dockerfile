@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:10-alpine
 
 LABEL maintainer="dev@swapdex.net"
 
@@ -13,7 +13,6 @@ RUN apk --no-cache --virtual deps add \
       bash \
       git \
     && npm install
-
 COPY . .
 
 RUN mkdir -p build/contracts \

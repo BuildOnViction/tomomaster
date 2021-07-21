@@ -10,8 +10,13 @@
         "networkId": 7879
     },
     "explorerUrl": "https://dexscan.net",
+<<<<<<< HEAD
     "tomoscanUrl": "http://scan-server:3333",
     "baseUrl": "https://master.swapdex.net/",
+=======
+    "tomoscanUrl": "http://scan_server:3333",
+    "baseUrl": "https://gov.swapdex.net/",
+>>>>>>> master
     "db": {
         "uri" : "mongodb://master_db:27017/governance"
     },

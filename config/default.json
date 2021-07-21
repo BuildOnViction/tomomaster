@@ -7,13 +7,13 @@
         "level": "debug"
     },
     "cors": [
-        "https://swagger.tomochain.com"
+        "https://swagger.swapdex.net"
     ],
     "blockchain": {
         "rpc": "https://rpc.swapdex.net",
         "ws": "wss://ws.swapdex.net",
-        "internalRpc": "",
-        "internalWs": "",
+        "internalRpc": "http://rpc_rpc:8545",
+        "internalWs": "ws://rpc_rpc:8546",
         "networkId": 7879,
         "epoch": 900,
         "blockTime": 2,
@@ -32,7 +32,7 @@
     },
     "explorerUrl": "http://localhost:3003",
     "tomoscanUrl": "https://dexscan.net",
-    "baseUrl": "https://master.swapdex.net/",
+    "baseUrl": "https://gov.swapdex.net/",
     "truffle": {
         "mnemonic": "",
         "minCandidateCap": "10000000000000000000000",
