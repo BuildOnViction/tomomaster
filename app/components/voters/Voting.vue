@@ -9,20 +9,20 @@
                 <b-card
                     :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                     + (loading ? ' tomo-loading' : '')">
-                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Vote</h4>
+                    <h4 class=" color-white tomo-card__title tomo-card__title--big">Stake</h4>
                     <ul class="tomo-list list-unstyled">
                         <li class="tomo-list__item">
                             <i class="tm-tomo2 tomo-list__icon" />
                             <p class="tomo-list__text">
                                 <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
-                                <span>Voter</span>
+                                <span>Staker</span>
                             </p>
                         </li>
                         <li class="tomo-list__item">
                             <i class="tm-profile tomo-list__icon" />
                             <p class="tomo-list__text">
                                 <span><router-link :to="`/candidate/${candidate}`">{{ candidate }}</router-link></span>
-                                <span>Candidate</span>
+                                <span>Masternode</span>
                             </p>
                         </li>
                         <li class="tomo-list__item">
@@ -39,9 +39,9 @@
                         novalidate
                         @submit.prevent="validate()">
                         <b-form-group
-                            :description="`How much TOMO would you like to vote for this candidate?
-                            TX fee: ${txFee} TOMO`"
-                            label="Vote"
+                            :description="`How much SDX would you like to stake for this masternode?
+                            TX fee: ${txFee} SDX`"
+                            label="Stake"
                             label-for="vote-value">
                             <b-input-group>
                                 <number-input
@@ -58,10 +58,10 @@
                                     class="text-danger">Required field</span>
                                 <span
                                     v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                    class="text-danger">Minimum of voting is 100 TOMO</span>
+                                    class="text-danger">Minimum of voting is 100 SDX</span>
                                 <span
                                     v-else-if="votingError"
-                                    class="text-danger">Not enough TOMO</span>
+                                    class="text-danger">Not enough SDX</span>
                             </b-input-group>
                         </b-form-group>
                         <div>
@@ -200,8 +200,8 @@ export default {
             txFee: 0,
             gasPrice: null,
             transactionHash: '',
-            toastMessageError: 'An error occurred while voting, please try again',
-            toastMessage: 'You have successfully voted!'
+            toastMessageError: 'An error occurred while staking, please try again',
+            toastMessage: 'You have successfully staked!'
         }
     },
     validations: {

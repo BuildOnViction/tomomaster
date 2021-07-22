@@ -6,9 +6,9 @@
             </h1>
             <div class="container">
                 <h3 style="text-align: center">LEGAL DISCLAIMER</h3>
-                <h5>1. Risks related to the use of TomoMaster </h5>
+                <h5>1. Risks related to the use of SdxMaster </h5>
                 <p>
-                    TomoMaster will not be responsible for any losses, damages or claims arising from
+                    SdxMaster will not be responsible for any losses, damages or claims arising from
                     events falling within the scope of the following five categories:
                 </p>
                 <p>
@@ -16,7 +16,7 @@
                     e.g., forgotten passwords, and payments sent to wrong coin addresses.
                 </p>
                 <p>
-                    (2) Software problems of TomoMaster and/or any cryptocurrency-related software
+                    (2) Software problems of SdxMaster and/or any cryptocurrency-related software
                     or service, e.g., corrupted wallet file, incorrectly constructed transactions,
                     unsafe cryptographic libraries, malware affecting the wallet and/or any
                     cryptocurrency-related software or service.
@@ -45,8 +45,8 @@
                 </p>
                 <h5>3. Compliance with tax obligations</h5>
                 <p>
-                    The users of TomoMaster are solely responsible to determinate what, if any, taxes apply
-                    to their crypto-currency transactions. The owners of, or contributors to, TomoMaster are NOT
+                    The users of SdxMaster are solely responsible to determinate what, if any, taxes apply
+                    to their crypto-currency transactions. The owners of, or contributors to, SdxMaster are NOT
                     responsible for determining the taxes that apply to crypto-currency transactions.
                 </p>
                 <h5>4. Limitation of liability</h5>
@@ -59,7 +59,7 @@
                 </p>
                 <h5>5. Arbitration</h5>
                 <p>
-                    The user of TomoMaster agrees to arbitrate any dispute arising from or in connection with
+                    The user of SdxMaster agrees to arbitrate any dispute arising from or in connection with
                     the service or this disclaimer, except for disputes related to copyrights, logos, trademarks,
                     trade names, trade secrets or patents.
                 </p>

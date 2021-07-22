@@ -10,10 +10,10 @@
                 <div
                     class="tomo-empty col-12">
                     <i class="tm-notice tomo-empty__icon"/>
-                    <p class="tomo-empty__description">You have not voted for this candidate, so you can't unvote.</p>
+                    <p class="tomo-empty__description">Not staked for this Masternode, you can't unstake.</p>
                     <b-button
                         :to="`/voting/${candidate}`"
-                        variant="primary">Vote</b-button>
+                        variant="primary">Stake</b-button>
                 </div>
             </div>
             <div
@@ -28,17 +28,17 @@
                         <b-card
                             :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                             + (loading ? ' tomo-loading' : '')">
-                            <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
+                            <h4 class=" color-white tomo-card__title tomo-card__title--big">Unstake
                                 <span
                                     class="tomo-card__subtitle">
-                                    Your TOMO will be locked in a duration after unvoting</span>
+                                    Your SDX will be locked in a duration after unstaking</span>
                             </h4>
                             <ul class="tomo-list list-unstyled">
                                 <li class="tomo-list__item">
                                     <i class="tm-wallet tomo-list__icon" />
                                     <p class="tomo-list__text">
                                         <span><router-link :to="`/voter/${voter}`">{{ voter }}</router-link></span>
-                                        <span>Voter</span>
+                                        <span>Staker</span>
                                     </p>
                                 </li>
                                 <li class="tomo-list__item">
@@ -49,7 +49,7 @@
                                                 {{ candidate }}
                                             </router-link>
                                         </span>
-                                        <span>Candidate</span>
+                                        <span>Masternode</span>
                                     </p>
                                 </li>
                                 <li class="tomo-list__item">
@@ -59,7 +59,7 @@
                                             - <a
                                                 href="javascript:"
                                                 @click="unvoteAll">All</a></span>
-                                        <span>You voted</span>
+                                        <span>You staked</span>
                                     </p>
                                 </li>
                             </ul>
@@ -69,7 +69,7 @@
                                 novalidate
                                 @submit.prevent="validate()">
                                 <b-form-group
-                                    :description="`The amount of TOMO to unvote. TX fee: ${txFee} TOMO`"
+                                    :description="`The amount of SDX to unstake. TX fee: ${txFee} SDX`"
                                     label="Amount"
                                     label-for="unvote-value">
                                     <b-input-group>
@@ -91,14 +91,14 @@
                                             class="text-danger">Must be number </span>
                                         <!-- <span
                                             v-else-if="isMin"
-                                            class="text-danger">Minimum of unvoting is 100 TOMO </span> -->
+                                            class="text-danger">Minimum of unstaking is 100 SDX </span> -->
                                         <span
                                             v-else-if="isMax"
                                             class="text-danger">
-                                            Must be less than {{ limitedUnvote }} TOMO </span>
+                                            Must be less than {{ limitedUnvote }} SDX </span>
                                         <span
                                             v-else-if="!isEnoughTomo"
-                                            class="text-danger">Voted amount left should not less than 100 TOMO </span>
+                                            class="text-danger">Staked amount left should not less than 100 SDX </span>
                                     </b-input-group>
                                 </b-form-group>
                                 <div class="buttons text-right">
@@ -237,8 +237,8 @@ export default {
             isOwner: false,
             limitedUnvote: 0,
             transactionHash: '',
-            toastMessage: 'You have successfully unvoted!',
-            toastMessageError: 'An error occurred while unvoting, please try again'
+            toastMessage: 'You have successfully unstaked!',
+            toastMessageError: 'An error occurred while unstaking, please try again'
         }
     },
     validations () {
@@ -459,8 +459,8 @@ export default {
                 self.loading = true
                 if (data.tx) {
                     clearInterval(self.interval)
-                    let toastMessage = (data.tx && data.status) ? 'You have successfully unvoted!'
-                        : 'An error occurred while voting, please try again'
+                    let toastMessage = (data.tx && data.status) ? 'You have successfully unstaked!'
+                        : 'An error occurred while staking, please try again'
                     self.$toasted.show(toastMessage)
                     setTimeout(() => {
                         if (data.tx) {
@@ -485,7 +485,7 @@ export default {
         validateMaxAmount (value) {
             this.converted = new BigNumber(value)
             const votedValue = new BigNumber(this.voted)
-            this.maxValue = (this.isOwner) ? votedValue.minus(new BigNumber(50000)) : votedValue
+            this.maxValue = (this.isOwner) ? votedValue.minus(new BigNumber(10000)) : votedValue
             this.limitedUnvote = this.maxValue.toString(10)
             if (this.converted.isGreaterThan(this.maxValue)) {
                 return true
@@ -514,8 +514,8 @@ export default {
         async unvoteAll () {
             if (this.isOwner) {
                 let voted = new BigNumber(this.voted)
-                if (voted.isGreaterThan(new BigNumber(50000))) {
-                    this.unvoteValue = voted.minus(new BigNumber(50000)).toString(10)
+                if (voted.isGreaterThan(new BigNumber(10000))) {
+                    this.unvoteValue = voted.minus(new BigNumber(10000)).toString(10)
                 }
             } else this.unvoteValue = this.voted.toString(10)
         },

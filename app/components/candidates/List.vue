@@ -50,7 +50,7 @@
                     <h3 class="section-title--masternodes">
                         <div class="masternode-bar">
                             <i class="tm-flag color-yellow" />
-                            <span>Candidates</span>
+                            <span>Masternodes</span>
                             <span class="text-truncate section-title__description">
                                 <a
                                     v-if="activeCandidates !== 0"
@@ -164,7 +164,7 @@
                         v-if="data.item.status === 'PROPOSED' || data.item.status === 'MASTERNODE'"
                         variant="primary"
                         class="mt-3 mt-lg-0 vote-btn"
-                        @click="onRowClick(data.item.address)">Vote</b-button>
+                        @click="onRowClick(data.item.address)">Stake</b-button>
                 </template>
             </b-table>
             <b-pagination
@@ -302,7 +302,7 @@ export default {
             if (this.isTomonet) {
                 this.$router.push({ path: `/voting/${address}` })
             } else {
-                const toastMessage = 'You can not vote at the moment. Please log in first.'
+                const toastMessage = 'You can not stake at the moment. Please log in first.'
                 this.$toasted.show(toastMessage, {
                     type: 'info',
                     delay: '5000'

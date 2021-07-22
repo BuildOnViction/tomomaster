@@ -8,7 +8,7 @@
             <b-card
                 :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                 + (loading ? ' tomo-loading' : '')">
-                <h4 class=" color-white tomo-card__title tomo-card__title--big">Update Candidate Information</h4>
+                <h4 class=" color-white tomo-card__title tomo-card__title--big">Update Masternode Information</h4>
                 <b-form
                     class="tomo-form tomo-form--vote"
                     novalidate
@@ -240,7 +240,7 @@ export default {
             const { data } = await axios.get(`/api/candidates/${self.address}`)
             if (data) {
                 if (data.owner !== self.account) {
-                    self.$toasted.show(`You need log the owner of candidate account in before updating`)
+                    self.$toasted.show(`You need log the owner of masternode account in before updating`)
                     setTimeout(() => {
                         self.$router.push({ path: '/setting' })
                     }, 1000)
@@ -380,7 +380,7 @@ export default {
                         self.signHashError = ''
                         self.signHash = ''
                         self.$router.push({ path: `/candidate/${self.address}` }, () => {
-                            self.$toasted.show('Candidate\'s information updated successfully ')
+                            self.$toasted.show('Masternode information updated successfully ')
                         })
                     }, 3000)
                 } else {

@@ -6,7 +6,7 @@
             <div
                 class="tomo-empty col-12">
                 <i class="tm-notice tomo-empty__icon"/>
-                <p class="tomo-empty__description">This is not a candidate</p>
+                <p class="tomo-empty__description">This is not a masternode</p>
             </div>
         </div>
         <div
@@ -99,7 +99,7 @@
                             class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 tomo-info">
                             <p class="tomo-info__title">
                                 <i class="tm-arrow-up tomo-info__icon" />
-                                <span class="tomo-info__text">You voted</span>
+                                <span class="tomo-info__text">You staked</span>
                             </p>
                             <p
                                 id="tomo-info__description--you-voted"
@@ -184,11 +184,11 @@
                     <b-button
                         v-if="candidate.voted > 0"
                         :to="`/unvoting/${candidate.address}`"
-                        variant="secondary">Unvote</b-button>
+                        variant="secondary">Unstake</b-button>
                     <b-button
                         v-if="candidate.status !== 'RESIGNED' && isTomonet"
                         :to="`/voting/${candidate.address}`"
-                        variant="primary">Vote</b-button>
+                        variant="primary">Stake</b-button>
                 </div>
             </div>
             <!-- <div
@@ -230,7 +230,7 @@
                             <i class="tm-gift color-purple" />
                             <span>Masternode Rewards</span>
                             <span class="text-truncate section-title__description">
-                                Reward/Status for candidate</span>
+                                Reward/Status for masternode owner</span>
                             <span
                                 v-if="candidate.slashedTimes"
                                 class="text-truncate section-title__description">
@@ -304,9 +304,9 @@
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="tm-arrow-up color-pink" />
-                            <span>Voters</span>
+                            <span>Stakers</span>
                             <span class="text-truncate section-title__description">
-                                People who voted for this candidate</span>
+                                People who stake for this masternode</span>
                         </h3>
                     </div>
                 </div>
@@ -359,7 +359,7 @@
                             <i class="tm-time color-purple" />
                             <span>Transactions</span>
                             <span class="text-truncate section-title__description">
-                                All transactions of this candidate</span>
+                                All transactions of this masternode</span>
                         </h3>
                     </div>
                 </div>
@@ -414,11 +414,11 @@
                         slot-scope="data">
                         <a
                             v-b-tooltip.hover.right
-                            :href="`${config.explorerUrl}/txs/${data.item.tx}`"
-                            title="View on TomoScan"
+                            :href="`${config.explorerUrl}/tx/${data.item.tx}`"
+                            title="View on DexScan"
                             target="_blank">
                             <i class="tm-eye" />
-                            <span>View on TomoScan</span>
+                            <span>View on DexScan</span>
                         </a>
                     </template>
                 </b-table>
@@ -445,9 +445,9 @@ import store from 'store'
 export default {
     name: 'App',
     metaInfo: {
-        title: 'Candidate Details | TomoMaster',
+        title: 'Masternode Details | SdxMaster',
         meta: [
-            { name: 'description', content: 'Staking TomoChain Masternode to get the reward every epochs. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake TomoChain' } // eslint-disable-line
+            { name: 'description', content: 'Staking SDXChain Masternode to get the reward every epochs. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake SdxChain' } // eslint-disable-line
         ]
     },
     components: {
@@ -538,7 +538,7 @@ export default {
             txFields: [
                 {
                     key: 'voter',
-                    label: 'Voter',
+                    label: 'Staker',
                     sortable: true
                 },
                 {
@@ -636,7 +636,7 @@ export default {
     methods: {
         getEventClass (event) {
             let clazz = ''
-            if (event === 'Unvote' || event === 'Resign') {
+            if (event === 'Unstake' || event === 'Resign') {
                 clazz = 'color-pink'
             }
 

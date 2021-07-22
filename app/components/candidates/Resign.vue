@@ -14,14 +14,14 @@
                             <i class="tm-wallet tomo-list__icon" />
                             <p class="tomo-list__text">
                                 <span>{{ coinbase }}</span>
-                                <span>Coinbase Address</span>
+                                <span>SDX Masternode Address</span>
                             </p>
                         </li>
                     </ul>
                     <b-card-footer class="text-right">
                         <p v-if="owner !== account">
                             <i class="tm-notice"/>
-                            You are not an owner of this candidate
+                            You are not an owner of this Masternode.
                         </p>
                         <!-- <b-button
                             v-b-modal.confirmResignModal

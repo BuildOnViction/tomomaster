@@ -14,17 +14,17 @@
                     </p>
                     <h3 style="text-align: center">INTRODUCTION</h3>
                     <p>
-                        Welcome to TomoMaster, a free, open-source, client-side tool for interacting with the
-                        blockchain. TomoChain values privacy and we make a concerted effort to minimize and,
+                        Welcome to SdxMaster, a free, open-source, client-side tool for interacting with the
+                        blockchain. SdxChain values privacy and we make a concerted effort to minimize and,
                         to the extent possible, eliminate the exposure of personal data during the use of our
-                        interface. TomoMaster does not collect, hold, or store keys, account information,
+                        interface. SdxMaster does not collect, hold, or store keys, account information,
                         or passwords. We do not collect data passively, do not monetize the collection of data,
                         and do not use your data for marketing or advertising.
                     </p>
                     <p>
                         To the extent we collect any personal information, this privacy policy (“Policy”)
-                        describes how TomoMaster collects, uses, and shares personal information of people who visit
-                        our website (the “Site”), use our mobile application, TomoMaster (the “App”),
+                        describes how SdxMaster collects, uses, and shares personal information of people who visit
+                        our website (the “Site”), use our mobile application, SdxMaster (the “App”),
                         or otherwise use our services (collectively, the “Services”).
                     </p>
                     <p>
@@ -44,8 +44,8 @@
                         style="text-align: center">
                         THE BLOCKCHAIN</h3>
                     <p>
-                        Due to the inherent transparency of many blockchains, including the TomoChain Blockchain,
-                        transactions that individuals broadcast via TomoMaster may be publicly accessible.
+                        Due to the inherent transparency of many blockchains, including the SdxChain Blockchain,
+                        transactions that individuals broadcast via SdxMaster may be publicly accessible.
                         This includes, but is not limited to, your public sending address, the public address of the
                         receiver, the amount sent or received, and any other data a user has chosen to include in a
                         given transaction. Information stored on a blockchain may be public, immutable, and difficult or
@@ -64,12 +64,12 @@
                         We may collect Personal Information you choose to provide to us. For example,
                         when you contact us for support through the Services, you give us with your e-mail address and
                         any other information that you choose to provide. Also, if you participate in a
-                        TomoMaster offer, give-away, or promotion (“Promotion”), you provide your name,
+                        SdxMaster offer, give-away, or promotion (“Promotion”), you provide your name,
                         e-mail address, and mailing address.
                     </p>
                     <h5>California Do Not Track Disclosures</h5>
                     <p>
-                        TomoMaster does not track users over time and across third party websites to provide targeted
+                        SdxMaster does not track users over time and across third party websites to provide targeted
                         advertising and therefore does not respond to Do Not Track (DNT) signals.
                     </p>
                     <h3 style="text-align: center">USE OF INFORMATION</h3>
@@ -92,7 +92,7 @@
                         We may share the Personal Information we collect from and about you (1) to fulfill the
                         purpose for which you provided it; (2) with your consent; (3) for legal, protection, and
                         safety purposes; (4) to comply with any court order, law, or legal process, including to respond
-                        to any government or regulatory request; (5) to protect the rights of TomoMaster, our agents,
+                        to any government or regulatory request; (5) to protect the rights of SdxMaster, our agents,
                         customers, and others, including by enforcing our agreements, policies, and terms of service;
                         and (6) with those who need it to do work for us (our Service Providers, as defined below).
                     </p>
@@ -211,7 +211,7 @@
 export default {
     data: () => {
         return {
-            email: 'admin@tomochain.com'
+            email: 'admin@swapdex.net'
         }
     }
 }

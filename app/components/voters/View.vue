@@ -5,7 +5,7 @@
                 <div class="col-12">
                     <div class="section-title">
                         <i class="tm-arrow-up color-pink" />
-                        <span>Voter</span>
+                        <span>Holder</span>
                         <span class="text-truncate section-title__description">{{ voter }}</span>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="col-12 tomo-info">
                     <p class="tomo-info__title">
                         <i class="tm-dot tomo-info__icon" />
-                        <span class="tomo-info__text">Total voted</span>
+                        <span class="tomo-info__text">Total staked</span>
                     </p>
                     <p
                         id="tomo-info__description--voted"
@@ -56,9 +56,9 @@
                 <div class="col-12">
                     <div class="section-title">
                         <i class="tm-flag color-yellow" />
-                        <span>Candidates</span>
+                        <span>Masternodes</span>
                         <span class="text-truncate section-title__description">
-                            All candidates are voted by this voter</span>
+                            Masternodes this holder is staked in</span>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                 :sort-desc.sync="sortDesc"
                 :show-empty="true"
                 :class="`tomo-table tomo-table--voted${loading ? ' loading' : ''}`"
-                empty-text="There are no candidates to show"
+                empty-text="There are no masternodes to show"
                 stacked="md"
                 @sort-changed="sortingChangeCandidate" >
 
@@ -97,7 +97,7 @@
                         v-if="data.item.owner == voter"
                         :id="`mnowner__${data.index}`">*</span>
                     <b-tooltip :target="`mnowner__${data.index}`">
-                        This voter owns this node
+                        This Staker owns this node
                     </b-tooltip>
                 </template>
 
@@ -123,9 +123,9 @@
                 <div class="col-12">
                     <h3 class="section-title">
                         <i class="tm-gift color-purple" />
-                        <span>Voter Rewards</span>
+                        <span>Staker Rewards</span>
                         <span class="text-truncate section-title__description">
-                            All Reward for Voter</span>
+                            All Reward for Staker</span>
                     </h3>
                 </div>
             </div>
@@ -196,7 +196,7 @@
                         <i class="tm-time color-purple" />
                         <span>Transactions</span>
                         <span class="text-truncate section-title__description">
-                            All transactions of this voter</span>
+                            All transactions of this holder</span>
                     </h3>
                 </div>
             </div>
@@ -247,11 +247,11 @@
                     slot-scope="data">
                     <a
                         v-b-tooltip.hover.right
-                        :href="`${config.explorerUrl}/txs/${data.item.tx}`"
-                        title="View on TomoScan"
+                        :href="`${config.explorerUrl}/tx/${data.item.tx}`"
+                        title="View on DexScan"
                         target="_blank">
                         <i class="tm-eye" />
-                        <span>View on TomoScan</span>
+                        <span>View on DexScan</span>
                     </a>
                 </template>
             </b-table>
@@ -276,7 +276,7 @@ import store from 'store'
 export default {
     name: 'App',
     metaInfo: {
-        title: 'Staker Details | TomoMaster',
+        title: 'Staker Details | SdxMaster',
         meta: [
             { name: 'description', content: 'Staking history, Reward history, Masternode list, Transaction list. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake TomoChain' } // eslint-disable-line
         ]
@@ -306,7 +306,7 @@ export default {
                 },
                 {
                     key: 'capacity',
-                    label: 'Voted Capacity',
+                    label: 'Amount Staked',
                     sortable: true
                 },
                 {
@@ -427,7 +427,7 @@ export default {
     methods: {
         getEventClass (event) {
             let clazz = ''
-            if (event === 'Unvote' || event === 'Resign') {
+            if (event === 'Unstake' || event === 'Resign') {
                 clazz = 'color-pink'
             }
 

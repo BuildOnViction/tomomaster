@@ -7,20 +7,15 @@
             <b-card
                 :class="'col-12 col-md-8 col-lg-6 tomo-card tomo-card--lighter p-0'
                 + (loading ? ' tomo-loading' : '')">
-                <h4 class="color-white tomo-card__title tomo-card__title--big">Become a Candidate</h4>
+                <h4 class="color-white tomo-card__title tomo-card__title--big">Register a Masternode</h4>
                 <ul class="tomo-list list-unstyled">
                     <li class="tomo-list__item">
                         <i class="tm-tomo2 tomo-list__icon" />
-                        <span class="tomo-list__text">You have to deposit at least 50,000 TOMO</span>
+                        <span class="tomo-list__text">You have to deposit at least 10,000 SDX</span>
                     </li>
                     <li class="tomo-list__item">
                         <i class="tm-lock tomo-list__icon" />
                         <span class="tomo-list__text">Your deposit will be locked</span>
-                    </li>
-                    <li class="tomo-list__item">
-                        <i class="tm-arrow-up tomo-list__icon" />
-                        <span class="tomo-list__text">
-                            Coin holders are able to vote for you to become a masternode</span>
                     </li>
                 </ul>
 
@@ -29,8 +24,8 @@
                     novalidate
                     @submit.prevent="validate()">
                     <b-form-group
-                        :description="`How much TOMO do you want to deposit? TX fee: ${txFee} TOMO`"
-                        label="Vote"
+                        :description="`How much SDX do you want to deposit? TX fee: ${txFee} SDX`"
+                        label="Stake"
                         label-for="apply-value">
                         <b-input-group>
                             <number-input
@@ -47,13 +42,13 @@
                                 class="text-danger">Required field</span>
                             <span
                                 v-else-if="$v.applyValue.$dirty && !$v.applyValue.minValue"
-                                class="text-danger">Must be greater than 50,000 TOMO</span>
+                                class="text-danger">Must be greater than 10,000 SDX</span>
                         </b-input-group>
                     </b-form-group>
                     <b-form-group
-                        label="Coinbase Address"
+                        label="SDX Masternode Address"
                         label-for="coinbase"
-                        description="What is your node coinbase address?">
+                        description="What is your SDX Masternode Server Account Address?">
                         <b-form-input
                             :class="getValidationClass('coinbase')"
                             v-model="coinbase"
@@ -65,16 +60,16 @@
                             class="text-danger">Required field</span>
                         <span
                             v-else-if="$v.coinbase.$dirty && !$v.coinbase.coinbaseAddress"
-                            class="text-danger">Wrong coinbase address format</span>
+                            class="text-danger">Wrong SDX Masternode address format</span>
                         <span
                             v-else-if="coinbaseError"
                             class="text-danger">
-                            The masternode candidate account should be different from the depositing account.
+                            The masternode account should be different from the depositing account.
                         </span>
                         <span
                             v-else-if="candidateError"
                             class="text-danger">
-                            This coinbase address is already a candidate
+                            This SDX Masternode address is already a Masternode
                         </span>
                     </b-form-group>
                     <!--b-form-group
@@ -152,7 +147,7 @@ export default {
         return {
             account: '',
             isReady: !!this.web3,
-            applyValue: '50000',
+            applyValue: '10000',
             coinbase: '',
             // nodeUrl: '',
             loading: false,
@@ -173,7 +168,7 @@ export default {
     validations: {
         applyValue: {
             required,
-            minValue: minValue(50000)
+            minValue: minValue(10000)
         },
         coinbase: {
             required,
@@ -250,7 +245,7 @@ export default {
                     const convertedAmount = new BigNumber(this.applyValue)
 
                     if (this.balance.isLessThan(convertedAmount)) {
-                        this.$toasted.show(`Not enough TOMO`, {
+                        this.$toasted.show(`Not enough SDX`, {
                             type: 'error'
                         })
                         return false

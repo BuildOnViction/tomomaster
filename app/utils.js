@@ -3,13 +3,13 @@ import TomoValidatorArtifacts from '../build/contracts/TomoValidator.json'
 
 const Helper = {
     getCurrencySymbol () {
-        return 'TOMO'
+        return 'SDX'
     },
     formatCurrencySymbol (number) {
         let unit = this.getCurrencySymbol()
 
         if (unit === null) {
-            unit = 'TOMO'
+            unit = 'SDX'
         }
         return `${number} ${unit}`
     },

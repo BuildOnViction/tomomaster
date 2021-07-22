@@ -12,7 +12,7 @@
                 </h4>
                 <p class="md-content">
                     You have {{ event }}
-                    <span class="color-white">{{ amount }} TOMO</span> for candidate
+                    <span class="color-white">{{ amount }} SDX</span> for masternode
                     <router-link :to="`/candidate/${candidate}`">
                     {{ truncate(candidate, 20) }}</router-link> successfully.
                     <br ><br >
@@ -82,21 +82,21 @@ export default {
                         self.amount = new BigNumber(transaction.capacity).div(10 ** 18).toString(10)
                         self.icon = 'checkmark'
                         self.title = 'Success'
-                        self.event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
+                        self.event = transaction.event === 'Vote' ? 'staked' : 'unstaked'
                         self.candidate = transaction.candidate
                         self.txUrl = urljoin(self.config.explorerUrl, `/txs/${self.tx}`)
                         // self.description = `You have ${event}
-                        // <span class="color-white">${amount} TOMO</span> for candidate
+                        // <span class="color-white">${amount} SDX</span> for candidate
                         // <router-link to="/candidate/${transaction.candidate}">${transaction.candidate}</router-link>
                         // successfully.
                         // <br/><br/>
                         // Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
                         // target="_blank">${self.tx}</a>`
-                        self.buttonText = 'View all Candidates'
+                        self.buttonText = 'View all Masternodes'
                     } else {
                         self.icon = 'notice'
                         self.title = 'Transaction Failed'
-                        self.description = 'You have voted unsuccessfully'
+                        self.description = 'You have staked unsuccessfully'
                         self.buttonText = 'Try Again'
                     }
                 })

@@ -100,7 +100,7 @@
                     </b-form-group>
 
                     <!--<b-form-group
-                        v-if="provider === 'sdxwallet'"
+                        v-if="provider === 'tomowallet'"
                         class="mb-4"
                         style="text-align: center">
                         <vue-qrcode
@@ -116,7 +116,7 @@
                             </b-button>
                         </div>
                         <div>
-                            <b>In case you do not have SdxWallet, download here</b>
+                            <b>In case you do not have TomoWallet, download here</b>
                         </div>
                         <div
                             style="margin-top: 5px">
@@ -245,18 +245,18 @@
                     class="tomo-list list-unstyled">
                     <li
                         v-if="w.blockNumber !== '0' && w.cap !== '0'"
-                        class="tomo-list__text">
-                        <p class="tomo-list__text inpadding">
+                        class="tomo-list__item">
+                        <p class="tomo-list__text">
                             <a :href="`${config.explorerUrl}/blocks/${w.blockNumber}`">
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
-                        <div class="tomo-list__text inpadding">
+                        <div class="tomo-list__text">
                             <p class="color-white mb-0">
                                 {{ w.estimatedTime }}</p>
                             <span>Estimated Time</span>
                         </div>
-                        <div class="tomo-list__text inpadding">
+                        <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
                             <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
                             <span>Capacity</span>
@@ -265,7 +265,7 @@
                             :disabled="w.blockNumber > chainConfig.blockNumber"
                             variant="primary"
                             @click="withdraw(w.blockNumber, k)">Withdraw</b-button>-->
-                        <div class="tomo-list__text inpadding">
+                        <div class="tomo-list__text">
                             <b-button
                                 :disabled="w.blockNumber > chainConfig.blockNumber"
                                 class="float-right"

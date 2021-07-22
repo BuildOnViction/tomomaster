@@ -16,7 +16,7 @@
                                 <i class="tm-wallet tomo-list__icon" />
                                 <p class="tomo-list__text">
                                     <span>{{ coinbase }}</span>
-                                    <span>Coinbase Address</span>
+                                    <span>SDX Masternode Address</span>
                                 </p>
                             </li>
                             <li class="tomo-list__item">
@@ -65,11 +65,11 @@
                                 :disabled="loading"
                                 :to="'/setting'"
                                 variant="secondary">Back</b-button>
-                            <!-- <b-button
+                            <!--<b-button
                                 v-b-modal.resignModal
                                 :disabled="loading"
                                 variant="secondary"
-                                @click="resignActive = true;">Withdraw</b-button> -->
+                                @click="resignActive = true;">Withdraw</b-button>-->
                             <button
                                 v-if="provider !== 'tomowallet'"
                                 class="btn btn-primary"
