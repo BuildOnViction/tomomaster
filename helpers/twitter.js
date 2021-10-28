@@ -30,7 +30,7 @@ const TwitterHelper = {
         const msg = owner.substr(0, 8) + ' has proposed a new candidate ' + candidate.substr(0, 8) +
             '\nCapacity: ' + amount + ' $TOMO' +
             '\nTomoMaster:  https://master.tomochain.com/candidate/' + candidate +
-            '\nTransaction: https://scan.tomochain.com/txs/' + txHash
+            '\nTransaction: https://tomoscan.io/tx/' + txHash
 
         twitter.post('statuses/update', { status: msg },
             function (error, tweet, response) {
