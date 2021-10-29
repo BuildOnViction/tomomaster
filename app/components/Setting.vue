@@ -281,7 +281,7 @@
                     <li
                         class="tomo-list__item">
                         <p class="tomo-list__text">
-                            <a :href="`${config.explorerUrl}/txs/${w.tx}`">
+                            <a :href="`${config.explorerUrl}/tx/${w.tx}`">
                                 {{ (w.tx || '').substring(0,8) }}</a>
                             <span>Transaction</span>
                         </p>
