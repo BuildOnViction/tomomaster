@@ -84,13 +84,13 @@ export default {
                         self.title = 'Success'
                         self.event = transaction.event === 'Vote' ? 'voted' : 'unvoted'
                         self.candidate = transaction.candidate
-                        self.txUrl = urljoin(self.config.explorerUrl, `/txs/${self.tx}`)
+                        self.txUrl = urljoin(self.config.explorerUrl, `/tx/${self.tx}`)
                         // self.description = `You have ${event}
                         // <span class="color-white">${amount} TOMO</span> for candidate
                         // <router-link to="/candidate/${transaction.candidate}">${transaction.candidate}</router-link>
                         // successfully.
                         // <br/><br/>
-                        // Transaction Hash: <a href="${self.config.explorerUrl}/txs/${self.tx}"
+                        // Transaction Hash: <a href="${self.config.explorerUrl}/tx/${self.tx}"
                         // target="_blank">${self.tx}</a>`
                         self.buttonText = 'View all Candidates'
                     } else {

@@ -414,7 +414,7 @@
                         slot-scope="data">
                         <a
                             v-b-tooltip.hover.right
-                            :href="`${config.explorerUrl}/txs/${data.item.tx}`"
+                            :href="`${config.explorerUrl}/tx/${data.item.tx}`"
                             title="View on TomoScan"
                             target="_blank">
                             <i class="tm-eye" />

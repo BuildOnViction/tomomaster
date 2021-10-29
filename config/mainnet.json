@@ -9,7 +9,7 @@
         "internalWs": "",
         "networkId": 88
     },
-    "explorerUrl": "https://scan.tomochain.com",
+    "explorerUrl": "https://tomoscan.io",
     "tomoscanUrl": "http://tomoscan_server:3333",
     "baseUrl": "https://master.tomochain.com/",
     "db": {
