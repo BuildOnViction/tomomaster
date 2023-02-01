@@ -59,7 +59,7 @@
         "lodash": "^4.17.20",
         "lru-cache": "^5.1.1",
         "moment": "^2.22.2",
-        "mongoose": "^5.4.11",
+        "mongoose": "^5.13.15",
         "morgan": "^1.9.1",
         "store": "^2.0.12",
         "swagger-ui-express": "^4.0.2",
