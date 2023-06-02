@@ -111,7 +111,7 @@ router.get('/:voter/rewards', [
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
 
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+            urljoin(config.get('tomoscanUrl'), 'api/epoch/expose/rewards'),
             {
                 address: voter,
                 limit,
@@ -389,7 +389,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         let rewards = cache.get(cacheKey)
         if (!rewards) {
             rewards = await axios.post(
-                urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
+                urljoin(config.get('tomoscanUrl'), 'api/epoch/expose/rewards'),
                 {
                     address: address,
                     limit: 1,
@@ -413,11 +413,11 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         // get total signers in latest epoch
         let totalSigners
         if (epoch) {
-            cacheKey = urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            cacheKey = urljoin(config.get('tomoscanUrl'), `api/epoch/expose/totalSignNumber/${epoch}`)
             totalSigners = cache.get(cacheKey)
             if (!totalSigners) {
                 totalSigners = await axios.post(
-                    urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+                    urljoin(config.get('tomoscanUrl'), `api/epoch/expose/totalSignNumber/${epoch}`)
                 )
                 cache.set(cacheKey, totalSigners)
             }
