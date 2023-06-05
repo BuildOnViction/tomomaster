@@ -127,6 +127,8 @@ router.get('/:voter/rewards', [
             r.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate.toLowerCase() === r.validator.toLowerCase())
             }) || {}).name || r.validator
+            r.reward = new BigNumber(r.reward).div(10 ** 18).toString(10)
+            r.rewardTime = r.timestamp
             return r
         })
         res.json({
@@ -395,9 +397,10 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
                     limit: 1,
                     page: 1,
                     owner: candidate.owner,
-                    reason: 'Voter'
+                    reason: 'voter'
                 }
             )
+
             cache.set(cacheKey, rewards)
         }
 
