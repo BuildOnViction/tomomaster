@@ -8,7 +8,7 @@
 This is Governance Dapp for TomoChain. Full-Node can apply to become a candidate for masternode. Coin Holder can vote for candidates to become masternodes. See the detail from technical Whitepaper: https://docs.tomochain.com/whitepaper/](https://docs.tomochain.com/whitepaper/)
 
 ## Requirements
-- NodeJS (If you get EACCES permission issue, please see: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
+- NodeJS 10 (If you get EACCES permission issue, please see: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
 - MongoDB
 - Truffle Framework
 
