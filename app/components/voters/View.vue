@@ -543,12 +543,12 @@ export default {
                         epoch: r.epoch,
                         candidate: r.validator,
                         candidateName: r.candidateName,
-                        startBlockNumber: r.startBlock,
-                        endBlockNumber: r.endBlock,
+                        startBlockNumber: r.startBlockNumber,
+                        endBlockNumber: r.endBlockNumber,
                         signNumber: r.signNumber,
                         reward: new BigNumber(r.reward).toFixed(6),
-                        createdAt: moment(new Date(r.rewardTime * 1000)).fromNow(),
-                        dateTooltip: moment(new Date(r.rewardTime * 1000)).format('lll')
+                        createdAt: moment(r.rewardTime).fromNow(),
+                        dateTooltip: moment(r.rewardTime).format('lll')
                     })
                 })
                 self.voterRewards = items
