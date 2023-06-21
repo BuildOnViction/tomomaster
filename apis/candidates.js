@@ -13,7 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
-const BigNumber = require('bignumber.js')
+// const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
 
@@ -724,14 +724,14 @@ router.get('/:candidate/:owner/getRewards', [
 
         if (rewards.data && rewards.data.length > 0) {
             const rwData = rewards.data
+            console.log(rwData)
             masternodesRW = rwData.map((r) => {
                 const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
                 if (!r.reward) {
                     r.rewardTime = mn.epochCreatedAt || ''
                 } else {
-                    r.masternodeReward = '-'
-                    r.reward = new BigNumber(r.reward).div(10 ** 18)
+                    r.masternodeReward = r.masternodeReward
                     r.rewardTime = r.timestamp
                 }
                 if (currentEpoch - r.epoch < 2) {
