@@ -713,12 +713,12 @@ router.get('/:candidate/:owner/getRewards', [
 
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
         const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/epoch/expose/MNRewardsByEpochs'),
+            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
             {
                 address: candidate,
                 owner: owner,
-                reason: 'voter',
-                epoch: masternodesEpochs.toString().replace('[', '').replace(']', '').trim()
+                reason: 'Voter',
+                epoch: masternodesEpochs
             }
         )
 
@@ -730,10 +730,12 @@ router.get('/:candidate/:owner/getRewards', [
                 if (!r.reward) {
                     r.rewardTime = mn.epochCreatedAt || ''
                 } else {
+                    r.masternodeReward = '-'
                     r.reward = new BigNumber(r.reward).div(10 ** 18)
                     r.rewardTime = r.timestamp
                 }
                 if (currentEpoch - r.epoch < 2) {
+                    r.masternodeReward = '-'
                     r.reward = '-'
                     r.signNumber = '-'
                 }
@@ -745,6 +747,7 @@ router.get('/:candidate/:owner/getRewards', [
 
         if (noRewardEpochs.length > 0) {
             noRewardEpochs = noRewardEpochs.map(n => {
+                n.masternodeReward = 0
                 n.reward = 0
                 n.rewardTime = n.epochCreatedAt
                 n.signNumber = 0

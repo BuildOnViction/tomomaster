@@ -723,14 +723,14 @@ export default {
                 let items = []
 
                 mnRewards.data.items.map((r) => {
-                    const reward = !isNaN(r.reward || 0)
-                        ? new BigNumber(r.reward || 0).toFixed(6) : r.reward
+                    const reward = !isNaN(r.masternodeReward || 0)
+                        ? new BigNumber(r.masternodeReward || 0).toFixed(6) : r.masternodeReward
                     items.push({
                         epoch: r.epoch,
                         signNumber: r.signNumber ? r.signNumber : 0,
                         reward: reward,
-                        createdAt: r.rewardTime ? moment(new Date(r.rewardTime * 1000)).fromNow() : 'N/A',
-                        dateTooltip: moment(new Date(r.rewardTime * 1000)).format('lll'),
+                        createdAt: r.rewardTime ? moment(r.rewardTime).fromNow() : 'N/A',
+                        dateTooltip: moment(r.rewardTime).format('lll'),
                         status: r.status,
                         name: self.candidate.name || 'Anonymous'
                     })
