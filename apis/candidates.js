@@ -712,14 +712,15 @@ router.get('/:candidate/:owner/getRewards', [
         })
 
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
-        const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
-            {
-                address: candidate,
-                owner: owner,
-                reason: 'Voter',
-                epoch: masternodesEpochs
-            }
+        const rewards = await axios.get(
+            urljoin(
+                config.get('tomoscanUrl'),
+                `api/epoch/expose/MNRewardsByEpochs`,
+                `${masternodesEpochs.join(',')}`,
+                `?owner=${owner}`,
+                `&address=${candidate}`,
+                `&reason=voter`
+            )
         )
 
         if (rewards.data && rewards.data.length > 0) {
