@@ -134,8 +134,8 @@ router.get('/:voter/rewards', [
             r.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate.toLowerCase() === r.validator.toLowerCase())
             }) || {}).name || r.validator
-            // r.reward = new BigNumber(r.reward).div(10 ** 18).toString(10)
-            // r.rewardTime = r.timestamp
+            r.reward = new BigNumber(r.reward).div(1e18).toString(10)
+            r.rewardTime = r.timestamp * 1000
             return r
         })
         res.json({
