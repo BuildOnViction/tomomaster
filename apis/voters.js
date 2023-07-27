@@ -110,13 +110,20 @@ router.get('/:voter/rewards', [
         const page = (req.query.page) ? parseInt(req.query.page) : 1
         let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
 
-        const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
-            {
-                address: voter,
-                limit,
-                page: page
-            }
+        const rewards = await axios.get(
+            urljoin(
+                config.get('tomoscanUrl'),
+                'api/epoch/expose/rewards',
+                `?address=${voter}`,
+                `&reason=voter`,
+                `&offset=${(page - 1) * limit}`,
+                `&limit=${limit}`
+            )
+            // {
+            //     address: voter,
+            //     limit,
+            //     page: page
+            // }
         )
 
         const cs = rewards.data.items.map(r => r.validator)
@@ -127,8 +134,8 @@ router.get('/:voter/rewards', [
             r.candidateName = (_.findLast(candidates, (c) => {
                 return (c.candidate.toLowerCase() === r.validator.toLowerCase())
             }) || {}).name || r.validator
-            // r.reward = new BigNumber(r.reward).div(10 ** 18).toString(10)
-            // r.rewardTime = r.timestamp
+            r.reward = new BigNumber(r.reward).div(1e18).toString(10)
+            r.rewardTime = r.timestamp * 1000
             return r
         })
         res.json({
@@ -387,18 +394,19 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
         // get latest reward
         let cacheKey = urljoin(config.get('tomoscanUrl'),
-            'api/expose/rewards', address.toLowerCase(), candidate.owner.toLowerCase())
+            'api/epoch/expose/rewards', address.toLowerCase(), candidate.owner.toLowerCase())
         let rewards = cache.get(cacheKey)
         if (!rewards) {
             rewards = await axios.post(
-                urljoin(config.get('tomoscanUrl'), 'api/expose/rewards'),
-                {
-                    address: address,
-                    limit: 1,
-                    page: 1,
-                    owner: candidate.owner,
-                    reason: 'Voter'
-                }
+                urljoin(
+                    config.get('tomoscanUrl'),
+                    'api/epoch/expose/rewards',
+                    `?address=${address}`,
+                    `&owner=${candidate.owner}`,
+                    `&offset=0`,
+                    `&limit=1`,
+                    `&reason=voter`
+                )
             )
 
             cache.set(cacheKey, rewards)
@@ -416,11 +424,14 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         // get total signers in latest epoch
         let totalSigners
         if (epoch) {
-            cacheKey = urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+            cacheKey = urljoin(config.get('tomoscanUrl'), `api/epoch/expose/totalSignNumber/${epoch}`)
             totalSigners = cache.get(cacheKey)
             if (!totalSigners) {
-                totalSigners = await axios.post(
-                    urljoin(config.get('tomoscanUrl'), `api/expose/totalSignNumber/${epoch}`)
+                totalSigners = await axios.get(
+                    urljoin(
+                        config.get('tomoscanUrl'),
+                        `api/epoch/expose/totalSignNumber/${epoch}`
+                    )
                 )
                 cache.set(cacheKey, totalSigners)
             }

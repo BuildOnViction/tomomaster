@@ -13,6 +13,7 @@ const logger = require('../helpers/logger')
 const { check, validationResult, query } = require('express-validator/check')
 const uuidv4 = require('uuid/v4')
 const urljoin = require('url-join')
+const { default: BigNumber } = require('bignumber.js')
 // const BigNumber = require('bignumber.js')
 
 const gas = config.get('blockchain.gas')
@@ -712,14 +713,15 @@ router.get('/:candidate/:owner/getRewards', [
         })
 
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
-        const rewards = await axios.post(
-            urljoin(config.get('tomoscanUrl'), 'api/expose/MNRewardsByEpochs'),
-            {
-                address: candidate,
-                owner: owner,
-                reason: 'Voter',
-                epoch: masternodesEpochs
-            }
+        const rewards = await axios.get(
+            urljoin(
+                config.get('tomoscanUrl'),
+                `api/epoch/expose/MNRewardsByEpochs`,
+                `${masternodesEpochs.join(',')}`,
+                `?owner=${owner}`,
+                `&address=${candidate}`,
+                `&reason=voter`
+            )
         )
 
         if (rewards.data && rewards.data.length > 0) {
@@ -728,11 +730,12 @@ router.get('/:candidate/:owner/getRewards', [
             masternodesRW = rwData.map((r) => {
                 const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
+                r.reward = new BigNumber(r.reward).div(1e18).toString(10)
+                r.masternodeReward = new BigNumber(r.masternodeReward).div(1e18).toString(10)
                 if (!r.reward) {
                     r.rewardTime = mn.epochCreatedAt || ''
                 } else {
-                    r.masternodeReward = r.masternodeReward
-                    r.rewardTime = r.timestamp
+                    r.rewardTime = r.timestamp * 1000
                 }
                 if (currentEpoch - r.epoch < 2) {
                     r.masternodeReward = '-'
