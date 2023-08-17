@@ -1,0 +1,45 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Mainnet
+on: workflow_dispatch
+
+jobs:
+  mainnet:
+
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: rsync code
+      uses: burnett01/rsync-deployments@5.1
+      with:
+        switches: -avzr --delete  --include="./"
+        path: ./
+        remote_path: ${{ secrets.PATH }}
+        remote_host: ${{ secrets.HOSTMAINNET }}
+        remote_port: ${{ secrets.PORT }}
+        remote_user:  ${{ secrets.USERNAME }}
+        remote_key: ${{ secrets.KEYMAINNET }}
+    - name: Restart services
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOSTMAINNET }}
+        port: ${{ secrets.PORT }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEYMAINNET }}
+        script: |
+          cd ${{ secrets.PATH }}
+          bash deploy.sh
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: system-healthcheck
+        SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+        SLACK_ICON_EMOJI: ':tomomaster:'
+        SLACK_MESSAGE: ' ${{ env.COMMIT_MESSAGE }} :rocket: '
+        SLACK_USERNAME: tomomaster-deploy-bot
+        SLACK_WEBHOOK: ${{ secrets.SLACK }}
+
