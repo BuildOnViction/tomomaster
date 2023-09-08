@@ -247,7 +247,7 @@
                         v-if="w.blockNumber !== '0' && w.cap !== '0'"
                         class="tomo-list__item">
                         <p class="tomo-list__text">
-                            <a :href="`${config.explorerUrl}/blocks/${w.blockNumber}`">
+                            <a :href="`${config.explorerUrl}/block/${w.blockNumber}`">
                                 {{ w.blockNumber }}</a>
                             <span>Withdrawal Block Number</span>
                         </p>
