@@ -1,0 +1,61 @@
+### THIS WORKFLOW IS USED FOR SERVER RUNNING TELEPORT ONLY
+### DONOT RUN THIS WORKFLOW FOR MAINNET PRODUCTION
+
+name: Devnet Teleport
+on: workflow_dispatch
+
+jobs:
+  devnet:
+    permissions:
+      # The "id-token: write" permission is required or Machine ID will not be able to authenticate with the cluster.
+      id-token: write
+      contents: read
+    # The name of the workflow, and the Linux distro to be used to perform the required steps.
+    name: Devnet_Teleport
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '10.6'
+      - name: Install package
+        run: |
+          npm ci --no-audit
+
+      - name: Build
+        run: npm run build
+
+      - name: Fetch Teleport binaries
+        uses: teleport-actions/setup@v1
+        with:
+          version: 13.3.8
+      - name: Fetch credentials using Machine ID
+        id: auth
+        uses: teleport-actions/auth@v1
+        with:
+          # Use the address of the auth/proxy server for your own cluster.
+          proxy: ${{ secrets.TELEPORT_PROXY }}
+          # Use the name of the join token resource you created in step 1.
+          token: github-action-tomo
+          # Specify the length of time that the generated credentials should be
+          # valid for. This is optional and defaults to "1h"
+          certificate-ttl: 1h
+          # Enable the submission of anonymous usage telemetry.
+          anonymous-telemetry: 1
+      - name: Deploy to devnet
+        run: |
+          tsh -i ${{ steps.auth.outputs.identity-file }} ssh ${{ secrets.TELEPORT_USERNAME_DEVNET }}@${{ secrets.TELEPORT_HOSTNAME_DEVNET }} "rm -rf ${{ secrets.DEVNET_DEPLOY_PATH }} && mkdir ${{ secrets.DEVNET_DEPLOY_PATH }}"
+          rsync -r -e 'tsh ssh -i ${{ steps.auth.outputs.identity-file }}' ./  ${{ secrets.TELEPORT_USERNAME_DEVNET }}@${{ secrets.TELEPORT_HOSTNAME_DEVNET }}:${{ secrets.DEVNET_DEPLOY_PATH }}
+          tsh -i ${{ steps.auth.outputs.identity-file }} ssh ${{ secrets.TELEPORT_USERNAME_DEVNET }}@${{ secrets.TELEPORT_HOSTNAME_DEVNET }} "cd ${{ secrets.DEVNET_DEPLOY_PATH }} && bash deploy.sh"
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: system-healthcheck
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_ICON_EMOJI: ':tomomaster:'
+          SLACK_MESSAGE: '[Devnet] TomoMaster has been deployed'
+          SLACK_USERNAME: tomomaster-deploy-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK }}
