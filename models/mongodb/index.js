@@ -8,7 +8,8 @@ const config = require('config')
 mongoose.Promise = global.Promise
 mongoose.set('useCreateIndex', true)
 mongoose.connect(config.get('db.uri'), {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 },
 (err) => {
     if (err) {
