@@ -374,7 +374,7 @@ async function updateSignerPenAndStatus () {
         logger.error('updateSignerAndPen %s', e)
         web3 = new Web3Ws()
         validator = new Validator(web3)
-        await sleep(1000)
+        await sleep(100)
         return updateSignerPenAndStatus()
     }
 }
