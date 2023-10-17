@@ -563,10 +563,10 @@ const getBlockSigners = async (number) => {
   
 async function updateLatestSignedBlock (blk) {
     try {
-        if (!blk || blk.number % parseInt(config.get('blockchain.blockSignerGap')) != 0) {
+        if (!blk || blk.number % parseInt(config.get('blockchain.blockSignerGap')) != parseInt(config.get('blockchain.blockSignerDelay'))) {
             return
         }
-        const signers = await getBlockSigners(blk.number)
+        const signers = await getBlockSigners(blk.number - parseInt(config.get('blockchain.blockSignerDelay')))
         let bulkOps = []
         for (const signer of signers) {
             bulkOps.push({
