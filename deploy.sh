@@ -3,7 +3,7 @@ npm config set user 0
 npm config set unsafe-perm true
 
 
-cp ../config/* ./config/
+cp ../config/tomomaster.json ./config/local.json
 cp abis/*json build/contracts/
 
 pm2 list || npm i -g pm2
