@@ -531,30 +531,64 @@ function diff (a, b) {
     })
 }
 
+const getBlockSigners = async (number) => {
+    try {
+      if (!number) {
+        return
+      }
+      const data = {
+        jsonrpc: '2.0',
+        method: 'eth_getBlockSignersByNumber',
+        params: ['0x' + number.toString(16)],
+        id: 88,
+      }
+      const response = await axios.post(config.get('blockchain.internalRpc'), data)
+      const result = response.data
+      if (!result.error) {
+        let signers = result.result
+        signers.map((s) => {
+          if (s && s.length === 66) {
+            return ethUtils.toChecksumAddress(s)
+          }
+        })
+        return signers
+      }
+    } catch (err) {
+      logger.error(`getBlockSigners error: ${number}`)
+      throw err
+    }
+    return []
+  }
+
+  
 async function updateLatestSignedBlock (blk) {
     try {
-        for (let hash of ((blk || {}).transactions || [])) {
-            let tx = await web3Rpc.eth.getTransaction(hash)
-            if ((tx || {}).to === config.get('blockchain.blockSignerAddress')) {
-                let signer = tx.from
-                let buff = Buffer.from((tx.input || '').substring(2), 'hex')
-                let sbuff = buff.slice(buff.length - 32, buff.length)
-                let bN = ((await web3Rpc.eth.getBlock('0x' + sbuff.toString('hex'))) || {}).number
-                if (!bN) {
-                    logger.debug('Bypass signer %s sign %s', signer, '0x' + sbuff.toString('hex'))
-                    continue
-                }
-                logger.debug('Sign block %s by signer %s', bN, signer)
-                await db.Candidate.findOneAndUpdate({
+        if (!blk || blk.number % parseInt(config.get('blockchain.blockSignerGap')) != 0) {
+            return
+        }
+        const signers = await getBlockSigners(blk.number)
+        let bulkOps = []
+        for (const signer of signers) {
+            bulkOps.push({
+                updateOne: {
+                  filter: {
                     smartContractAddress: config.get('blockchain.validatorAddress'),
                     candidate: signer.toLowerCase()
-                }, {
+                },
+                  update: {
                     $set: {
-                        latestSignedBlock: bN
-                    }
-                }, { upsert: false })
-            }
+                        latestSignedBlock: blk.number
+                    },
+                  },
+                  upsert: false,
+                },
+              })
         }
+
+          if (bulkOps.length > 0) {
+            await db.Candidate.collection.bulkWrite(bulkOps)
+          }
+          logger.debug(`UpdatelatestSignedBlock at block ${blk.number}`)
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
     }
