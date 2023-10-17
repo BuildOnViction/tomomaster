@@ -374,7 +374,7 @@ async function updateSignerPenAndStatus () {
         logger.error('updateSignerAndPen %s', e)
         web3 = new Web3Ws()
         validator = new Validator(web3)
-        await sleep(10000)
+        await sleep(1000)
         return updateSignerPenAndStatus()
     }
 }
@@ -500,7 +500,7 @@ async function watchNewBlock (n) {
         web3 = new Web3Ws()
         validator = new Validator(web3)
     }
-    await sleep(1000)
+    await sleep(100)
     return watchNewBlock(n)
 }
 
@@ -586,9 +586,9 @@ async function updateLatestSignedBlock (blk) {
         }
 
           if (bulkOps.length > 0) {
-            await db.Candidate.collection.bulkWrite(bulkOps)
+            const res = await db.Candidate.collection.bulkWrite(bulkOps)
+            logger.debug(`UpdatelatestSignedBlock at block ${blk.number}, result ${res}`)
           }
-          logger.debug(`UpdatelatestSignedBlock at block ${blk.number}`)
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
     }
