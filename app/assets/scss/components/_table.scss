@@ -2,7 +2,7 @@
     width: 100%;
     overflow: hidden;
     margin-bottom: 50px;
-    color: #7573a6;
+    color: $color-text;
   
     thead {
         display: none;
@@ -11,6 +11,8 @@
             border: none;
             font-weight: 400;
             font-size: 16px;
+            text-transform: uppercase;
+            white-space: nowrap;
 
             &:focus {
                 outline: none;
@@ -83,16 +85,14 @@
   
         tr {
             display: block;
-            border-radius: 10px;
-            background-image: linear-gradient(-135deg, #2e2e4b 0%, #323252 100%);
-            box-shadow: 8px 8px 40px 0 rgba(0, 0, 0, .07);
+            background: $color-primary;
             padding: 17px 20px 16px;
             margin-bottom: 20px;
 
             @extend %transit;
 
             &:hover {
-                background-image: linear-gradient(-135deg, #323252 0%, #2e2e4b 100%);
+                background: $color-primary;
             }
     
             @include media-breakpoint-up(lg) {
@@ -292,32 +292,35 @@
             .tomo-chip {
                 width: 100%;
             }
+            .vote-btn{
+                border-radius: 0 !important;
+            }
         }
         
         td[aria-colindex="6"] > div {
             position: relative;
             z-index: 1;
 
-            &:before,
-            &:after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: calc(-20px - 10px);
-                height: 10px;
-                width: 10px;
-            }
+            // &:before,
+            // &:after {
+            //     content: '';
+            //     position: absolute;
+            //     top: 0;
+            //     left: calc(-20px - 10px);
+            //     height: 10px;
+            //     width: 10px;
+            // }
 
-            &:before {
-                border-top-right-radius: 10px;
-                background-color: #31304d;
-                z-index: 1;
-            }
+            // &:before {
+            //     // border-top-right-radius: 10px;
+            //     background-color: #31304d;
+            //     z-index: 1;
+            // }
 
-            &:after {
-                background-color: $color-body-bg;
-                z-index: 0;
-            }
+            // &:after {
+            //     background-color: $color-body-bg;
+            //     z-index: 0;
+            // }
         }
 
         td[aria-colindex="6"] > div > div {
@@ -333,7 +336,7 @@
             }
 
             &:before {
-                border-bottom-right-radius: 10px;
+                // border-bottom-right-radius: 10px;
                 background-color: #31304d;
                 z-index: 1;
             }

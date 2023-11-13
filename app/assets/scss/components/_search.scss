@@ -5,8 +5,11 @@
     margin-top: 5px;
 
     input.form-control {
-        border-radius: 100px;
+        border-radius: 0;
         padding: 4px 40px 4px 20px;
+        &::placeholder{
+            color: $color-text-2;
+        }
     }
 
     .btn {

@@ -20,6 +20,10 @@
         display: block;
         color: $color-text;
         margin-top: 10px;
+        span{
+            display: inline-block;
+            margin: 0 12px;
+        }
     }
 }
 

@@ -4,7 +4,7 @@
     .page-item {
         margin-right: 15px;
   
-        &.active .page-link {
+        &.active a {
             color: $color-white;
             background-color: $color-primary;
         }
@@ -52,11 +52,10 @@
       
         .page-link {
             color: $color-text;
-            background-color: #323258;
+            // background-color: #323258;
             height: 30px;
             min-width: 30px;
             line-height: 30px;
-            border-radius: 30px;
             text-align: center;
             border: 0px;
             padding: 0 5px;

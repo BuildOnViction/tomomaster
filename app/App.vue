@@ -3,8 +3,7 @@
         <div class="page-layout">
             <b-navbar
                 toggleable="lg"
-                type="dark"
-                variant="info">
+            >
                 <div class="container">
                     <b-navbar-brand to="/">
                         <img src="/app/assets/img/logo.svg" >
@@ -21,10 +20,7 @@
                                 <auto-complete
                                     v-model="search"
                                     :items="items"/>
-                                <b-button
-                                    variant="outline-success"
-                                    type="submit"
-                                    @click="searchCandidate">Search</b-button>
+
                             </b-nav-form>
                         </b-navbar-nav>
                         <b-navbar-nav class="ml-auto navbar-buttons">
@@ -301,24 +297,24 @@
                                         <a
                                             :href="needHelpLink"
                                             target="_blank">
-                                        <i class="tm-lifebuoy mr-1"/>Need help?</a>
+                                            Need help?</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
                                             href="https://docs.tomochain.com/legal/privacy">
-                                        <i class="tm-lock mr-1"/>Privacy Policy</a>
+                                            Privacy Policy</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
                                             href="https://docs.tomochain.com/legal/terms-of-use">
-                                        <i class="tm-profile mr-1"/>Terms of Use</a>
+                                            Terms of Use</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="/api-docs"><i class="tm-checklist mr-1"/>API Documentation</a>
+                                            href="/api-docs">API Documentation</a>
                                     </li>
                                 </ul>
                             </div>

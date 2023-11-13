@@ -2,18 +2,18 @@
   margin-bottom: 20px;
 
   a {
-    color: #7573a6;
+    color: $color-link;
   }
 
   a:hover {
-    color: #cfcde1;
+    color: $color-link;
   }
 
   &__copyright {
     margin-bottom: 1rem;
 
     a {
-      color: #6a8ae8;
+      color: $color-text-2;
     }
   }
 
@@ -23,6 +23,12 @@
 
   &__links {
     margin-top: 1rem;
+    .list-inline-item{
+      text-transform: uppercase;
+      color: $color-text;
+      border-bottom: 1px solid $color-border;
+      padding-bottom: 4px;
+    }
   }
 
   @include media-breakpoint-up(md) {

@@ -2,7 +2,7 @@
     text-align: center;
     color: #ffffff;
     text-transform: capitalize;
-    border-radius: 8px;
+    // border-radius: 8px;
     display: inline-block;
     vertical-align: middle;
     font-weight: 500;
@@ -10,7 +10,7 @@
 
     &--primary {
         color: $color-white;
-        background-color: $color-text;
+        background-color: $color-primary;
     }
 
     &--accent {
@@ -25,11 +25,11 @@
         padding: 10px 9px;
     }
 
-    @include media-breakpoint-up(lg) {
+    // @include media-breakpoint-up(lg) {
 
-        &--primary {
-            color: #7473a6;
-            background-color: #323258;
-        }
-    }
+    //     &--primary {
+    //         color: #7473a6;
+    //         background-color: #323258;
+    //     }
+    // }
 }
