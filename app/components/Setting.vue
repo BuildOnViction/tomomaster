@@ -34,9 +34,9 @@
                                     value="ledger">Ledger Wallet</option>
                                 <option
                                     value="trezor">Trezor Wallet</option>
-                                <option
+                                    <!-- <option
                                     v-if="!isElectron"
-                                    value="pantograph">Pantograph</option>
+                                    value="pantograph">Pantograph</option> -->
                             </b-form-select>
                             <small
                                 v-if="provider !== 'metamask' && provider !== 'pantograph'"

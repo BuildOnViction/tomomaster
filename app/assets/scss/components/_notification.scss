@@ -43,10 +43,10 @@
 }
 
 .readAllBtn {
-    color: #7573a6;
+    color: $color-brand;
 
     &:hover {
-        color: #7573a6;
+        color: $color-brand;
         text-decoration: underline !important; 
     }
 }
@@ -77,10 +77,10 @@
 }
 
 .masternode-name {
-    color: #7573a6;
+    color: $color-link;
 
     &:hover {
-        color: #7573a6;
+        color: $color-link;
         text-decoration: underline !important; 
     }
 }

@@ -34,7 +34,7 @@
                                 id="btn-become-candidate"
                                 to="/apply"
                                 variant="primary">Become a candidate</b-button>
-                            <b-dropdown
+                            <!-- <b-dropdown
                                 class="dd-setting ml-3"
                                 right
                                 offset="25"
@@ -244,7 +244,7 @@
                                     class="notification_bottom">
                                     TomoMaster - {{ version }}
                                 </b-dropdown-text>
-                            </b-dropdown>
+                            </b-dropdown> -->
                             <b-dropdown
                                 v-if="isTomonet"
                                 class="dd-setting ml-1"

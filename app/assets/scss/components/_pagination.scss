@@ -9,9 +9,9 @@
             background-color: $color-primary;
         }
     
-        &.disabled:not([role="separator"]) .page-link {
-            background-color: #373658;
-        }
+        // &.disabled:not([role="separator"]) .page-link {
+        //     background-color: #373658;
+        // }
     
         &:first-child,
         &:nth-child(2),

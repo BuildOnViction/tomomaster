@@ -52,12 +52,14 @@
     // border-radius: 100px;
     background-color: $color-btn-bg;
     color: $color-primary;
+    text-transform: uppercase;
 
     &.btn:hover,
     &.btn:focus {
         box-shadow: none;
         border-color: $color-btn-hover-bg;
         background-color: $color-btn-hover-bg;
+        color: $color-text;
     }
     
 }

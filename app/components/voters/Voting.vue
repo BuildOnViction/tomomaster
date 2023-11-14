@@ -39,8 +39,8 @@
                         novalidate
                         @submit.prevent="validate()">
                         <b-form-group
-                            :description="`How much TOMO would you like to vote for this candidate?
-                            TX fee: ${txFee} TOMO`"
+                            :description="`How much VIC would you like to vote for this candidate?
+                            TX fee: ${txFee} VIC`"
                             label="Vote"
                             label-for="vote-value">
                             <b-input-group>
@@ -58,10 +58,10 @@
                                     class="text-danger">Required field</span>
                                 <span
                                     v-else-if="$v.voteValue.$dirty && !$v.voteValue.minValue"
-                                    class="text-danger">Minimum of voting is 100 TOMO</span>
+                                    class="text-danger">Minimum of voting is 100 VIC</span>
                                 <span
                                     v-else-if="votingError"
-                                    class="text-danger">Not enough TOMO</span>
+                                    class="text-danger">Not enough VIC</span>
                             </b-input-group>
                         </b-form-group>
                         <div>

@@ -3,8 +3,8 @@ select.form-control {
     border-color: $color-input-bg;
     background-color: $color-input-bg;
     background-image:
-        linear-gradient(45deg, transparent 50%, $color-text-muted 50%),
-        linear-gradient(135deg, $color-text-muted 50%, transparent 50%);
+        linear-gradient(45deg, transparent 50%, $color-text 50%),
+        linear-gradient(135deg, $color-text 50%, transparent 50%);
     background-position:
         calc(100% - 20px) calc(1em + 2px),
         calc(100% - 15px) calc(1em + 2px),
@@ -21,8 +21,8 @@ select.form-control {
         border-color: $color-input-focus-bg;
         background-color: $color-input-focus-bg;
         background-image:
-            linear-gradient(45deg, $color-text-muted 50%, transparent 50%),
-            linear-gradient(135deg, transparent 50%, $color-text-muted 50%);
+            linear-gradient(45deg, $color-text 50%, transparent 50%),
+            linear-gradient(135deg, transparent 50%, $color-text 50%);
         background-position:
             calc(100% - 15px) 1em,
             calc(100% - 20px) 1em,
