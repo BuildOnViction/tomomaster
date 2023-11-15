@@ -247,7 +247,7 @@
                             </b-dropdown> -->
                             <b-dropdown
                                 v-if="isTomonet"
-                                class="dd-setting ml-1"
+                                class="dd-setting ml-3"
                                 right
                                 offset="25"
                                 no-caret
@@ -285,7 +285,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="tomo-footer__copyright">
-                                TomoMaster &copy; {{ (new Date()).getFullYear() }} -
+                                VicMater &copy; {{ (new Date()).getFullYear() }} -
                                 <a
                                     :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`"
                                     class="version-tag">
