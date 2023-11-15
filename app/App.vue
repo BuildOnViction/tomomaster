@@ -323,39 +323,39 @@
                             <ul class="list-inline">
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://t.me/tomochain"
+                                        href="https://viction.link/telegram"
                                         target="_blank">
                                         <i class="tm-telegram" />
                                     </a>
                                 </li>
-                                <li class="list-inline-item">
+                                <!-- <li class="list-inline-item">
                                     <a
                                         href="https://www.facebook.com/tomochainofficial"
                                         target="_blank">
                                         <i class="tm-facebook" />
                                     </a>
-                                </li>
+                                </li> -->
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://twitter.com/TomoChainANN"
+                                        href="https://viction.link/twitter"
                                         target="_blank">
                                         <i class="tm-twitter" />
                                     </a>
                                 </li>
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://github.com/tomochain/"
+                                        href="https://github.com/BuildOnViction"
                                         target="_blank">
                                         <i class="tm-github" />
                                     </a>
                                 </li>
-                                <li class="list-inline-item">
+                                <!-- <li class="list-inline-item">
                                     <a
                                         href="https://www.reddit.com/r/Tomochain/"
                                         target="_blank">
                                         <i class="tm-reddit" />
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>

@@ -133,7 +133,7 @@
   
     td {
         align-items: center;
-        border-color: #505078;
+        border-color: $color-border;
         grid-template-columns: 40% auto !important;
         grid-column-gap: 15px !important;
         word-break: break-word;

@@ -77,6 +77,9 @@
             outline: none!important;
         }
     }
+    span.navbar-toggler-icon{
+        background-color: $color-btn-bg;
+    }
 }
 #btn-setting {
     font-size: 0;

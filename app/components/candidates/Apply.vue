@@ -29,7 +29,7 @@
                     novalidate
                     @submit.prevent="validate()">
                     <b-form-group
-                        :description="`How much VIC do you want to deposit? TX fee: ${txFee} TOMO`"
+                        :description="`How much VIC do you want to deposit? TX fee: ${txFee} VIC`"
                         label="Vote"
                         label-for="apply-value">
                         <b-input-group>

@@ -3,7 +3,7 @@ input[type="number"],
 input[type="email"],
 input[type="phone"],
 input[type="password"] {
-    border-color: $color-input-bg;
+    border-color: $color-border;
     background-color: $color-input-bg;
     border-radius: 8px;
     font-size: 14px;
@@ -20,14 +20,14 @@ input[type="password"] {
     }
 
     &::-webkit-input-placeholder {
-        color: #505078;
+        color: $color-text-2;
     }
 
     &:-moz-placeholder {
-        color: #505078;
+        color: $color-text-2;
     }
 
     &:-ms-input-placeholder {
-        color: #505078;
+        color: $color-text-2;
     }
 }
