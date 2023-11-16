@@ -374,7 +374,7 @@ import AutoComplete from './components/AutoComplete.vue'
 export default {
     name: 'App',
     metaInfo: {
-        title: 'Viction Governance DApp | TomoMaster',
+        title: 'Viction Governance DApp | VicMaster',
         meta: [
             { name: 'description', content: 'VicMaster - Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics' } // eslint-disable-line
         ]
