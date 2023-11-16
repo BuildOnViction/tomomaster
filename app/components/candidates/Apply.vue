@@ -39,9 +39,9 @@
                                 :step="0.1"
                                 v-model="applyValue"
                                 name="apply-value"/>
-                            <b-input-group-append>
+                            <!-- <b-input-group-append>
                                 <i class="tm-tomo2" />
-                            </b-input-group-append>
+                            </b-input-group-append> -->
                             <span
                                 v-if="$v.applyValue.$dirty && !$v.applyValue.required"
                                 class="text-danger">Required field</span>

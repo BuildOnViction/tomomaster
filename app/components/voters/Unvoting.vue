@@ -80,9 +80,9 @@
                                             v-model="unvoteValue"
                                             name="vote-value"
                                             @input="onChange"/>
-                                        <b-input-group-append>
+                                        <!-- <b-input-group-append>
                                             <i class="tm-tomo2" />
-                                        </b-input-group-append>
+                                        </b-input-group-append> -->
                                         <span
                                             v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
                                             class="text-danger">Required field </span>

@@ -50,9 +50,9 @@
                                     :step="10"
                                     v-model="voteValue"
                                     name="vote-value"/>
-                                <b-input-group-append>
+                                <!-- <b-input-group-append>
                                     <i class="tm-tomo2" />
-                                </b-input-group-append>
+                                </b-input-group-append> -->
                                 <span
                                     v-if="$v.voteValue.$dirty && !$v.voteValue.required"
                                     class="text-danger">Required field</span>
