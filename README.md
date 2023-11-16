@@ -37,7 +37,7 @@ npm install
 truffle deploy --reset --network tomo # only use this command if you want to connect to a private network
 cp abis/*json build/contracts/
 ```
-Note: before deploying to tomochain testnet, make sure you have TOMO in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.testnet.tomochain.com)
+Note: before deploying to tomochain testnet, make sure you have VIC in the wallet. If not, get free at [https://faucet.tomochain.com](https://faucet.testnet.tomochain.com)
 
 ## Enable https
 ``` npm run dev-https```

@@ -154,7 +154,7 @@
                                                     'font-weight: bold;'"
                                                     class="notification__content">
                                                     <span class="notification_label withdraw">Withdraw</span>
-                                                    {{ value.amount }} unvoted TOMO are ready to withdraw
+                                                    {{ value.amount }} unvoted VIC are ready to withdraw
                                                 </span>
                                                 <div class="notification__time">TomoMaster -
                                                     {{ value.createdAt }}</div>
