@@ -11,7 +11,7 @@
     },
     "explorerUrl": "https://tomoscan.io",
     "tomoscanUrl": "http://tomoscan_server:3333",
-    "baseUrl": "https://master.tomochain.com/",
+    "baseUrl": "https://vicmaster.xyz/",
     "db": {
         "uri" : "mongodb://tomomaster_db:27017/governance"
     },
