@@ -1,5 +1,6 @@
 .navbar {
-    background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
+    // background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
+    background: $color-primary;
 
     &.navbar-light {
         padding-top: 4px;
@@ -48,14 +49,17 @@
 #btn-become-candidate {
     font-size: 12px;
     font-weight: 500;
-    border-radius: 100px;
+    // border-radius: 100px;
     background-color: $color-btn-bg;
+    color: $color-primary;
+    text-transform: uppercase;
 
     &.btn:hover,
     &.btn:focus {
         box-shadow: none;
         border-color: $color-btn-hover-bg;
         background-color: $color-btn-hover-bg;
+        color: $color-text;
     }
     
 }
@@ -72,6 +76,9 @@
             background: transparent!important;
             outline: none!important;
         }
+    }
+    span.navbar-toggler-icon{
+        background-color: $color-btn-bg;
     }
 }
 #btn-setting {
@@ -96,7 +103,7 @@
     i {
         display: inline-block;
         font-size: 18px;
-        color: #678be0;
+        color: $color-link;
 
         @extend %transit;
     }
@@ -137,13 +144,17 @@
         text-decoration: none;
         white-space: pre-wrap;
         cursor: pointer;
+        color: $color-text-2;
 
         &:hover {
-            color: #30ddd8 !important;
+            color: $color-text;
         }
     }
     a.tab-active {
-        color: #30ddd8;
+        color: $color-text;
+        border-bottom: 1px solid $color-border;
+        padding-bottom: 4px;
+        display: inline-block;
     }
 }
 

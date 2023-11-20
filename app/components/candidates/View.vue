@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="section-title">
-                            <i class="tm-flag color-yellow" />
+                            <!-- <i class="tm-flag color-yellow" /> -->
                             <span>
                                 {{ (candidate.rank) ? `${candidate.rank}. ${candidate.name}` : candidate.name }}
                             </span>
@@ -227,7 +227,7 @@
                 <div class="row candidate-reward-bar">
                     <div class="col-12">
                         <h3 class="section-title">
-                            <i class="tm-gift color-purple" />
+                            <!-- <i class="tm-gift color-purple" /> -->
                             <span>Masternode Rewards</span>
                             <span class="text-truncate section-title__description">
                                 Reward/Status for candidate</span>
@@ -303,7 +303,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h3 class="section-title">
-                            <i class="tm-arrow-up color-pink" />
+                            <!-- <i class="tm-arrow-up color-pink" /> -->
                             <span>Voters</span>
                             <span class="text-truncate section-title__description">
                                 People who voted for this candidate</span>
@@ -356,7 +356,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h3 class="section-title">
-                            <i class="tm-time color-purple" />
+                            <!-- <i class="tm-time color-purple" /> -->
                             <span>Transactions</span>
                             <span class="text-truncate section-title__description">
                                 All transactions of this candidate</span>

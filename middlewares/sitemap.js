@@ -6,7 +6,7 @@ const apicache = require('apicache')
 const cache = apicache.middleware
 
 router.get('/sitemap.xml', cache('1 day'), async (req, res) => {
-    const domain = 'https://master.tomochain.com'
+    const domain = 'https://vicmaster.xyz'
     let routes = (await db.Candidate.find()
         .sort({ capacityNumber: -1 })
         .limit(500).lean().exec()).map(c => {

@@ -31,7 +31,7 @@
                             <h4 class=" color-white tomo-card__title tomo-card__title--big">Unvote
                                 <span
                                     class="tomo-card__subtitle">
-                                    Your TOMO will be locked in a duration after unvoting</span>
+                                    Your VIC will be locked in a duration after unvoting</span>
                             </h4>
                             <ul class="tomo-list list-unstyled">
                                 <li class="tomo-list__item">
@@ -69,7 +69,7 @@
                                 novalidate
                                 @submit.prevent="validate()">
                                 <b-form-group
-                                    :description="`The amount of TOMO to unvote. TX fee: ${txFee} TOMO`"
+                                    :description="`The amount of VIC to unvote. TX fee: ${txFee} VIC`"
                                     label="Amount"
                                     label-for="unvote-value">
                                     <b-input-group>
@@ -80,9 +80,9 @@
                                             v-model="unvoteValue"
                                             name="vote-value"
                                             @input="onChange"/>
-                                        <b-input-group-append>
+                                        <!-- <b-input-group-append>
                                             <i class="tm-tomo2" />
-                                        </b-input-group-append>
+                                        </b-input-group-append> -->
                                         <span
                                             v-if="$v.unvoteValue.$dirty && !$v.unvoteValue.required"
                                             class="text-danger">Required field </span>
@@ -91,14 +91,14 @@
                                             class="text-danger">Must be number </span>
                                         <!-- <span
                                             v-else-if="isMin"
-                                            class="text-danger">Minimum of unvoting is 100 TOMO </span> -->
+                                            class="text-danger">Minimum of unvoting is 100 VIC </span> -->
                                         <span
                                             v-else-if="isMax"
                                             class="text-danger">
-                                            Must be less than {{ limitedUnvote }} TOMO </span>
+                                            Must be less than {{ limitedUnvote }} VIC </span>
                                         <span
                                             v-else-if="!isEnoughTomo"
-                                            class="text-danger">Voted amount left should not less than 100 TOMO </span>
+                                            class="text-danger">Voted amount left should not less than 100 VIC </span>
                                     </b-input-group>
                                 </b-form-group>
                                 <div class="buttons text-right">

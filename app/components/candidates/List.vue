@@ -5,7 +5,6 @@
             <div class="row">
                 <div class="col-12">
                     <h3 class="section-title">
-                        <i class="tm-bolt color-pink" />
                         <span>Network Information</span>
                     </h3>
                 </div>
@@ -49,7 +48,6 @@
                 <div class="col-12">
                     <h3 class="section-title--masternodes">
                         <div class="masternode-bar">
-                            <i class="tm-flag color-yellow" />
                             <span>Candidates</span>
                             <span class="text-truncate section-title__description">
                                 <a

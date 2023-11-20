@@ -34,9 +34,9 @@
                                     value="ledger">Ledger Wallet</option>
                                 <option
                                     value="trezor">Trezor Wallet</option>
-                                <option
+                                    <!-- <option
                                     v-if="!isElectron"
-                                    value="pantograph">Pantograph</option>
+                                    value="pantograph">Pantograph</option> -->
                             </b-form-select>
                             <small
                                 v-if="provider !== 'metamask' && provider !== 'pantograph'"
@@ -187,7 +187,7 @@
                             <a
                                 href="https://metamask.io/"
                                 target="_blank">Metamask Extension</a>
-                            then connect it to Tomochain Mainnet or Testnet.</p>
+                            then connect it to Viction Mainnet or Testnet.</p>
                     </div>
                     <div
                         v-if="!isReady && provider === 'pantograph'">
@@ -195,7 +195,7 @@
                             <a
                                 href="https://pantograph.io/"
                                 target="_blank">Pantograph Extension</a>
-                            then connect it to Tomochain Mainnet or Testnet.</p>
+                            then connect it to Viction Mainnet or Testnet.</p>
                     </div>
                     <div class="buttons text-right">
                         <b-button
@@ -814,7 +814,7 @@ export default {
                     }
                 })
             } else {
-                this.$toasted.show('Not enough TOMO for transaction fee', {
+                this.$toasted.show('Not enough VIC for transaction fee', {
                     type : 'info'
                 })
             }

@@ -3,8 +3,7 @@
         <div class="page-layout">
             <b-navbar
                 toggleable="lg"
-                type="dark"
-                variant="info">
+            >
                 <div class="container">
                     <b-navbar-brand to="/">
                         <img src="/app/assets/img/logo.svg" >
@@ -21,10 +20,7 @@
                                 <auto-complete
                                     v-model="search"
                                     :items="items"/>
-                                <b-button
-                                    variant="outline-success"
-                                    type="submit"
-                                    @click="searchCandidate">Search</b-button>
+
                             </b-nav-form>
                         </b-navbar-nav>
                         <b-navbar-nav class="ml-auto navbar-buttons">
@@ -38,7 +34,7 @@
                                 id="btn-become-candidate"
                                 to="/apply"
                                 variant="primary">Become a candidate</b-button>
-                            <b-dropdown
+                            <!-- <b-dropdown
                                 class="dd-setting ml-3"
                                 right
                                 offset="25"
@@ -158,7 +154,7 @@
                                                     'font-weight: bold;'"
                                                     class="notification__content">
                                                     <span class="notification_label withdraw">Withdraw</span>
-                                                    {{ value.amount }} unvoted TOMO are ready to withdraw
+                                                    {{ value.amount }} unvoted VIC are ready to withdraw
                                                 </span>
                                                 <div class="notification__time">TomoMaster -
                                                     {{ value.createdAt }}</div>
@@ -248,10 +244,10 @@
                                     class="notification_bottom">
                                     TomoMaster - {{ version }}
                                 </b-dropdown-text>
-                            </b-dropdown>
+                            </b-dropdown> -->
                             <b-dropdown
                                 v-if="isTomonet"
-                                class="dd-setting ml-1"
+                                class="dd-setting ml-3"
                                 right
                                 offset="25"
                                 no-caret
@@ -289,7 +285,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="tomo-footer__copyright">
-                                TomoMaster &copy; {{ (new Date()).getFullYear() }} -
+                                VicMater &copy; {{ (new Date()).getFullYear() }} -
                                 <a
                                     :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`"
                                     class="version-tag">
@@ -301,24 +297,24 @@
                                         <a
                                             :href="needHelpLink"
                                             target="_blank">
-                                        <i class="tm-lifebuoy mr-1"/>Need help?</a>
+                                            Need help?</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
                                             href="https://docs.tomochain.com/legal/privacy">
-                                        <i class="tm-lock mr-1"/>Privacy Policy</a>
+                                            Privacy Policy</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
                                             href="https://docs.tomochain.com/legal/terms-of-use">
-                                        <i class="tm-profile mr-1"/>Terms of Use</a>
+                                            Terms of Use</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="/api-docs"><i class="tm-checklist mr-1"/>API Documentation</a>
+                                            href="/api-docs">API Documentation</a>
                                     </li>
                                 </ul>
                             </div>
@@ -327,39 +323,39 @@
                             <ul class="list-inline">
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://t.me/tomochain"
+                                        href="https://viction.link/telegram"
                                         target="_blank">
                                         <i class="tm-telegram" />
                                     </a>
                                 </li>
-                                <li class="list-inline-item">
+                                <!-- <li class="list-inline-item">
                                     <a
                                         href="https://www.facebook.com/tomochainofficial"
                                         target="_blank">
                                         <i class="tm-facebook" />
                                     </a>
-                                </li>
+                                </li> -->
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://twitter.com/TomoChainANN"
+                                        href="https://viction.link/twitter"
                                         target="_blank">
                                         <i class="tm-twitter" />
                                     </a>
                                 </li>
                                 <li class="list-inline-item">
                                     <a
-                                        href="https://github.com/tomochain/"
+                                        href="https://github.com/BuildOnViction"
                                         target="_blank">
                                         <i class="tm-github" />
                                     </a>
                                 </li>
-                                <li class="list-inline-item">
+                                <!-- <li class="list-inline-item">
                                     <a
                                         href="https://www.reddit.com/r/Tomochain/"
                                         target="_blank">
                                         <i class="tm-reddit" />
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -378,9 +374,9 @@ import AutoComplete from './components/AutoComplete.vue'
 export default {
     name: 'App',
     metaInfo: {
-        title: 'TomoChain Governance DApp | TomoMaster',
+        title: 'Viction Governance DApp | VicMaster',
         meta: [
-            { name: 'description', content: 'Tomomaster - Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics' } // eslint-disable-line
+            { name: 'description', content: 'VicMaster - Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics' } // eslint-disable-line
         ]
     },
     components: {

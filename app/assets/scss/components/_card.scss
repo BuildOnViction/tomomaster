@@ -1,15 +1,17 @@
 .tomo-card {
     margin-bottom: 30px;
-    border-radius: 8px;
+    // border-radius: 8px;
     border: none;
-    background-image: linear-gradient(-135deg, #2d2d4a 0%, #333353 100%);
+    background: $color-primary;
 
     &--lighter {
-        background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
+        // background-image: linear-gradient(-135deg, #373658 0%, #40406a 100%);
+        background: $color-primary;
     }
 
     &--animated {
-        background-image: linear-gradient(-135deg, #2d2d4a, #40406A, #1d1e31);
+        // background-image: linear-gradient(-135deg, #2d2d4a, #40406A, #1d1e31);
+        background: $color-primary;
         background-size: 400% 400%;
         animation: tomomaster 10s ease infinite;
     }
@@ -17,10 +19,10 @@
     @extend %transit;
 
     .tomo-card__title {
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 12px;
         color: $color-text-highlight;
-        margin-bottom: 25px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
 
         &--big {
             font-size: 24px;

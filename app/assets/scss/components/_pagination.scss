@@ -3,15 +3,43 @@
   
     .page-item {
         margin-right: 15px;
-  
-        &.active .page-link {
+        &:nth-child(1), &:nth-child(2), &:nth-last-child(-n + 2){
+            .page-link{
+                background-color: transparent !important;
+            }
+        }
+        &>span{
+            background: transparent !important;
+        }
+        .page-link {
+            color: $color-text;
+            background-color: transparent;
+            height: 30px;
+            min-width: 30px;
+            line-height: 30px;
+            text-align: center;
+            border: 0px;
+            padding: 0 5px;
             color: $color-white;
-            background-color: $color-primary;
+            &:hover {
+                color: $color-white;
+                background-color: $color-primary;
+            }
+            &:focus, &:focus-visible{
+                box-shadow: none;
+            }
+        }
+        a.page-link{
+            background: #292929;
+        }
+  
+        &.active a.page-link {
+            background-color: #424242;
         }
     
-        &.disabled:not([role="separator"]) .page-link {
-            background-color: #373658;
-        }
+        // &.disabled:not([role="separator"]) .page-link {
+        //     background-color: #373658;
+        // }
     
         &:first-child,
         &:nth-child(2),
@@ -50,22 +78,8 @@
             content: '\e916';
         }
       
-        .page-link {
-            color: $color-text;
-            background-color: #323258;
-            height: 30px;
-            min-width: 30px;
-            line-height: 30px;
-            border-radius: 30px;
-            text-align: center;
-            border: 0px;
-            padding: 0 5px;
-    
-            &:hover {
-                color: $color-white;
-                background-color: $color-primary;
-            }
-        }
+       
+        
     }
   
     @include media-breakpoint-up(md) {

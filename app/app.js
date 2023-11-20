@@ -56,7 +56,7 @@ Vue.use(Toasted, {
 // set trezor's manifest
 TrezorConnect.manifest({
     email: 'admin@tomochain.com',
-    appUrl: 'https://master.tomochain.com'
+    appUrl: 'https://vicmaster.xyz'
 })
 
 // stockInit(Highcharts)

@@ -3,11 +3,12 @@ button,
 .btn.btn-primary.btn-primary.active {
     font-size: 14px;
     font-weight: 600;
-    border-radius: 8px;
-    color: #fff;
-    border-color: $color-btn-bg;
+    // border-radius: 8px;
+    color: $color-primary;
     background-color: $color-btn-bg;
     padding: 4px 20px;
+    border-radius: 0 !important;
+    
 
     @extend %transit;
 
@@ -30,6 +31,11 @@ button,
         border-color: #373658 !important;
         background-color: #373658 !important;
     }
+}
+
+.vote-btn{
+    border-radius: 0 !important;
+    text-transform: uppercase;
 }
 
 button.btn-secondary,
@@ -56,4 +62,7 @@ button.btn-secondary,
         border-color: $color-btn-hover-bg;
         background-color: $color-btn-hover-bg;
     }
+}
+.btn-primary{
+    border-color: transparent;
 }

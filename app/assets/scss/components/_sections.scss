@@ -5,7 +5,6 @@
 .section-title {
     font-size: 20px;
     font-weight: 200;
-    color: #cfcde1;
     text-align: left;
     line-height: 1.2;
     margin-bottom: 40px;
@@ -20,13 +19,16 @@
         display: block;
         color: $color-text;
         margin-top: 10px;
+        span{
+            display: inline-block;
+            margin: 0 12px;
+        }
     }
 }
 
 .section-title--masternodes {
     font-size: 20px;
     font-weight: 200;
-    color: #7573a6;
     text-align: left;
     line-height: 1.2;
     margin-bottom: 40px;
@@ -52,14 +54,14 @@
 .section--candidate {
 
     .section-title .edit-link {
-        color: #678be0;
+        color: $color-link;
 
         i {
             vertical-align: -1px;
         }
 
         &:hover {
-            color: #cfcde1;
+            color: $color-link;
         }
     }
 
