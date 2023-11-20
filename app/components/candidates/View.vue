@@ -415,10 +415,10 @@
                         <a
                             v-b-tooltip.hover.right
                             :href="`${config.explorerUrl}/tx/${data.item.tx}`"
-                            title="View on TomoScan"
+                            title="View on VicScan"
                             target="_blank">
                             <i class="tm-eye" />
-                            <span>View on TomoScan</span>
+                            <span>View on VicScan</span>
                         </a>
                     </template>
                 </b-table>
