@@ -445,9 +445,9 @@ import store from 'store'
 export default {
     name: 'App',
     metaInfo: {
-        title: 'Candidate Details | TomoMaster',
+        title: 'Candidate Details | VicMaster',
         meta: [
-            { name: 'description', content: 'Staking TomoChain Masternode to get the reward every epochs. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake TomoChain' } // eslint-disable-line
+            { name: 'description', content: 'Staking Viction Masternode to get the reward every epochs. You can use mobile, desktop, hardware wallet - ledger nano, trezor to stake Viction' } // eslint-disable-line
         ]
     },
     components: {
