@@ -1,7 +1,7 @@
 {
-    "name": "tomomaster",
-    "version": "1.6.4",
-    "description": "TomoChain Governance DApp",
+    "name": "vicmaster",
+    "version": "2.0.0",
+    "description": "Viction Governance DApp",
     "main": "elect.js",
     "scripts": {
         "lint": "eslint --cache ./ --ext .vue --ext .js",
@@ -27,14 +27,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/tomochain/tomomaster.git"
+        "url": "git+https://github.com/BuildOnViction/tomomaster.git"
     },
     "author": "",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/tomochain/tomomaster/issues"
+        "url": "https://github.com/BuildOnViction/tomomaster/issues"
     },
-    "homepage": "https://github.com/tomochain/tomomaster#readme",
+    "homepage": "https://github.com/BuildOnViction/tomomaster#readme",
     "dependencies": {
         "@chenfengyuan/vue-qrcode": "^1.0.0",
         "@ledgerhq/hw-app-eth": "^6.24.1",
