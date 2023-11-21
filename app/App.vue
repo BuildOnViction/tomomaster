@@ -287,7 +287,7 @@
                             <div class="tomo-footer__copyright">
                                 VicMater &copy; {{ (new Date()).getFullYear() }} -
                                 <a
-                                    :href="`https://github.com/tomochain/tomomaster/releases/tag/v${version}`"
+                                    :href="`https://github.com/BuildOnViction/tomomaster/releases/tag/v${version}`"
                                     class="version-tag">
                                     v{{ version }}</a>
                             </div>
@@ -302,13 +302,13 @@
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="https://docs.tomochain.com/legal/privacy">
+                                            href="https://docs.viction.xyz/legal/privacy ">
                                             Privacy Policy</a>
                                     </li>
                                     <li class="list-inline-item">
                                         <a
                                             target="_blank"
-                                            href="https://docs.tomochain.com/legal/terms-of-use">
+                                            href="https://docs.viction.xyz/legal/terms-of-use">
                                             Terms of Use</a>
                                     </li>
                                     <li class="list-inline-item">
@@ -396,7 +396,7 @@ export default {
             interval: '',
             notifications: [],
             readNoti: 0,
-            needHelpLink: 'https://docs.tomochain.com/faq/products/tomochain-applications/tomomaster'
+            needHelpLink: 'https://docs.viction.xyz/faq/masternode-and-voting/masternode'
         }
     },
     computed: {
