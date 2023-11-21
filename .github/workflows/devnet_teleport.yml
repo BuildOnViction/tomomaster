@@ -20,9 +20,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '10.6'
+      - name: Install Python
+        run: sudo apt install python2
       - name: Install package
         run: |
-          mkdir build && mkdir build/contracts && cp abis/*json build/contracts && npm i -g node-gyp@7.1.2 && npm ci --no-audit
+          mkdir build && mkdir build/contracts && cp abis/*json build/contracts && npm ci --python=python2 --no-audit
 
       - name: Build
         run: npm run build
