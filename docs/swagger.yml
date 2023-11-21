@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
-  version: 1.3.3
-  title: TomoMaster APIs
-  description: Happy to code TomoMaster APIs
+  version: 2.0.0
+  title: VicMaster APIs
+  description: Happy to code VicMaster APIs
   license:
     name: Github
-    url: 'https://github.com/tomochain/tomomaster'
+    url: 'https://github.com/BuildOnViction/tomomaster'
 tags:
   - name: Config
-    description: Get TomoMaster Application Configuration
+    description: Get VicMaster Application Configuration
   - name: Candidates
     description: Get Candidates information
   - name: Voters
@@ -20,7 +20,7 @@ tags:
 schemes:
   - https
   - http
-host: master.tomochain.com
+host: vicmaster.xyz
 consumes:
   - application/json
 produces:
@@ -30,7 +30,7 @@ paths:
     get:
       tags:
         - Config
-      summary: Get TomoMaster Application Configuration
+      summary: Get VicMaster Application Configuration
       responses:
         '200':
           description: OK
