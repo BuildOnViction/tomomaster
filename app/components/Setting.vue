@@ -28,8 +28,8 @@
                                     value="metamask">Metamask/DApp Wallets</option>
                                 <!-- <option
                                     value="tomowallet">TomoWallet (Recommended)</option> -->
-                                <option
-                                    value="custom">PrivateKey/MNEMONIC</option>
+                                <!-- <option
+                                    value="custom">PrivateKey/MNEMONIC</option> -->
                                 <option
                                     value="ledger">Ledger Wallet</option>
                                 <option
@@ -59,7 +59,7 @@
                             v-else-if="$v.networks.custom.$dirty && !$v.networks.custom.localhostUrl"
                             class="text-danger">Wrong URL format</span>
                     </b-form-group> -->
-                    <b-form-group
+                    <!-- <b-form-group
                         v-if="provider === 'custom'"
                         class="mb-4"
                         label="Privatekey/MNEMONIC"
@@ -72,7 +72,7 @@
                         <span
                             v-if="$v.mnemonic.$dirty && !$v.mnemonic.required"
                             class="text-danger">Required field</span>
-                    </b-form-group>
+                    </b-form-group> -->
                     <b-form-group
                         v-if="provider === 'custom'"
                         class="mb-4"
@@ -626,12 +626,12 @@ export default {
                         wjs = new Web3(p)
                     }
                     break
-                case 'pantograph':
-                    if (window.tomoWeb3) {
-                        var pp = window.tomoWeb3.currentProvider
-                        wjs = new Web3(pp)
-                    }
-                    break
+                // case 'pantograph':
+                //     if (window.tomoWeb3) {
+                //         var pp = window.tomoWeb3.currentProvider
+                //         wjs = new Web3(pp)
+                //     }
+                //     break
                 case 'ledger':
                     // Object - HttpProvider
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))

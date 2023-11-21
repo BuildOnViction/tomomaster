@@ -91,13 +91,13 @@ Vue.prototype.getAccount = async function () {
         }
         account = (await wjs.eth.getAccounts())[0]
         break
-    case 'pantograph':
-        // Request account access if needed - for metamask
-        if (window.tomochain) {
-            await window.tomochain.enable()
-        }
-        account = (await wjs.eth.getAccounts())[0]
-        break
+    // case 'pantograph':
+    //     // Request account access if needed - for metamask
+    //     if (window.tomochain) {
+    //         await window.tomochain.enable()
+    //     }
+    //     account = (await wjs.eth.getAccounts())[0]
+    //     break
     case 'tomowalletDapp':
         account = (await wjs.eth.getAccounts())[0]
         break
@@ -340,16 +340,16 @@ Vue.prototype.detectNetwork = async function (provider) {
                     }
                 }
                 break
-            case 'pantograph':
-                if (window.tomoWeb3) {
-                    if (window.tomoWeb3.currentProvider) {
-                        let pp = window.tomoWeb3.currentProvider
-                        wjs = new Web3(pp)
-                    } else {
-                        wjs = window.tomoWeb3
-                    }
-                }
-                break
+            // case 'pantograph':
+            //     if (window.tomoWeb3) {
+            //         if (window.tomoWeb3.currentProvider) {
+            //             let pp = window.tomoWeb3.currentProvider
+            //             wjs = new Web3(pp)
+            //         } else {
+            //             wjs = window.tomoWeb3
+            //         }
+            //     }
+            //     break
             case 'tomowallet':
                 wjs = new Web3(new HDWalletProvider(
                     '',

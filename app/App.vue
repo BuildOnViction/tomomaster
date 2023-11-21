@@ -264,7 +264,10 @@
                                 <b-dropdown-divider />
                                 <b-dropdown-item
                                     target="_bank"
-                                    href="https://bit.ly/2B6p29o">Help</b-dropdown-item>
+                                    href="https://docs.viction.xyz/faq/masternode-and-voting/masternode"
+                                >
+                                    Help
+                                </b-dropdown-item>
                                 <b-dropdown-item to="/setting">Settings/Withdraws</b-dropdown-item>
                                 <b-dropdown-divider />
                                 <b-dropdown-item
