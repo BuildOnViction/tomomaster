@@ -58,6 +58,6 @@ jobs:
           SLACK_CHANNEL: system-healthcheck
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
           SLACK_ICON_EMOJI: ':tomomaster:'
-          SLACK_MESSAGE: '[Devnet] TomoMaster has been deployed'
+          SLACK_MESSAGE: '[Devnet] VicMaster has been deployed'
           SLACK_USERNAME: tomomaster-deploy-bot
           SLACK_WEBHOOK: ${{ secrets.SLACK }}
