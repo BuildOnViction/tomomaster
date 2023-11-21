@@ -22,7 +22,7 @@ jobs:
           node-version: '10.6'
       - name: Install package
         run: |
-          mkdir build && mkdir build/contracts && cp abis/*json build/contracts && npm ci --no-audit
+          mkdir build && mkdir build/contracts && cp abis/*json build/contracts && npm i -g node-gyp@7.1.2 && npm ci --no-audit
 
       - name: Build
         run: npm run build
