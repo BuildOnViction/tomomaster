@@ -866,7 +866,7 @@ router.post('/:candidate/generateMessage', [
             return res.status(406).send('This address is not a candidate')
         }
 
-        const message = '[Tomomaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
+        const message = '[VicMaster ' + (new Date().toLocaleString().replace(/['"]+/g, '')) + ']' +
             ' I am the owner of candidate ' + '[' + candidate + ']'
         const id = uuidv4()
 
