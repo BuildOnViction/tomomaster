@@ -35,6 +35,7 @@ import * as HDKey from 'hdkey'
 import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
 import Helper from './utils'
+const walletAdapter = require('./walletAdapter.js')
 
 Vue.use(Meta)
 Vue.use(BootstrapVue)
@@ -44,9 +45,9 @@ Vue.use(Toasted, {
     position: 'bottom-right',
     theme: 'bubble',
     duration: 4000,
-    action : {
-        text : 'Dismiss',
-        onClick : (e, toastObject) => {
+    action: {
+        text: 'Dismiss',
+        onClick: (e, toastObject) => {
             toastObject.goAway(0)
         }
     },
@@ -55,7 +56,7 @@ Vue.use(Toasted, {
 
 // set trezor's manifest
 TrezorConnect.manifest({
-    email: 'admin@tomochain.com',
+    email: 'hi@viction.xyz',
     appUrl: 'https://vicmaster.xyz'
 })
 
@@ -81,23 +82,51 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
 Vue.prototype.getAccount = async function () {
     const provider = Vue.prototype.NetworkProvider || ''
     const wjs = Vue.prototype.web3
+    const config = await getConfig()
+    const supportedWalletOption = [{
+        chainId: '0x' + parseInt(config.blockchain.networkId).toString(16),
+        chainName: 'Viction',
+        nativeCurrency: {
+            name: 'VIC',
+            symbol: 'VIC',
+            decimals: 18
+        },
+        rpcUrls: [config.blockchain.rpc]
+    }]
+
     let account
     switch (provider) {
-    case 'metamask':
-        // Request account access if needed - for metamask
-        if (window.ethereum) {
-            // await window.ethereum.enable()
-            await window.ethereum.request({ method: 'eth_requestAccounts' })
+    case walletAdapter.WALLET_TYPE.COIN98:
+        account = await walletAdapter.connectCoin98(supportedWalletOption)
+        if (account.error) {
+            throw new Error(account.error)
         }
-        account = (await wjs.eth.getAccounts())[0]
         break
-    // case 'pantograph':
-    //     // Request account access if needed - for metamask
-    //     if (window.tomochain) {
-    //         await window.tomochain.enable()
-    //     }
-    //     account = (await wjs.eth.getAccounts())[0]
-    //     break
+    case walletAdapter.WALLET_TYPE.VICTION:
+        account = await walletAdapter.connectViction()
+        if (account.error) {
+            throw new Error(account.error)
+        }
+        break
+    case walletAdapter.WALLET_TYPE.RAMPER:
+        account = await walletAdapter.connectRamper(supportedWalletOption)
+        if (account.error) {
+            throw new Error(account.error)
+        }
+        break
+    case walletAdapter.WALLET_TYPE.METAMASK:
+        account = await walletAdapter.connectMetamask(supportedWalletOption)
+        if (account.error) {
+            throw new Error(account.error)
+        }
+        break
+        // case 'pantograph':
+        //     // Request account access if needed - for metamask
+        //     if (window.tomochain) {
+        //         await window.tomochain.enable()
+        //     }
+        //     account = (await wjs.eth.getAccounts())[0]
+        //     break
     case 'tomowalletDapp':
         account = (await wjs.eth.getAccounts())[0]
         break
@@ -139,7 +168,7 @@ Vue.prototype.getAccount = async function () {
     default:
         break
     }
-    if (!account || account.length <= 0) {
+    if (provider !== '' && (!account || account.length <= 0)) {
         console.log(`Couldn't get any accounts! Make sure
             your Ethereum client is configured correctly.`)
     }
@@ -299,7 +328,7 @@ getConfig().then((config) => {
     localStorage.set('configMaster', config)
     Vue.use(VueAnalytics, {
         id: config.GA,
-        linkers: ['master.tomochain.com'],
+        linkers: ['vicmaster.xyz'],
         router,
         autoTraking: {
             screenView: true
@@ -324,10 +353,32 @@ Vue.prototype.detectNetwork = async function (provider) {
         const chainConfig = config.blockchain
         if (!wjs) {
             switch (provider) {
-            case 'metamask':
-                if (window.ethereum) {
-                    let p = window.ethereum
-                    wjs = new Web3(p)
+            case walletAdapter.WALLET_TYPE.COIN98:
+                wjs = await walletAdapter.loadCoin98Provider()
+                if (!wjs) {
+                    self.$toasted.show('Please install Coin98 wallet', { type: 'error' })
+                    return
+                }
+                break
+            case walletAdapter.WALLET_TYPE.VICTION:
+                wjs = await walletAdapter.loadVictionProvider()
+                if (!wjs) {
+                    self.$toasted.show('Please install Viction wallet', { type: 'error' })
+                    return
+                }
+                break
+            case walletAdapter.WALLET_TYPE.RAMPER:
+                wjs = await walletAdapter.loadRamperProvider()
+                if (!wjs) {
+                    self.$toasted.show('Please install Ramper wallet', { type: 'error' })
+                    return
+                }
+                break
+            case walletAdapter.WALLET_TYPE.METAMASK:
+                wjs = await walletAdapter.loadMetamaskProvider()
+                if (!wjs) {
+                    self.$toasted.show('Please install Metamask wallet', { type: 'error' })
+                    return
                 }
                 break
             case 'tomowalletDapp':
@@ -340,16 +391,16 @@ Vue.prototype.detectNetwork = async function (provider) {
                     }
                 }
                 break
-            // case 'pantograph':
-            //     if (window.tomoWeb3) {
-            //         if (window.tomoWeb3.currentProvider) {
-            //             let pp = window.tomoWeb3.currentProvider
-            //             wjs = new Web3(pp)
-            //         } else {
-            //             wjs = window.tomoWeb3
-            //         }
-            //     }
-            //     break
+                // case 'pantograph':
+                //     if (window.tomoWeb3) {
+                //         if (window.tomoWeb3.currentProvider) {
+                //             let pp = window.tomoWeb3.currentProvider
+                //             wjs = new Web3(pp)
+                //         } else {
+                //             wjs = window.tomoWeb3
+                //         }
+                //     }
+                //     break
             case 'tomowallet':
                 wjs = new Web3(new HDWalletProvider(
                     '',

@@ -15,7 +15,7 @@
                     @submit.prevent="validate()">
                     <b-form-group
                         class="mb-4"
-                        label="Network Provider"
+                        label="Wallet Provider"
                         label-for="provider">
                         <b-input-group>
                             <b-form-select
@@ -23,24 +23,23 @@
                                 v-model="provider"
                                 class="form-control"
                                 @change="onChangeSelect">
-                                <option
-                                    v-if="!isElectron"
-                                    value="metamask">Metamask/DApp Wallets</option>
+                                <option value="coin98">Coin98</option>
+                                <option value="viction">Viction</option>
+                                <option value="ramper">Ramper</option>
+                                <option value="metamask">Metamask/DApp Wallets</option>
                                 <!-- <option
                                     value="tomowallet">TomoWallet (Recommended)</option> -->
                                 <!-- <option
                                     value="custom">PrivateKey/MNEMONIC</option> -->
-                                <option
-                                    value="ledger">Ledger Wallet</option>
-                                <option
-                                    value="trezor">Trezor Wallet</option>
-                                    <!-- <option
+                                <option value="ledger">Ledger Wallet</option>
+                                <option value="trezor">Trezor Wallet</option>
+                                <!-- <option
                                     v-if="!isElectron"
                                     value="pantograph">Pantograph</option> -->
                             </b-form-select>
-                            <small
+                            <!-- <small
                                 v-if="provider !== 'metamask' && provider !== 'pantograph'"
-                                class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small>
+                                class="form-text text-muted">Using node at {{ chainConfig.rpc }}.</small> -->
                         </b-input-group>
                     </b-form-group>
                     <!-- <b-form-group
@@ -86,8 +85,7 @@
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
                             class="text-danger">Required field</span>
-                        <small
-                            class="form-text text-muted">To unlock the wallet, try paths
+                        <small class="form-text text-muted">To unlock the wallet, try paths
                             <code
                                 class="hd-path"
                                 @click="changePath(`m/44'/60'/0'/0`)">m/44'/60'/0'/0</code> or
@@ -104,11 +102,10 @@
                         class="mb-4"
                         style="text-align: center">
                         <vue-qrcode
-                            :options="{size: 250 }"
+                            :options="{ size: 250 }"
                             :value="qrCode"
-                            class="img-fluid text-center text-lg-right"/>
-                        <div
-                            v-if="mobileCheck">
+                            class="img-fluid text-center text-lg-right" />
+                        <div v-if="mobileCheck">
                             <b-button
                                 :href="qrCodeApp"
                                 variant="primary">
@@ -118,21 +115,20 @@
                         <div>
                             <b>In case you do not have TomoWallet, download here</b>
                         </div>
-                        <div
-                            style="margin-top: 5px">
+                        <div style="margin-top: 5px">
                             <a
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href="https://goo.gl/MvE1GV"
                                 class="social-links__link">
-                                <img src="/app/assets/img/appstore.png" >
+                                <img src="/app/assets/img/appstore.png">
                             </a>
                             <a
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href="https://goo.gl/4tFQzY"
                                 class="social-links__link">
-                                <img src="/app/assets/img/googleplay.png" >
+                                <img src="/app/assets/img/googleplay.png">
                             </a>
                         </div>
                     </b-form-group>
@@ -149,8 +145,7 @@
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
                             class="text-danger">Required field</span>
-                        <small
-                            class="form-text text-muted">To unlock the wallet, try paths
+                        <small class="form-text text-muted">To unlock the wallet, try paths
                             <code
                                 class="hd-path"
                                 @click="changePath(`m/44'/60'/0'`)">m/44'/60'/0'</code>
@@ -181,21 +176,21 @@
                             class="text-danger">Required field</span> -->
                     </b-form-group>
 
-                    <div
-                        v-if="!isReady && provider === 'metamask'">
+                    <div v-if="!isReady && provider === 'metamask'">
                         <p>Please install &amp; login
                             <a
                                 href="https://metamask.io/"
                                 target="_blank">Metamask Extension</a>
-                            then connect it to Viction Mainnet or Testnet.</p>
+                            then connect it to Viction Mainnet or Testnet.
+                        </p>
                     </div>
-                    <div
-                        v-if="!isReady && provider === 'pantograph'">
+                    <div v-if="!isReady && provider === 'pantograph'">
                         <p>Please install &amp; login
                             <a
                                 href="https://pantograph.io/"
                                 target="_blank">Pantograph Extension</a>
-                            then connect it to Viction Mainnet or Testnet.</p>
+                            then connect it to Viction Mainnet or Testnet.
+                        </p>
                     </div>
                     <div class="buttons text-right">
                         <b-button
@@ -227,7 +222,8 @@
                         <i class="tm-tomo2 tomo-list__icon" />
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ formatNumber(balance) }}
-                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                                <span class="text-muted">{{ getCurrencySymbol() }}</span>
+                            </p>
                             <span>Balance</span>
                         </div>
                     </li>
@@ -258,7 +254,8 @@
                         </div> -->
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
-                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                                <span class="text-muted">{{ getCurrencySymbol() }}</span>
+                            </p>
                             <span>Capacity</span>
                         </div>
                         <!-- <b-button
@@ -278,19 +275,19 @@
                     v-for="(w, k, index) in wh"
                     :key="index"
                     class="tomo-list list-unstyled">
-                    <li
-                        class="tomo-list__item">
+                    <li class="tomo-list__item">
                         <p class="tomo-list__text">
                             <a :href="`${config.explorerUrl}/tx/${w.tx}`">
-                                {{ (w.tx || '').substring(0,8) }}</a>
+                                {{ (w.tx || '').substring(0, 8) }}</a>
                             <span>Transaction</span>
                         </p>
                         <div class="tomo-list__text">
                             <p class="color-white mb-0">{{ w.cap }}
-                            <span class="text-muted">{{ getCurrencySymbol() }}</span></p>
+                                <span class="text-muted">{{ getCurrencySymbol() }}</span>
+                            </p>
                             <span>Capacity</span>
                         </div>
-                        <p class="tomo-list__text"/>
+                        <p class="tomo-list__text" />
                     </li>
                 </ul>
             </b-card>
@@ -299,17 +296,15 @@
             id="hdwalletModal"
             class="tomo-modal-light"
             style="display: none;">
-            <div
-                class="modal-backdrop">
-                <div class="modal" >
+            <div class="modal-backdrop">
+                <div class="modal">
                     <header class="modal-header">
                         <slot name="header">
                             Please select the address you would like to interact with
                             <button
                                 type="button"
                                 class="close"
-                                @click="closeModal"
-                            >
+                                @click="closeModal">
                                 x
                             </button>
                         </slot>
@@ -325,7 +320,7 @@
                                         name="hdWallet"
                                         type="radio"
                                         autocomplete="off"
-                                        style="width: 5%; float: left" >
+                                        style="width: 5%; float: left">
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}
                                     </div>
@@ -347,16 +342,14 @@
                             <button
                                 type="button"
                                 class="btn btn-secondary"
-                                @click="closeModal"
-                            >
+                                @click="closeModal">
                                 Cancel
                             </button>
 
                             <button
                                 type="button"
                                 class="btn btn-primary"
-                                @click="setHdPath"
-                            >
+                                @click="setHdPath">
                                 Unlock your wallet
                             </button>
                         </slot>
@@ -377,10 +370,12 @@ import {
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
+const walletAdapter = require('../walletAdapter.js')
 // const HDWalletProvider = require('truffle-hdwallet-provider')
 const { HDWalletProvider } = require('../../helpers')
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const defaultWalletNumber = 10
+
 export default {
     name: 'App',
     components: {
@@ -394,7 +389,7 @@ export default {
             hdPath: "m/44'/889'/0'/0", // HD DerivationPath of hardware wallet
             hdWallets: {}, // list of addresses in hardware wallet
             config: {},
-            provider: 'metamask',
+            provider: walletAdapter.WALLET_TYPE.COIN98,
             address: '',
             withdraws: [],
             wh: [],
@@ -437,7 +432,7 @@ export default {
         }
     },
     watch: {},
-    updated () {},
+    updated () { },
     beforeDestroy () {
         if (this.interval) {
             clearInterval(this.interval)
@@ -458,26 +453,26 @@ export default {
             let account
             self.address = ''
             try {
-                if (!self.web3 && self.NetworkProvider === 'metamask') {
-                    throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
-                }
-                if (!self.web3 && self.NetworkProvider === 'pantograph') {
-                    throw Error('Web3 is not properly detected. Have you installed Pantograph extension?')
-                }
                 if (self.web3) {
                     try {
                         contract = self.TomoValidator
                         self.gasPrice = await self.web3.eth.getGasPrice()
                     } catch (error) {
-                        self.$toasted.show('Make sure you choose correct tomochain network.')
+                        self.$toasted.show('Make sure you choose correct Viction network.')
                     }
                 }
 
                 if (store.get('address') && self.isReady) {
                     account = store.get('address').toLowerCase()
                 } else {
-                    account = this.$store.state.address
-                        ? this.$store.state.address : (self.web3 ? await self.getAccount() : false)
+                    try {
+                        account = this.$store.state.address
+                            ? this.$store.state.address : (self.web3 ? await self.getAccount() : false)
+                    } catch (e) {
+                        self.$toasted.show(e.message, {
+                            type: 'error'
+                        })
+                    }
                 }
 
                 if (!account) {
@@ -488,20 +483,21 @@ export default {
                 }
 
                 self.address = account
-                self.web3.eth.getBalance(self.address).then(balanceBN => {
+                try {
+                    const balanceBN = await self.web3.eth.getBalance(self.address)
                     self.balance = new BigNumber(balanceBN).div(10 ** 18)
-                }).catch(e => {
-                    self.$toasted.show('Cannot load balance', { type: 'error' })
-                })
+                } catch (e) {
+                    console.error('Cannot get balance')
+                    self.$toasted.show('Cannot load balance')
+                }
 
                 let whPromise = axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
                 if (contract) {
                     // let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
-                    let blksPromise = contract.methods.getWithdrawBlockNumbers().call({ from: account })
+                    let blks = await contract.methods.getWithdrawBlockNumbers().call({ from: account })
                     // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
-                    const blks = await blksPromise
-
+                    // const blks = await blksPromise
                     await Promise.all(blks.map(async (it, index) => {
                         let blk = new BigNumber(it).toString()
                         if (blk !== '0') {
@@ -536,7 +532,7 @@ export default {
             } catch (e) {
                 console.log(e)
                 self.$toasted.show(e, {
-                    type : 'error'
+                    type: 'error'
                 })
             }
         }
@@ -550,7 +546,7 @@ export default {
         }
         await self.setupAccount()
     },
-    mounted () {},
+    mounted () { },
     methods: {
         getValidationClass: function (fieldName) {
             let field = this.$v[fieldName]
@@ -564,7 +560,7 @@ export default {
             }
         },
         validate: function () {
-            if (this.provider === 'metamask' || this.provider === 'pantograph') {
+            if (walletAdapter.SupportedWallets[this.provider]) {
                 this.save()
             }
 
@@ -602,7 +598,7 @@ export default {
                 console.log(error.message)
                 self.loading = false
                 self.$toasted.show(error.message || error, {
-                    type : 'error'
+                    type: 'error'
                 })
             }
         },
@@ -620,18 +616,40 @@ export default {
             try {
                 let offset
                 switch (self.provider) {
-                case 'metamask':
-                    if (window.ethereum) {
-                        var p = window.ethereum
-                        wjs = new Web3(p)
+                case walletAdapter.WALLET_TYPE.COIN98:
+                    wjs = await walletAdapter.loadCoin98Provider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Coin98 wallet', { type: 'error' })
+                        return
                     }
                     break
-                // case 'pantograph':
-                //     if (window.tomoWeb3) {
-                //         var pp = window.tomoWeb3.currentProvider
-                //         wjs = new Web3(pp)
-                //     }
-                //     break
+                case walletAdapter.WALLET_TYPE.VICTION:
+                    wjs = await walletAdapter.loadVictionProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Viction wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                case walletAdapter.WALLET_TYPE.RAMPER:
+                    wjs = await walletAdapter.loadRamperProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Ramper wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                case walletAdapter.WALLET_TYPE.METAMASK:
+                    wjs = await walletAdapter.loadMetamaskProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Metamask wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                    // case 'pantograph':
+                    //     if (window.tomoWeb3) {
+                    //         var pp = window.tomoWeb3.currentProvider
+                    //         wjs = new Web3(pp)
+                    //     }
+                    //     break
                 case 'ledger':
                     // Object - HttpProvider
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
@@ -655,11 +673,11 @@ export default {
                 default:
                     self.mnemonic = self.mnemonic.trim()
                     const walletProvider =
-                        (self.mnemonic.indexOf(' ') >= 0)
-                            ? new HDWalletProvider(
-                                self.mnemonic.trim(),
-                                self.chainConfig.rpc, 0, 1, self.hdPath)
-                            : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
+                            (self.mnemonic.indexOf(' ') >= 0)
+                                ? new HDWalletProvider(
+                                    self.mnemonic.trim(),
+                                    self.chainConfig.rpc, 0, 1, self.hdPath)
+                                : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
                     wjs = new Web3(walletProvider)
                     break
                 }
@@ -669,17 +687,17 @@ export default {
 
                 if (self.address) {
                     self.$store.state.address = self.address.toLowerCase()
-                    if (self.provider === 'metamask' || self.provider === 'pantograph') {
+                    if (walletAdapter.SupportedWallets[self.provider]) {
                         store.set('address', self.address.toLowerCase())
                         store.set('network', self.provider)
                     }
                     self.$bus.$emit('logged', 'user logged')
-                    self.$toasted.show('Network Provider was changed successfully')
+                    self.$toasted.show('Wallet Provider was changed successfully')
                 }
             } catch (e) {
                 self.loading = false
                 self.$toasted.show('There are some errors when changing the network provider', {
-                    type : 'error'
+                    type: 'error'
                 })
                 console.log(e)
             }
@@ -707,7 +725,13 @@ export default {
                 if (self.interval) {
                     clearInterval(self.interval)
                 }
-                await this.getAccountInfo(data.user)
+                try {
+                    await this.getAccountInfo(data.user)
+                } catch (e) {
+                    self.$toasted.show(e.message, {
+                        type: 'error'
+                    })
+                }
             }
         },
         async onChangeSelect (event) {
@@ -748,8 +772,8 @@ export default {
                 if (self.interval) {
                     clearInterval(self.interval)
                 }
-                self.$toasted.show('Make sure you choose correct tomochain network.', {
-                    type : 'error'
+                self.$toasted.show('Make sure you choose correct Viction network.', {
+                    type: 'error'
                 })
             }
 
@@ -805,7 +829,8 @@ export default {
             const txFee = new BigNumber(this.chainConfig.gas * this.gasPrice).div(10 ** 18)
 
             if (this.balance.isGreaterThanOrEqualTo(txFee)) {
-                this.$router.push({ name: 'CandidateWithdraw',
+                this.$router.push({
+                    name: 'CandidateWithdraw',
                     params: {
                         address: this.address,
                         blockNumber: w.blockNumber,
@@ -815,7 +840,7 @@ export default {
                 })
             } else {
                 this.$toasted.show('Not enough VIC for transaction fee', {
-                    type : 'info'
+                    type: 'info'
                 })
             }
         },

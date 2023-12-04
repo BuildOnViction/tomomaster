@@ -1,8 +1,7 @@
-'use strict'
 
 const Validator = require('./models/blockchain/validator')
 const Web3Ws = require('./models/blockchain/web3ws').Web3WsInternal
-const web3Rpc = require('./models/blockchain/web3rpc').Web3RpcInternal()
+// const web3Rpc = require('./models/blockchain/web3rpc').Web3RpcInternal()
 const config = require('config')
 const db = require('./models/mongodb')
 const BigNumber = require('bignumber.js')
@@ -10,6 +9,8 @@ const moment = require('moment')
 const logger = require('./helpers/logger')
 const axios = require('axios')
 const _ = require('lodash')
+const ethUtils = require('ethereumjs-util')
+
 const TwitterHelper = require('./helpers/twitter')
 
 process.setMaxListeners(100)
@@ -533,37 +534,39 @@ function diff (a, b) {
 
 const getBlockSigners = async (number) => {
     try {
-      if (!number) {
-        return
-      }
-      const data = {
-        jsonrpc: '2.0',
-        method: 'eth_getBlockSignersByNumber',
-        params: ['0x' + number.toString(16)],
-        id: 88,
-      }
-      const response = await axios.post(config.get('blockchain.internalRpc'), data)
-      const result = response.data
-      if (!result.error) {
-        let signers = result.result
-        signers.map((s) => {
-          if (s && s.length === 66) {
-            return ethUtils.toChecksumAddress(s)
-          }
-        })
-        return signers
-      }
+        if (!number) {
+            return
+        }
+        const data = {
+            jsonrpc: '2.0',
+            method: 'eth_getBlockSignersByNumber',
+            params: ['0x' + number.toString(16)],
+            id: 88
+        }
+        const response = await axios.post(config.get('blockchain.internalRpc'), data)
+        const result = response.data
+        if (!result.error) {
+            let signers = result.result
+            signers.map((s) => {
+                if (s && s.length === 66) {
+                    return ethUtils.toChecksumAddress(s)
+                }
+            })
+            return signers
+        }
     } catch (err) {
-      logger.error(`getBlockSigners error: ${number}`)
-      throw err
+        logger.error(`getBlockSigners error: ${number}`)
+        throw err
     }
     return []
-  }
+}
 
-  
 async function updateLatestSignedBlock (blk) {
     try {
-        if (!blk || blk.number % parseInt(config.get('blockchain.blockSignerGap')) != parseInt(config.get('blockchain.blockSignerDelay'))) {
+        if (!blk ||
+            blk.number % parseInt(config.get('blockchain.blockSignerGap')) !==
+                parseInt(config.get('blockchain.blockSignerDelay'))
+        ) {
             return
         }
         const signers = await getBlockSigners(blk.number - parseInt(config.get('blockchain.blockSignerDelay')))
@@ -571,24 +574,24 @@ async function updateLatestSignedBlock (blk) {
         for (const signer of signers) {
             bulkOps.push({
                 updateOne: {
-                  filter: {
-                    smartContractAddress: config.get('blockchain.validatorAddress'),
-                    candidate: signer.toLowerCase()
-                },
-                  update: {
-                    $set: {
-                        latestSignedBlock: blk.number
+                    filter: {
+                        smartContractAddress: config.get('blockchain.validatorAddress'),
+                        candidate: signer.toLowerCase()
                     },
-                  },
-                  upsert: false,
-                },
-              })
+                    update: {
+                        $set: {
+                            latestSignedBlock: blk.number
+                        }
+                    },
+                    upsert: false
+                }
+            })
         }
 
-          if (bulkOps.length > 0) {
+        if (bulkOps.length > 0) {
             const res = await db.Candidate.collection.bulkWrite(bulkOps)
             logger.debug(`UpdatelatestSignedBlock at block ${blk.number}, result ${res}`)
-          }
+        }
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
     }
