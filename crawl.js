@@ -293,8 +293,13 @@ async function updateSignerPenAndStatus() {
                 logger.error('no onchain candidate found')
                 return
             }
+            logger.info(`Onchain candidates length`, Object.keys(allCandidates).length)
+            logger.info(`Database candidates candidates`, candidates.length)
             for (const c of candidates) {
-                const thisCandidate = allCandidates[c.candidate]
+                const thisCandidate = allCandidates[ethUtils.toChecksumAddress(c.candidate)]
+                if (!thisCandidate) {
+                    continue
+                }
                 switch (thisCandidate.status) {
                     case 'MASTERNODE':
                         signers.push(c.candidate)
@@ -421,11 +426,11 @@ async function updateSignerPenAndStatus() {
 
         if (candidateBulkOps.length > 0) {
             const res = await db.Candidate.collection.bulkWrite(candidateBulkOps)
-            logger.debug(`Update candidates at block ${blk.number}, result ${res}`)
+            logger.debug(`Update candidates at block ${blk.number}, result ${JSON.stringify(res)}`)
         }
         if (statusBulkOps.length > 0) {
             const res = await db.Status.collection.bulkWrite(statusBulkOps)
-            logger.debug(`Update statuses at block ${blk.number}, result ${res}`)
+            logger.debug(`Update statuses at block ${blk.number}, result ${JSON.stringify(res)}`)
         }
 
         await db.Signer.findOneAndUpdate({ blockNumber: blk.number }, {
@@ -434,7 +439,7 @@ async function updateSignerPenAndStatus() {
             signers: signers
         }, { upsert: true })
 
-        await db.Penalty.update({ epoch: currentEpoch }, {
+        await db.Penalty.updateOne({ epoch: currentEpoch }, {
             networkId: config.get('blockchain.networkId'),
             blockNumber: blk.number,
             epoch: currentEpoch,
@@ -659,7 +664,7 @@ async function updateLatestSignedBlock(blk) {
 
         if (bulkOps.length > 0) {
             const res = await db.Candidate.collection.bulkWrite(bulkOps)
-            logger.debug(`UpdatelatestSignedBlock at block ${blk.number}, result ${res}`)
+            logger.debug(`UpdatelatestSignedBlock at block ${blk.number}, result ${JSON.stringify(res)}`)
         }
     } catch (e) {
         logger.error('updateLatestSignedBlock %s', e)
