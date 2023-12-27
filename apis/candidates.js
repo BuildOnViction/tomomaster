@@ -693,16 +693,11 @@ router.get('/:candidate/:owner/getRewards', [
 
         const total = db.Status.estimatedDocumentCount({
             candidate: candidate,
-            epoch: {
-                $lte: currentEpoch - 2
-            }
         })
 
         const epochData = await db.Status.find({
             candidate: candidate,
-            epoch: {
-                $lte: currentEpoch - 2
-            }
+
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
         let masternodesEpochs = []
 
@@ -713,6 +708,7 @@ router.get('/:candidate/:owner/getRewards', [
         })
 
         let masternodes = epochData.filter(e => e.status === 'MASTERNODE')
+
         const rewards = await axios.get(
             urljoin(
                 config.get('tomoscanUrl'),

@@ -320,11 +320,11 @@ async function updateSignerPenAndStatus() {
                         statusBulkOps.push({
                             updateOne: {
                                 filter: {
-                                    epoch: currentEpoch, candidate: c.candidate
+                                    epoch: parseInt(currentEpoch), candidate: c.candidate.toLowerCase()
                                 },
                                 update: {
                                     $set: {
-                                        epoch: currentEpoch,
+                                        epoch: parseInt(currentEpoch),
                                         candidate: c.candidate,
                                         status: 'MASTERNODE',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -370,11 +370,11 @@ async function updateSignerPenAndStatus() {
                         statusBulkOps.push({
                             updateOne: {
                                 filter: {
-                                    epoch: currentEpoch, candidate: c.candidate
+                                    epoch: parseInt(currentEpoch), candidate: c.candidate.toLowerCase()
                                 },
                                 update: {
                                     $set: {
-                                        epoch: currentEpoch,
+                                        epoch: parseInt(currentEpoch),
                                         candidate: c.candidate,
                                         status: 'SLASHED',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
@@ -403,11 +403,11 @@ async function updateSignerPenAndStatus() {
                         statusBulkOps.push({
                             updateOne: {
                                 filter: {
-                                    epoch: currentEpoch, candidate: c.candidate
+                                    epoch: parseInt(currentEpoch), candidate: c.candidate.toLowerCase()
                                 },
                                 update: {
                                     $set: {
-                                        epoch: currentEpoch,
+                                        epoch: parseInt(currentEpoch),
                                         candidate: c.candidate,
                                         status: 'PROPOSED',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
