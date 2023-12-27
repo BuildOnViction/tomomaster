@@ -325,7 +325,7 @@ async function updateSignerPenAndStatus() {
                                 update: {
                                     $set: {
                                         epoch: parseInt(currentEpoch),
-                                        candidate: c.candidate,
+                                        candidate: c.candidate.toLowerCase(),
                                         status: 'MASTERNODE',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
                                     }
@@ -375,7 +375,7 @@ async function updateSignerPenAndStatus() {
                                 update: {
                                     $set: {
                                         epoch: parseInt(currentEpoch),
-                                        candidate: c.candidate,
+                                        candidate: c.candidate.toLowerCase(),
                                         status: 'SLASHED',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
                                     }
@@ -408,7 +408,7 @@ async function updateSignerPenAndStatus() {
                                 update: {
                                     $set: {
                                         epoch: parseInt(currentEpoch),
-                                        candidate: c.candidate,
+                                        candidate: c.candidate.toLowerCase(),
                                         status: 'PROPOSED',
                                         epochCreatedAt: moment.unix(blk.timestamp).utc()
                                     }

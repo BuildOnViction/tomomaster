@@ -733,7 +733,7 @@ router.get('/:candidate/:owner/getRewards', [
                 } else {
                     r.rewardTime = r.timestamp * 1000
                 }
-                if (currentEpoch - r.epoch < 2) {
+                if (currentEpoch - r.epoch < 1) {
                     r.masternodeReward = '-'
                     r.reward = '-'
                     r.signNumber = '-'
