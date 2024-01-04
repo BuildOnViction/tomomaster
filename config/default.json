@@ -10,6 +10,7 @@
         "https://swagger.tomochain.com"
     ],
     "blockchain": {
+        "clientRpc": "https://rpc.viction.xyz",
         "rpc": "https://rpc.testnet.tomochain.com",
         "ws": "wss://ws.testnet.tomochain.com",
         "internalRpc": "",
