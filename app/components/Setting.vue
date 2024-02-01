@@ -446,7 +446,7 @@ export default {
         self.hdWallets = self.hdWallets || {}
         self.config = store.get('configMaster') || await self.appConfig()
         self.chainConfig = self.config.blockchain || {}
-        self.networks.rpc = self.chainConfig.rpc
+        self.networks.rpc = self.chainConfig.clientRpc
 
         self.setupAccount = async () => {
             let contract
