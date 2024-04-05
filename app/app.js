@@ -409,7 +409,7 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'trezor':
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
-                wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.rpc))
+                wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
                 break
             default:
                 break
