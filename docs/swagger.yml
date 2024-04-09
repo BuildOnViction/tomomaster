@@ -20,7 +20,7 @@ tags:
 schemes:
   - https
   - http
-host: vicmaster.xyz
+host: www.vicmaster.xyz
 consumes:
   - application/json
 produces:
