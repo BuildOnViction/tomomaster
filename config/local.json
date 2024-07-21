@@ -10,8 +10,8 @@
         "https://swagger.tomochain.com"
     ],
     "blockchain": {
-        "rpc": "https://rpc.viction-qcnet.tforce.dev",
-        "ws": "https://wss.viction-qcnet.tforce.dev",
+        "rpc": "https://viction-qcnet-rpc.tforce.dev",
+        "ws": "https://viction-qcnet-wss.tforce.dev",
         "internalRpc": "http://127.0.0.1:10545",
         "internalWs": "ws://127.0.0.1:10546",
         "networkId": 989899,
@@ -32,9 +32,9 @@
     "db": {
         "uri": "mongodb://localhost:27017/governance"
     },
-    "explorerUrl": "https://scan.viction-qcnet.tforce.dev",
-    "tomoscanUrl": "https://scan.viction-qcnet.tforce.dev",
-    "baseUrl": "https://master.viction-qcnet.tforce.dev",
+    "explorerUrl": "https://viction-qcnet-scan.tforce.dev",
+    "tomoscanUrl": "https://viction-qcnet-scan.tforce.dev",
+    "baseUrl": "https://viction-qcnet-master.tforce.dev",
     "truffle": {
         "mnemonic": "",
         "minCandidateCap": "50000000000000000000000",
