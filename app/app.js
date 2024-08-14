@@ -91,7 +91,10 @@ Vue.prototype.getAccount = async function () {
             symbol: 'VIC',
             decimals: 18
         },
-        rpcUrls: [config.blockchain.clientRpc]
+        rpcUrls: [
+            config.blockchain.clientRpc
+        ],
+        blockExplorerUrls: [config.explorerUrl]
     }]
 
     let account
@@ -298,7 +301,7 @@ Vue.prototype.checkLongNumber = Helper.checkLongNumber
 Vue.prototype.formatBigNumber = Helper.formatBigNumber
 
 const getConfig = Vue.prototype.appConfig = async function () {
-    let config = await axios.get('/api/config')
+    let config = await axios.get('http://localhost:3001/api/config')
     return config.data
 }
 
