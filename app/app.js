@@ -301,7 +301,7 @@ Vue.prototype.checkLongNumber = Helper.checkLongNumber
 Vue.prototype.formatBigNumber = Helper.formatBigNumber
 
 const getConfig = Vue.prototype.appConfig = async function () {
-    let config = await axios.get('http://localhost:3001/api/config')
+    let config = await axios.get('/api/config')
     return config.data
 }
 
