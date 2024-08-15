@@ -39,9 +39,7 @@ const walletAdapter = {
 
     connectViction: async () => {
         let provider = null
-        if (window.coin98) {
-            provider = window.coin98.provider
-        } else if (window.viction) {
+        if (window.viction) {
             provider = window.viction
         }
         if (!provider) {
@@ -60,11 +58,7 @@ const walletAdapter = {
 
     connectRamper: async (supportedWalletOption) => {
         let provider = null
-        if (window.coin98) {
-            provider = window.coin98.provider
-        } else if (window.viction) {
-            provider = window.viction
-        } else if (window.ramper2) {
+        if (window.ramper2) {
             provider = window.ramper2.provider
         }
         if (!provider) {
@@ -73,6 +67,7 @@ const walletAdapter = {
         const chainId = await provider.request({
             method: 'net_version'
         })
+
         try {
             if (supportedWalletOption[0].chainId !== chainId) {
                 await provider.request({
@@ -92,23 +87,19 @@ const walletAdapter = {
 
     connectMetamask: async (supportedWalletOption) => {
         let provider = null
-        if (window.coin98) {
-            provider = window.coin98.provider
-        } else if (window.viction) {
-            provider = window.viction
-        } else if (window.ramper2) {
-            provider = window.ramper2.provider
-        } else if (window.ethereum) {
+        if (window.ethereum) {
             provider = window.ethereum
         }
         if (!provider) {
             return { error: 'Please install Metamask wallet' }
         }
-        const chainId = await window.ethereum.request({
+        const chainId = await provider.request({
             method: 'net_version'
         })
+
+        const chainIdHex = '0x' + parseInt(chainId).toString(16)
         try {
-            if (supportedWalletOption[0].chainId !== chainId) {
+            if (supportedWalletOption[0].chainId !== chainIdHex) {
                 await provider.request({
                     method: 'wallet_addEthereumChain',
                     params: supportedWalletOption

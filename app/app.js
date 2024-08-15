@@ -91,7 +91,10 @@ Vue.prototype.getAccount = async function () {
             symbol: 'VIC',
             decimals: 18
         },
-        rpcUrls: [config.blockchain.clientRpc]
+        rpcUrls: [
+            config.blockchain.clientRpc
+        ],
+        blockExplorerUrls: [config.explorerUrl]
     }]
 
     let account
