@@ -18,7 +18,7 @@
         "networkId": 89,
         "epoch": 900,
         "blockTime": 2,
-        "reward": 125,
+        "reward": 312.5,
         "voterRewardRate": 50,
         "masternodeRewardRate": 40,
         "foundationRewardRate": 10,
