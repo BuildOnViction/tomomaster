@@ -11,9 +11,9 @@
     ],
     "blockchain": {
         "rpc": "https://viction-qcnet-rpc.tforce.dev",
-        "ws": "https://viction-qcnet-wss.tforce.dev",
-        "internalRpc": "http://127.0.0.1:10545",
-        "internalWs": "ws://127.0.0.1:10546",
+        "ws": "ws://viction-qcnet-wss.tforce.dev",
+        "internalRpc": "http://127.0.0.1:22045",
+        "internalWs": "ws://127.0.0.1:22046",
         "networkId": 989899,
         "epoch": 900,
         "blockTime": 2,
