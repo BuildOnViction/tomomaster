@@ -35,6 +35,7 @@ import * as HDKey from 'hdkey'
 import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
 import Helper from './utils'
+
 const walletAdapter = require('./walletAdapter.js')
 
 Vue.use(Meta)
@@ -72,6 +73,7 @@ Vue.prototype.setupProvider = async function (provider, wjs) {
         const config = await getConfig()
         localStorage.set('configMaster', config)
         Vue.prototype.web3 = wjs
+        window.wallet = wjs
         Vue.prototype.TomoValidator = new wjs.eth.Contract(
             Helper.TomoValidatorArtifacts.abi,
             config.blockchain.validatorAddress
@@ -99,30 +101,30 @@ Vue.prototype.getAccount = async function () {
 
     let account
     switch (provider) {
-    case walletAdapter.WALLET_TYPE.COIN98:
-        account = await walletAdapter.connectCoin98(supportedWalletOption)
-        if (account.error) {
-            throw new Error(account.error)
-        }
-        break
-    case walletAdapter.WALLET_TYPE.VICTION:
-        account = await walletAdapter.connectViction()
-        if (account.error) {
-            throw new Error(account.error)
-        }
-        break
-    case walletAdapter.WALLET_TYPE.RAMPER:
-        account = await walletAdapter.connectRamper(supportedWalletOption)
-        if (account.error) {
-            throw new Error(account.error)
-        }
-        break
-    case walletAdapter.WALLET_TYPE.METAMASK:
-        account = await walletAdapter.connectMetamask(supportedWalletOption)
-        if (account.error) {
-            throw new Error(account.error)
-        }
-        break
+        case walletAdapter.WALLET_TYPE.COIN98:
+            account = await walletAdapter.connectCoin98(supportedWalletOption)
+            if (account.error) {
+                throw new Error(account.error)
+            }
+            break
+        case walletAdapter.WALLET_TYPE.VICTION:
+            account = await walletAdapter.connectViction()
+            if (account.error) {
+                throw new Error(account.error)
+            }
+            break
+        case walletAdapter.WALLET_TYPE.RAMPER:
+            account = await walletAdapter.connectRamper(supportedWalletOption)
+            if (account.error) {
+                throw new Error(account.error)
+            }
+            break
+        case walletAdapter.WALLET_TYPE.METAMASK:
+            account = await walletAdapter.connectMetamask(supportedWalletOption)
+            if (account.error) {
+                throw new Error(account.error)
+            }
+            break
         // case 'pantograph':
         //     // Request account access if needed - for metamask
         //     if (window.tomochain) {
@@ -130,46 +132,49 @@ Vue.prototype.getAccount = async function () {
         //     }
         //     account = (await wjs.eth.getAccounts())[0]
         //     break
-    case 'tomowalletDapp':
-        account = (await wjs.eth.getAccounts())[0]
-        break
-    case 'tomowallet':
-        account = this.$store.state.address
-        break
-    case 'custom':
-        account = (await wjs.eth.getAccounts())[0]
-        break
-    case 'ledger':
-        try {
-            if (!Vue.prototype.appEth) {
-                let transport = await TransportWebUSB.create()
-                Vue.prototype.appEth = await new Eth(transport)
-            }
-            let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
-            if (!ethAppConfig.arbitraryDataEnabled) {
-                throw new Error(`Please go to App Setting
+        case 'tomowalletDapp':
+            account = (await wjs.eth.getAccounts())[0]
+            break
+        case 'tomowallet':
+            account = this.$store.state.address
+            break
+        case 'custom':
+            account = (await wjs.eth.getAccounts())[0]
+            break
+        case 'ledger':
+            try {
+                if (!Vue.prototype.appEth) {
+                    let transport = await TransportWebUSB.create()
+                    Vue.prototype.appEth = await new Eth(transport)
+                }
+                let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
+                if (!ethAppConfig.arbitraryDataEnabled) {
+                    throw new Error(`Please go to App Setting
                     to enable contract data and display data on your device!`)
+                }
+                let result = await Vue.prototype.appEth.getAddress(
+                    localStorage.get('hdDerivationPath')
+                )
+                account = result.address
+            } catch (error) {
+                console.log(error)
+                throw error
             }
-            let result = await Vue.prototype.appEth.getAddress(
-                localStorage.get('hdDerivationPath')
+            break
+        case 'trezor':
+            const payload = Vue.prototype.trezorPayload || localStorage.get('trezorPayload')
+            const offset = localStorage.get('offset')
+            account = Vue.prototype.HDWalletCreate(
+                payload,
+                offset
             )
-            account = result.address
-        } catch (error) {
-            console.log(error)
-            throw error
-        }
-        break
-    case 'trezor':
-        const payload = Vue.prototype.trezorPayload || localStorage.get('trezorPayload')
-        const offset = localStorage.get('offset')
-        account = Vue.prototype.HDWalletCreate(
-            payload,
-            offset
-        )
-        localStorage.set('trezorPayload', { xpub: payload.xpub })
-        break
-    default:
-        break
+            localStorage.set('trezorPayload', { xpub: payload.xpub })
+            break
+        case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+            account = (await wjs.eth.getAccounts())[0]
+            break
+        default:
+            break
     }
     if (provider !== '' && (!account || account.length <= 0)) {
         console.log(`Couldn't get any accounts! Make sure
@@ -356,44 +361,44 @@ Vue.prototype.detectNetwork = async function (provider) {
         const chainConfig = config.blockchain
         if (!wjs) {
             switch (provider) {
-            case walletAdapter.WALLET_TYPE.COIN98:
-                wjs = await walletAdapter.loadCoin98Provider()
-                if (!wjs) {
-                    self.$toasted.show('Please install Coin98 wallet', { type: 'error' })
-                    return
-                }
-                break
-            case walletAdapter.WALLET_TYPE.VICTION:
-                wjs = await walletAdapter.loadVictionProvider()
-                if (!wjs) {
-                    self.$toasted.show('Please install Viction wallet', { type: 'error' })
-                    return
-                }
-                break
-            case walletAdapter.WALLET_TYPE.RAMPER:
-                wjs = await walletAdapter.loadRamperProvider()
-                if (!wjs) {
-                    self.$toasted.show('Please install Ramper wallet', { type: 'error' })
-                    return
-                }
-                break
-            case walletAdapter.WALLET_TYPE.METAMASK:
-                wjs = await walletAdapter.loadMetamaskProvider()
-                if (!wjs) {
-                    self.$toasted.show('Please install Metamask wallet', { type: 'error' })
-                    return
-                }
-                break
-            case 'tomowalletDapp':
-                if (window.web3) {
-                    if (window.web3.currentProvider) {
-                        let p = window.web3.currentProvider
-                        wjs = new Web3(p)
-                    } else {
-                        wjs = window.web3
+                case walletAdapter.WALLET_TYPE.COIN98:
+                    wjs = await walletAdapter.loadCoin98Provider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Coin98 wallet', { type: 'error' })
+                        return
                     }
-                }
-                break
+                    break
+                case walletAdapter.WALLET_TYPE.VICTION:
+                    wjs = await walletAdapter.loadVictionProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Viction wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                case walletAdapter.WALLET_TYPE.RAMPER:
+                    wjs = await walletAdapter.loadRamperProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Ramper wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                case walletAdapter.WALLET_TYPE.METAMASK:
+                    wjs = await walletAdapter.loadMetamaskProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Please install Metamask wallet', { type: 'error' })
+                        return
+                    }
+                    break
+                case 'tomowalletDapp':
+                    if (window.web3) {
+                        if (window.web3.currentProvider) {
+                            let p = window.web3.currentProvider
+                            wjs = new Web3(p)
+                        } else {
+                            wjs = window.web3
+                        }
+                    }
+                    break
                 // case 'pantograph':
                 //     if (window.tomoWeb3) {
                 //         if (window.tomoWeb3.currentProvider) {
@@ -404,18 +409,21 @@ Vue.prototype.detectNetwork = async function (provider) {
                 //         }
                 //     }
                 //     break
-            case 'tomowallet':
-                wjs = new Web3(new HDWalletProvider(
-                    '',
-                    chainConfig.rpc, 0, 1, true))
-                break
-            case 'trezor':
-            case 'ledger':
-                // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
-                wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
-                break
-            default:
-                break
+                case 'tomowallet':
+                    wjs = new Web3(new HDWalletProvider(
+                        '',
+                        chainConfig.rpc, 0, 1, true))
+                    break
+                case 'trezor':
+                case 'ledger':
+                    // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
+                    wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
+                    break
+                case 'walletConnect':
+                    wjs = walletAdapter.loadWalletConnectProvider()
+                    break
+                default:
+                    break
             }
             await this.setupProvider(provider, await wjs)
         }
@@ -511,27 +519,27 @@ Vue.prototype.signMessage = async function (message) {
         const provider = Vue.prototype.NetworkProvider
         let result
         switch (provider) {
-        case 'ledger':
-            const signature = await Vue.prototype.appEth.signPersonalMessage(
-                path,
-                Buffer.from(message).toString('hex')
-            )
-            let v = signature['v'] - 27
-            v = v.toString(16)
-            if (v.length < 2) {
-                v = '0' + v
-            }
-            result = '0x' + signature['r'] + signature['s'] + v
-            break
-        case 'trezor':
-            const sig = await TrezorConnect.ethereumSignMessage({
-                path,
-                message
-            })
-            result = '0x' + sig.payload.signature || ''
-            break
-        default:
-            break
+            case 'ledger':
+                const signature = await Vue.prototype.appEth.signPersonalMessage(
+                    path,
+                    Buffer.from(message).toString('hex')
+                )
+                let v = signature['v'] - 27
+                v = v.toString(16)
+                if (v.length < 2) {
+                    v = '0' + v
+                }
+                result = '0x' + signature['r'] + signature['s'] + v
+                break
+            case 'trezor':
+                const sig = await TrezorConnect.ethereumSignMessage({
+                    path,
+                    message
+                })
+                result = '0x' + sig.payload.signature || ''
+                break
+            default:
+                break
         }
         return result
     } catch (error) {

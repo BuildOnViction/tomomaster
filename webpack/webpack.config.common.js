@@ -67,9 +67,19 @@ const webpackConfig = {
                 }
             },
             {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
+                test: /\.(js|es.js|mjs)$/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            ['@babel/preset-env', { targets: { electron: '2.0' } }]
+                        ],
+                        plugins: [
+                            '@babel/plugin-proposal-optional-chaining',
+                            '@babel/plugin-proposal-nullish-coalescing-operator'
+                        ]
+                    }
+                }
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,

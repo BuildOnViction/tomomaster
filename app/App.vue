@@ -374,6 +374,7 @@ import store from 'store'
 import moment from 'moment'
 import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
+
 export default {
     name: 'App',
     metaInfo: {
