@@ -23,8 +23,10 @@ const walletAdapter = {
         const chainId = await provider.request({
             method: 'net_version'
         })
+        const chainIdHex = '0x' + parseInt(chainId).toString(16)
+
         try {
-            if (supportedWalletOption[0].chainId !== chainId) {
+            if (supportedWalletOption[0].chainId !== chainIdHex) {
                 await provider.request({
                     method: 'wallet_addEthereumChain',
                     params: supportedWalletOption
@@ -161,7 +163,10 @@ const walletAdapter = {
         const provider = await EthereumProvider.init({
             projectId: 'da5b1ad9fc27d9fea8f82411fe41f9cc',
             showQrModal: true,
-            chains: [1]
+            chains: [88],
+            rpcMap: {
+                88: 'https://rpc.viction.xyz'
+            }
         })
         await provider.enable()
 
