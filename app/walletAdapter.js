@@ -1,4 +1,6 @@
+/* eslint-disable new-cap */
 const Web3 = require('web3')
+const EthereumProvider = require('@walletconnect/ethereum-provider').EthereumProvider
 
 // override order: coin98 > viction > ramper > metamask
 const walletAdapter = {
@@ -7,7 +9,8 @@ const walletAdapter = {
         COIN98: 'coin98',
         VICTION: 'viction',
         RAMPER: 'ramper',
-        METAMASK: 'metamask'
+        METAMASK: 'metamask',
+        WALLET_CONNECT: 'walletConnect'
     }),
     connectCoin98: async (supportedWalletOption) => {
         let provider = null
@@ -153,13 +156,24 @@ const walletAdapter = {
             p = window.ethereum
         }
         return new Web3(p)
+    },
+    loadWalletConnectProvider: async () => {
+        const provider = await EthereumProvider.init({
+            projectId: 'da5b1ad9fc27d9fea8f82411fe41f9cc',
+            showQrModal: true,
+            chains: [1]
+        })
+        await provider.enable()
+
+        return new Web3(provider)
     }
 }
 walletAdapter.SupportedWallets = {
     [walletAdapter.WALLET_TYPE.COIN98]: true,
     [walletAdapter.WALLET_TYPE.VICTION]: true,
     [walletAdapter.WALLET_TYPE.RAMPER]: true,
-    [walletAdapter.WALLET_TYPE.METAMASK]: true
+    [walletAdapter.WALLET_TYPE.METAMASK]: true,
+    [walletAdapter.WALLET_TYPE.WALLET_CONNECT]: true
 
 }
 module.exports = walletAdapter
