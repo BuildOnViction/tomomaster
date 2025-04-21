@@ -167,10 +167,13 @@ const walletAdapter = {
             chains: [88],
             rpcMap: {
                 88: 'https://rpc.viction.xyz'
+            },
+            qrModalOptions: {
+                enableExplorer: false
             }
         })
         await provider.enable()
-
+        window.wcProvider = provider
         return new Web3(provider)
     }
 }
