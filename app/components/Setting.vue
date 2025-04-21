@@ -33,6 +33,7 @@
                                     value="custom">PrivateKey/MNEMONIC</option> -->
                                 <option value="ledger">Ledger Wallet</option>
                                 <option value="trezor">Trezor Wallet</option>
+                                <option value="walletConnect">Wallet Connect</option>
                                 <!-- <option
                                     v-if="!isElectron"
                                     value="pantograph">Pantograph</option> -->

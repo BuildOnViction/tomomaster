@@ -148,7 +148,7 @@ Vue.prototype.getAccount = async function () {
             let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
             if (!ethAppConfig.arbitraryDataEnabled) {
                 throw new Error(`Please go to App Setting
-                    to enable contract data and display data on your device!`)
+                to enable contract data and display data on your device!`)
             }
             let result = await Vue.prototype.appEth.getAddress(
                 localStorage.get('hdDerivationPath')
@@ -167,6 +167,9 @@ Vue.prototype.getAccount = async function () {
             offset
         )
         localStorage.set('trezorPayload', { xpub: payload.xpub })
+        break
+    case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+        account = (await wjs.eth.getAccounts())[0]
         break
     default:
         break
@@ -413,6 +416,9 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
                 wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
+                break
+            case 'walletConnect':
+                wjs = walletAdapter.loadWalletConnectProvider()
                 break
             default:
                 break

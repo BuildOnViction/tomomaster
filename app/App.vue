@@ -271,7 +271,7 @@
                                 <b-dropdown-item to="/setting">Settings/Withdraws</b-dropdown-item>
                                 <b-dropdown-divider />
                                 <b-dropdown-item
-                                    v-if="!mobileCheck && isTomonet"
+                                    v-if="isTomonet"
                                     href="/"
                                     @click="signOut">Sign out</b-dropdown-item>
                             </b-dropdown>
@@ -374,6 +374,7 @@ import store from 'store'
 import moment from 'moment'
 import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
+
 export default {
     name: 'App',
     metaInfo: {
