@@ -739,6 +739,13 @@ export default {
                         return
                     }
                     break
+                case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+                    wjs = await walletAdapter.loadWalletConnectProvider()
+                    if (!wjs) {
+                        self.$toasted.show('Provider is NOT available', { type: 'error' })
+                        return
+                    }
+                    break
                     // case 'pantograph':
                     //     if (window.tomoWeb3) {
                     //         var pp = window.tomoWeb3.currentProvider

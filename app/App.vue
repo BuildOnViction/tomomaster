@@ -272,7 +272,6 @@
                                 <b-dropdown-divider />
                                 <b-dropdown-item
                                     v-if="isTomonet"
-                                    href="/"
                                     @click="signOut">Sign out</b-dropdown-item>
                             </b-dropdown>
                         </b-navbar-nav>
@@ -495,14 +494,16 @@ export default {
                 } catch (error) {}
             }, 0)
         },
-        signOut () {
+        async signOut () {
+            if (window && window.wcProvider) {
+                await window.wcProvider.disconnect()
+            }
             store.clearAll()
-            Object.assign(this.$store.state, this.getDefaultState())
-            // this.$store.state.address = null
-
             this.$router.go({
                 path: '/'
             })
+            Object.assign(this.$store.state, this.getDefaultState())
+            // this.$store.state.address = null
         },
         async readClick () {
             this.statusClass = 'display: none;'
