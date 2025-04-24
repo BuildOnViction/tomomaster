@@ -24,6 +24,9 @@ on:
       ecs_service_name:
         type: string
         default: "api"
+    secrets:
+      AWS_ACCOUNT_ID:
+        required: true
 
 jobs:
   codebuild:
@@ -33,7 +36,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ inputs.aws_region }}
-          role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/${{ inputs.aws_role_assume_name }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_role_assume_name }}
       - name: Trigger CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
@@ -51,7 +54,7 @@ jobs:
             REPO_NAME
         env:
           AWS_DEFAULT_REGION: ${{ inputs.aws_region }}
-          AWS_ACCOUNT_ID: ${{ inputs.aws_account_id }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           CULIOPS_BRANCH: ${{ inputs.culiops_branch }}
           ECS_CLUSTER_NAME: ${{ inputs.ecs_cluster_name }}
           BUILD_TYPE: ${{ inputs.ecs_service_name }}
