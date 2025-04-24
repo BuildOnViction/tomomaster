@@ -51,7 +51,8 @@ jobs:
             IMAGE,
             IMAGE_TAG,
             TRIGGERED_BY,
-            REPO_NAME
+            APP_BRANCH,
+            APP_REPO_NAME
         env:
           AWS_DEFAULT_REGION: ${{ inputs.aws_region }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -59,5 +60,6 @@ jobs:
           ECS_CLUSTER_NAME: ${{ inputs.ecs_cluster_name }}
           BUILD_TYPE: ${{ inputs.ecs_service_name }}
           IMAGE: ""
+          APP_REPO_NAME: ${{ github.event.repository.name }}
+          APP_BRANCH: ${{ github.ref_name }}
           TRIGGERED_BY: ${{ github.actor }}
-          REPO_NAME: ${{ github.event.repository.name }}
