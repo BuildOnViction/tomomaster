@@ -160,8 +160,9 @@ const walletAdapter = {
         return new Web3(p)
     },
     loadWalletConnectProvider: async () => {
+        const PROJECT_ID = 'da5b1ad9fc27d9fea8f82411fe41f9cc'
         const provider = await EthereumProvider.init({
-            projectId: 'da5b1ad9fc27d9fea8f82411fe41f9cc',
+            projectId: PROJECT_ID,
             showQrModal: true,
             chains: [88],
             rpcMap: {

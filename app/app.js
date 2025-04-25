@@ -408,21 +408,21 @@ Vue.prototype.detectNetwork = async function (provider) {
                 //         }
                 //     }
                 //     break
-                case 'tomowallet':
-                    wjs = new Web3(new HDWalletProvider(
-                        '',
-                        chainConfig.rpc, 0, 1, true))
-                    break
-                case 'trezor':
-                case 'ledger':
-                    // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
-                    wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
-                    break
-                case 'walletConnect':
-                    wjs = walletAdapter.loadWalletConnectProvider()
-                    break
-                default:
-                    break
+            case 'tomowallet':
+                wjs = new Web3(new HDWalletProvider(
+                    '',
+                    chainConfig.rpc, 0, 1, true))
+                break
+            case 'trezor':
+            case 'ledger':
+                // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
+                wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
+                break
+            case 'walletConnect':
+                wjs = walletAdapter.loadWalletConnectProvider()
+                break
+            default:
+                break
             }
             await this.setupProvider(provider, await wjs)
         }
