@@ -1097,7 +1097,7 @@
     "fs-extra-p": "8.1.0",
     "fs-write-stream-atomic": "1.0.10",
     "fs.realpath": "1.0.0",
-    "fsevents": "1.2.13",
+    "fsevents": "2.3.3",
     "fstream": "1.0.12",
     "function-bind": "1.1.1",
     "galactus": "0.2.1",
@@ -1669,5 +1669,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "optionalDependencies": {
+    "fsevents": "2.3.3"
   }
 }

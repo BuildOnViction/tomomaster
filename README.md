@@ -33,7 +33,7 @@ cp config/default.json config/local.json
 
 ## Install
 ```
-npm install
+npm install --legacy-peer-deps
 truffle deploy --reset --network tomo # only use this command if you want to connect to a private network
 cp abis/*json build/contracts/
 ```
