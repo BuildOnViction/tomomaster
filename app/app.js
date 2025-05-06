@@ -84,9 +84,12 @@ Vue.prototype.getAccount = async function () {
     const provider = Vue.prototype.NetworkProvider || ''
     const wjs = Vue.prototype.web3
     const config = await getConfig()
+
+    const chainName = config.blockchain.networkId === 88 ? 'Viction' : 'Viction testnet'
+
     const supportedWalletOption = [{
         chainId: '0x' + parseInt(config.blockchain.networkId).toString(16),
-        chainName: 'Viction',
+        chainName: chainName,
         nativeCurrency: {
             name: 'VIC',
             symbol: 'VIC',
@@ -120,6 +123,12 @@ Vue.prototype.getAccount = async function () {
         break
     case walletAdapter.WALLET_TYPE.METAMASK:
         account = await walletAdapter.connectMetamask(supportedWalletOption)
+        if (account.error) {
+            throw new Error(account.error)
+        }
+        break
+    case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+        account = await walletAdapter.connectWalletConnect(supportedWalletOption)
         if (account.error) {
             throw new Error(account.error)
         }
@@ -168,9 +177,6 @@ Vue.prototype.getAccount = async function () {
             offset
         )
         localStorage.set('trezorPayload', { xpub: payload.xpub })
-        break
-    case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
-        account = (await wjs.eth.getAccounts())[0]
         break
     default:
         break
