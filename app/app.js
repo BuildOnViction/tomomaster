@@ -85,7 +85,7 @@ Vue.prototype.getAccount = async function () {
     const wjs = Vue.prototype.web3
     const config = await getConfig()
 
-    const chainName = config.blockchain.networkId === 88 ? 'Viction' : 'Viction testnet'
+    const chainName = config.blockchain.networkId === 88 ? 'Viction' : 'Viction Testnet'
 
     const supportedWalletOption = [{
         chainId: '0x' + parseInt(config.blockchain.networkId).toString(16),
@@ -425,7 +425,7 @@ Vue.prototype.detectNetwork = async function (provider) {
                 wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
                 break
             case 'walletConnect':
-                wjs = walletAdapter.loadWalletConnectProvider()
+                wjs = walletAdapter.loadWalletConnectProvider(chainConfig.networkId)
                 break
             default:
                 break

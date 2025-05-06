@@ -183,12 +183,17 @@ const walletAdapter = {
         }
         return new Web3(p)
     },
-    loadWalletConnectProvider: async () => {
+    loadWalletConnectProvider: async (numChainId) => {
         const PROJECT_ID = 'da5b1ad9fc27d9fea8f82411fe41f9cc'
 
         const provider = await EthereumProvider.init({
             projectId: PROJECT_ID,
             showQrModal: true,
+            optionalChains: [numChainId || 88],
+            rpcMap: {
+                88: 'https://rpc.viction.xyz',
+                89: 'https://rpc-testnet.viction.xyz'
+            },
             qrModalOptions: {
                 enableExplorer: false
             }

@@ -740,7 +740,7 @@ export default {
                     }
                     break
                 case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
-                    wjs = await walletAdapter.loadWalletConnectProvider()
+                    wjs = await walletAdapter.loadWalletConnectProvider(self.chainConfig.networkId)
                     if (!wjs) {
                         self.$toasted.show('Provider is NOT available', { type: 'error' })
                         return
