@@ -119,6 +119,30 @@ const walletAdapter = {
             return { error: `Unable to connect Metamask wallet: ${error.message}` }
         }
     },
+    connectWalletConnect: async (supportedWalletOption) => {
+        const provider = window.wcProvider
+        if (!provider) {
+            return { error: 'Please login with WalletConnect' }
+        }
+
+        const chainIdHex = '0x' + parseInt(provider.chainId).toString(16)
+
+        try {
+            if (supportedWalletOption[0].chainId !== chainIdHex) {
+                await provider.request({
+                    method: 'wallet_addEthereumChain',
+                    params: supportedWalletOption
+                })
+            }
+            const accounts = await provider.request({
+                method: 'eth_requestAccounts'
+            })
+            return accounts[0]
+        } catch (error) {
+            console.log(error)
+            return { error: `Unable to connect Metamask wallet: ${error.message}` }
+        }
+    },
     loadCoin98Provider: async () => {
         let p
         if (window.coin98) {
@@ -159,17 +183,23 @@ const walletAdapter = {
         }
         return new Web3(p)
     },
-    loadWalletConnectProvider: async () => {
+    loadWalletConnectProvider: async (numChainId) => {
+        const PROJECT_ID = 'cef8c87b765e4d9c89fefc47dbe9ced9'
+
         const provider = await EthereumProvider.init({
-            projectId: 'da5b1ad9fc27d9fea8f82411fe41f9cc',
+            projectId: PROJECT_ID,
             showQrModal: true,
-            chains: [88],
+            optionalChains: [numChainId || 88],
             rpcMap: {
-                88: 'https://rpc.viction.xyz'
+                88: 'https://rpc.viction.xyz',
+                89: 'https://rpc-testnet.viction.xyz'
+            },
+            qrModalOptions: {
+                enableExplorer: false
             }
         })
         await provider.enable()
-
+        window.wcProvider = provider
         return new Web3(provider)
     }
 }
