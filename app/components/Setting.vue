@@ -6,23 +6,31 @@
             class="m-0">
             <b-card
                 v-if="!address"
-                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
-                + (loading ? ' tomo-loading' : '')">
-                <h4 class="color-white tomo-card__title tomo-card__title--big">Login</h4>
+                :class="
+                    'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0' +
+                        (loading ? ' tomo-loading' : '')
+                "
+            >
+                <h4 class="color-white tomo-card__title tomo-card__title--big">
+                    Login
+                </h4>
                 <b-form
                     class="tomo-form tomo-form--setting"
                     novalidate
-                    @submit.prevent="validate()">
+                    @submit.prevent="validate()"
+                >
                     <b-form-group
                         class="mb-4"
                         label="Wallet Provider"
-                        label-for="provider">
+                        label-for="provider"
+                    >
                         <b-input-group>
                             <b-form-select
                                 id="provider"
                                 v-model="provider"
                                 class="form-control"
-                                @change="onChangeSelect">
+                                @change="onChangeSelect"
+                            >
                                 <option value="coin98">Coin98</option>
                                 <option value="viction">Viction</option>
                                 <option value="ramper">Ramper</option>
@@ -33,6 +41,7 @@
                                     value="custom">PrivateKey/MNEMONIC</option> -->
                                 <option value="ledger">Ledger Wallet</option>
                                 <option value="trezor">Trezor Wallet</option>
+                                <option value="walletConnect">Wallet Connect</option>
                                 <!-- <option
                                     v-if="!isElectron"
                                     value="pantograph">Pantograph</option> -->
@@ -76,35 +85,52 @@
                         v-if="provider === 'custom'"
                         class="mb-4"
                         label="Select HD derivation path(MNEMONIC)"
-                        label-for="hdPath">
+                        label-for="hdPath"
+                    >
                         <b-form-input
                             :class="getValidationClass('hdPath')"
                             :value="hdPath"
                             v-model="hdPath"
-                            type="text" />
+                            type="text"
+                        />
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
-                            class="text-danger">Required field</span>
-                        <small class="form-text text-muted">To unlock the wallet, try paths
+                            class="text-danger"
+                        >Required field</span
+                        >
+                        <small
+                            class="form-text text-muted"
+                        >To unlock the wallet, try paths
                             <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/60'/0'/0`)">m/44'/60'/0'/0</code> or
+                                @click="changePath(`m/44'/60'/0'/0`)"
+                            >m/44'/60'/0'/0</code
+                            >
+                            or
                             <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/60'/0'`)">m/44'/60'/0'</code> or
+                                @click="changePath(`m/44'/60'/0'`)"
+                            >m/44'/60'/0'</code
+                            >
+                            or
                             <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/889'/0'/0`)">m/44'/889'/0'/0</code></small>
+                                @click="changePath(`m/44'/889'/0'/0`)"
+                            >m/44'/889'/0'/0</code
+                        ></small
+                        >
                     </b-form-group>
 
                     <b-form-group
                         v-if="provider === 'tomowallet'"
                         class="mb-4"
-                        style="text-align: center">
+                        style="text-align: center"
+                    >
                         <vue-qrcode
                             :options="{ size: 250 }"
                             :value="qrCode"
-                            class="img-fluid text-center text-lg-right" />
+                            class="img-fluid text-center text-lg-right"
+                        />
                         <div v-if="mobileCheck">
                             <b-button
                                 :href="qrCodeApp"
@@ -120,15 +146,17 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href="https://goo.gl/MvE1GV"
-                                class="social-links__link">
-                                <img src="/app/assets/img/appstore.png">
+                                class="social-links__link"
+                            >
+                                <img src="/app/assets/img/appstore.png" >
                             </a>
                             <a
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href="https://goo.gl/4tFQzY"
-                                class="social-links__link">
-                                <img src="/app/assets/img/googleplay.png">
+                                class="social-links__link"
+                            >
+                                <img src="/app/assets/img/googleplay.png" >
                             </a>
                         </div>
                     </b-form-group>
@@ -136,33 +164,49 @@
                         v-if="provider === 'ledger'"
                         class="mb-4"
                         label="Select HD derivation path"
-                        label-for="hdPath">
+                        label-for="hdPath"
+                    >
                         <b-form-input
                             :class="getValidationClass('hdPath')"
                             :value="hdPath"
                             v-model="hdPath"
-                            type="text" />
+                            type="text"
+                        />
                         <span
                             v-if="$v.hdPath.$dirty && !$v.hdPath.required"
-                            class="text-danger">Required field</span>
-                        <small class="form-text text-muted">To unlock the wallet, try paths
+                            class="text-danger"
+                        >Required field</span
+                        >
+                        <small
+                            class="form-text text-muted"
+                        >To unlock the wallet, try paths
                             <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/60'/0'`)">m/44'/60'/0'</code>
-                            or <code
+                                @click="changePath(`m/44'/60'/0'`)"
+                            >m/44'/60'/0'</code
+                            >
+                            or
+                            <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/60'/0'/0`)">m/44'/60'/0'/0</code>
-                            with Ethereum App,<br>
-                            or try path <code
+                                @click="changePath(`m/44'/60'/0'/0`)"
+                            >m/44'/60'/0'/0</code
+                            >
+                            with Ethereum App,<br >
+                            or try path
+                            <code
                                 class="hd-path"
-                                @click="changePath(`m/44'/889'/0'/0`)">m/44'/889'/0'/0</code>
-                            with TomoChain App (on Ledger).</small>
+                                @click="changePath(`m/44'/889'/0'/0`)"
+                            >m/44'/889'/0'/0</code
+                            >
+                            with TomoChain App (on Ledger).</small
+                            >
                     </b-form-group>
 
                     <b-form-group
                         v-if="provider === 'trezor'"
                         class="mb-4"
-                        label-for="hdPath">
+                        label-for="hdPath"
+                    >
                         <span>HD derivation path: </span>
                         <label class="ml-1"><b>m/44'/60'/0'/0</b></label>
                         <!-- <b-form-input
@@ -177,18 +221,24 @@
                     </b-form-group>
 
                     <div v-if="!isReady && provider === 'metamask'">
-                        <p>Please install &amp; login
+                        <p>
+                            Please install &amp; login
                             <a
                                 href="https://metamask.io/"
-                                target="_blank">Metamask Extension</a>
+                                target="_blank"
+                            >Metamask Extension</a
+                            >
                             then connect it to Viction Mainnet or Testnet.
                         </p>
                     </div>
                     <div v-if="!isReady && provider === 'pantograph'">
-                        <p>Please install &amp; login
+                        <p>
+                            Please install &amp; login
                             <a
                                 href="https://pantograph.io/"
-                                target="_blank">Pantograph Extension</a>
+                                target="_blank"
+                            >Pantograph Extension</a
+                            >
                             then connect it to Viction Mainnet or Testnet.
                         </p>
                     </div>
@@ -196,16 +246,22 @@
                         <b-button
                             v-if="provider !== 'tomowallet'"
                             type="submit"
-                            variant="primary">Save</b-button>
+                            variant="primary"
+                        >Save</b-button
+                        >
                     </div>
                 </b-form>
             </b-card>
             <b-card
                 v-if="address"
-                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
-                + (loading ? ' tomo-loading' : '')">
+                :class="
+                    'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0' +
+                        (loading ? ' tomo-loading' : '')
+                "
+            >
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Account Information</h4>
+                    Account Information
+                </h4>
                 <ul class="tomo-list list-unstyled">
                     <li class="tomo-list__item">
                         <i class="tm-wallet tomo-list__icon" />
@@ -221,7 +277,8 @@
                     <li class="tomo-list__item">
                         <i class="tm-tomo2 tomo-list__icon" />
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ formatNumber(balance) }}
+                            <p class="color-white mb-0">
+                                {{ formatNumber(balance) }}
                                 <span class="text-muted">{{ getCurrencySymbol() }}</span>
                             </p>
                             <span>Balance</span>
@@ -230,21 +287,28 @@
                 </ul>
             </b-card>
             <b-card
-                v-if="isReady && (aw || (wh.length > 0))"
-                :class="'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0'
-                + (loading ? ' tomo-loading' : '')">
+                v-if="isReady && (aw || wh.length > 0)"
+                :class="
+                    'col-12 col-md-8 col-lg-7 tomo-card tomo-card--lighter p-0' +
+                        (loading ? ' tomo-loading' : '')
+                "
+            >
                 <h4 class="h4 color-white tomo-card__title tomo-card__title--big">
-                    Withdrawals</h4>
+                    Withdrawals
+                </h4>
                 <ul
                     v-for="(w, k, index) in withdraws"
                     :key="index"
-                    class="tomo-list list-unstyled">
+                    class="tomo-list list-unstyled"
+                >
                     <li
                         v-if="w.blockNumber !== '0' && w.cap !== '0'"
-                        class="tomo-list__item">
+                        class="tomo-list__item"
+                    >
                         <p class="tomo-list__text">
                             <a :href="`${config.explorerUrl}/block/${w.blockNumber}`">
-                                {{ w.blockNumber }}</a>
+                                {{ w.blockNumber }}</a
+                                >
                             <span>Withdrawal Block Number</span>
                         </p>
                         <!-- <div class="tomo-list__text">
@@ -253,7 +317,8 @@
                             <span>Estimated Time</span>
                         </div> -->
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ w.cap }}
+                            <p class="color-white mb-0">
+                                {{ w.cap }}
                                 <span class="text-muted">{{ getCurrencySymbol() }}</span>
                             </p>
                             <span>Capacity</span>
@@ -267,22 +332,27 @@
                                 :disabled="w.blockNumber > chainConfig.blockNumber"
                                 class="float-right"
                                 variant="primary"
-                                @click="changeView(w, k)">Withdraw</b-button>
+                                @click="changeView(w, k)"
+                            >Withdraw</b-button
+                            >
                         </div>
                     </li>
                 </ul>
                 <ul
                     v-for="(w, k, index) in wh"
                     :key="index"
-                    class="tomo-list list-unstyled">
+                    class="tomo-list list-unstyled"
+                >
                     <li class="tomo-list__item">
                         <p class="tomo-list__text">
                             <a :href="`${config.explorerUrl}/tx/${w.tx}`">
-                                {{ (w.tx || '').substring(0, 8) }}</a>
+                                {{ (w.tx || '').substring(0, 8) }}</a
+                                >
                             <span>Transaction</span>
                         </p>
                         <div class="tomo-list__text">
-                            <p class="color-white mb-0">{{ w.cap }}
+                            <p class="color-white mb-0">
+                                {{ w.cap }}
                                 <span class="text-muted">{{ getCurrencySymbol() }}</span>
                             </p>
                             <span>Capacity</span>
@@ -314,13 +384,16 @@
                             <div
                                 v-for="(hdwallet, index) in hdWallets"
                                 :key="index">
-                                <label style="width: 100%; margin-bottom: 5px; line-height: 16px; cursor: pointer">
+                                <label
+                                    style="width: 100%; margin-bottom: 5px; line-height: 16px; cursor: pointer"
+                                >
                                     <input
                                         :value="index"
                                         name="hdWallet"
                                         type="radio"
                                         autocomplete="off"
-                                        style="width: 5%; float: left">
+                                        style="width: 5%; float: left"
+                                    >
                                     <div style="width: 70%; float: left">
                                         {{ hdwallet.address }}
                                     </div>
@@ -332,7 +405,8 @@
                             <div
                                 id="moreHdAddresses"
                                 style="margin-top: 10px; cursor: pointer"
-                                @click="moreHdAddresses">
+                                @click="moreHdAddresses"
+                            >
                                 More Addresses
                             </div>
                         </slot>
@@ -342,7 +416,8 @@
                             <button
                                 type="button"
                                 class="btn btn-secondary"
-                                @click="closeModal">
+                                @click="closeModal"
+                            >
                                 Cancel
                             </button>
 
@@ -364,9 +439,7 @@ import Web3 from 'web3'
 import BigNumber from 'bignumber.js'
 import { validationMixin } from 'vuelidate'
 import axios from 'axios'
-import {
-    required, minLength
-} from 'vuelidate/lib/validators'
+import { required, minLength } from 'vuelidate/lib/validators'
 // import localhostUrl from '../../validators/localhostUrl.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import store from 'store'
@@ -428,11 +501,11 @@ export default {
         mobileCheck: () => {
             const isAndroid = navigator.userAgent.match(/Android/i)
             const isIOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
-            return (isAndroid || isIOS)
+            return isAndroid || isIOS
         }
     },
     watch: {},
-    updated () { },
+    updated () {},
     beforeDestroy () {
         if (this.interval) {
             clearInterval(this.interval)
@@ -444,7 +517,7 @@ export default {
         }
         let self = this
         self.hdWallets = self.hdWallets || {}
-        self.config = store.get('configMaster') || await self.appConfig()
+        self.config = store.get('configMaster') || (await self.appConfig())
         self.chainConfig = self.config.blockchain || {}
         self.networks.rpc = self.chainConfig.clientRpc
 
@@ -467,7 +540,10 @@ export default {
                 } else {
                     try {
                         account = this.$store.state.address
-                            ? this.$store.state.address : (self.web3 ? await self.getAccount() : false)
+                            ? this.$store.state.address
+                            : self.web3
+                                ? await self.getAccount()
+                                : false
                     } catch (e) {
                         self.$toasted.show(e.message, {
                             type: 'error'
@@ -491,37 +567,47 @@ export default {
                     self.$toasted.show('Cannot load balance')
                 }
 
-                let whPromise = axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
+                let whPromise = axios.get(
+                    `/api/owners/${self.address}/withdraws?limit=100`
+                )
                 if (contract) {
                     // let blksPromise = contract.getWithdrawBlockNumbers.call({ from: account })
-                    let blks = await contract.methods.getWithdrawBlockNumbers().call({ from: account })
+                    let blks = await contract.methods
+                        .getWithdrawBlockNumbers()
+                        .call({ from: account })
                     // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
 
                     // const blks = await blksPromise
-                    await Promise.all(blks.map(async (it, index) => {
-                        let blk = new BigNumber(it).toString()
-                        if (blk !== '0') {
-                            self.aw = true
-                        }
-                        let wd = {
-                            blockNumber: blk
-                        }
-                        wd.cap = new BigNumber(
-                            // await contract.getWithdrawCap.call(blk, { from: account })
-                            await contract.methods.getWithdrawCap(blk).call({ from: account })
-                        ).div(10 ** 18).toFormat()
-                        wd.estimatedTime = await self.getSecondsToHms(
-                            (wd.blockNumber - self.chainConfig.blockNumber)
-                        )
-                        self.withdraws[index] = wd
-                    }))
+                    await Promise.all(
+                        blks.map(async (it, index) => {
+                            let blk = new BigNumber(it).toString()
+                            if (blk !== '0') {
+                                self.aw = true
+                            }
+                            let wd = {
+                                blockNumber: blk
+                            }
+                            wd.cap = new BigNumber(
+                                // await contract.getWithdrawCap.call(blk, { from: account })
+                                await contract.methods
+                                    .getWithdrawCap(blk)
+                                    .call({ from: account })
+                            )
+                                .div(10 ** 18)
+                                .toFormat()
+                            wd.estimatedTime = await self.getSecondsToHms(
+                                wd.blockNumber - self.chainConfig.blockNumber
+                            )
+                            self.withdraws[index] = wd
+                        })
+                    )
                 }
 
                 const wh = await whPromise
 
                 // let wh = await axios.get(`/api/owners/${self.address}/withdraws`)
                 self.wh = []
-                wh.data.forEach(w => {
+                wh.data.forEach((w) => {
                     let it = {
                         cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
                         tx: w.tx
@@ -546,7 +632,7 @@ export default {
         }
         await self.setupAccount()
     },
-    mounted () { },
+    mounted () {},
     methods: {
         getValidationClass: function (fieldName) {
             let field = this.$v[fieldName]
@@ -615,32 +701,48 @@ export default {
             self.loading = true
             try {
                 let offset
+
                 switch (self.provider) {
                 case walletAdapter.WALLET_TYPE.COIN98:
                     wjs = await walletAdapter.loadCoin98Provider()
                     if (!wjs) {
-                        self.$toasted.show('Please install Coin98 wallet', { type: 'error' })
+                        self.$toasted.show('Please install Coin98 wallet', {
+                            type: 'error'
+                        })
                         return
                     }
                     break
                 case walletAdapter.WALLET_TYPE.VICTION:
                     wjs = await walletAdapter.loadVictionProvider()
                     if (!wjs) {
-                        self.$toasted.show('Please install Viction wallet', { type: 'error' })
+                        self.$toasted.show('Please install Viction wallet', {
+                            type: 'error'
+                        })
                         return
                     }
                     break
                 case walletAdapter.WALLET_TYPE.RAMPER:
                     wjs = await walletAdapter.loadRamperProvider()
                     if (!wjs) {
-                        self.$toasted.show('Please install Ramper wallet', { type: 'error' })
+                        self.$toasted.show('Please install Ramper wallet', {
+                            type: 'error'
+                        })
                         return
                     }
                     break
                 case walletAdapter.WALLET_TYPE.METAMASK:
                     wjs = await walletAdapter.loadMetamaskProvider()
                     if (!wjs) {
-                        self.$toasted.show('Please install Metamask wallet', { type: 'error' })
+                        self.$toasted.show('Please install Metamask wallet', {
+                            type: 'error'
+                        })
+                        return
+                    }
+                    break
+                case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+                    wjs = await walletAdapter.loadWalletConnectProvider(self.chainConfig.networkId)
+                    if (!wjs) {
+                        self.$toasted.show('Provider is NOT available', { type: 'error' })
                         return
                     }
                     break
@@ -661,26 +763,38 @@ export default {
                     // wjs = await ws.connect(self.networks.wss)
                     // wjs = new Web3(new Web3.providers.WebsocketProvider(self.chainConfig.ws))
                     // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
-                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    offset = document
+                        .querySelector('input[name="hdWallet"]:checked')
+                        .value.toString()
                     store.set('hdDerivationPath', self.hdPath + '/' + offset)
                     break
                 case 'trezor':
                     wjs = new Web3(new Web3.providers.HttpProvider(self.networks.rpc))
-                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    offset = document
+                        .querySelector('input[name="hdWallet"]:checked')
+                        .value.toString()
                     store.set('hdDerivationPath', self.hdPath + '/' + offset)
                     store.set('offset', offset)
+                    break
+                case 'walletConnect':
+                    wjs = await walletAdapter.loadWalletConnectProvider()
                     break
                 default:
                     self.mnemonic = self.mnemonic.trim()
                     const walletProvider =
-                            (self.mnemonic.indexOf(' ') >= 0)
-                                ? new HDWalletProvider(
-                                    self.mnemonic.trim(),
-                                    self.chainConfig.rpc, 0, 1, self.hdPath)
-                                : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
+              self.mnemonic.indexOf(' ') >= 0
+                  ? new HDWalletProvider(
+                      self.mnemonic.trim(),
+                      self.chainConfig.rpc,
+                      0,
+                      1,
+                      self.hdPath
+                  )
+                  : new PrivateKeyProvider(self.mnemonic, self.chainConfig.rpc)
                     wjs = new Web3(walletProvider)
                     break
                 }
+
                 await self.setupProvider(this.provider, wjs)
                 await self.setupAccount()
                 self.loading = false
@@ -696,9 +810,12 @@ export default {
                 }
             } catch (e) {
                 self.loading = false
-                self.$toasted.show('There are some errors when changing the network provider', {
-                    type: 'error'
-                })
+                self.$toasted.show(
+                    'There are some errors when changing the network provider',
+                    {
+                        type: 'error'
+                    }
+                )
                 console.log(e)
             }
         },
@@ -707,18 +824,18 @@ export default {
             const { data } = await axios.get('/api/auth/generateLoginQR')
             this.id = data.id
             this.qrCode = encodeURI(
-                'tomochain:login?message=' + data.message +
-                '&submitURL=' + data.url
+                'tomochain:login?message=' + data.message + '&submitURL=' + data.url
             )
             this.qrCodeApp = encodeURI(
-                'tomochain://login?message=' + data.message +
-                '&submitURL=' + data.url
+                'tomochain://login?message=' + data.message + '&submitURL=' + data.url
             )
             return true
         },
         async getLoginResult () {
             // calling api every 2 seconds
-            const { data } = await axios.get('/api/auth/getLoginResult?id=' + this.id)
+            const { data } = await axios.get(
+                '/api/auth/getLoginResult?id=' + this.id
+            )
 
             if (!data.error && data) {
                 this.loading = true
@@ -760,9 +877,9 @@ export default {
             let contract
             self.address = account
             self.$store.state.address = account
-            const web3 = new Web3(new HDWalletProvider(
-                '',
-                self.chainConfig.rpc, 0, 1, self.hdPath))
+            const web3 = new Web3(
+                new HDWalletProvider('', self.chainConfig.rpc, 0, 1, self.hdPath)
+            )
 
             await self.setupProvider(this.provider, web3)
             try {
@@ -785,30 +902,38 @@ export default {
             })
             if (contract) {
                 // let blks = await contract.getWithdrawBlockNumbers.call({ from: account })
-                let blks = await contract.methods.getWithdrawBlockNumbers().call({ from: account })
+                let blks = await contract.methods
+                    .getWithdrawBlockNumbers()
+                    .call({ from: account })
 
-                await Promise.all(blks.map(async (it, index) => {
-                    let blk = new BigNumber(it).toString()
-                    if (blk !== '0') {
-                        self.aw = true
-                    }
-                    let wd = {
-                        blockNumber: blk
-                    }
-                    wd.cap = new BigNumber(
-                        // await contract.getWithdrawCap.call(blk, { from: account })
-                        await contract.methods.getWithdrawCap(blk).call({ from: account })
-                    ).div(10 ** 18).toFormat()
-                    wd.estimatedTime = await self.getSecondsToHms(
-                        (wd.blockNumber - self.chainConfig.blockNumber)
-                    )
-                    self.withdraws[index] = wd
-                }))
+                await Promise.all(
+                    blks.map(async (it, index) => {
+                        let blk = new BigNumber(it).toString()
+                        if (blk !== '0') {
+                            self.aw = true
+                        }
+                        let wd = {
+                            blockNumber: blk
+                        }
+                        wd.cap = new BigNumber(
+                            // await contract.getWithdrawCap.call(blk, { from: account })
+                            await contract.methods.getWithdrawCap(blk).call({ from: account })
+                        )
+                            .div(10 ** 18)
+                            .toFormat()
+                        wd.estimatedTime = await self.getSecondsToHms(
+                            wd.blockNumber - self.chainConfig.blockNumber
+                        )
+                        self.withdraws[index] = wd
+                    })
+                )
             }
 
-            let wh = await axios.get(`/api/owners/${self.address}/withdraws?limit=100`)
+            let wh = await axios.get(
+                `/api/owners/${self.address}/withdraws?limit=100`
+            )
             self.wh = []
-            wh.data.forEach(w => {
+            wh.data.forEach((w) => {
                 let it = {
                     cap: new BigNumber(w.capacity).div(10 ** 18).toFormat(),
                     tx: w.tx
@@ -826,7 +951,9 @@ export default {
             }
         },
         changeView (w, k) {
-            const txFee = new BigNumber(this.chainConfig.gas * this.gasPrice).div(10 ** 18)
+            const txFee = new BigNumber(this.chainConfig.gas * this.gasPrice).div(
+                10 ** 18
+            )
 
             if (this.balance.isGreaterThanOrEqualTo(txFee)) {
                 this.$router.push({
@@ -854,7 +981,10 @@ export default {
         async moreHdAddresses () {
             document.getElementById('moreHdAddresses').style.cursor = 'wait'
             document.body.style.cursor = 'wait'
-            await this.selectHdPath(Object.keys(this.hdWallets).length, this.defaultWalletNumber)
+            await this.selectHdPath(
+                Object.keys(this.hdWallets).length,
+                this.defaultWalletNumber
+            )
             document.getElementById('moreHdAddresses').style.cursor = 'pointer'
             document.body.style.cursor = 'default'
         },

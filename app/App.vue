@@ -271,8 +271,7 @@
                                 <b-dropdown-item to="/setting">Settings/Withdraws</b-dropdown-item>
                                 <b-dropdown-divider />
                                 <b-dropdown-item
-                                    v-if="!mobileCheck && isTomonet"
-                                    href="/"
+                                    v-if="isTomonet"
                                     @click="signOut">Sign out</b-dropdown-item>
                             </b-dropdown>
                         </b-navbar-nav>
@@ -374,6 +373,7 @@ import store from 'store'
 import moment from 'moment'
 import pkg from '../package.json'
 import AutoComplete from './components/AutoComplete.vue'
+
 export default {
     name: 'App',
     metaInfo: {
@@ -494,14 +494,16 @@ export default {
                 } catch (error) {}
             }, 0)
         },
-        signOut () {
+        async signOut () {
+            if (window && window.wcProvider) {
+                await window.wcProvider.disconnect()
+            }
             store.clearAll()
-            Object.assign(this.$store.state, this.getDefaultState())
-            // this.$store.state.address = null
-
             this.$router.go({
                 path: '/'
             })
+            Object.assign(this.$store.state, this.getDefaultState())
+            // this.$store.state.address = null
         },
         async readClick () {
             this.statusClass = 'display: none;'

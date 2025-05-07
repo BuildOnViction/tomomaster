@@ -35,6 +35,7 @@ import * as HDKey from 'hdkey'
 import * as ethUtils from 'ethereumjs-util'
 import Meta from 'vue-meta'
 import Helper from './utils'
+
 const walletAdapter = require('./walletAdapter.js')
 
 Vue.use(Meta)
@@ -83,9 +84,12 @@ Vue.prototype.getAccount = async function () {
     const provider = Vue.prototype.NetworkProvider || ''
     const wjs = Vue.prototype.web3
     const config = await getConfig()
+
+    const chainName = config.blockchain.networkId === 88 ? 'Viction' : 'Viction Testnet'
+
     const supportedWalletOption = [{
         chainId: '0x' + parseInt(config.blockchain.networkId).toString(16),
-        chainName: 'Viction',
+        chainName: chainName,
         nativeCurrency: {
             name: 'VIC',
             symbol: 'VIC',
@@ -123,6 +127,12 @@ Vue.prototype.getAccount = async function () {
             throw new Error(account.error)
         }
         break
+    case walletAdapter.WALLET_TYPE.WALLET_CONNECT:
+        account = await walletAdapter.connectWalletConnect(supportedWalletOption)
+        if (account.error) {
+            throw new Error(account.error)
+        }
+        break
         // case 'pantograph':
         //     // Request account access if needed - for metamask
         //     if (window.tomochain) {
@@ -148,7 +158,7 @@ Vue.prototype.getAccount = async function () {
             let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
             if (!ethAppConfig.arbitraryDataEnabled) {
                 throw new Error(`Please go to App Setting
-                    to enable contract data and display data on your device!`)
+                to enable contract data and display data on your device!`)
             }
             let result = await Vue.prototype.appEth.getAddress(
                 localStorage.get('hdDerivationPath')
@@ -413,6 +423,9 @@ Vue.prototype.detectNetwork = async function (provider) {
             case 'ledger':
                 // wjs = new Web3(new Web3.providers.WebsocketProvider(chainConfig.ws))
                 wjs = new Web3(new Web3.providers.HttpProvider(chainConfig.clientRpc))
+                break
+            case 'walletConnect':
+                wjs = walletAdapter.loadWalletConnectProvider(chainConfig.networkId)
                 break
             default:
                 break
