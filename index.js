@@ -42,6 +42,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(docs))
 app.use(require('./apis'))
 app.use(require('./middlewares/sitemap'))
 
+app.get('/.well-known/walletconnect.txt', (req, res) => {
+    return res.sendFile('walletconnect.txt', {
+        root: path.join(__dirname, 'app/assets/files'),
+        headers: {
+            'Content-type': 'application/octet-stream'
+        }
+    })
+})
+
 app.get('*', function (req, res) {
     let p
     if (process.env.NODE_ENV === 'development') {
