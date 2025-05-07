@@ -21,7 +21,9 @@ app.use(helmet())
 app.use(helmet.hidePoweredBy())
 
 // cors
-app.use(cors())
+app.use(cors({
+    origin: config.get('cors')
+}))
 
 app.use(morgan('short', { stream: logger.stream }))
 
