@@ -158,7 +158,7 @@ Vue.prototype.getAccount = async function () {
             let ethAppConfig = await Vue.prototype.appEth.getAppConfiguration()
             if (!ethAppConfig.arbitraryDataEnabled) {
                 throw new Error(`Please go to App Setting
-                    to enable contract data and display data on your device!`)
+                to enable contract data and display data on your device!`)
             }
             let result = await Vue.prototype.appEth.getAddress(
                 localStorage.get('hdDerivationPath')
