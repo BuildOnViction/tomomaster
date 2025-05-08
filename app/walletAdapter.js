@@ -185,10 +185,18 @@ const walletAdapter = {
     },
     loadWalletConnectProvider: async (numChainId) => {
         const PROJECT_ID = 'cef8c87b765e4d9c89fefc47dbe9ced9'
+        const metadata = {
+            name: 'Vicmaster',
+            // eslint-disable-next-line max-len
+            description: 'Providing a professional UI which allows coin-holders to stake for masternodes, decentralized governance and explore masternode performance statistics',
+            url: 'https://master-testnet.viction.xyz',
+            icons: ['https://vicscan.xyz/vic-token.png']
+        }
 
         const provider = await EthereumProvider.init({
             projectId: PROJECT_ID,
             showQrModal: true,
+            metadata,
             optionalChains: [numChainId || 88],
             rpcMap: {
                 88: 'https://rpc.viction.xyz',
