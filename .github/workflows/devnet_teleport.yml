@@ -23,16 +23,11 @@ jobs:
       - name: Install Python
         run: sudo apt install python2
       - name: Install package
-        with:
-          node-version: '14.21.3'
         run: |
           mkdir build && mkdir build/contracts && cp abis/*json build/contracts && npm ci --python=python2 --no-audit
 
-
       - name: Build
         run: npm run build
-        with:
-          node-version: '10.6'
 
       - name: Fetch Teleport binaries
         uses: teleport-actions/setup@v1
