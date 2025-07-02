@@ -4,7 +4,7 @@
   "description": "Viction Governance DApp",
   "main": "elect.js",
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "node scripts/apply-patch.js",
     "lint": "eslint --cache ./ --ext .vue --ext .js",
     "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
     "nodemon": "./node_modules/.bin/nodemon index.js",
@@ -524,7 +524,6 @@
     "parse-asn1": "5.1.5",
     "parse-headers": "2.0.3",
     "parseurl": "1.3.3",
-    "patch-package": "^6.5.1",
     "path-exists": "3.0.0",
     "path-parse": "1.0.6",
     "path-to-regexp": "0.1.7",
