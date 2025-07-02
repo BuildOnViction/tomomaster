@@ -184,7 +184,8 @@ const walletAdapter = {
         return new Web3(p)
     },
     loadWalletConnectProvider: async (numChainId) => {
-        const PROJECT_ID = 'cef8c87b765e4d9c89fefc47dbe9ced9'
+        // const PROJECT_ID = 'cef8c87b765e4d9c89fefc47dbe9ced9'
+        const PROJECT_ID = 'c8eeebf5bd973cb871a062bf67cef40c'
         const metadata = {
             name: 'Vicmaster',
             // eslint-disable-next-line max-len
