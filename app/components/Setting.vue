@@ -776,9 +776,6 @@ export default {
                     store.set('hdDerivationPath', self.hdPath + '/' + offset)
                     store.set('offset', offset)
                     break
-                case 'walletConnect':
-                    wjs = await walletAdapter.loadWalletConnectProvider()
-                    break
                 default:
                     self.mnemonic = self.mnemonic.trim()
                     const walletProvider =
