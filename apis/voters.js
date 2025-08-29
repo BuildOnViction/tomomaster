@@ -378,16 +378,24 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
         let yesterday = new Date(current.setDate(current.getDate() - 1))
         const theDayBeforeYes = new Date(current.setDate(current.getDate() - 1))
 
-        const epochIn1Day = db.Status.count({
+        let epochIn1Day = await db.Status.count({
             candidate: address,
             epochCreatedAt: {
                 $gte: theDayBeforeYes,
-                $lt: yesterday
+                $lte: yesterday
             }
         })
+        if (!epochIn1Day) {
+            epochIn1Day = await db.Status.count({
+                candidate: address,
+                'epochCreatedAt._i': {
+                    $gte: theDayBeforeYes.getTime(),
+                    $lte: yesterday.getTime()
+                }
+            })
+        }
 
         const candidate = await candidatePromise
-
         if (!candidate) {
             return res.send('N/A')
         }
@@ -397,17 +405,20 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
             'api/epoch/expose/rewards', address.toLowerCase(), candidate.owner.toLowerCase())
         let rewards = cache.get(cacheKey)
         if (!rewards) {
-            rewards = await axios.post(
+            rewards = await axios.get(
                 urljoin(
                     config.get('tomoscanUrl'),
                     'api/epoch/expose/rewards',
-                    `?address=${address}`,
-                    `&owner=${candidate.owner}`,
+                    `?owner=${address}`,
+                    `&address=${candidate.owner}`,
                     `&offset=0`,
                     `&limit=1`,
                     `&reason=voter`
                 )
             )
+            rewards = {
+                data: rewards.data
+            }
 
             cache.set(cacheKey, rewards)
         }
@@ -433,6 +444,9 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
                         `api/epoch/expose/totalSignNumber/${epoch}`
                     )
                 )
+                totalSigners = {
+                    data: totalSigners.data
+                }
                 cache.set(cacheKey, totalSigners)
             }
         }
@@ -443,7 +457,7 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
 
             // calculate voter reward 1 day
             const estimateReward = masternodeReward.multipliedBy(0.5)
-                .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(await epochIn1Day) || 'N/A'
+                .multipliedBy(amount).div(capacity.plus(amount)).multipliedBy(epochIn1Day) || 'N/A'
             return res.send(estimateReward.toString(10))
         }
         return res.send('N/A')
