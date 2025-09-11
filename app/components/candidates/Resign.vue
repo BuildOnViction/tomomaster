@@ -204,7 +204,7 @@ export default {
                         }).catch(e => {
                             console.log(e)
                             self.loading = false
-                            self.$toasted.show(self.toastMessageError + e, { type: 'error' })
+                            self.$toasted.show(self.toastMessageError + ' ' + e.message, { type: 'error' })
                         })
                 }
             } catch (e) {
