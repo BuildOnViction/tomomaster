@@ -37,7 +37,7 @@ import Meta from 'vue-meta'
 import Helper from './utils'
 
 const walletAdapter = require('./walletAdapter.js')
-
+// axios.defaults.baseURL = 'http://localhost:3001'
 Vue.use(Meta)
 Vue.use(BootstrapVue)
 Vue.use(VueClipboards)
@@ -70,9 +70,9 @@ Vue.prototype.isElectron = !!(window && window.process && window.process.type)
 Vue.prototype.setupProvider = async function (provider, wjs) {
     Vue.prototype.NetworkProvider = provider
     if (wjs instanceof Web3) {
+        Vue.prototype.web3 = wjs
         const config = await getConfig()
         localStorage.set('configMaster', config)
-        Vue.prototype.web3 = wjs
         Vue.prototype.TomoValidator = new wjs.eth.Contract(
             Helper.TomoValidatorArtifacts.abi,
             config.blockchain.validatorAddress
@@ -365,6 +365,8 @@ Vue.prototype.detectNetwork = async function (provider) {
         const config = localStorage.get('configMaster') || await getConfig()
         const chainConfig = config.blockchain
         if (!wjs) {
+            // wait provider init
+            await (new Promise(resolve => setTimeout(resolve, 1000)))
             switch (provider) {
             case walletAdapter.WALLET_TYPE.COIN98:
                 wjs = await walletAdapter.loadCoin98Provider()
